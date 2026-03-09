@@ -20,9 +20,7 @@ const Header = () => {
       {/* Main header */}
       <div className="flex items-center justify-between px-6 pb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-            <span className="text-white text-lg font-bold">H</span>
-          </div>
+          <img src={logoImg} alt="Hádron Portal" className="w-10 h-10 object-contain" />
           <span className="text-base font-medium tracking-wide">Hádron Portal</span>
         </div>
 

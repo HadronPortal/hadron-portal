@@ -16,7 +16,7 @@ const Header = () => {
       {/* Top accent line */}
       <div className="h-[3px] bg-[#262f55]" />
       {/* Top strip with blue background */}
-      <div className="bg-[#363d63] text-right px-3 py-[3px] text-[11px] tracking-wide">
+      <div className="bg-[#262f55] text-right px-3 py-[3px] text-[11px] tracking-wide">
         DEV|00-PROCION TESTE DEV WEB LTDA
       </div>
       {/* Main header */}

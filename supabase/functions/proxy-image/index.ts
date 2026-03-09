@@ -50,7 +50,6 @@ serve(async (req) => {
   try {
     const url = new URL(req.url);
     const filename = url.searchParams.get('file');
-    const debug = url.searchParams.get('debug') === '1';
 
     if (!filename) {
       return new Response(JSON.stringify({ error: 'Missing file param' }), {
@@ -61,59 +60,32 @@ serve(async (req) => {
 
     const { token, cookies } = await getAuth();
 
-    // Try multiple possible URL patterns
-    const basePaths = [
-      `https://dev.hadronweb.com.br/app/user_data/DEV/products/${filename}`,
-      `https://dev.hadronweb.com.br/app/user_data/DEV/products/pro/${filename}`,
-      `https://dev.hadronweb.com.br/app/user_data/products/${filename}`,
-      `https://dev.hadronweb.com.br/app/uploads/products/${filename}`,
-      `https://dev.hadronweb.com.br/app/assets/products/${filename}`,
-      `https://dev.hadronweb.com.br/user_data/DEV/products/${filename}`,
-    ];
+    const imgUrl = `https://dev.hadronweb.com.br/user_data/DEV/products/${encodeURIComponent(filename)}`;
 
-    const results: { url: string; status: number; contentType: string }[] = [];
+    const imgRes = await fetch(imgUrl, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Cookie': cookies,
+      },
+    });
 
-    for (const imgUrl of basePaths) {
-      const imgRes = await fetch(imgUrl, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Cookie': cookies,
-        },
-      });
-
-      const ct = imgRes.headers.get('content-type') || '';
-      results.push({ url: imgUrl, status: imgRes.status, contentType: ct });
-
-      if (imgRes.ok && ct.startsWith('image')) {
-        console.log('SUCCESS:', imgUrl, imgRes.status, ct);
-        const imgData = await imgRes.arrayBuffer();
-        return new Response(imgData, {
-          headers: {
-            ...corsHeaders,
-            'Content-Type': ct,
-            'Cache-Control': 'public, max-age=86400',
-          },
-        });
-      } else {
-        await imgRes.text(); // consume body
-      }
+    if (!imgRes.ok || !imgRes.headers.get('content-type')?.startsWith('image')) {
+      await imgRes.text();
+      return new Response(null, { status: 404, headers: corsHeaders });
     }
 
-    console.log('All paths failed for:', filename, JSON.stringify(results));
+    const contentType = imgRes.headers.get('content-type') || 'image/jpeg';
+    const imgData = await imgRes.arrayBuffer();
 
-    if (debug) {
-      return new Response(JSON.stringify({ filename, results }), {
-        status: 404,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    return new Response(null, { status: 404, headers: corsHeaders });
+    return new Response(imgData, {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=86400',
+      },
+    });
   } catch (error) {
     console.error('Error:', error);
-    return new Response(JSON.stringify({ error: String(error) }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(null, { status: 500, headers: corsHeaders });
   }
 });

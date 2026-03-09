@@ -18,36 +18,33 @@ serve(async (req) => {
       throw new Error('Missing API credentials');
     }
 
-    // Step 1: Login
+    // Step 1: Login to get access_token
     const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ aus_email: email, aus_senha: password }),
     });
 
-    if (!loginRes.ok) {
-      const text = await loginRes.text();
-      throw new Error(`Login failed [${loginRes.status}]: ${text}`);
+    const loginData = await loginRes.json();
+
+    if (!loginRes.ok || !loginData.success) {
+      throw new Error(`Login failed: ${JSON.stringify(loginData)}`);
     }
 
-    // Extract cookies for session
-    const setCookies = loginRes.headers.getSetCookie?.() || [];
-    const cookieHeader = setCookies.map(c => c.split(';')[0]).join('; ');
+    const token = loginData.access_token;
+    console.log('Login successful, token obtained');
 
-    const loginData = await loginRes.json();
-    console.log('Login response:', JSON.stringify(loginData));
-
-    // Step 2: Fetch catalogo
+    // Step 2: Fetch catalogo using Bearer token
     const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
       headers: {
-        'Cookie': cookieHeader,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
 
     if (!catalogoRes.ok) {
       const text = await catalogoRes.text();
-      throw new Error(`Catalogo fetch failed [${catalogoRes.status}]: ${text}`);
+      throw new Error(`Catalogo fetch failed [${catalogoRes.status}]: ${text.substring(0, 500)}`);
     }
 
     const catalogoData = await catalogoRes.json();

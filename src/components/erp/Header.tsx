@@ -6,7 +6,7 @@ const navItems = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Users, label: 'Clientes', path: '/clientes' },
   { icon: Gauge, label: 'Analítico', path: '/analitico' },
-  { icon: LayoutGrid, label: 'Grid', path: '#' },
+  { icon: LayoutGrid, label: 'Pedidos', path: '/pedidos' },
   { icon: Grid3X3, label: 'Aplicações', path: '#' },
   { icon: Box, label: 'Módulos', path: '#' },
 ];

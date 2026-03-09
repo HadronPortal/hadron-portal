@@ -48,7 +48,7 @@ const OrdersTable = ({ orders }: { orders: Order[] }) => {
                     </TableCell>
                     <TableCell className="text-sm">{order.localizacao}</TableCell>
                     <TableCell>
-                      <span className={`inline-block px-4 py-1 rounded text-[11px] font-semibold ${status.bg} ${status.text}`}>
+                      <span className={`inline-block px-3 py-0.5 rounded text-[10px] font-semibold ${status.bg} ${status.text}`}>
                         {status.label}
                       </span>
                       {order.erp_code && (

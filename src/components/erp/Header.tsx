@@ -5,7 +5,7 @@ import logoImg from '@/assets/icon_hadronweb.png';
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Users, label: 'Clientes', path: '/clientes' },
-  { icon: Gauge, label: 'Indicadores', path: '#' },
+  { icon: Gauge, label: 'Analítico', path: '/analitico' },
   { icon: LayoutGrid, label: 'Grid', path: '#' },
   { icon: Grid3X3, label: 'Aplicações', path: '#' },
   { icon: Box, label: 'Módulos', path: '#' },

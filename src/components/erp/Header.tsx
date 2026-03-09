@@ -8,7 +8,7 @@ const navItems = [
   { icon: Gauge, label: 'Analítico', path: '/analitico' },
   { icon: LayoutGrid, label: 'Pedidos', path: '/pedidos' },
   { icon: Grid3X3, label: 'Produtos', path: '/produtos' },
-  { icon: Box, label: 'Módulos', path: '#' },
+  { icon: Box, label: 'Catálogo', path: '/catalogo' },
 ];
 
 const Header = () => {

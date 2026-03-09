@@ -47,7 +47,7 @@ serve(async (req) => {
 
     const token = loginData.access_token;
 
-    // Step 2: Fetch all catalogo items (API doesn't support server-side pagination)
+    // Step 2: Fetch catalogo - try multiple param approaches
     const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
       method: 'POST',
       headers: {
@@ -55,7 +55,7 @@ serve(async (req) => {
         'Cookie': cookieHeader,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ page: 1, limit: 1000 }),
+      body: JSON.stringify({ page: parseInt(page), limit: parseInt(limit), pagina: parseInt(page), limite: parseInt(limit), offset: (parseInt(page) - 1) * parseInt(limit), per_page: parseInt(limit) }),
     });
 
     const responseText = await catalogoRes.text();

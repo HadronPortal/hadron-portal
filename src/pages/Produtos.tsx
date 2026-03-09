@@ -16,14 +16,21 @@ interface ProdutoItem {
 }
 
 const mockProdutos: ProdutoItem[] = [
-  {
-    cod: '1002',
-    descricao: 'PIMENTA VERMELHA',
-    qtde: '10.000',
-    peso: '10kg',
-    valor: 'R$1.225,67',
-    tipo: 'todos',
-  },
+  { cod: '1002', descricao: 'PIMENTA VERMELHA', qtde: '10.000', peso: '10kg', valor: 'R$1.225,67', tipo: 'todos' },
+  { cod: '1003', descricao: 'BORRACHA ALTO IMPACTO', qtde: '5.000', peso: '25kg', valor: 'R$3.450,00', tipo: 'todos' },
+  { cod: '1004', descricao: 'COLEIRA DE COURO FORRADA', qtde: '2.500', peso: '3kg', valor: 'R$882,50', tipo: 'todos' },
+  { cod: '1005', descricao: 'GASOLINA PREMIUM', qtde: '50.000', peso: '1.000kg', valor: 'R$45.330,00', tipo: 'todos' },
+  { cod: '1006', descricao: 'DESODORANTE IMPORTADO', qtde: '1.200', peso: '8kg', valor: 'R$735,90', tipo: 'amostra' },
+  { cod: '1007', descricao: 'TUBO DE ENSAIO 50ML', qtde: '3.000', peso: '5kg', valor: 'R$1.234,56', tipo: 'todos' },
+  { cod: '1008', descricao: 'VALVULA IMPORTADA HD', qtde: '800', peso: '15kg', valor: 'R$6.580,00', tipo: 'bonificados' },
+  { cod: '1009', descricao: 'BANANA NANICA', qtde: '20.000', peso: '500kg', valor: 'R$12.000,00', tipo: 'todos' },
+  { cod: '1010', descricao: 'CAFE TORRADO ESPECIAL', qtde: '7.500', peso: '75kg', valor: 'R$8.925,00', tipo: 'amostra' },
+  { cod: '1011', descricao: 'OLEO ESSENCIAL LAVANDA', qtde: '600', peso: '2kg', valor: 'R$2.340,00', tipo: 'todos' },
+  { cod: '1012', descricao: 'PARAFUSO INOX M8', qtde: '100.000', peso: '200kg', valor: 'R$5.600,00', tipo: 'bonificados' },
+  { cod: '1013', descricao: 'RESINA EPOXI TRANSPARENTE', qtde: '1.500', peso: '30kg', valor: 'R$4.125,00', tipo: 'todos' },
+  { cod: '1014', descricao: 'FITA ADESIVA INDUSTRIAL', qtde: '8.000', peso: '12kg', valor: 'R$960,00', tipo: 'amostra' },
+  { cod: '1015', descricao: 'CIMENTO PORTLAND CP-V', qtde: '30.000', peso: '1.500kg', valor: 'R$22.500,00', tipo: 'todos' },
+  { cod: '1016', descricao: 'LUVA LATEX PROCEDIMENTO', qtde: '50.000', peso: '40kg', valor: 'R$3.750,00', tipo: 'bonificados' },
 ];
 
 const tabs = [

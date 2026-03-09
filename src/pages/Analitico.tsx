@@ -21,18 +21,16 @@ interface ProdutoAnalitico {
 }
 
 const mockProdutos: ProdutoAnalitico[] = [
-  {
-    id: '1',
-    produto: '1002-PIMENTA VERMELHA',
-    imagemPlaceholder: true,
-    mesValor: 'R$ 1.225,67',
-    mesQtd: '(10)',
-    mesPeso: '10 Kg',
-    totalValor: 'R$ 1.225,67',
-    totalQtd: '(10)',
-    totalPeso: '10 Kg',
-    tipo: 'vendas',
-  },
+  { id: '1', produto: '1002-PIMENTA VERMELHA', imagemPlaceholder: true, mesValor: 'R$ 1.225,67', mesQtd: '(10)', mesPeso: '10 Kg', totalValor: 'R$ 1.225,67', totalQtd: '(10)', totalPeso: '10 Kg', tipo: 'vendas' },
+  { id: '2', produto: '1003-BORRACHA ALTO IMPACTO', imagemPlaceholder: true, mesValor: 'R$ 3.450,00', mesQtd: '(25)', mesPeso: '25 Kg', totalValor: 'R$ 3.450,00', totalQtd: '(25)', totalPeso: '25 Kg', tipo: 'vendas' },
+  { id: '3', produto: '1005-GASOLINA PREMIUM', imagemPlaceholder: true, mesValor: 'R$ 45.330,00', mesQtd: '(500)', mesPeso: '1.000 Kg', totalValor: 'R$ 45.330,00', totalQtd: '(500)', totalPeso: '1.000 Kg', tipo: 'vendas' },
+  { id: '4', produto: '1006-DESODORANTE IMPORTADO', imagemPlaceholder: true, mesValor: 'R$ 735,90', mesQtd: '(12)', mesPeso: '8 Kg', totalValor: 'R$ 735,90', totalQtd: '(12)', totalPeso: '8 Kg', tipo: 'amostra' },
+  { id: '5', produto: '1009-BANANA NANICA', imagemPlaceholder: true, mesValor: 'R$ 12.000,00', mesQtd: '(200)', mesPeso: '500 Kg', totalValor: 'R$ 12.000,00', totalQtd: '(200)', totalPeso: '500 Kg', tipo: 'vendas' },
+  { id: '6', produto: '1010-CAFE TORRADO ESPECIAL', imagemPlaceholder: true, mesValor: 'R$ 8.925,00', mesQtd: '(75)', mesPeso: '75 Kg', totalValor: 'R$ 8.925,00', totalQtd: '(75)', totalPeso: '75 Kg', tipo: 'bonificacao' },
+  { id: '7', produto: '1012-PARAFUSO INOX M8', imagemPlaceholder: true, mesValor: 'R$ 5.600,00', mesQtd: '(1000)', mesPeso: '200 Kg', totalValor: 'R$ 5.600,00', totalQtd: '(1000)', totalPeso: '200 Kg', tipo: 'bonificacao' },
+  { id: '8', produto: '1014-FITA ADESIVA INDUSTRIAL', imagemPlaceholder: true, mesValor: 'R$ 960,00', mesQtd: '(80)', mesPeso: '12 Kg', totalValor: 'R$ 960,00', totalQtd: '(80)', totalPeso: '12 Kg', tipo: 'amostra' },
+  { id: '9', produto: '1015-CIMENTO PORTLAND CP-V', imagemPlaceholder: true, mesValor: 'R$ 22.500,00', mesQtd: '(300)', mesPeso: '1.500 Kg', totalValor: 'R$ 22.500,00', totalQtd: '(300)', totalPeso: '1.500 Kg', tipo: 'vendas' },
+  { id: '10', produto: '1016-LUVA LATEX PROCEDIMENTO', imagemPlaceholder: true, mesValor: 'R$ 3.750,00', mesQtd: '(500)', mesPeso: '40 Kg', totalValor: 'R$ 3.750,00', totalQtd: '(500)', totalPeso: '40 Kg', tipo: 'bonificacao' },
 ];
 
 const tabs = [

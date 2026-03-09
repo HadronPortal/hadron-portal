@@ -5,8 +5,8 @@ import type { Order } from '@/lib/mock-data';
 
 const statusConfig: Record<Order['status'], { label: string; bg: string; text: string }> = {
   aprovado: { label: 'Pedido Aprovado', bg: 'bg-orange-400', text: 'text-white' },
-  confirmado: { label: 'Pagamento Confirmado', bg: 'bg-green-500', text: 'text-white' },
-  pendente: { label: 'Pedido Pendente', bg: 'bg-yellow-700', text: 'text-white' },
+  confirmado: { label: 'Pagamento Confirmado', bg: 'bg-emerald-500', text: 'text-white' },
+  pendente: { label: 'Pedido Pendente', bg: 'bg-gray-400', text: 'text-white' },
 };
 
 const OrdersTable = ({ orders }: { orders: Order[] }) => {

@@ -104,7 +104,7 @@ const Catalogo = () => {
     return isNaN(num) ? saldo : num.toLocaleString('pt-BR');
   };
 
-  const imageBaseUrl = 'https://dev.hadronweb.com.br/app/user_data/DEV/products/pro/';
+  const imageBaseUrl = 'https://dev.hadronweb.com.br/app/user_data/DEV/products/';
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

@@ -60,16 +60,17 @@ serve(async (req) => {
 
     const { token, cookies } = await getAuth();
 
-    const imgRes = await fetch(`https://dev.hadronweb.com.br/app/user_data/DEV/products/${encodeURIComponent(filename)}`, {
+    const imgUrl = `https://dev.hadronweb.com.br/app/user_data/DEV/products/${encodeURIComponent(filename)}`;
+    console.log('Fetching image:', imgUrl);
+
+    const imgRes = await fetch(imgUrl, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Cookie': cookies,
       },
     });
 
-    if (!imgRes.ok) {
-      return new Response(null, { status: 404, headers: corsHeaders });
-    }
+    console.log('Image response status:', imgRes.status, 'content-type:', imgRes.headers.get('content-type'));
 
     const contentType = imgRes.headers.get('content-type') || 'image/jpeg';
     const imgData = await imgRes.arrayBuffer();

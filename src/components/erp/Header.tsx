@@ -20,7 +20,7 @@ const Header = () => {
       {/* Main header */}
       <div className="flex items-center justify-between px-6 pb-3">
         <div className="flex items-center gap-3">
-          <img src={logoImg} alt="Hádron Portal" className="w-10 h-10 object-contain" />
+          <img src={logoImg} alt="Hádron Portal" className="w-14 h-14 object-contain" />
           <span className="text-base font-medium tracking-wide">Hádron Portal</span>
         </div>
 

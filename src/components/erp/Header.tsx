@@ -1,47 +1,41 @@
-import { Home, Users, BarChart3, LayoutGrid, AppWindow, Box } from 'lucide-react';
+import { Home, Users, UserCheck, LayoutGrid, Grid3X3, Store } from 'lucide-react';
 
 const navItems = [
   { icon: Home, label: 'Home' },
   { icon: Users, label: 'Usuários' },
-  { icon: BarChart3, label: 'Indicadores' },
+  { icon: UserCheck, label: 'Indicadores' },
   { icon: LayoutGrid, label: 'Grid' },
-  { icon: AppWindow, label: 'Aplicações' },
-  { icon: Box, label: 'Módulos' },
+  { icon: Grid3X3, label: 'Aplicações' },
+  { icon: Store, label: 'Módulos' },
 ];
 
 const Header = () => {
   return (
-    <header className="bg-[hsl(var(--erp-header))] text-primary-foreground sticky top-0 z-50">
-      <div className="flex items-center justify-between px-4 md:px-6 h-14">
-        {/* Logo */}
+    <header className="bg-[hsl(var(--erp-header))] text-primary-foreground">
+      {/* Top strip */}
+      <div className="text-right px-4 py-1 text-[11px] opacity-70 tracking-wide">
+        DEV|00-PROCION TESTE DEV WEB LTDA
+      </div>
+      {/* Main header */}
+      <div className="flex items-center justify-between px-6 pb-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center font-bold text-sm">
-            H
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+            <span className="text-white text-lg font-bold">H</span>
           </div>
-          <span className="text-lg font-semibold tracking-tight hidden sm:inline">
-            Hádron Portal
-          </span>
+          <span className="text-base font-medium tracking-wide">Hádron Portal</span>
         </div>
 
-        {/* Nav Icons */}
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-4">
           {navItems.map(({ icon: Icon, label }) => (
             <button
               key={label}
               title={label}
-              className="p-2 rounded-md hover:bg-primary/20 transition-colors"
+              className="p-1.5 hover:opacity-80 transition-opacity"
             >
-              <Icon size={18} />
+              <Icon size={20} />
             </button>
           ))}
         </nav>
-
-        {/* Company info */}
-        <div className="hidden md:block text-xs text-right opacity-80 leading-tight">
-          <span className="font-medium">DEV|00</span>
-          <br />
-          PROCION TESTE DEV WEB LTDA
-        </div>
       </div>
     </header>
   );

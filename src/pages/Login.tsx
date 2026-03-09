@@ -109,7 +109,7 @@ const Login = () => {
               className="text-xs uppercase tracking-[0.15em] hover:underline"
               style={{ color: 'hsl(220, 70%, 50%)' }}
             >
-              Forgotten Your Password?
+              Esqueceu sua senha?
             </button>
           </div>
         </div>

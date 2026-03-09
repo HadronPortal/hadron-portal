@@ -122,7 +122,7 @@ const Catalogo = () => {
             <select
               value={limit}
               onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
-              className="border border-border rounded px-1.5 py-0.5 text-xs bg-card text-foreground w-16"
+              className="border border-border rounded px-3 py-1.5 text-sm bg-card text-foreground w-20 h-9"
             >
               <option value={10}>10</option>
               <option value={25}>25</option>

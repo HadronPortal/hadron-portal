@@ -5,7 +5,7 @@ import { User } from 'lucide-react';
 
 const FilterBar = () => {
   return (
-    <div className="bg-card border-b border-border px-6 py-2.5">
+    <div className="bg-transparent border-b border-border px-6 py-2.5">
       <div className="flex items-center gap-4 flex-wrap">
         {/* Period - single field */}
         <Input

@@ -47,7 +47,7 @@ serve(async (req) => {
 
     const token = loginData.access_token;
 
-    // Step 2: Fetch catalogo with pagination via JSON POST
+    // Step 2: Fetch catalogo with pagination nested under "pagination" key
     const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
       method: 'POST',
       headers: {
@@ -55,7 +55,7 @@ serve(async (req) => {
         'Cookie': cookieHeader,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ limit: parseInt(limit), page: parseInt(page) }),
+      body: JSON.stringify({ pagination: { page: parseInt(page), limit: parseInt(limit) } }),
     });
 
     const responseText = await catalogoRes.text();

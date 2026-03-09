@@ -6,10 +6,11 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
+import { productImages } from '@/lib/product-images';
 
 interface CatalogoItem {
   codProd: string;
-  foto: string;
+  img: string;
   descricao: string;
   grupo: string;
   prevSaida: number;
@@ -19,15 +20,15 @@ interface CatalogoItem {
 }
 
 const mockCatalogo: CatalogoItem[] = [
-  { codProd: '1', foto: '🍌', descricao: 'BANANA', grupo: 'FRUTAS', prevSaida: 0, prevEntrada: 0, saldoAtual: '500', saldoFuturo: 0 },
-  { codProd: '201', foto: '🧪', descricao: 'TUBO DE ENSAIO', grupo: 'VIDRO E SUAS OBRAS', prevSaida: 0, prevEntrada: 0, saldoAtual: '1.234,56', saldoFuturo: 0 },
-  { codProd: '303', foto: '🔧', descricao: 'PONTA PERFURADORA MS SJ8D', grupo: 'REATORES, CALDEIRAS, MAQUINAS,', prevSaida: 0, prevEntrada: 0, saldoAtual: '498', saldoFuturo: 0 },
-  { codProd: '1000', foto: '🔴', descricao: 'VALVULA IMPORTADA', grupo: 'REATORES, CALDEIRAS, MAQUINAS,', prevSaida: 0, prevEntrada: 0, saldoAtual: '658', saldoFuturo: 0 },
-  { codProd: '1001', foto: '🧴', descricao: 'DESODORANTE IMPORTADO TERCEIROS', grupo: 'OLEOS ESSENCIAIS E RESINOIDES', prevSaida: 0, prevEntrada: 90, saldoAtual: '735', saldoFuturo: 825 },
-  { codProd: '1002', foto: '🌶️', descricao: 'PIMENTA VERMELHA', grupo: 'CAFE, CHA, ESPECIARIAS', prevSaida: 0, prevEntrada: 0, saldoAtual: '4.337', saldoFuturo: 0 },
-  { codProd: '1003', foto: '⚫', descricao: 'BORRACHA ALTO IMPACTO', grupo: 'BORRACHA E SUAS OBRAS', prevSaida: 0, prevEntrada: 0, saldoAtual: '4.979', saldoFuturo: 0 },
-  { codProd: '1004', foto: '👜', descricao: 'COLEIRA DE COURO FORRADA WEB', grupo: 'OBRAS DE COURO', prevSaida: 0, prevEntrada: 0, saldoAtual: '882', saldoFuturo: 0 },
-  { codProd: '1005', foto: '⛽', descricao: 'GASOLINA', grupo: 'COMBUSTIVEIS/OLEOS MINERAIS', prevSaida: 0, prevEntrada: 0, saldoAtual: '4.765.533', saldoFuturo: 0 },
+  { codProd: '1', img: 'banana', descricao: 'BANANA', grupo: 'FRUTAS', prevSaida: 0, prevEntrada: 0, saldoAtual: '500', saldoFuturo: 0 },
+  { codProd: '201', img: 'tubo-ensaio', descricao: 'TUBO DE ENSAIO', grupo: 'VIDRO E SUAS OBRAS', prevSaida: 0, prevEntrada: 0, saldoAtual: '1.234,56', saldoFuturo: 0 },
+  { codProd: '303', img: 'ponta', descricao: 'PONTA PERFURADORA MS SJ8D', grupo: 'REATORES, CALDEIRAS, MAQUINAS,', prevSaida: 0, prevEntrada: 0, saldoAtual: '498', saldoFuturo: 0 },
+  { codProd: '1000', img: 'valvula', descricao: 'VALVULA IMPORTADA', grupo: 'REATORES, CALDEIRAS, MAQUINAS,', prevSaida: 0, prevEntrada: 0, saldoAtual: '658', saldoFuturo: 0 },
+  { codProd: '1001', img: 'desodorante', descricao: 'DESODORANTE IMPORTADO TERCEIROS', grupo: 'OLEOS ESSENCIAIS E RESINOIDES', prevSaida: 0, prevEntrada: 90, saldoAtual: '735', saldoFuturo: 825 },
+  { codProd: '1002', img: 'pimenta', descricao: 'PIMENTA VERMELHA', grupo: 'CAFE, CHA, ESPECIARIAS', prevSaida: 0, prevEntrada: 0, saldoAtual: '4.337', saldoFuturo: 0 },
+  { codProd: '1003', img: 'borracha', descricao: 'BORRACHA ALTO IMPACTO', grupo: 'BORRACHA E SUAS OBRAS', prevSaida: 0, prevEntrada: 0, saldoAtual: '4.979', saldoFuturo: 0 },
+  { codProd: '1004', img: 'coleira', descricao: 'COLEIRA DE COURO FORRADA WEB', grupo: 'OBRAS DE COURO', prevSaida: 0, prevEntrada: 0, saldoAtual: '882', saldoFuturo: 0 },
+  { codProd: '1005', img: 'gasolina', descricao: 'GASOLINA', grupo: 'COMBUSTIVEIS/OLEOS MINERAIS', prevSaida: 0, prevEntrada: 0, saldoAtual: '4.765.533', saldoFuturo: 0 },
 ];
 
 const Catalogo = () => {
@@ -41,7 +42,6 @@ const Catalogo = () => {
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Catalogo</h1>
 
-        {/* Controls row */}
         <div className="flex items-center justify-between">
           <select
             value={rowsPerPage}
@@ -59,7 +59,6 @@ const Catalogo = () => {
           </Button>
         </div>
 
-        {/* Table */}
         <div className="bg-card rounded-lg border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
@@ -80,9 +79,11 @@ const Catalogo = () => {
                   <TableRow key={item.codProd} className="hover:bg-accent/30">
                     <TableCell className="text-sm">{item.codProd}</TableCell>
                     <TableCell>
-                      <div className="w-10 h-10 bg-muted rounded flex items-center justify-center text-lg">
-                        {item.foto}
-                      </div>
+                      <img
+                        src={productImages[item.img]}
+                        alt={item.descricao}
+                        className="w-14 h-14 object-contain rounded bg-muted"
+                      />
                     </TableCell>
                     <TableCell className="text-sm font-medium">{item.descricao}</TableCell>
                     <TableCell className="text-sm">{item.grupo}</TableCell>

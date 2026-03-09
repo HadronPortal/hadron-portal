@@ -6,11 +6,12 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
+import { productImages } from '@/lib/product-images';
 
 interface ProdutoAnalitico {
   id: string;
   produto: string;
-  imagemPlaceholder?: boolean;
+  img: string;
   mesValor: string;
   mesQtd: string;
   mesPeso: string;
@@ -21,16 +22,16 @@ interface ProdutoAnalitico {
 }
 
 const mockProdutos: ProdutoAnalitico[] = [
-  { id: '1', produto: '1002-PIMENTA VERMELHA', imagemPlaceholder: true, mesValor: 'R$ 1.225,67', mesQtd: '(10)', mesPeso: '10 Kg', totalValor: 'R$ 1.225,67', totalQtd: '(10)', totalPeso: '10 Kg', tipo: 'vendas' },
-  { id: '2', produto: '1003-BORRACHA ALTO IMPACTO', imagemPlaceholder: true, mesValor: 'R$ 3.450,00', mesQtd: '(25)', mesPeso: '25 Kg', totalValor: 'R$ 3.450,00', totalQtd: '(25)', totalPeso: '25 Kg', tipo: 'vendas' },
-  { id: '3', produto: '1005-GASOLINA PREMIUM', imagemPlaceholder: true, mesValor: 'R$ 45.330,00', mesQtd: '(500)', mesPeso: '1.000 Kg', totalValor: 'R$ 45.330,00', totalQtd: '(500)', totalPeso: '1.000 Kg', tipo: 'vendas' },
-  { id: '4', produto: '1006-DESODORANTE IMPORTADO', imagemPlaceholder: true, mesValor: 'R$ 735,90', mesQtd: '(12)', mesPeso: '8 Kg', totalValor: 'R$ 735,90', totalQtd: '(12)', totalPeso: '8 Kg', tipo: 'amostra' },
-  { id: '5', produto: '1009-BANANA NANICA', imagemPlaceholder: true, mesValor: 'R$ 12.000,00', mesQtd: '(200)', mesPeso: '500 Kg', totalValor: 'R$ 12.000,00', totalQtd: '(200)', totalPeso: '500 Kg', tipo: 'vendas' },
-  { id: '6', produto: '1010-CAFE TORRADO ESPECIAL', imagemPlaceholder: true, mesValor: 'R$ 8.925,00', mesQtd: '(75)', mesPeso: '75 Kg', totalValor: 'R$ 8.925,00', totalQtd: '(75)', totalPeso: '75 Kg', tipo: 'bonificacao' },
-  { id: '7', produto: '1012-PARAFUSO INOX M8', imagemPlaceholder: true, mesValor: 'R$ 5.600,00', mesQtd: '(1000)', mesPeso: '200 Kg', totalValor: 'R$ 5.600,00', totalQtd: '(1000)', totalPeso: '200 Kg', tipo: 'bonificacao' },
-  { id: '8', produto: '1014-FITA ADESIVA INDUSTRIAL', imagemPlaceholder: true, mesValor: 'R$ 960,00', mesQtd: '(80)', mesPeso: '12 Kg', totalValor: 'R$ 960,00', totalQtd: '(80)', totalPeso: '12 Kg', tipo: 'amostra' },
-  { id: '9', produto: '1015-CIMENTO PORTLAND CP-V', imagemPlaceholder: true, mesValor: 'R$ 22.500,00', mesQtd: '(300)', mesPeso: '1.500 Kg', totalValor: 'R$ 22.500,00', totalQtd: '(300)', totalPeso: '1.500 Kg', tipo: 'vendas' },
-  { id: '10', produto: '1016-LUVA LATEX PROCEDIMENTO', imagemPlaceholder: true, mesValor: 'R$ 3.750,00', mesQtd: '(500)', mesPeso: '40 Kg', totalValor: 'R$ 3.750,00', totalQtd: '(500)', totalPeso: '40 Kg', tipo: 'bonificacao' },
+  { id: '1', produto: '1002-PIMENTA VERMELHA', img: 'pimenta', mesValor: 'R$ 1.225,67', mesQtd: '(10)', mesPeso: '10 Kg', totalValor: 'R$ 1.225,67', totalQtd: '(10)', totalPeso: '10 Kg', tipo: 'vendas' },
+  { id: '2', produto: '1003-BORRACHA ALTO IMPACTO', img: 'borracha', mesValor: 'R$ 3.450,00', mesQtd: '(25)', mesPeso: '25 Kg', totalValor: 'R$ 3.450,00', totalQtd: '(25)', totalPeso: '25 Kg', tipo: 'vendas' },
+  { id: '3', produto: '1005-GASOLINA PREMIUM', img: 'gasolina', mesValor: 'R$ 45.330,00', mesQtd: '(500)', mesPeso: '1.000 Kg', totalValor: 'R$ 45.330,00', totalQtd: '(500)', totalPeso: '1.000 Kg', tipo: 'vendas' },
+  { id: '4', produto: '1006-DESODORANTE IMPORTADO', img: 'desodorante', mesValor: 'R$ 735,90', mesQtd: '(12)', mesPeso: '8 Kg', totalValor: 'R$ 735,90', totalQtd: '(12)', totalPeso: '8 Kg', tipo: 'amostra' },
+  { id: '5', produto: '1009-BANANA NANICA', img: 'banana', mesValor: 'R$ 12.000,00', mesQtd: '(200)', mesPeso: '500 Kg', totalValor: 'R$ 12.000,00', totalQtd: '(200)', totalPeso: '500 Kg', tipo: 'vendas' },
+  { id: '6', produto: '1010-CAFE TORRADO ESPECIAL', img: 'cafe', mesValor: 'R$ 8.925,00', mesQtd: '(75)', mesPeso: '75 Kg', totalValor: 'R$ 8.925,00', totalQtd: '(75)', totalPeso: '75 Kg', tipo: 'bonificacao' },
+  { id: '7', produto: '1012-PARAFUSO INOX M8', img: 'parafuso', mesValor: 'R$ 5.600,00', mesQtd: '(1000)', mesPeso: '200 Kg', totalValor: 'R$ 5.600,00', totalQtd: '(1000)', totalPeso: '200 Kg', tipo: 'bonificacao' },
+  { id: '8', produto: '1014-FITA ADESIVA INDUSTRIAL', img: 'fita', mesValor: 'R$ 960,00', mesQtd: '(80)', mesPeso: '12 Kg', totalValor: 'R$ 960,00', totalQtd: '(80)', totalPeso: '12 Kg', tipo: 'amostra' },
+  { id: '9', produto: '1015-CIMENTO PORTLAND CP-V', img: 'cimento', mesValor: 'R$ 22.500,00', mesQtd: '(300)', mesPeso: '1.500 Kg', totalValor: 'R$ 22.500,00', totalQtd: '(300)', totalPeso: '1.500 Kg', tipo: 'vendas' },
+  { id: '10', produto: '1016-LUVA LATEX PROCEDIMENTO', img: 'luva', mesValor: 'R$ 3.750,00', mesQtd: '(500)', mesPeso: '40 Kg', totalValor: 'R$ 3.750,00', totalQtd: '(500)', totalPeso: '40 Kg', tipo: 'bonificacao' },
 ];
 
 const tabs = [
@@ -48,7 +49,6 @@ const Analitico = () => {
     ? mockProdutos
     : mockProdutos.filter((p) => p.tipo === activeTab);
 
-  // Totals
   const totalMesValor = 'R$ 1.225,67';
   const totalMesPeso = '10Kg';
   const totalGeralValor = 'R$ 1.225,67';
@@ -62,7 +62,6 @@ const Analitico = () => {
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Analitico Período</h1>
 
-        {/* Tabs */}
         <div className="flex items-center gap-2">
           {tabs.map((tab) => (
             <button
@@ -79,7 +78,6 @@ const Analitico = () => {
           ))}
         </div>
 
-        {/* Controls row */}
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <select
@@ -100,7 +98,6 @@ const Analitico = () => {
           </Button>
         </div>
 
-        {/* Table */}
         <div className="bg-card rounded-lg border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
@@ -116,11 +113,11 @@ const Analitico = () => {
                   <TableRow key={produto.id} className="hover:bg-accent/30">
                     <TableCell className="text-sm">
                       <div className="flex items-center gap-3">
-                        {produto.imagemPlaceholder && (
-                          <div className="w-8 h-8 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
-                            📦
-                          </div>
-                        )}
+                        <img
+                          src={productImages[produto.img]}
+                          alt={produto.produto}
+                          className="w-10 h-10 object-contain rounded bg-muted"
+                        />
                         <span className="font-semibold">{produto.produto}</span>
                       </div>
                     </TableCell>
@@ -135,7 +132,6 @@ const Analitico = () => {
                   </TableRow>
                 ))}
 
-                {/* Total row */}
                 <TableRow className="border-t-2 border-border">
                   <TableCell className="text-sm font-bold text-foreground">TOTAL</TableCell>
                   <TableCell className="text-sm">
@@ -152,9 +148,8 @@ const Analitico = () => {
           </div>
         </div>
 
-        {/* Pagination */}
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>Mostrando de 1 até 1 de 1 registros.</span>
+          <span>Mostrando de 1 até {filtered.length} de {filtered.length} registros.</span>
           <div className="flex items-center gap-1">
             <button className="px-2 py-1 border border-border rounded text-xs hover:bg-accent">&lt;&lt;</button>
             <button className="px-2 py-1 border border-border rounded text-xs hover:bg-accent">&lt;</button>

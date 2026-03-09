@@ -5,6 +5,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
+import { productImages } from '@/lib/product-images';
 
 interface ProdutoItem {
   cod: string;
@@ -13,24 +14,25 @@ interface ProdutoItem {
   peso: string;
   valor: string;
   tipo: 'todos' | 'amostra' | 'bonificados';
+  img: string;
 }
 
 const mockProdutos: ProdutoItem[] = [
-  { cod: '1002', descricao: 'PIMENTA VERMELHA', qtde: '10.000', peso: '10kg', valor: 'R$1.225,67', tipo: 'todos' },
-  { cod: '1003', descricao: 'BORRACHA ALTO IMPACTO', qtde: '5.000', peso: '25kg', valor: 'R$3.450,00', tipo: 'todos' },
-  { cod: '1004', descricao: 'COLEIRA DE COURO FORRADA', qtde: '2.500', peso: '3kg', valor: 'R$882,50', tipo: 'todos' },
-  { cod: '1005', descricao: 'GASOLINA PREMIUM', qtde: '50.000', peso: '1.000kg', valor: 'R$45.330,00', tipo: 'todos' },
-  { cod: '1006', descricao: 'DESODORANTE IMPORTADO', qtde: '1.200', peso: '8kg', valor: 'R$735,90', tipo: 'amostra' },
-  { cod: '1007', descricao: 'TUBO DE ENSAIO 50ML', qtde: '3.000', peso: '5kg', valor: 'R$1.234,56', tipo: 'todos' },
-  { cod: '1008', descricao: 'VALVULA IMPORTADA HD', qtde: '800', peso: '15kg', valor: 'R$6.580,00', tipo: 'bonificados' },
-  { cod: '1009', descricao: 'BANANA NANICA', qtde: '20.000', peso: '500kg', valor: 'R$12.000,00', tipo: 'todos' },
-  { cod: '1010', descricao: 'CAFE TORRADO ESPECIAL', qtde: '7.500', peso: '75kg', valor: 'R$8.925,00', tipo: 'amostra' },
-  { cod: '1011', descricao: 'OLEO ESSENCIAL LAVANDA', qtde: '600', peso: '2kg', valor: 'R$2.340,00', tipo: 'todos' },
-  { cod: '1012', descricao: 'PARAFUSO INOX M8', qtde: '100.000', peso: '200kg', valor: 'R$5.600,00', tipo: 'bonificados' },
-  { cod: '1013', descricao: 'RESINA EPOXI TRANSPARENTE', qtde: '1.500', peso: '30kg', valor: 'R$4.125,00', tipo: 'todos' },
-  { cod: '1014', descricao: 'FITA ADESIVA INDUSTRIAL', qtde: '8.000', peso: '12kg', valor: 'R$960,00', tipo: 'amostra' },
-  { cod: '1015', descricao: 'CIMENTO PORTLAND CP-V', qtde: '30.000', peso: '1.500kg', valor: 'R$22.500,00', tipo: 'todos' },
-  { cod: '1016', descricao: 'LUVA LATEX PROCEDIMENTO', qtde: '50.000', peso: '40kg', valor: 'R$3.750,00', tipo: 'bonificados' },
+  { cod: '1002', descricao: 'PIMENTA VERMELHA', qtde: '10.000', peso: '10kg', valor: 'R$1.225,67', tipo: 'todos', img: 'pimenta' },
+  { cod: '1003', descricao: 'BORRACHA ALTO IMPACTO', qtde: '5.000', peso: '25kg', valor: 'R$3.450,00', tipo: 'todos', img: 'borracha' },
+  { cod: '1004', descricao: 'COLEIRA DE COURO FORRADA', qtde: '2.500', peso: '3kg', valor: 'R$882,50', tipo: 'todos', img: 'coleira' },
+  { cod: '1005', descricao: 'GASOLINA PREMIUM', qtde: '50.000', peso: '1.000kg', valor: 'R$45.330,00', tipo: 'todos', img: 'gasolina' },
+  { cod: '1006', descricao: 'DESODORANTE IMPORTADO', qtde: '1.200', peso: '8kg', valor: 'R$735,90', tipo: 'amostra', img: 'desodorante' },
+  { cod: '1007', descricao: 'TUBO DE ENSAIO 50ML', qtde: '3.000', peso: '5kg', valor: 'R$1.234,56', tipo: 'todos', img: 'tubo-ensaio' },
+  { cod: '1008', descricao: 'VALVULA IMPORTADA HD', qtde: '800', peso: '15kg', valor: 'R$6.580,00', tipo: 'bonificados', img: 'valvula' },
+  { cod: '1009', descricao: 'BANANA NANICA', qtde: '20.000', peso: '500kg', valor: 'R$12.000,00', tipo: 'todos', img: 'banana' },
+  { cod: '1010', descricao: 'CAFE TORRADO ESPECIAL', qtde: '7.500', peso: '75kg', valor: 'R$8.925,00', tipo: 'amostra', img: 'cafe' },
+  { cod: '1011', descricao: 'OLEO ESSENCIAL LAVANDA', qtde: '600', peso: '2kg', valor: 'R$2.340,00', tipo: 'todos', img: 'oleo' },
+  { cod: '1012', descricao: 'PARAFUSO INOX M8', qtde: '100.000', peso: '200kg', valor: 'R$5.600,00', tipo: 'bonificados', img: 'parafuso' },
+  { cod: '1013', descricao: 'RESINA EPOXI TRANSPARENTE', qtde: '1.500', peso: '30kg', valor: 'R$4.125,00', tipo: 'todos', img: 'resina' },
+  { cod: '1014', descricao: 'FITA ADESIVA INDUSTRIAL', qtde: '8.000', peso: '12kg', valor: 'R$960,00', tipo: 'amostra', img: 'fita' },
+  { cod: '1015', descricao: 'CIMENTO PORTLAND CP-V', qtde: '30.000', peso: '1.500kg', valor: 'R$22.500,00', tipo: 'todos', img: 'cimento' },
+  { cod: '1016', descricao: 'LUVA LATEX PROCEDIMENTO', qtde: '50.000', peso: '40kg', valor: 'R$3.750,00', tipo: 'bonificados', img: 'luva' },
 ];
 
 const tabs = [
@@ -57,7 +59,6 @@ const Produtos = () => {
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Produtos</h1>
 
-        {/* Tabs */}
         <div className="flex items-center gap-2">
           {tabs.map((tab) => (
             <button
@@ -74,7 +75,6 @@ const Produtos = () => {
           ))}
         </div>
 
-        {/* Controls row */}
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <select
@@ -100,7 +100,6 @@ const Produtos = () => {
           </div>
         </div>
 
-        {/* Table */}
         <div className="bg-card rounded-lg border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
@@ -119,9 +118,11 @@ const Produtos = () => {
                   <TableRow key={produto.cod} className="hover:bg-accent/30">
                     <TableCell className="text-sm">{produto.cod}</TableCell>
                     <TableCell>
-                      <div className="w-10 h-10 bg-muted rounded flex items-center justify-center text-lg">
-                        🌶️
-                      </div>
+                      <img
+                        src={productImages[produto.img]}
+                        alt={produto.descricao}
+                        className="w-14 h-14 object-contain rounded bg-muted"
+                      />
                     </TableCell>
                     <TableCell className="text-sm font-medium">{produto.descricao}</TableCell>
                     <TableCell className="text-sm">{produto.qtde}</TableCell>
@@ -134,7 +135,6 @@ const Produtos = () => {
           </div>
         </div>
 
-        {/* Pagination */}
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>Mostrando de 1 até {filtered.length} de {filtered.length} registros.</span>
           <div className="flex items-center gap-1">

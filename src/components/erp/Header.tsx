@@ -1,4 +1,4 @@
-import { Home, Users, UserCheck, LayoutGrid, Grid3X3, Store } from 'lucide-react';
+import { Home, Users, Gauge, LayoutGrid, Grid3X3, Box } from 'lucide-react';
 import logoImg from '@/assets/icon_hadronweb.png';
 
 const navItems = [

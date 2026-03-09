@@ -76,7 +76,7 @@ const Login = () => {
             <div>
               <Input
                 type="password"
-                placeholder="Password"
+                placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

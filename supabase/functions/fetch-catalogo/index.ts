@@ -47,16 +47,15 @@ serve(async (req) => {
 
     const token = loginData.access_token;
 
-    // Step 2: Fetch catalogo with pagination via POST form-urlencoded
-    const formBody = `page=${page}&limit=${limit}`;
+    // Step 2: Fetch all catalogo items (API doesn't support server-side pagination)
     const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Cookie': cookieHeader,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: formBody,
+      body: JSON.stringify({ page: 1, limit: 1000 }),
     });
 
     const responseText = await catalogoRes.text();

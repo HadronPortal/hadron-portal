@@ -44,7 +44,7 @@ const Index = () => {
               clientesPositivados={data.clientes_positivados}
             />
 
-            <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-5">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
               <OrdersTable orders={data.orders} />
               <ClientsTable clients={data.clients} />
             </div>

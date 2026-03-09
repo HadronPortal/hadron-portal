@@ -1,1 +1,4 @@
 project_id = "okertqaojhjafezdwnaa"
+
+[functions.fetch-catalogo]
+verify_jwt = false

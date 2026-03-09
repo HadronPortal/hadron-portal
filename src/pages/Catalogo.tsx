@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useTransition } from 'react';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import {
@@ -6,7 +6,6 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 interface CatalogoItem {
   pro_codpro: number;
@@ -17,41 +16,87 @@ interface CatalogoItem {
   pro_codgrp: number;
 }
 
+const pageCache = new Map<string, { catalogs: CatalogoItem[]; total_records: number }>();
+
 const Catalogo = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [items, setItems] = useState<CatalogoItem[]>([]);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const totalPages = Math.ceil(totalRecords / limit);
 
   useEffect(() => {
+    const cacheKey = `${page}-${limit}`;
+    const cached = pageCache.get(cacheKey);
+
+    if (cached) {
+      setItems(cached.catalogs);
+      setTotalRecords(cached.total_records);
+      setInitialLoading(false);
+      return;
+    }
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     const fetchCatalogo = async () => {
       try {
-        setLoading(true);
+        setIsFetching(true);
         setError(null);
 
         const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
         const res = await fetch(
           `https://${projectId}.supabase.co/functions/v1/fetch-catalogo?page=${page}&limit=${limit}`,
-          { headers: { 'Content-Type': 'application/json' } }
+          { headers: { 'Content-Type': 'application/json' }, signal: controller.signal }
         );
 
         if (!res.ok) throw new Error(`Erro ${res.status}`);
         const data = await res.json();
 
-        setItems(data?.catalogs || []);
-        setTotalRecords(data?.total_records || 0);
+        const result = { catalogs: data?.catalogs || [], total_records: data?.total_records || 0 };
+        pageCache.set(cacheKey, result);
+
+        if (!controller.signal.aborted) {
+          setItems(result.catalogs);
+          setTotalRecords(result.total_records);
+        }
       } catch (err: any) {
+        if (err.name === 'AbortError') return;
         console.error('Erro ao buscar catálogo:', err);
         setError(err.message || 'Erro ao carregar catálogo');
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setInitialLoading(false);
+          setIsFetching(false);
+        }
       }
     };
-    fetchCatalogo();
+
+    // Prefetch next page
+    const prefetch = (p: number) => {
+      const key = `${p}-${limit}`;
+      if (pageCache.has(key) || p < 1) return;
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      fetch(`https://${projectId}.supabase.co/functions/v1/fetch-catalogo?page=${p}&limit=${limit}`, {
+        headers: { 'Content-Type': 'application/json' },
+      }).then(r => r.json()).then(data => {
+        pageCache.set(key, { catalogs: data?.catalogs || [], total_records: data?.total_records || 0 });
+      }).catch(() => {});
+    };
+
+    fetchCatalogo().then(() => {
+      // Prefetch adjacent pages
+      prefetch(page + 1);
+      if (page > 1) prefetch(page - 1);
+    });
+
+    return () => controller.abort();
   }, [page, limit]);
 
   const formatSaldo = (saldo: string) => {
@@ -67,7 +112,10 @@ const Catalogo = () => {
       <FilterBar />
 
       <main className="flex-1 px-6 py-5 space-y-4">
-        <h1 className="text-2xl font-bold text-foreground">Catálogo</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-foreground">Catálogo</h1>
+          {isFetching && <Loader2 className="animate-spin text-muted-foreground" size={18} />}
+        </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -88,14 +136,14 @@ const Catalogo = () => {
           </Button>
         </div>
 
-        {loading ? (
+        {initialLoading && items.length === 0 ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="animate-spin text-muted-foreground" size={32} />
           </div>
-        ) : error ? (
+        ) : error && items.length === 0 ? (
           <div className="text-center py-20 text-destructive">{error}</div>
         ) : (
-          <div className="bg-card rounded-lg border border-border overflow-hidden">
+          <div className={`bg-card rounded-lg border border-border overflow-hidden transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -134,7 +182,6 @@ const Catalogo = () => {
               </Table>
             </div>
 
-            {/* Pagination */}
             <div className="flex items-center justify-between px-4 py-3 border-t border-border">
               <span className="text-xs text-muted-foreground">
                 Página {page} de {totalPages} — {totalRecords} produtos
@@ -143,7 +190,7 @@ const Catalogo = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  disabled={page <= 1}
+                  disabled={page <= 1 || isFetching}
                   onClick={() => setPage((p) => p - 1)}
                 >
                   <ChevronLeft size={14} />
@@ -165,6 +212,7 @@ const Catalogo = () => {
                       variant={pageNum === page ? 'default' : 'outline'}
                       size="sm"
                       className="w-8 h-8 p-0"
+                      disabled={isFetching}
                       onClick={() => setPage(pageNum)}
                     >
                       {pageNum}
@@ -174,7 +222,7 @@ const Catalogo = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  disabled={page >= totalPages}
+                  disabled={page >= totalPages || isFetching}
                   onClick={() => setPage((p) => p + 1)}
                 >
                   <ChevronRight size={14} />

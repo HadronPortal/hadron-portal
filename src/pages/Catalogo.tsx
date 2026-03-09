@@ -5,7 +5,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface CatalogoItem {
@@ -18,18 +18,32 @@ interface CatalogoItem {
 }
 
 const Catalogo = () => {
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [items, setItems] = useState<CatalogoItem[]>([]);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const totalPages = Math.ceil(totalRecords / limit);
 
   useEffect(() => {
     const fetchCatalogo = async () => {
       try {
         setLoading(true);
-        const { data, error: fnError } = await supabase.functions.invoke('fetch-catalogo');
-        if (fnError) throw fnError;
+        setError(null);
+
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const res = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/fetch-catalogo?page=${page}&limit=${limit}`,
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        if (!res.ok) throw new Error(`Erro ${res.status}`);
+        const data = await res.json();
+
         setItems(data?.catalogs || []);
+        setTotalRecords(data?.total_records || 0);
       } catch (err: any) {
         console.error('Erro ao buscar catálogo:', err);
         setError(err.message || 'Erro ao carregar catálogo');
@@ -38,7 +52,7 @@ const Catalogo = () => {
       }
     };
     fetchCatalogo();
-  }, []);
+  }, [page, limit]);
 
   const formatSaldo = (saldo: string) => {
     const num = parseFloat(saldo);
@@ -56,16 +70,18 @@ const Catalogo = () => {
         <h1 className="text-2xl font-bold text-foreground">Catálogo</h1>
 
         <div className="flex items-center justify-between">
-          <select
-            value={rowsPerPage}
-            onChange={(e) => setRowsPerPage(Number(e.target.value))}
-            className="border border-border rounded px-1.5 py-0.5 text-xs bg-card text-foreground w-16"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Itens por página:</span>
+            <select
+              value={limit}
+              onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
+              className="border border-border rounded px-1.5 py-0.5 text-xs bg-card text-foreground w-16"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
 
           <Button variant="outline" size="sm" className="gap-1">
             Colunas <ChevronDown size={14} />
@@ -92,7 +108,7 @@ const Catalogo = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {items.slice(0, rowsPerPage).map((item) => (
+                  {items.map((item) => (
                     <TableRow key={item.pro_codpro} className="hover:bg-accent/30">
                       <TableCell className="text-sm">{item.pro_codpro}</TableCell>
                       <TableCell>
@@ -117,8 +133,53 @@ const Catalogo = () => {
                 </TableBody>
               </Table>
             </div>
-            <div className="px-4 py-2 text-xs text-muted-foreground border-t border-border">
-              Exibindo {Math.min(rowsPerPage, items.length)} de {items.length} produtos
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+              <span className="text-xs text-muted-foreground">
+                Página {page} de {totalPages} — {totalRecords} produtos
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  <ChevronLeft size={14} />
+                </Button>
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (page <= 3) {
+                    pageNum = i + 1;
+                  } else if (page >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = page - 2 + i;
+                  }
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={pageNum === page ? 'default' : 'outline'}
+                      size="sm"
+                      className="w-8 h-8 p-0"
+                      onClick={() => setPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  <ChevronRight size={14} />
+                </Button>
+              </div>
             </div>
           </div>
         )}

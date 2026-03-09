@@ -18,7 +18,12 @@ serve(async (req) => {
       throw new Error('Missing API credentials');
     }
 
-    // Step 1: Login to get access_token and session cookies
+    // Parse query params for pagination
+    const url = new URL(req.url);
+    const page = url.searchParams.get('page') || '1';
+    const limit = url.searchParams.get('limit') || '10';
+
+    // Step 1: Login
     const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -26,7 +31,6 @@ serve(async (req) => {
       redirect: 'manual',
     });
 
-    // Extract cookies from Set-Cookie headers
     const rawHeaders = loginRes.headers;
     const cookies: string[] = [];
     for (const [key, value] of rawHeaders.entries()) {
@@ -35,7 +39,6 @@ serve(async (req) => {
       }
     }
     const cookieHeader = cookies.join('; ');
-
     const loginData = await loginRes.json();
 
     if (!loginData.success) {
@@ -43,10 +46,9 @@ serve(async (req) => {
     }
 
     const token = loginData.access_token;
-    console.log('Login successful. Cookies:', cookieHeader);
 
-    // Step 2: Fetch catalogo using both Bearer token and cookies
-    const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
+    // Step 2: Fetch catalogo with pagination
+    const catalogoRes = await fetch(`https://dev.hadronweb.com.br/app/Pages/apiCatalogs?page=${page}&limit=${limit}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Cookie': cookieHeader,
@@ -55,14 +57,11 @@ serve(async (req) => {
     });
 
     const responseText = await catalogoRes.text();
-    console.log('Catalogo response status:', catalogoRes.status);
-    console.log('Catalogo response preview:', responseText.substring(0, 500));
 
     if (!catalogoRes.ok) {
       throw new Error(`Catalogo fetch failed [${catalogoRes.status}]: ${responseText.substring(0, 500)}`);
     }
 
-    // Try to parse as JSON
     let catalogoData;
     try {
       catalogoData = JSON.parse(responseText);

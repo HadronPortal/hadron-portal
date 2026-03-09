@@ -43,14 +43,18 @@ const Header = () => {
             ))}
           </nav>
 
-          <button
-            onClick={() => navigate('/login')}
-            title="Sair"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded border-l border-primary-foreground/20 pl-6 hover:bg-primary-foreground/10 transition-colors text-sm"
-          >
-            <LogOut size={16} />
-            <span className="hidden sm:inline">Sair</span>
-          </button>
+          <div className="flex items-center gap-3 border-l border-primary-foreground/20 pl-6">
+            <User size={20} className="opacity-70" />
+            <span className="text-sm opacity-80 hidden md:inline">3-SUPERVISOR REGIAO 1</span>
+            <button
+              onClick={() => navigate('/login')}
+              title="Sair"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-primary-foreground/10 transition-colors text-sm"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:inline">Sair</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>

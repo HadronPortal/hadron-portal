@@ -89,7 +89,7 @@ const Pedidos = () => {
             <select
               value={rowsPerPage}
               onChange={(e) => setRowsPerPage(Number(e.target.value))}
-              className="border border-border rounded px-1.5 py-0.5 text-xs bg-card text-foreground w-16"
+              className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
             >
               <option value={10}>10</option>
               <option value={25}>25</option>

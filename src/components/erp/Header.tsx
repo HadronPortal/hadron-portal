@@ -14,13 +14,13 @@ const Header = () => {
   return (
     <header className="bg-[hsl(var(--erp-header))] text-primary-foreground">
       {/* Top accent line */}
-      <div className="h-[4px] bg-[hsl(230,50%,55%)]" />
+      <div className="h-[3px] bg-[#262f55]" />
       {/* Top strip with blue background */}
-      <div className="bg-[hsl(var(--erp-blue))] text-right px-4 py-[3px] text-[11px] tracking-wide">
+      <div className="bg-[hsl(var(--erp-blue))] text-right px-3 py-[3px] text-[11px] tracking-wide">
         DEV|00-PROCION TESTE DEV WEB LTDA
       </div>
       {/* Main header */}
-      <div className="flex items-center justify-between px-10 py-3">
+      <div className="flex items-center justify-between px-3 py-2">
         <div className="flex items-center gap-3">
           <img alt="Hádron Portal" className="w-[60px] h-[60px] object-contain -mt-2" src={logoImg} />
           <span className="text-base font-medium tracking-wide">Hádron Portal</span>

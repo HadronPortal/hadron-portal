@@ -5,62 +5,71 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Cache token in memory to avoid re-login on every request
+let cachedToken: string | null = null;
+let cachedCookies: string = '';
+let tokenExpiry = 0;
+
+async function getAuth(): Promise<{ token: string; cookies: string }> {
+  if (cachedToken && Date.now() < tokenExpiry) {
+    return { token: cachedToken, cookies: cachedCookies };
+  }
+
+  const email = Deno.env.get('HADRON_API_EMAIL');
+  const password = Deno.env.get('HADRON_API_PASSWORD');
+  if (!email || !password) throw new Error('Missing API credentials');
+
+  const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ aus_email: email, aus_senha: password }),
+    redirect: 'manual',
+  });
+
+  const cookies: string[] = [];
+  for (const [key, value] of loginRes.headers.entries()) {
+    if (key.toLowerCase() === 'set-cookie') {
+      cookies.push(value.split(';')[0]);
+    }
+  }
+
+  const loginData = await loginRes.json();
+  if (!loginData.success) throw new Error(`Login failed: ${JSON.stringify(loginData)}`);
+
+  cachedToken = loginData.access_token;
+  cachedCookies = cookies.join('; ');
+  tokenExpiry = Date.now() + 25 * 60 * 1000; // cache 25 min
+
+  return { token: cachedToken!, cookies: cachedCookies };
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const email = Deno.env.get('HADRON_API_EMAIL');
-    const password = Deno.env.get('HADRON_API_PASSWORD');
-
-    if (!email || !password) {
-      throw new Error('Missing API credentials');
-    }
-
-    // Parse query params for pagination
     const url = new URL(req.url);
-    const page = url.searchParams.get('page') || '1';
-    const limit = url.searchParams.get('limit') || '10';
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
 
-    // Step 1: Login
-    const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ aus_email: email, aus_senha: password }),
-      redirect: 'manual',
-    });
+    const { token, cookies } = await getAuth();
 
-    const rawHeaders = loginRes.headers;
-    const cookies: string[] = [];
-    for (const [key, value] of rawHeaders.entries()) {
-      if (key.toLowerCase() === 'set-cookie') {
-        cookies.push(value.split(';')[0]);
-      }
-    }
-    const cookieHeader = cookies.join('; ');
-    const loginData = await loginRes.json();
-
-    if (!loginData.success) {
-      throw new Error(`Login failed: ${JSON.stringify(loginData)}`);
-    }
-
-    const token = loginData.access_token;
-
-    // Step 2: Fetch catalogo with pagination nested under "pagination" key
     const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Cookie': cookieHeader,
+        'Cookie': cookies,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ pagination: { page: parseInt(page), limit: parseInt(limit) } }),
+      body: JSON.stringify({ pagination: { page, limit } }),
     });
 
     const responseText = await catalogoRes.text();
 
     if (!catalogoRes.ok) {
+      // Invalidate cache on auth errors
+      cachedToken = null;
       throw new Error(`Catalogo fetch failed [${catalogoRes.status}]: ${responseText.substring(0, 500)}`);
     }
 
@@ -72,7 +81,7 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify(catalogoData), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },
     });
   } catch (error) {
     console.error('Error:', error);

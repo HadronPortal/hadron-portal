@@ -25,7 +25,7 @@ const Login = () => {
       {/* Left side - Logo */}
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center relative">
         <div className="flex items-center gap-4">
-          <img src={iconHadron} alt="Hádron" className="w-16 h-16" />
+          <img src={iconHadron} alt="Hádron" className="w-20 h-20 object-contain" />
           <span className="text-3xl font-light tracking-wide" style={{ color: 'hsl(0, 0%, 100%)' }}>
             Hádron<span className="font-semibold">Web</span>
           </span>
@@ -43,7 +43,7 @@ const Login = () => {
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center justify-center gap-3 mb-8">
-            <img src={iconHadron} alt="Hádron" className="w-12 h-12" />
+            <img src={iconHadron} alt="Hádron" className="w-14 h-14 object-contain" />
             <span className="text-2xl font-light tracking-wide" style={{ color: 'hsl(0, 0%, 100%)' }}>
               Hádron<span className="font-semibold">Web</span>
             </span>
@@ -51,10 +51,10 @@ const Login = () => {
 
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-light tracking-wide" style={{ color: 'hsl(0, 0%, 100%)' }}>
-              Welcome
+              Bem-vindo
             </h1>
             <p className="text-xs uppercase tracking-[0.2em]" style={{ color: 'hsl(220, 70%, 50%)' }}>
-              Please login to Admin Dashboard.
+              Faça login no painel administrativo.
             </p>
           </div>
 
@@ -62,7 +62,7 @@ const Login = () => {
             <div>
               <Input
                 type="email"
-                placeholder="Username"
+                placeholder="Usuário"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -76,7 +76,7 @@ const Login = () => {
             <div>
               <Input
                 type="password"
-                placeholder="Password"
+                placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -98,7 +98,7 @@ const Login = () => {
                   color: 'hsl(0, 0%, 100%)',
                 }}
               >
-                {loading ? 'Entrando...' : 'Login'}
+                {loading ? 'Entrando...' : 'Entrar'}
               </Button>
             </div>
           </form>
@@ -109,7 +109,7 @@ const Login = () => {
               className="text-xs uppercase tracking-[0.15em] hover:underline"
               style={{ color: 'hsl(220, 70%, 50%)' }}
             >
-              Forgotten Your Password?
+              Esqueceu sua senha?
             </button>
           </div>
         </div>

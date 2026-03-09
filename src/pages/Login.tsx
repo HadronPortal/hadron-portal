@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import iconHadron from '@/assets/icon_hadronweb.png';
 
 const Login = () => {
@@ -9,15 +11,46 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // TODO: integrate with auth
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('auth-login', {
+        body: { email, password },
+      });
+
+      if (error || !data?.success) {
+        toast({
+          title: 'Erro ao entrar',
+          description: data?.error || error?.message || 'Credenciais inválidas',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Store token and user info
+      localStorage.setItem('hadron_token', data.access_token);
+      if (data.user) {
+        localStorage.setItem('hadron_user', JSON.stringify(data.user));
+      }
+
+      toast({
+        title: 'Login realizado com sucesso!',
+      });
+
       navigate('/');
-    }, 800);
+    } catch (err) {
+      toast({
+        title: 'Erro de conexão',
+        description: 'Não foi possível conectar ao servidor.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,8 +63,6 @@ const Login = () => {
             Hádron<span className="font-semibold">Portal</span>
           </span>
         </div>
-
-        {/* Vertical divider */}
         <div
           className="absolute right-0 top-1/4 bottom-1/4 w-px"
           style={{ backgroundColor: 'hsl(220, 9%, 46%, 0.3)' }}

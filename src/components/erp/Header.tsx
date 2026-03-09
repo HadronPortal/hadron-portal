@@ -7,7 +7,7 @@ const navItems = [
   { icon: Users, label: 'Clientes', path: '/clientes' },
   { icon: Gauge, label: 'Analítico', path: '/analitico' },
   { icon: LayoutGrid, label: 'Pedidos', path: '/pedidos' },
-  { icon: Grid3X3, label: 'Aplicações', path: '#' },
+  { icon: Grid3X3, label: 'Produtos', path: '/produtos' },
   { icon: Box, label: 'Módulos', path: '#' },
 ];
 

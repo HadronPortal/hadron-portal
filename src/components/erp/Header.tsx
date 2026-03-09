@@ -18,7 +18,7 @@ const Header = () => {
         DEV|00-PROCION TESTE DEV WEB LTDA
       </div>
       {/* Main header */}
-      <div className="flex items-center justify-between px-10 py-2">
+      <div className="flex items-center justify-between px-10 py-1 -mt-1">
         <div className="flex items-center gap-3">
           <img alt="Hádron Portal" className="w-16 h-16 object-contain" src={logoImg} />
           <span className="text-base font-medium tracking-wide">Hádron Portal</span>

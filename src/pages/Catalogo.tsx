@@ -142,6 +142,12 @@ const Catalogo = () => {
         ) : error && items.length === 0 ? (
           <div className="text-center py-20 text-destructive">{error}</div>
         ) : (
+          <div className="relative">
+            {isFetching && (
+              <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10 rounded-lg">
+                <Loader2 className="animate-spin text-muted-foreground" size={32} />
+              </div>
+            )}
           <div className={`bg-card rounded-lg border border-border overflow-hidden transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
             <div className="overflow-x-auto">
               <Table>
@@ -228,6 +234,7 @@ const Catalogo = () => {
                 </Button>
               </div>
             </div>
+          </div>
           </div>
         )}
       </main>

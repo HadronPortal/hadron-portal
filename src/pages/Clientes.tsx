@@ -170,7 +170,7 @@ const Clientes = () => {
           <select
             value={rowsPerPage}
             onChange={(e) => setRowsPerPage(Number(e.target.value))}
-            className="border border-border rounded px-2 py-1 text-sm bg-card text-foreground"
+            className="border border-border rounded px-1.5 py-0.5 text-xs bg-card text-foreground w-16"
           >
             <option value={10}>10</option>
             <option value={25}>25</option>

@@ -18,10 +18,10 @@ const Header = () => {
         DEV|00-PROCION TESTE DEV WEB LTDA
       </div>
       {/* Main header */}
-      <div className="flex items-center justify-between px-6 pb-3">
-        <div className="flex items-center gap-3">
-          <img src={logoImg} alt="Hádron Portal" className="w-14 h-14 object-contain" />
-          <span className="text-base font-medium tracking-wide">Hádron Portal</span>
+      <div className="flex items-center justify-between px-6 py-3">
+        <div className="flex items-center gap-4">
+          <img src={logoImg} alt="Hádron Portal" className="w-20 h-20 object-contain" />
+          <span className="text-lg font-medium tracking-wide">Hádron Portal</span>
         </div>
 
         <nav className="flex items-center gap-4">

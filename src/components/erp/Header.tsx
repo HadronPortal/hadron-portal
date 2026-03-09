@@ -1,13 +1,13 @@
-import { Home, Users, UserCheck, LayoutGrid, Grid3X3, Store } from 'lucide-react';
+import { Home, Users, Gauge, LayoutGrid, Grid3X3, Box } from 'lucide-react';
 import logoImg from '@/assets/icon_hadronweb.png';
 
 const navItems = [
   { icon: Home, label: 'Home' },
   { icon: Users, label: 'Usuários' },
-  { icon: UserCheck, label: 'Indicadores' },
+  { icon: Gauge, label: 'Indicadores' },
   { icon: LayoutGrid, label: 'Grid' },
   { icon: Grid3X3, label: 'Aplicações' },
-  { icon: Store, label: 'Módulos' },
+  { icon: Box, label: 'Módulos' },
 ];
 
 const Header = () => {

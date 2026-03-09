@@ -51,10 +51,10 @@ const Login = () => {
 
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-light tracking-wide" style={{ color: 'hsl(0, 0%, 100%)' }}>
-              Welcome
+              Bem-vindo
             </h1>
             <p className="text-xs uppercase tracking-[0.2em]" style={{ color: 'hsl(220, 70%, 50%)' }}>
-              Please login to Admin Dashboard.
+              Faça login no painel administrativo.
             </p>
           </div>
 

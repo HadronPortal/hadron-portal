@@ -18,39 +18,57 @@ serve(async (req) => {
       throw new Error('Missing API credentials');
     }
 
-    // Step 1: Login
+    // Step 1: Login to get access_token and session cookies
     const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ aus_email: email, aus_senha: password }),
+      redirect: 'manual',
     });
 
-    if (!loginRes.ok) {
-      const text = await loginRes.text();
-      throw new Error(`Login failed [${loginRes.status}]: ${text}`);
+    // Extract cookies from Set-Cookie headers
+    const rawHeaders = loginRes.headers;
+    const cookies: string[] = [];
+    for (const [key, value] of rawHeaders.entries()) {
+      if (key.toLowerCase() === 'set-cookie') {
+        cookies.push(value.split(';')[0]);
+      }
     }
-
-    // Extract cookies for session
-    const setCookies = loginRes.headers.getSetCookie?.() || [];
-    const cookieHeader = setCookies.map(c => c.split(';')[0]).join('; ');
+    const cookieHeader = cookies.join('; ');
 
     const loginData = await loginRes.json();
-    console.log('Login response:', JSON.stringify(loginData));
 
-    // Step 2: Fetch catalogo
+    if (!loginData.success) {
+      throw new Error(`Login failed: ${JSON.stringify(loginData)}`);
+    }
+
+    const token = loginData.access_token;
+    console.log('Login successful. Cookies:', cookieHeader);
+
+    // Step 2: Fetch catalogo using both Bearer token and cookies
     const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Cookie': cookieHeader,
         'Content-Type': 'application/json',
       },
     });
 
+    const responseText = await catalogoRes.text();
+    console.log('Catalogo response status:', catalogoRes.status);
+    console.log('Catalogo response preview:', responseText.substring(0, 500));
+
     if (!catalogoRes.ok) {
-      const text = await catalogoRes.text();
-      throw new Error(`Catalogo fetch failed [${catalogoRes.status}]: ${text}`);
+      throw new Error(`Catalogo fetch failed [${catalogoRes.status}]: ${responseText.substring(0, 500)}`);
     }
 
-    const catalogoData = await catalogoRes.json();
+    // Try to parse as JSON
+    let catalogoData;
+    try {
+      catalogoData = JSON.parse(responseText);
+    } catch {
+      throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`);
+    }
 
     return new Response(JSON.stringify(catalogoData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

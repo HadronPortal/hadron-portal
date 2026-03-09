@@ -235,6 +235,7 @@ const Catalogo = () => {
               </div>
             </div>
           </div>
+          </div>
         )}
       </main>
     </div>

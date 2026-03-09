@@ -34,12 +34,6 @@ const FilterBar = () => {
         />
 
         <div className="flex items-center gap-3 ml-auto">
-          {/* User */}
-          <div className="flex items-center gap-2 text-sm text-foreground">
-            <User size={16} className="text-muted-foreground" />
-            <span className="font-medium text-xs">3-SUPERVISOR REGIAO 1</span>
-          </div>
-
           <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Limpar
           </button>

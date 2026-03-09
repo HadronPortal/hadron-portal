@@ -23,7 +23,7 @@ const Header = () => {
         DEV|00-PROCION TESTE DEV WEB LTDA
       </div>
       {/* Main header */}
-      <div className="flex items-center justify-between px-10 py-4">
+      <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
           <img alt="Hádron Portal" className="w-[60px] h-[60px] object-contain -mt-2" src={logoImg} />
           <span className="text-base font-medium tracking-wide">Hádron Portal</span>

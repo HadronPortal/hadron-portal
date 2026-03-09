@@ -29,18 +29,33 @@ const Header = () => {
           <span className="text-base font-medium tracking-wide">Hádron Portal</span>
         </div>
 
-        <nav className="flex items-center gap-4">
-          {navItems.map(({ icon: Icon, label, path }) => (
+        <div className="flex items-center gap-6">
+          <nav className="flex items-center gap-4">
+            {navItems.map(({ icon: Icon, label, path }) => (
+              <button
+                key={label}
+                title={label}
+                onClick={() => path !== '#' && navigate(path)}
+                className="p-1.5 hover:opacity-80 transition-opacity"
+              >
+                <Icon size={20} />
+              </button>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3 border-l border-primary-foreground/20 pl-6">
+            <User size={20} className="opacity-70" />
+            <span className="text-sm opacity-80 hidden md:inline">3-SUPERVISOR REGIAO 1</span>
             <button
-              key={label}
-              title={label}
-              onClick={() => path !== '#' && navigate(path)}
-              className="p-1.5 hover:opacity-80 transition-opacity"
+              onClick={() => navigate('/login')}
+              title="Sair"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-primary-foreground/10 transition-colors text-sm"
             >
-              <Icon size={20} />
+              <LogOut size={16} />
+              <span className="hidden sm:inline">Sair</span>
             </button>
-          ))}
-        </nav>
+          </div>
+        </div>
       </div>
     </header>
   );

@@ -4,10 +4,10 @@ import logoImg from '@/assets/icon_hadronweb.png';
 const navItems = [
   { icon: Home, label: 'Home' },
   { icon: Users, label: 'Usuários' },
-  { icon: UserCheck, label: 'Indicadores' },
+  { icon: Gauge, label: 'Indicadores' },
   { icon: LayoutGrid, label: 'Grid' },
   { icon: Grid3X3, label: 'Aplicações' },
-  { icon: Store, label: 'Módulos' },
+  { icon: Box, label: 'Módulos' },
 ];
 
 const Header = () => {

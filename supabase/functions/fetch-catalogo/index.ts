@@ -47,12 +47,12 @@ serve(async (req) => {
 
     const token = loginData.access_token;
 
-    // Step 2: Fetch catalogo with pagination
+    // Step 2: Fetch catalogo with pagination via GET query params
     const catalogoRes = await fetch(`https://dev.hadronweb.com.br/app/Pages/apiCatalogs?page=${page}&limit=${limit}`, {
+      method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Cookie': cookieHeader,
-        'Content-Type': 'application/json',
       },
     });
 

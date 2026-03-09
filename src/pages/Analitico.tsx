@@ -131,22 +131,22 @@ const Analitico = () => {
                       <div className="text-xs text-muted-foreground">{produto.mesPeso}</div>
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="text-destructive">{produto.totalValor} {produto.totalQtd}</div>
-                      <div className="text-xs text-destructive">{produto.totalPeso}</div>
+                      <div className="text-foreground">{produto.totalValor} {produto.totalQtd}</div>
+                      <div className="text-xs text-muted-foreground">{produto.totalPeso}</div>
                     </TableCell>
                   </TableRow>
                 ))}
 
                 {/* Total row */}
-                <TableRow className="border-t-2 border-border font-bold">
-                  <TableCell className="text-sm font-bold">TOTAL</TableCell>
+                <TableRow className="border-t-2 border-border">
+                  <TableCell className="text-sm font-bold text-foreground">TOTAL</TableCell>
                   <TableCell className="text-sm">
-                    <div className="font-bold text-destructive">{totalMesValor}</div>
-                    <div className="text-xs font-bold text-destructive">{totalMesPeso}</div>
+                    <div className="font-bold text-foreground">{totalMesValor}</div>
+                    <div className="text-xs font-bold text-foreground">{totalMesPeso}</div>
                   </TableCell>
                   <TableCell className="text-sm">
-                    <div className="font-bold text-destructive">{totalGeralValor}</div>
-                    <div className="text-xs font-bold text-destructive">{totalGeralPeso}</div>
+                    <div className="font-bold text-foreground">{totalGeralValor}</div>
+                    <div className="text-xs font-bold text-foreground">{totalGeralPeso}</div>
                   </TableCell>
                 </TableRow>
               </TableBody>

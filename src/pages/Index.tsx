@@ -23,16 +23,17 @@ const Index = () => {
       <Header />
       <FilterBar />
 
-      <main className="flex-1 px-4 md:px-6 py-6 space-y-6 max-w-[1400px] mx-auto w-full">
+      <main className="flex-1 px-6 py-5 space-y-5">
+        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+
         {loading || !data ? (
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-24 rounded-lg" />
+                <Skeleton key={i} className="h-20 rounded-lg" />
               ))}
             </div>
             <Skeleton className="h-64 rounded-lg" />
-            <Skeleton className="h-48 rounded-lg" />
           </div>
         ) : (
           <>
@@ -43,13 +44,9 @@ const Index = () => {
               clientesPositivados={data.clientes_positivados}
             />
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-2">
-                <OrdersTable orders={data.orders} />
-              </div>
-              <div>
-                <ClientsTable clients={data.clients} />
-              </div>
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-5">
+              <OrdersTable orders={data.orders} />
+              <ClientsTable clients={data.clients} />
             </div>
           </>
         )}

@@ -7,6 +7,7 @@ export interface Order {
   status: 'aprovado' | 'confirmado' | 'pendente';
   valor: number;
   data_pedido: string;
+  erp_code?: string;
 }
 
 export interface Client {
@@ -33,85 +34,40 @@ export const mockDashboardData: DashboardData = {
   orders: [
     {
       id: '1',
-      codigo: '00120',
+      codigo: '454',
       cliente_nome: 'A SP DISTRIBUIDOR SAO PAULO LTDA',
       cliente_cnpj: '67.567.339/0001-45',
-      localizacao: 'São Paulo, SP',
+      localizacao: 'ARARAQUARA - SP',
       status: 'aprovado',
-      valor: 450.0,
-      data_pedido: '08/03/2026',
+      valor: 1225.67,
+      data_pedido: '18/02/2026, 11:58',
+      erp_code: 'ERP:2274',
     },
     {
       id: '2',
-      codigo: '00119',
-      cliente_nome: 'COMERCIAL BRASIL EIRELI',
-      cliente_cnpj: '12.345.678/0001-90',
-      localizacao: 'Campinas, SP',
+      codigo: '453',
+      cliente_nome: 'A SP PROCION SISTEMAS, SAO PAULO',
+      cliente_cnpj: '57.711.657/0001-84',
+      localizacao: 'SAO CARLOS - SP',
       status: 'confirmado',
-      valor: 775.67,
-      data_pedido: '07/03/2026',
+      valor: 18.44,
+      data_pedido: '08/01/2026, 00:31',
     },
     {
       id: '3',
-      codigo: '00118',
-      cliente_nome: 'MEGASTORE DISTRIBUIDORA LTDA',
-      cliente_cnpj: '98.765.432/0001-10',
-      localizacao: 'Rio de Janeiro, RJ',
+      codigo: '452',
+      cliente_nome: 'A SP PROCION SISTEMAS, SAO PAULO',
+      cliente_cnpj: '57.711.657/0001-84',
+      localizacao: 'SAO CARLOS - SP',
       status: 'pendente',
-      valor: 36.88,
-      data_pedido: '06/03/2026',
-    },
-    {
-      id: '4',
-      codigo: '00117',
-      cliente_nome: 'FAST SUPPLY COMERCIO LTDA',
-      cliente_cnpj: '11.222.333/0001-44',
-      localizacao: 'Belo Horizonte, MG',
-      status: 'aprovado',
-      valor: 1200.00,
-      data_pedido: '05/03/2026',
-    },
-    {
-      id: '5',
-      codigo: '00116',
-      cliente_nome: 'NOVA ERA ATACADISTA SA',
-      cliente_cnpj: '55.666.777/0001-88',
-      localizacao: 'Curitiba, PR',
-      status: 'confirmado',
-      valor: 890.50,
-      data_pedido: '04/03/2026',
+      valor: 18.44,
+      data_pedido: '08/01/2026, 00:31',
     },
   ],
-  clients: [
-    {
-      id: '1',
-      nome: 'A SP DISTRIBUIDOR SAO PAULO LTDA',
-      localizacao: 'São Paulo, SP',
-      data_cadastro: '08/03/2026',
-    },
-    {
-      id: '2',
-      nome: 'COMERCIAL BRASIL EIRELI',
-      localizacao: 'Campinas, SP',
-      data_cadastro: '07/03/2026',
-    },
-    {
-      id: '3',
-      nome: 'MEGASTORE DISTRIBUIDORA LTDA',
-      localizacao: 'Rio de Janeiro, RJ',
-      data_cadastro: '05/03/2026',
-    },
-    {
-      id: '4',
-      nome: 'FAST SUPPLY COMERCIO LTDA',
-      localizacao: 'Belo Horizonte, MG',
-      data_cadastro: '03/03/2026',
-    },
-  ],
+  clients: [],
 };
 
 export async function fetchDashboard(): Promise<DashboardData> {
-  // Simulates API call — replace with real endpoint later
   return new Promise((resolve) => {
     setTimeout(() => resolve(mockDashboardData), 300);
   });

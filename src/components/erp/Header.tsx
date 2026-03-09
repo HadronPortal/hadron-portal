@@ -1,4 +1,5 @@
 import { Home, Users, UserCheck, LayoutGrid, Grid3X3, Store } from 'lucide-react';
+import logoImg from '@/assets/icon_hadronweb.png';
 
 const navItems = [
   { icon: Home, label: 'Home' },

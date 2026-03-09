@@ -13,10 +13,8 @@ const navItems = [
 const Header = () => {
   return (
     <header className="bg-[hsl(var(--erp-header))] text-primary-foreground">
-      {/* Blue accent strip */}
-      <div className="h-1 bg-[hsl(var(--erp-blue))]" />
-      {/* Top strip */}
-      <div className="text-right px-4 py-1 text-[11px] opacity-70 tracking-wide">
+      {/* Top strip with blue background */}
+      <div className="bg-[hsl(var(--erp-blue))] text-right px-4 py-1 text-[11px] opacity-90 tracking-wide">
         DEV|00-PROCION TESTE DEV WEB LTDA
       </div>
       {/* Main header */}

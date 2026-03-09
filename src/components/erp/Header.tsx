@@ -19,8 +19,8 @@ const Header = () => {
       </div>
       {/* Main header */}
       <div className="flex items-center justify-between px-10 py-2">
-        <div className="flex items-center gap-4">
-          <img alt="Hádron Portal" className="w-20 h-20 object-contain -my-3" src="/lovable-uploads/51f7d872-880c-4be1-99b8-35fbb58cc720.png" />
+        <div className="flex items-center gap-3">
+          <img alt="Hádron Portal" className="w-16 h-16 object-contain -my-2" src={logoImg} />
           <span className="text-base font-medium tracking-wide">Hádron Portal</span>
         </div>
 

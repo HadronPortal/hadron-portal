@@ -27,7 +27,7 @@ const Login = () => {
         <div className="flex items-center gap-4">
           <img src={iconHadron} alt="Hádron" className="w-20 h-20 object-contain" />
           <span className="text-3xl font-light tracking-wide" style={{ color: 'hsl(0, 0%, 100%)' }}>
-            Hádron<span className="font-semibold">Web</span>
+            Hádron<span className="font-semibold">Portal</span>
           </span>
         </div>
 

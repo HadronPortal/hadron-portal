@@ -2,3 +2,6 @@ project_id = "okertqaojhjafezdwnaa"
 
 [functions.fetch-catalogo]
 verify_jwt = false
+
+[functions.proxy-image]
+verify_jwt = false

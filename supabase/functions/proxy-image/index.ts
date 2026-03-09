@@ -72,6 +72,10 @@ serve(async (req) => {
 
     console.log('Image response status:', imgRes.status, 'content-type:', imgRes.headers.get('content-type'));
 
+    if (!imgRes.ok) {
+      return new Response(null, { status: 404, headers: corsHeaders });
+    }
+
     const contentType = imgRes.headers.get('content-type') || 'image/jpeg';
     const imgData = await imgRes.arrayBuffer();
 

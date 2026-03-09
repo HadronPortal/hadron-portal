@@ -98,7 +98,7 @@ const Login = () => {
                   color: 'hsl(0, 0%, 100%)',
                 }}
               >
-                {loading ? 'Entrando...' : 'Login'}
+                {loading ? 'Entrando...' : 'Entrar'}
               </Button>
             </div>
           </form>

@@ -104,7 +104,9 @@ const Catalogo = () => {
     return isNaN(num) ? saldo : num.toLocaleString('pt-BR');
   };
 
-  const imageBaseUrl = 'https://dev.hadronweb.com.br/app/user_data/DEV/products/';
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const getImageUrl = (filename: string) =>
+    `https://${projectId}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

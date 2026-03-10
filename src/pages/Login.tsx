@@ -24,8 +24,8 @@ const Login = () => {
 
       if (error || !data?.success) {
         toast({
-          title: 'Erro ao entrar',
-          description: data?.error || error?.message || 'Credenciais inválidas',
+          title: 'Não foi possível entrar',
+          description: data?.error || 'E-mail ou senha incorretos. Verifique seus dados e tente novamente.',
           variant: 'destructive',
         });
         return;

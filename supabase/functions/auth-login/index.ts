@@ -27,10 +27,20 @@ serve(async (req) => {
       redirect: 'manual',
     });
 
-    const loginData = await loginRes.json();
+    const responseText = await loginRes.text();
+    let loginData;
+    try {
+      loginData = JSON.parse(responseText);
+    } catch {
+      console.error('Non-JSON response:', responseText);
+      return new Response(JSON.stringify({ success: false, error: 'E-mail ou senha incorretos. Verifique seus dados e tente novamente.' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     if (!loginData.success) {
-      return new Response(JSON.stringify({ success: false, error: 'Credenciais inválidas' }), {
+      return new Response(JSON.stringify({ success: false, error: 'E-mail ou senha incorretos. Verifique seus dados e tente novamente.' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

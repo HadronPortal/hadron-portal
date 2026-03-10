@@ -561,22 +561,22 @@ const LojaVirtual = () => {
         <div className="grid md:grid-cols-2 gap-4">
           <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(220, 30%, 94%), hsl(220, 50%, 88%))' }}>
             <div>
-              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: BRAND }}>Premium</span>
-              <h3 className="text-lg font-bold text-gray-800 mt-1">Vegetais Frescos & Consumo Diário</h3>
-              <p className="text-sm text-gray-500">Ganhe 50% de desconto extra</p>
+              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: BRAND }}>Atacado</span>
+              <h3 className="text-lg font-bold text-gray-800 mt-1">Produtos de Higiene por Caixa</h3>
+              <p className="text-sm text-gray-500">Desconto progressivo para distribuidores</p>
               <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: BRAND }}>
-                Comprar Agora
+                Ver Ofertas
               </button>
             </div>
-            <img src="https://themes.pixelstrap.com/fastkart/assets/images/veg-3/banner/1.png" alt="" className="absolute right-4 bottom-0 h-[160px] object-contain hidden sm:block" />
+            <img src={imgSaboneteLiquido} alt="" className="absolute right-4 bottom-2 h-[140px] object-contain hidden sm:block" />
           </div>
           <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(25, 80%, 94%), hsl(30, 60%, 88%))' }}>
             <div>
-              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: 'hsl(25, 90%, 55%)' }}>Disponível</span>
-              <h3 className="text-lg font-bold text-gray-800 mt-1">100% Natural & Frutas Saudáveis</h3>
-              <p className="text-sm text-gray-500">Especial de Fim de Semana</p>
+              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: 'hsl(25, 90%, 55%)' }}>Novidade</span>
+              <h3 className="text-lg font-bold text-gray-800 mt-1">Linha Dermatológica</h3>
+              <p className="text-sm text-gray-500">Cuidados especiais para a pele</p>
               <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: 'hsl(25, 90%, 55%)' }}>
-                Comprar Agora
+                Conhecer
               </button>
             </div>
             <img src="https://themes.pixelstrap.com/fastkart/assets/images/veg-3/banner/2.png" alt="" className="absolute right-4 bottom-0 h-[160px] object-contain hidden sm:block" />

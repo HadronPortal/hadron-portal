@@ -24,6 +24,11 @@ interface ClienteAPI {
   COD_REP: number;
 }
 
+interface Representante {
+  rep_codrep: number;
+  rep_nomrep: string;
+}
+
 const tabs = [
   { key: 'todos', label: 'Todos' },
   { key: 'novos', label: 'Novos' },

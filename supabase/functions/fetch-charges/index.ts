@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 let cachedToken: string | null = null;
-let cachedCookies: string = '';
+let cachedCookies = '';
 let tokenExpiry = 0;
 
 async function getAuth(): Promise<{ token: string; cookies: string }> {
@@ -57,25 +57,31 @@ serve(async (req) => {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '50');
-    const codter = url.searchParams.get('codter');
-    const repParam = url.searchParams.get('rep');
+    const search = url.searchParams.get('search') || '';
+    const codter = url.searchParams.get('codter') || '';
+    const repParam = url.searchParams.get('rep') || '';
+    const dateIni = url.searchParams.get('date_ini') || '';
+    const dateEnd = url.searchParams.get('date_end') || '';
+    const chargeFilter = url.searchParams.get('charge_filter') || '';
+    const sortField = url.searchParams.get('sort_field') || '';
+    const sortDir = url.searchParams.get('sort_dir') || 'DESC';
 
     const { token, cookies } = await getAuth();
 
-    // When filtering by client, fetch a large batch and filter server-side
-    // because the API does not support codter filtering natively
-    const apiLimit = codter ? 5000 : limit;
-    const apiPage = codter ? 1 : page;
-
     const requestBody: Record<string, unknown> = {
-      pagination: { page: apiPage, limit: apiLimit },
+      search,
+      filter: {
+        cod_ter: codter,
+        cod_rep: repParam,
+        date_ini: dateIni,
+        date_end: dateEnd,
+        charge_filter: chargeFilter,
+      },
+      pagination: { page, limit },
+      sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
-    if (repParam) {
-      requestBody.orc_codrep = repParam.split(',').map(Number);
-    }
-
-    const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCharges', {
+    const res = await fetch('https://dev.hadronweb.com.br/app/Pages/api-charges', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -97,17 +103,6 @@ serve(async (req) => {
       data = JSON.parse(responseText);
     } catch {
       throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`);
-    }
-
-    // Filter by client code if specified
-    if (codter) {
-      const codterNum = parseInt(codter);
-      const allCharges = data.charges || [];
-      const filtered = allCharges.filter((c: { CODTER: number }) => c.CODTER === codterNum);
-      const start = (page - 1) * limit;
-      const paged = filtered.slice(start, start + limit);
-      data.charges = paged;
-      data.total_records = filtered.length;
     }
 
     return new Response(JSON.stringify(data), {

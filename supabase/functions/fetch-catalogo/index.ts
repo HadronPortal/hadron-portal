@@ -5,9 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Cache token in memory to avoid re-login on every request
 let cachedToken: string | null = null;
-let cachedCookies: string = '';
+let cachedCookies = '';
 let tokenExpiry = 0;
 
 async function getAuth(): Promise<{ token: string; cookies: string }> {
@@ -38,7 +37,7 @@ async function getAuth(): Promise<{ token: string; cookies: string }> {
 
   cachedToken = loginData.access_token;
   cachedCookies = cookies.join('; ');
-  tokenExpiry = Date.now() + 25 * 60 * 1000; // cache 25 min
+  tokenExpiry = Date.now() + 25 * 60 * 1000;
 
   return { token: cachedToken!, cookies: cachedCookies };
 }
@@ -52,17 +51,18 @@ serve(async (req) => {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '10');
-    const repParam = url.searchParams.get('rep');
+    const search = url.searchParams.get('search') || '';
+    const repParam = url.searchParams.get('rep') || '';
 
     const { token, cookies } = await getAuth();
 
     const requestBody: Record<string, unknown> = {
+      search,
+      filter: {
+        cod_rep: repParam,
+      },
       pagination: { page, limit },
     };
-
-    if (repParam) {
-      requestBody.orc_codrep = repParam.split(',').map(Number);
-    }
 
     const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
       method: 'POST',
@@ -77,7 +77,6 @@ serve(async (req) => {
     const responseText = await catalogoRes.text();
 
     if (!catalogoRes.ok) {
-      // Invalidate cache on auth errors
       cachedToken = null;
       throw new Error(`Catalogo fetch failed [${catalogoRes.status}]: ${responseText.substring(0, 500)}`);
     }

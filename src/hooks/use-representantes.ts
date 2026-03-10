@@ -8,18 +8,18 @@ export interface Representante {
 const fetchReps = async (): Promise<Representante[]> => {
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
   const res = await fetch(
-    `https://${projectId}.supabase.co/functions/v1/fetch-clients?page=1&limit=1`
+    `https://${projectId}.supabase.co/functions/v1/fetch-reps`
   );
   if (!res.ok) return [];
   const data = await res.json();
-  return data.representantes || [];
+  return data.data || [];
 };
 
 export function useRepresentantes() {
   const { data: representantes = [], isLoading: loading } = useQuery({
     queryKey: ['representantes'],
     queryFn: fetchReps,
-    staleTime: 15 * 60 * 1000, // cache 15 min - rarely changes
+    staleTime: 15 * 60 * 1000,
   });
 
   return { representantes, loading };

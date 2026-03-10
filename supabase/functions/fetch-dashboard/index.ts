@@ -49,15 +49,21 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const repParam = url.searchParams.get('rep');
+    const repParam = url.searchParams.get('rep') || '';
+    const dateIni = url.searchParams.get('date_ini') || '';
+    const dateEnd = url.searchParams.get('date_end') || '';
 
     const { token, cookies } = await getAuth();
 
-    const requestBody: Record<string, unknown> = {};
-
-    if (repParam) {
-      requestBody.orc_codrep = repParam.split(',').map(Number);
-    }
+    const requestBody: Record<string, unknown> = {
+      search: '',
+      filter: {
+        cod_rep: repParam,
+        date_ini: dateIni,
+        date_end: dateEnd,
+      },
+      pagination: { page: 1, limit: 50 },
+    };
 
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiDashboard', {
       method: 'POST',

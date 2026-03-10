@@ -48,57 +48,32 @@ serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const limit = parseInt(url.searchParams.get('limit') || '50');
-    const search = url.searchParams.get('search') || '';
-    const repParam = url.searchParams.get('rep') || '';
-    const dateIni = url.searchParams.get('date_ini') || '';
-    const dateEnd = url.searchParams.get('date_end') || '';
-    const clientFilter = url.searchParams.get('client_filter') || '';
-    const sortField = url.searchParams.get('sort_field') || '';
-    const sortDir = url.searchParams.get('sort_dir') || 'DESC';
-
     const { token, cookies } = await getAuth();
 
-    const requestBody: Record<string, unknown> = {
-      search,
-      filter: {
-        cod_rep: repParam,
-        date_ini: dateIni,
-        date_end: dateEnd,
-        client_filter: clientFilter,
-      },
-      pagination: { page, limit },
-      sort: sortField ? { field: sortField, direction: sortDir } : undefined,
-    };
-
-    const clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiClients', {
-      method: 'POST',
+    const res = await fetch('https://dev.hadronweb.com.br/app/pages/apiListaRepsDropdown', {
+      method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Cookie': cookies,
-        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody),
     });
 
-    const responseText = await clientsRes.text();
+    const responseText = await res.text();
 
-    if (!clientsRes.ok) {
+    if (!res.ok) {
       cachedToken = null;
-      throw new Error(`Clients fetch failed [${clientsRes.status}]: ${responseText.substring(0, 500)}`);
+      throw new Error(`Reps fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
     }
 
-    let clientsData;
+    let data;
     try {
-      clientsData = JSON.parse(responseText);
+      data = JSON.parse(responseText);
     } catch {
       throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`);
     }
 
-    return new Response(JSON.stringify(clientsData), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },
+    return new Response(JSON.stringify(data), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
     });
   } catch (error) {
     console.error('Error:', error);

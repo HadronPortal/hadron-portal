@@ -25,6 +25,7 @@ interface FilterBarProps {
 const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChange, onSearch, onFilter, onClear }: FilterBarProps) => {
   const [startDate, setStartDate] = useState<Date>(new Date(2026, 0, 8));
   const [endDate, setEndDate] = useState<Date>(new Date(2026, 2, 9));
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [selectedRep, setSelectedRep] = useState<string>('all');
   const [search, setSearch] = useState('');
 

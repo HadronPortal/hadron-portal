@@ -434,25 +434,25 @@ const LojaVirtual = () => {
           >
             <div className="relative z-10 max-w-md">
               <span className="text-xs font-bold uppercase tracking-widest" style={{ color: BRAND }}>
-                ORGÂNICO
+                HIGIENE & BELEZA
               </span>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mt-2 leading-tight">
-                100% Frescos
+                Cuidado Pessoal
               </h1>
-              <h2 className="text-xl md:text-2xl text-gray-500 mt-1">Frutas & Verduras</h2>
+              <h2 className="text-xl md:text-2xl text-gray-500 mt-1">Para toda a família</h2>
               <p className="text-sm text-gray-500 mt-3">
-                Frete grátis em todos os pedidos. Entregamos para você aproveitar.
+                Produtos de higiene, beleza e cuidados pessoais com os melhores preços.
               </p>
               <button
                 className="mt-5 px-6 py-2.5 rounded-lg text-white text-sm font-semibold transition-transform hover:scale-105"
                 style={{ backgroundColor: BRAND }}
               >
-                Comprar Agora
+                Ver Produtos
               </button>
             </div>
             <img
-              src="https://themes.pixelstrap.com/fastkart/assets/images/veg-3/home/1.png"
-              alt="Hero"
+              src={imgHero}
+              alt="Produtos de Higiene"
               className="absolute right-0 bottom-0 h-full max-h-[300px] object-contain opacity-90 hidden md:block"
             />
           </div>

@@ -20,3 +20,21 @@ verify_jwt = false
 
 [functions.fetch-item-reports]
 verify_jwt = false
+
+[functions.fetch-reps]
+verify_jwt = false
+
+[functions.fetch-orders]
+verify_jwt = false
+
+[functions.fetch-clients]
+verify_jwt = false
+
+[functions.fetch-charges]
+verify_jwt = false
+
+[functions.fetch-analytics]
+verify_jwt = false
+
+[functions.auth-login]
+verify_jwt = false

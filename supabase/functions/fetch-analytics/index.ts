@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 let cachedToken: string | null = null;
-let cachedCookies: string = '';
+let cachedCookies = '';
 let tokenExpiry = 0;
 
 async function getAuth(): Promise<{ token: string; cookies: string }> {
@@ -51,17 +51,25 @@ serve(async (req) => {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '50');
-    const repParam = url.searchParams.get('rep');
+    const search = url.searchParams.get('search') || '';
+    const repParam = url.searchParams.get('rep') || '';
+    const dateIni = url.searchParams.get('date_ini') || '';
+    const dateEnd = url.searchParams.get('date_end') || '';
+    const sortField = url.searchParams.get('sort_field') || '';
+    const sortDir = url.searchParams.get('sort_dir') || 'DESC';
 
     const { token, cookies } = await getAuth();
 
     const requestBody: Record<string, unknown> = {
+      search,
+      filter: {
+        cod_rep: repParam,
+        date_ini: dateIni,
+        date_end: dateEnd,
+      },
       pagination: { page, limit },
+      sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
-
-    if (repParam) {
-      requestBody.orc_codrep = repParam.split(',').map(Number);
-    }
 
     const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiAnalytics', {
       method: 'POST',

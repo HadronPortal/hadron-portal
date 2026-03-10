@@ -241,6 +241,7 @@ const LojaVirtual = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [bagExpanded, setBagExpanded] = useState(false);
   const bagTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cartIconRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
 
   const filtered = activeTab === 'All' ? allProducts : allProducts.filter(p => p.category === activeTab);
@@ -251,7 +252,51 @@ const LojaVirtual = () => {
     bagTimer.current = setTimeout(() => setBagExpanded(false), 3000);
   }, []);
 
-  const addToCart = (p: Product) => {
+  const flyToCart = useCallback((imgSrc: string, startX: number, startY: number) => {
+    const cartEl = cartIconRef.current;
+    if (!cartEl) return;
+    const cartRect = cartEl.getBoundingClientRect();
+    const endX = cartRect.left + cartRect.width / 2;
+    const endY = cartRect.top + cartRect.height / 2;
+
+    const flyEl = document.createElement('img');
+    flyEl.src = imgSrc;
+    flyEl.style.cssText = `
+      position: fixed; z-index: 9999; width: 60px; height: 60px; object-fit: contain;
+      left: ${startX - 30}px; top: ${startY - 30}px;
+      border-radius: 50%; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      pointer-events: none; transition: all 0.7s cubic-bezier(0.2, 1, 0.3, 1);
+    `;
+    document.body.appendChild(flyEl);
+
+    requestAnimationFrame(() => {
+      flyEl.style.left = `${endX - 15}px`;
+      flyEl.style.top = `${endY - 15}px`;
+      flyEl.style.width = '30px';
+      flyEl.style.height = '30px';
+      flyEl.style.opacity = '0.3';
+    });
+
+    setTimeout(() => {
+      flyEl.remove();
+      // pulse the cart icon
+      if (cartEl) {
+        cartEl.style.transform = 'scale(1.3)';
+        setTimeout(() => { cartEl.style.transform = 'scale(1)'; }, 200);
+      }
+    }, 700);
+  }, []);
+
+  const addToCart = (p: Product, e?: React.MouseEvent) => {
+    if (e) {
+      const btn = e.currentTarget as HTMLElement;
+      const card = btn.closest('.group');
+      const img = card?.querySelector('img');
+      if (img) {
+        const rect = img.getBoundingClientRect();
+        flyToCart(p.image, rect.left + rect.width / 2, rect.top + rect.height / 2);
+      }
+    }
     setCart(prev => {
       const ex = prev.find(i => i.id === p.id);
       if (ex) return prev.map(i => i.id === p.id ? { ...i, qty: i.qty + 1 } : i);

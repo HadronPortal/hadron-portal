@@ -25,29 +25,15 @@ const Header = () => {
         DEV|00-PROCION TESTE DEV WEB LTDA
       </div>
       {/* Main header */}
-      <div className="relative flex items-center px-6 py-4">
+      <div className="flex items-center justify-between px-6 py-4">
         {/* Logo - left */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
           <img alt="Hádron Portal" className="w-[60px] h-[60px] object-contain -mt-2" src={logoImg} />
           <span className="text-base font-medium tracking-wide">Hádron Portal</span>
         </div>
 
-        {/* Nav - centered */}
-        <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-4">
-          {navItems.map(({ icon: Icon, label, path }) => (
-            <button
-              key={label}
-              title={label}
-              onClick={() => path !== '#' && navigate(path)}
-              className="p-1.5 hover:opacity-80 transition-opacity"
-            >
-              <Icon size={20} />
-            </button>
-          ))}
-        </nav>
-
         {/* User - right */}
-        <div className="ml-auto flex items-center gap-3 border-l border-primary-foreground/20 pl-6">
+        <div className="flex items-center gap-3 border-l border-primary-foreground/20 pl-6">
           <User size={20} className="opacity-70" />
           <span className="text-sm opacity-80 hidden md:inline">3-SUPERVISOR REGIAO 1</span>
           <button
@@ -59,6 +45,41 @@ const Header = () => {
             <span className="hidden sm:inline">Sair</span>
           </button>
         </div>
+      </div>
+
+      {/* Navigation bar */}
+      <div className="bg-[hsl(var(--erp-header))] border-t border-primary-foreground/10 px-6 py-2 flex items-center">
+        {/* Left button */}
+        <button
+          onClick={() => navigate('/catalogo')}
+          className="flex items-center gap-2 bg-accent text-accent-foreground px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          <Box size={16} />
+          Catálogo
+        </button>
+
+        {/* Center nav links */}
+        <nav className="flex-1 flex items-center justify-center gap-6">
+          {navItems.map(({ icon: Icon, label, path }) => (
+            <button
+              key={label}
+              onClick={() => path !== '#' && navigate(path)}
+              className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors flex items-center gap-1.5"
+            >
+              <Icon size={16} />
+              {label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Right button */}
+        <button
+          onClick={() => navigate('/pedidos/criar')}
+          className="flex items-center gap-2 bg-accent text-accent-foreground px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          <ClipboardList size={16} />
+          Criar Pedido
+        </button>
       </div>
     </header>
   );

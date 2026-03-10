@@ -9,6 +9,7 @@ import Cobrancas from "./pages/Cobrancas";
 import Analitico from "./pages/Analitico";
 import Pedidos from "./pages/Pedidos";
 import Produtos from "./pages/Produtos";
+import ProdutoDetalhe from "./pages/ProdutoDetalhe";
 import Catalogo from "./pages/Catalogo";
 import LojaVirtual from "./pages/LojaVirtual";
 import Login from "./pages/Login";

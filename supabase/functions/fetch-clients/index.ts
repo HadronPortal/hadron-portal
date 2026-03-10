@@ -7,11 +7,12 @@ const corsHeaders = {
 
 let cachedToken: string | null = null;
 let cachedCookies: string = '';
+let cachedUser: Record<string, unknown> | null = null;
 let tokenExpiry = 0;
 
-async function getAuth(): Promise<{ token: string; cookies: string }> {
-  if (cachedToken && Date.now() < tokenExpiry) {
-    return { token: cachedToken, cookies: cachedCookies };
+async function getAuth(): Promise<{ token: string; cookies: string; user: Record<string, unknown> }> {
+  if (cachedToken && cachedUser && Date.now() < tokenExpiry) {
+    return { token: cachedToken, cookies: cachedCookies, user: cachedUser };
   }
 
   const email = Deno.env.get('HADRON_API_EMAIL');
@@ -37,9 +38,13 @@ async function getAuth(): Promise<{ token: string; cookies: string }> {
 
   cachedToken = loginData.access_token;
   cachedCookies = cookies.join('; ');
+  cachedUser = loginData.user || {};
   tokenExpiry = Date.now() + 25 * 60 * 1000;
 
-  return { token: cachedToken!, cookies: cachedCookies };
+  console.log('Login user data keys:', Object.keys(cachedUser!));
+  console.log('Login user data:', JSON.stringify(cachedUser).substring(0, 1000));
+
+  return { token: cachedToken!, cookies: cachedCookies, user: cachedUser! };
 }
 
 serve(async (req) => {
@@ -52,18 +57,26 @@ serve(async (req) => {
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '50');
 
-    const { token, cookies } = await getAuth();
+    const { token, cookies, user } = await getAuth();
 
-    // Parse optional filters from request body
-    let bodyParams: Record<string, unknown> = {};
-    if (req.method === 'POST') {
-      try { bodyParams = await req.json(); } catch { /* empty */ }
-    }
+    // Try to extract representative code from user data
+    const repCode = (user as Record<string, unknown>)?.aus_codrep 
+      || (user as Record<string, unknown>)?.codrep 
+      || (user as Record<string, unknown>)?.cod_rep
+      || '';
+
+    console.log('Rep code found:', repCode);
 
     const requestBody: Record<string, unknown> = {
       pagination: { page, limit },
-      ...bodyParams,
     };
+
+    // Only add orc_codrep if we have a value
+    if (repCode) {
+      requestBody.orc_codrep = [repCode];
+    }
+
+    console.log('Request body:', JSON.stringify(requestBody));
 
     const clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiClients', {
       method: 'POST',
@@ -79,6 +92,8 @@ serve(async (req) => {
 
     if (!clientsRes.ok) {
       cachedToken = null;
+      cachedUser = null;
+      console.error('API response:', responseText.substring(0, 1000));
       throw new Error(`Clients fetch failed [${clientsRes.status}]: ${responseText.substring(0, 500)}`);
     }
 

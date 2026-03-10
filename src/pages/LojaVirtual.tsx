@@ -427,14 +427,17 @@ const LojaVirtual = () => {
       {/* ═══ Shop By Categories ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
         <Carousel title="Compre por Categorias">
-          {categories.map(cat => (
-            <div key={cat.name} className="flex-shrink-0 w-[130px] flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-white hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer group">
-              <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: BL }}>
-                <img src={cat.img} alt={cat.name} className="w-14 h-14 object-contain group-hover:scale-110 transition-transform" />
+          {categories.map((cat, idx) => {
+            const bgColors = ['#fef3cd', '#f8e8f0', '#e8f5e9', '#fce4ec', '#e0f7fa', '#f3e5f5', '#fff3e0', '#e8eaf6'];
+            return (
+              <div key={cat.name} className="flex-shrink-0 w-[160px] flex flex-col items-center gap-3 py-4 cursor-pointer group">
+                <div className="w-28 h-28 rounded-full flex items-center justify-center overflow-hidden transition-shadow group-hover:shadow-lg" style={{ backgroundColor: bgColors[idx % bgColors.length] }}>
+                  <img src={cat.img} alt={cat.name} className="w-20 h-20 object-contain group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-xs text-center font-medium text-gray-600 leading-tight truncate w-full">{cat.name}</span>
               </div>
-              <span className="text-[11px] text-center font-medium text-gray-600 leading-tight">{cat.name}</span>
-            </div>
-          ))}
+            );
+          })}
         </Carousel>
       </section>
 

@@ -3,12 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 const BASE = `https://${projectId}.supabase.co/functions/v1`;
 
-interface UseApiFetchOptions {
+interface UseApiFetchOptions<T = any> {
   queryKey: string[];
   endpoint: string;
   params?: Record<string, string | number | undefined>;
   enabled?: boolean;
   staleTime?: number;
+  placeholderData?: (prev: T | undefined) => T | undefined;
 }
 
 export function useApiFetch<T = any>({

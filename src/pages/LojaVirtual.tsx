@@ -527,7 +527,7 @@ const LojaVirtual = () => {
 
       {/* ═══ BEST SELLER Carousel ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <Carousel title="BEST SELLER">
+        <Carousel title="MAIS VENDIDOS">
           {newProducts.map(p => <MiniCard key={`bs-${p.id}`} product={p} onAdd={addToCart} />)}
         </Carousel>
       </section>

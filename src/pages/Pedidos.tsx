@@ -7,7 +7,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, FileText } from 'lucide-react';
+import { ChevronDown, FileText, Plus } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
 interface OrderAPI {

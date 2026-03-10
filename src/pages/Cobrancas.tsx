@@ -32,6 +32,7 @@ const formatDate = (iso: string | null) => {
 
 const Cobrancas = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { representantes } = useRepresentantes();
   const codter = searchParams.get('codter');
   const clienteNome = searchParams.get('nome');
 

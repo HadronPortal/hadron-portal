@@ -5,6 +5,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+async function getServiceToken(): Promise<string> {
+  const email = Deno.env.get('HADRON_API_EMAIL');
+  const password = Deno.env.get('HADRON_API_PASSWORD');
+  if (!email || !password) throw new Error('Missing API credentials');
+
+  const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ aus_email: email, aus_senha: password }),
+    redirect: 'manual',
+  });
+
+  const loginData = await loginRes.json();
+  if (!loginData.success) throw new Error(`Login failed`);
+  return loginData.access_token;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -12,16 +29,17 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const userToken = url.searchParams.get('token') || '';
+    let token = url.searchParams.get('token') || '';
 
-    if (!userToken) {
-      throw new Error('Missing user token');
+    // Fallback to service account if no user token provided
+    if (!token) {
+      token = await getServiceToken();
     }
 
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiListaReps', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${userToken}`,
+        'Authorization': `Bearer ${token}`,
       },
     });
 
@@ -38,7 +56,10 @@ serve(async (req) => {
       throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`);
     }
 
-    return new Response(JSON.stringify(data), {
+    // Add count for debugging
+    const reps = data.data || data.representantes || [];
+    
+    return new Response(JSON.stringify({ ...data, total_count: reps.length }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
     });
   } catch (error) {

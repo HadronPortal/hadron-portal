@@ -67,7 +67,7 @@ serve(async (req) => {
         'Cookie': cookies,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ orc_codorc: orderId, orc_codrep: [3] }),
+      body: JSON.stringify({ orc_codorc: parseInt(orderId), orc_codrep: [3] }),
     });
 
     const responseText = await res.text();

@@ -201,7 +201,7 @@ const CriarPedido = () => {
           <div className="bg-card rounded-lg border border-border shadow-sm max-w-3xl mx-auto">
             {/* Header with search */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-              <h2 className="text-lg font-bold text-foreground">Itens do Produtos</h2>
+              <h2 className="text-lg font-bold text-foreground">Itens do Pedido</h2>
               <div className="relative w-56">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input value={produtoSearch}

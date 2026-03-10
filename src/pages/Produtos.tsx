@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
+import { useRepresentantes } from '@/hooks/use-representantes';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -34,6 +35,7 @@ const tabs = [
 
 const Produtos = () => {
   const navigate = useNavigate();
+  const { representantes } = useRepresentantes();
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [search, setSearch] = useState('');
@@ -74,7 +76,7 @@ const Produtos = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar />
+      <FilterBar representantes={representantes} />
 
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Produtos</h1>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useTransition } from 'react';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
+import { useRepresentantes } from '@/hooks/use-representantes';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -20,6 +21,7 @@ interface CatalogoItem {
 const pageCache = new Map<string, { catalogs: CatalogoItem[]; total_records: number }>();
 
 const Catalogo = () => {
+  const { representantes } = useRepresentantes();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
   const [items, setItems] = useState<CatalogoItem[]>([]);
@@ -113,7 +115,7 @@ const Catalogo = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar />
+      <FilterBar representantes={representantes} />
 
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Catálogo</h1>

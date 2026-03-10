@@ -90,9 +90,33 @@ const Pedidos = () => {
       const res = await fetch(url);
       if (!res.ok) throw new Error('Falha ao buscar pedidos');
       const data = await res.json();
-      setOrders(data.orders || []);
+      const apiOrders: OrderAPI[] = data.orders || [];
+
+      // Fetch local orders from database
+      const { data: localOrders } = await supabase
+        .from('pedidos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      const mappedLocal: OrderAPI[] = (localOrders || []).map((p: any) => ({
+        orc_codorc: 0,
+        orc_codorc_web: p.id,
+        orc_codter: p.cliente_codigo,
+        ter_nomter: p.cliente_nome,
+        ter_documento: p.cliente_documento || '',
+        TEN_CIDLGR: p.cliente_cidade || '',
+        TEN_UF_LGR: p.cliente_uf || '',
+        orc_status: p.status,
+        orc_vlrorc: Number(p.total),
+        orc_peso: 0,
+        orc_dtaorc: p.created_at,
+        _local: true,
+        _numero: p.numero,
+      }));
+
+      setOrders([...mappedLocal, ...apiOrders]);
       setDashboard(data.dashboard || dashboard);
-      setTotalRecords(data.total_records || 0);
+      setTotalRecords((data.total_records || 0) + mappedLocal.length);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');

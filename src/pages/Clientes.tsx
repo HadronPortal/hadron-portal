@@ -5,7 +5,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye, CreditCard, ChevronDown, Loader2 } from 'lucide-react';
+import { Eye, CreditCard, ChevronDown } from 'lucide-react';
+import Spinner from '@/components/ui/spinner';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ClienteAPI {

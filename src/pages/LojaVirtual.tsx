@@ -588,7 +588,7 @@ const LojaVirtual = () => {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <span className="text-xl font-black text-white">Fast<span style={{ color: B }}>kart.</span></span>
-              <p className="text-sm text-gray-400 mt-3">We are a friendly bar serving a variety of cocktails, craft beers and pub food.</p>
+              <p className="text-sm text-gray-400 mt-3">Somos uma loja online oferecendo uma variedade de produtos frescos e orgânicos com entrega rápida.</p>
             </div>
             <div>
               <h4 className="text-sm font-bold text-white mb-3">Categories</h4>

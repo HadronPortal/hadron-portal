@@ -290,13 +290,7 @@ const CriarPedido = () => {
               </Table>
             </div>
 
-            {/* Bottom */}
-            <div className="px-5 py-3 border-t border-border bg-muted/30 rounded-b-lg text-center text-sm text-muted-foreground">
-              {cart.length === 0 ? 'Nenhum item adicionado ao pedido' : `${cart.length} produto(s) — ${cart.reduce((s, c) => s + c.quantidade, 0)} unidades`}
-            </div>
-
-            <div className="px-5 py-3 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Preços de dúvida? Cheque nossa central de suporte ou entre em contato →</span>
+            <div className="px-5 py-3 border-t border-border flex items-center justify-end">
               {cart.length > 0 && (
                 <Button className="bg-erp-navy hover:bg-erp-navy/90 gap-2" disabled={!selectedCliente} onClick={() => setStep(1)}>
                   Avançar para Resumo

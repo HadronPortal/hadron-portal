@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ShoppingCart, Heart, Eye, Search, MapPin, Phone, ChevronLeft, ChevronRight, Star, Truck, Shield, RotateCcw, Headphones, Plus, Minus, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logoImg from '@/assets/icon_hadronweb.png';

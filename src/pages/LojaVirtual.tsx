@@ -309,7 +309,7 @@ const LojaVirtual = () => {
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen" style={{ backgroundColor: '#fafafa', backgroundImage: `url(https://themes.pixelstrap.com/fastkart/assets/images/veg-3/bg.jpg)`, backgroundAttachment: 'fixed', backgroundSize: 'cover', backgroundPosition: 'center' }}>
       {/* ═══ Top Bar ═══ */}
       <div className="text-xs text-center py-2 text-white" style={{ backgroundColor: B }}>
         Algo que você ama está em promoção! <button className="underline font-bold ml-1">Compre Agora!</button>

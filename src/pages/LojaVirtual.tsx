@@ -101,7 +101,7 @@ const Carousel = ({ children, title }: { children: React.ReactNode; title: strin
 };
 
 // ─── Product Card ───────────────────────────────────────────────────────
-const ProductCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product) => void }) => (
+const ProductCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product, e: React.MouseEvent) => void }) => (
   <div className="group bg-white rounded-lg border border-gray-100 overflow-hidden hover:shadow-lg transition-all relative">
     {product.badge && (
       <span className="absolute top-2 left-2 z-10 text-[10px] font-bold px-2 py-0.5 rounded text-white" style={{ backgroundColor: B }}>{product.badge}</span>
@@ -122,7 +122,7 @@ const ProductCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product)
           <span className="text-sm font-bold" style={{ color: B }}>${product.price.toFixed(2)}</span>
           <span className="text-xs text-gray-400 line-through ml-1">${product.oldPrice.toFixed(2)}</span>
         </div>
-        <button onClick={() => onAdd(product)} className="w-7 h-7 rounded-full flex items-center justify-center text-white transition hover:scale-110" style={{ backgroundColor: B }}>
+        <button onClick={(e) => onAdd(product, e)} className="w-7 h-7 rounded-full flex items-center justify-center text-white transition hover:scale-110" style={{ backgroundColor: B }}>
           <Plus size={14} />
         </button>
       </div>

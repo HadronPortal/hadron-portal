@@ -97,7 +97,7 @@ const FilterBar = ({ representantes = [], clientCountByRep = {}, onRepChange, on
             <SelectItem value="all">Todos os Representantes</SelectItem>
             {representantes.map((rep) => (
               <SelectItem key={rep.rep_codrep} value={String(rep.rep_codrep)}>
-                {rep.rep_codrep} - {rep.rep_nomrep}
+                {rep.rep_codrep}-{rep.rep_nomrep} ({clientCountByRep[rep.rep_codrep] ?? 0})
               </SelectItem>
             ))}
           </SelectContent>

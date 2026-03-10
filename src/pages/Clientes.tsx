@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Eye, CreditCard } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
-import { supabase } from '@/integrations/supabase/client';
+import { useRepresentantes } from '@/hooks/use-representantes';
 import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
 
 const COLUMNS: ColumnDef[] = [

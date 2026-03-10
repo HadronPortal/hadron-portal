@@ -559,7 +559,7 @@ const LojaVirtual = () => {
       {/* ── Promotional Banners ── */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(220, 30%, 94%), hsl(220, 50%, 88%))' }}>
+          <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(145, 30%, 94%), hsl(145, 50%, 88%))' }}>
             <div>
               <span className="text-xs uppercase tracking-wider font-bold" style={{ color: BRAND }}>Atacado</span>
               <h3 className="text-lg font-bold text-gray-800 mt-1">Produtos de Higiene por Caixa</h3>

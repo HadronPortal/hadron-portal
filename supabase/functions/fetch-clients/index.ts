@@ -7,12 +7,11 @@ const corsHeaders = {
 
 let cachedToken: string | null = null;
 let cachedCookies: string = '';
-let cachedUser: Record<string, unknown> | null = null;
 let tokenExpiry = 0;
 
-async function getAuth(): Promise<{ token: string; cookies: string; user: Record<string, unknown> }> {
-  if (cachedToken && cachedUser && Date.now() < tokenExpiry) {
-    return { token: cachedToken, cookies: cachedCookies, user: cachedUser };
+async function getAuth(): Promise<{ token: string; cookies: string }> {
+  if (cachedToken && Date.now() < tokenExpiry) {
+    return { token: cachedToken, cookies: cachedCookies };
   }
 
   const email = Deno.env.get('HADRON_API_EMAIL');
@@ -38,13 +37,9 @@ async function getAuth(): Promise<{ token: string; cookies: string; user: Record
 
   cachedToken = loginData.access_token;
   cachedCookies = cookies.join('; ');
-  cachedUser = loginData.user || {};
   tokenExpiry = Date.now() + 25 * 60 * 1000;
 
-  console.log('Login user data keys:', Object.keys(cachedUser!));
-  console.log('Login user data:', JSON.stringify(cachedUser).substring(0, 1000));
-
-  return { token: cachedToken!, cookies: cachedCookies, user: cachedUser! };
+  return { token: cachedToken!, cookies: cachedCookies };
 }
 
 serve(async (req) => {
@@ -57,37 +52,43 @@ serve(async (req) => {
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '50');
 
-    const { token, cookies, user } = await getAuth();
+    const { token, cookies } = await getAuth();
 
-    // Use user ID as representative code
-    const repCode = String((user as Record<string, unknown>)?.id || '54');
+    // Try both endpoint paths
+    const endpoints = [
+      'https://dev.hadronweb.com.br/app/Pages/apiClients',
+      'https://dev.hadronweb.com.br/DEV/app/Pages/apiClients',
+    ];
 
-    const requestBody: Record<string, unknown> = {
-      pagination: { page, limit },
-      orc_codrep: [repCode],
-    };
+    const requestBody = { pagination: { page, limit } };
 
-    console.log('Request body:', JSON.stringify(requestBody));
+    let responseText = '';
+    let ok = false;
 
-    console.log('Request body:', JSON.stringify(requestBody));
+    for (const endpoint of endpoints) {
+      console.log('Trying:', endpoint);
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Cookie': cookies,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
 
-    const clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiClients', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Cookie': cookies,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    });
+      responseText = await res.text();
+      console.log('Status:', res.status, 'Preview:', responseText.substring(0, 400));
 
-    const responseText = await clientsRes.text();
+      if (res.ok) {
+        ok = true;
+        break;
+      }
+    }
 
-    if (!clientsRes.ok) {
+    if (!ok) {
       cachedToken = null;
-      cachedUser = null;
-      console.error('API response:', responseText.substring(0, 1000));
-      throw new Error(`Clients fetch failed [${clientsRes.status}]: ${responseText.substring(0, 500)}`);
+      throw new Error(`Clients fetch failed: ${responseText.substring(0, 500)}`);
     }
 
     let clientsData;

@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Spinner from "@/components/ui/spinner";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Lazy-loaded pages
 const Index = lazy(() => import("./pages/Index"));

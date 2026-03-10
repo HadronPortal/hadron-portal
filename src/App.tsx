@@ -14,6 +14,7 @@ import Catalogo from "./pages/Catalogo";
 import LojaVirtual from "./pages/LojaVirtual";
 import Login from "./pages/Login";
 import PedidoDetalhe from "./pages/PedidoDetalhe";
+import CriarPedido from "./pages/CriarPedido";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

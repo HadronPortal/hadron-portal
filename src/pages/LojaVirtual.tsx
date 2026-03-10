@@ -403,8 +403,8 @@ const LojaVirtual = () => {
               <div className="rounded-2xl relative overflow-hidden min-h-[140px]" style={{ background: '#ff7675' }}>
                 <img src={`${IMG}/home/4.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
                 <div className="relative z-10 p-5 text-white">
-                  <h4 className="text-sm font-bold">Safe food saves lives</h4>
-                  <p className="text-xs text-white/70 mt-1">Discount Offer</p>
+                  <h4 className="text-sm font-bold">Alimento seguro salva vidas</h4>
+                  <p className="text-xs text-white/70 mt-1">Oferta com Desconto</p>
                 </div>
               </div>
             </div>

@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.fetch-dashboard]
 verify_jwt = false
+
+[functions.fetch-item-reports]
+verify_jwt = false

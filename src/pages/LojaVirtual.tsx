@@ -336,8 +336,8 @@ const LojaVirtual = () => {
               </div>
             </div>
             <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span className="hidden lg:inline">Language</span>
-              <span className="hidden lg:inline">Dollar</span>
+              <span className="hidden lg:inline">Idioma</span>
+              <span className="hidden lg:inline">Real</span>
               <button><RefreshCw size={20} /></button>
               <button><Heart size={20} /></button>
               <button ref={cartIconRef} onClick={() => setCartOpen(true)} className="relative transition-transform">

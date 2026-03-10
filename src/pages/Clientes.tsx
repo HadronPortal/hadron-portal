@@ -72,6 +72,11 @@ const Clientes = () => {
   const [clients, setClients] = useState<ClienteAPI[]>([]);
   const [representantes, setRepresentantes] = useState<Representante[]>([]);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateRange, setDateRange] = useState<{ start: Date; end: Date }>({
+    start: new Date(2026, 0, 8),
+    end: new Date(2026, 2, 9),
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -105,19 +110,47 @@ const Clientes = () => {
     fetchClients();
   }, [page]);
 
-  const handleRepChange = (repCodes: number[]) => {
-    setSelectedRep(repCodes);
+  const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
+  const handleSearch = (query: string) => setSearchQuery(query);
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+    setDateRange({ start: filters.startDate, end: filters.endDate });
+    setSelectedRep(filters.repCodes);
+    setSearchQuery(filters.search);
+  };
+  const handleClear = () => {
+    setSelectedRep([]);
+    setSearchQuery('');
+    setDateRange({ start: new Date(2026, 0, 8), end: new Date(2026, 2, 9) });
   };
 
   const repFiltered = selectedRep.length > 0
     ? clients.filter(c => selectedRep.includes(c.COD_REP))
     : clients;
 
+  const searchFiltered = searchQuery.trim()
+    ? repFiltered.filter(c => {
+        const q = searchQuery.toLowerCase();
+        return (
+          c.ter_nomter?.toLowerCase().includes(q) ||
+          c.ter_fanter?.toLowerCase().includes(q) ||
+          c.ter_documento?.includes(q) ||
+          c.TEN_CIDLGR?.toLowerCase().includes(q) ||
+          c.TEN_UF_LGR?.toLowerCase().includes(q)
+        );
+      })
+    : repFiltered;
+
+  const dateFiltered = searchFiltered.filter(c => {
+    if (!c.ULT_VENDA) return true;
+    const d = new Date(c.ULT_VENDA);
+    return d >= dateRange.start && d <= dateRange.end;
+  });
+
   const filtered = activeTab === 'todos'
-    ? repFiltered
+    ? dateFiltered
     : activeTab === 'positivados'
-      ? repFiltered.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
-      : repFiltered.filter(c => {
+      ? dateFiltered.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
+      : dateFiltered.filter(c => {
           const d = new Date(c.ter_dta_cad);
           const sixMonthsAgo = new Date();
           sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -134,7 +167,7 @@ const Clientes = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar representantes={representantes} clientCountByRep={clientCountByRep} onRepChange={handleRepChange} />
+      <FilterBar representantes={representantes} clientCountByRep={clientCountByRep} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Clientes</h1>

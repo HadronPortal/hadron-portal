@@ -421,6 +421,7 @@ const LojaVirtual = () => {
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       {/* ═══ Shop By Categories ═══ */}

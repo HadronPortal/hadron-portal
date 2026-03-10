@@ -414,7 +414,7 @@ const LojaVirtual = () => {
 
       {/* ═══ Shop By Categories ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <Carousel title="Shop By Categories">
+        <Carousel title="Compre por Categorias">
           {categories.map(cat => (
             <div key={cat.name} className="flex-shrink-0 w-[130px] flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-white hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer group">
               <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: BL }}>

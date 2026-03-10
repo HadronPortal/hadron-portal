@@ -359,7 +359,7 @@ const LojaVirtual = () => {
 
       {/* ── Top Bar ── */}
       <div className="text-xs text-center py-2 px-4" style={{ backgroundColor: BRAND, color: 'white' }}>
-        Frete grátis em compras acima de R$ 150,00! 🚚
+        Frete grátis em compras acima de R$ 200,00! 🚚 Distribuidora de Higiene & Beleza
       </div>
 
       {/* ── Header ── */}

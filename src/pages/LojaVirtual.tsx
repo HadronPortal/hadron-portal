@@ -236,7 +236,7 @@ const FloatingBag = ({ cart, expanded, onToggle, onOpen }: {
 // MAIN PAGE
 // ═══════════════════════════════════════════════════════════════════════
 const LojaVirtual = () => {
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeTab, setActiveTab] = useState('Todos');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [bagExpanded, setBagExpanded] = useState(false);

@@ -92,11 +92,16 @@ const Clientes = () => {
     setSelectedRep(repCodes);
   };
 
+  // Filter by selected representative first
+  const repFiltered = selectedRep.length > 0
+    ? clients.filter(c => selectedRep.includes(c.COD_REP))
+    : clients;
+
   const filtered = activeTab === 'todos'
-    ? clients
+    ? repFiltered
     : activeTab === 'positivados'
-      ? clients.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
-      : clients.filter(c => {
+      ? repFiltered.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
+      : repFiltered.filter(c => {
           const d = new Date(c.ter_dta_cad);
           const sixMonthsAgo = new Date();
           sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);

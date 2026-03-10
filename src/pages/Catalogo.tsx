@@ -44,6 +44,9 @@ const Catalogo = () => {
   const abortRef = useRef<AbortController | null>(null);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>(
+    Object.fromEntries(CATALOGO_COLUMNS.map(c => [c.key, true]))
+  );
 
   const totalPages = Math.ceil(totalRecords / limit);
 

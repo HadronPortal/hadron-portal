@@ -379,7 +379,8 @@ const LojaVirtual = () => {
       <FloatingBag cart={cart} expanded={bagExpanded} onToggle={() => setBagExpanded(v => !v)} onOpen={() => { setBagExpanded(false); setCartOpen(true); }} />
 
       {/* ═══ Hero ═══ */}
-      <section className="max-w-7xl mx-auto px-4 py-6">
+      <section className="relative py-6" style={{ backgroundImage: `url(${IMG}/bg.jpg)`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+        <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-7 rounded-2xl p-8 md:p-12 flex items-center min-h-[380px] relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #f0faf6, #e0f2eb)' }}>
             <div className="relative z-10 max-w-md">

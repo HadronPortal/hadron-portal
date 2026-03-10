@@ -21,7 +21,7 @@ const pageCache = new Map<string, { catalogs: CatalogoItem[]; total_records: num
 
 const Catalogo = () => {
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
   const [items, setItems] = useState<CatalogoItem[]>([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [initialLoading, setInitialLoading] = useState(true);

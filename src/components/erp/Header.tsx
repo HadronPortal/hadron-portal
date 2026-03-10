@@ -10,6 +10,7 @@ const navItems = [
   { icon: Grid3X3, label: 'Produtos', path: '/produtos' },
   { icon: Box, label: 'Catálogo', path: '/catalogo' },
   { icon: ShoppingBag, label: 'Loja Virtual', path: '/loja' },
+  { icon: DollarSign, label: 'Cobranças', path: '/cobrancas' },
 ];
 
 const Header = () => {

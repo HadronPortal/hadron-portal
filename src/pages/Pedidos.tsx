@@ -62,6 +62,10 @@ const statusMap: Record<string, { label: string; color: string }> = {
 
 const Pedidos = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const codter = searchParams.get('codter');
+  const clienteNome = searchParams.get('nome');
+
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [orders, setOrders] = useState<OrderAPI[]>([]);
   const [dashboard, setDashboard] = useState<Dashboard>({ sent: 0, sent_peso: 0, approved: 0, approved_peso: 0, invoiced: 0, invoiced_peso: 0, canceled: 0, canceled_peso: 0 });
@@ -76,9 +80,9 @@ const Pedidos = () => {
       setError(null);
       try {
         const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const res = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/fetch-orders?page=${page}&limit=${rowsPerPage}`
-        );
+        let url = `https://${projectId}.supabase.co/functions/v1/fetch-orders?page=${page}&limit=${rowsPerPage}`;
+        if (codter) url += `&codter=${codter}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Falha ao buscar pedidos');
         const data = await res.json();
         setOrders(data.orders || []);
@@ -92,7 +96,13 @@ const Pedidos = () => {
       }
     };
     fetchData();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, codter]);
+
+  const clearClientFilter = () => {
+    searchParams.delete('codter');
+    searchParams.delete('nome');
+    setSearchParams(searchParams);
+  };
 
   const kpiCards = [
     { label: 'Enviados', valor: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, color: 'bg-teal-600' },

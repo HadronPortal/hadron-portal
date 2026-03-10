@@ -95,7 +95,6 @@ const Clientes = () => {
       if (!res.ok) throw new Error('Falha ao buscar clientes');
       const result = await res.json();
       setClients(result.clients || []);
-      setRepresentantes(result.representantes || []);
       setTotalRecords(result.total_records || 0);
     } catch (err) {
       console.error(err);

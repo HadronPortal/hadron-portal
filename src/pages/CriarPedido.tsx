@@ -312,11 +312,6 @@ const CriarPedido = () => {
             <div className="lg:col-span-2 bg-card rounded-lg border border-border shadow-sm">
               <div className="flex items-center justify-between px-5 py-4 border-b border-border">
                 <h2 className="text-lg font-bold text-foreground">Resumo do Pedido</h2>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="text-xs" onClick={() => setStep(0)}>
-                    ← Voltar
-                  </Button>
-                </div>
               </div>
 
               <div className="overflow-x-auto">
@@ -387,38 +382,52 @@ const CriarPedido = () => {
             </div>
 
             {/* Right: Summary sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-erp-navy text-primary-foreground rounded-lg p-5 space-y-4 sticky top-4">
-                <h3 className="font-bold text-base">Resumo do Pedido</h3>
+            <div className="lg:col-span-1 space-y-4">
+              <div className="bg-card rounded-lg border border-border shadow-sm p-5 space-y-4">
+                <h3 className="font-bold text-base text-foreground">Resumo do pedido</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="opacity-80">Subtotal</span>
-                    <span>{fmt(subtotal)}</span>
+                    <span className="text-muted-foreground">Valor dos produtos ({cart.length}):</span>
+                    <span className="text-foreground">{fmt(subtotal)}</span>
                   </div>
+                  {desconto > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Desconto:</span>
+                      <span className="text-destructive font-medium">- {fmt(desconto)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
-                    <span className="opacity-80">Desconto</span>
-                    <span>{fmt(desconto)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="opacity-80">Frete</span>
-                    <span>{fmt(frete)}</span>
+                    <span className="text-muted-foreground">Frete:</span>
+                    <span className="text-erp-green font-bold">{frete > 0 ? fmt(frete) : 'Grátis'}</span>
                   </div>
                   <div className="mt-2">
-                    <label className="text-xs opacity-70">Tem desconto?</label>
+                    <label className="text-xs text-muted-foreground">Tem desconto?</label>
                     <Input type="number" value={desconto || ''} onChange={e => setDesconto(parseFloat(e.target.value) || 0)}
-                      className="h-8 mt-1 text-sm bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
+                      className="h-8 mt-1 text-sm"
                       placeholder="0,00" step="0.01" />
                   </div>
                 </div>
-                <div className="border-t border-primary-foreground/20 pt-3 flex justify-between font-bold text-lg">
-                  <span>Total</span>
-                  <span>{fmt(total)}</span>
+                <div className="border-t border-border pt-3">
+                  <div className="flex justify-between font-bold text-lg text-foreground">
+                    <span>Total:</span>
+                    <span className="text-erp-green">{fmt(total)}</span>
+                  </div>
                 </div>
+              </div>
+
+              <div className="space-y-3">
                 <Button
                   className="w-full font-bold rounded-md py-3 text-base bg-yellow-500 hover:bg-yellow-400 text-foreground"
                   onClick={handleEnviarPedido}
                 >
-                  Enviar pedido
+                  CONTINUAR
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full font-bold rounded-md py-3 text-base border-yellow-500 text-yellow-600 hover:bg-yellow-50"
+                  onClick={() => setStep(0)}
+                >
+                  VOLTAR
                 </Button>
               </div>
             </div>

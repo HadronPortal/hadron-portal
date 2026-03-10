@@ -51,13 +51,17 @@ serve(async (req) => {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '50');
+    const codter = url.searchParams.get('codter');
 
     const { token, cookies } = await getAuth();
 
-    const requestBody = {
+    const requestBody: Record<string, unknown> = {
       pagination: { page, limit },
       orc_codrep: [3],
     };
+    if (codter) {
+      requestBody.orc_codter = parseInt(codter);
+    }
 
     const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCharges', {
       method: 'POST',

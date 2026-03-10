@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import {
@@ -29,6 +30,10 @@ const formatDate = (iso: string | null) => {
 };
 
 const Cobrancas = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const codter = searchParams.get('codter');
+  const clienteNome = searchParams.get('nome');
+
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [charges, setCharges] = useState<Charge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,15 +41,21 @@ const Cobrancas = () => {
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
 
+  const clearClientFilter = () => {
+    searchParams.delete('codter');
+    searchParams.delete('nome');
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
         const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const res = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/fetch-charges?page=${page}&limit=${rowsPerPage}`
-        );
+        let url = `https://${projectId}.supabase.co/functions/v1/fetch-charges?page=${page}&limit=${rowsPerPage}`;
+        if (codter) url += `&codter=${codter}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Falha ao buscar cobranças');
         const data = await res.json();
         setCharges(data.charges || []);
@@ -57,7 +68,7 @@ const Cobrancas = () => {
       }
     };
     fetchData();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, codter]);
 
   const isOverdue = (vnc: string) => {
     if (!vnc) return false;
@@ -68,6 +79,16 @@ const Cobrancas = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <FilterBar />
+
+      {clienteNome && (
+        <div className="px-6 pt-2 text-sm text-muted-foreground">
+          Filtro Cliente:{' '}
+          <button onClick={clearClientFilter} className="text-primary underline font-semibold">
+            {decodeURIComponent(clienteNome)}
+          </button>
+          <button onClick={clearClientFilter} className="ml-2 text-xs text-muted-foreground hover:text-foreground">✕</button>
+        </div>
+      )}
 
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Cobranças</h1>

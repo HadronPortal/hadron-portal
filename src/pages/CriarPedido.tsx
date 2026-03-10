@@ -410,8 +410,7 @@ const CriarPedido = () => {
                   <span>{fmt(total)}</span>
                 </div>
                 <Button
-                  className="w-full font-bold rounded-md py-3 text-base"
-                  style={{ backgroundColor: 'hsl(43, 40%, 50%)', color: 'hsl(220, 60%, 15%)' }}
+                  className="w-full font-bold rounded-md py-3 text-base bg-yellow-500 hover:bg-yellow-400 text-foreground"
                   onClick={handleEnviarPedido}
                 >
                   Enviar pedido

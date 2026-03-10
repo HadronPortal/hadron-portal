@@ -5,9 +5,22 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye, CreditCard, ChevronDown } from 'lucide-react';
+import { Eye, CreditCard } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import { supabase } from '@/integrations/supabase/client';
+import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
+
+const COLUMNS: ColumnDef[] = [
+  { key: 'cod', label: 'COD' },
+  { key: 'descricao', label: 'DESCRICAO' },
+  { key: 'documento', label: 'DOCUMENTO' },
+  { key: 'local', label: 'LOCAL' },
+  { key: 'representante', label: 'REPRESENTANTE' },
+  { key: 'vendas', label: 'VENDAS' },
+  { key: 'ult_pedido', label: 'ULT PEDIDO' },
+  { key: 'cadastro', label: 'CADASTRO' },
+  { key: 'acao', label: 'AÇÃO' },
+];
 
 interface ClienteAPI {
   ter_codter: number;

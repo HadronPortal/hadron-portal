@@ -254,7 +254,7 @@ const Pedidos = () => {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredOrders.map((o: any) => {
+                    filteredOrders.map((o: any, idx: number) => {
                       const code = o.orc_codorc || o.codigo || '';
                       const st = statusMap[o.orc_status] || { label: o.orc_status || '—', color: 'bg-muted' };
                       return (

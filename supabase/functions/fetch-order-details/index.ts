@@ -60,7 +60,7 @@ serve(async (req) => {
 
     const { token, cookies } = await getAuth();
 
-    const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiOrderDetails', {
+    const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiOrderDetails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

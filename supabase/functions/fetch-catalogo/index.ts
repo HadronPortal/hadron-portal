@@ -64,7 +64,7 @@ serve(async (req) => {
       pagination: { page, limit },
     };
 
-    const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
+    const catalogoRes = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiCatalogs', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

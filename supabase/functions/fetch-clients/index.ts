@@ -73,7 +73,7 @@ serve(async (req) => {
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
-    const clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiClients', {
+    const clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiClients', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

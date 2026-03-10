@@ -65,12 +65,12 @@ const CriarPedido = () => {
 
   /* ─── fetch clientes ─── */
   const fetchClientes = useCallback(async (search: string) => {
-    if (search.length < 2) { setClientes([]); return; }
     setLoadingClientes(true);
     try {
-      const res = await fetch(`${BASE}/fetch-clients?page=1&limit=20`);
+      const res = await fetch(`${BASE}/fetch-clients?page=1&limit=50`);
       const data = await res.json();
       const all: ClienteAPI[] = data?.clients || [];
+      if (!search.trim()) { setClientes(all); return; }
       const q = search.toLowerCase();
       setClientes(all.filter(c =>
         (c.ter_nomter || '').toLowerCase().includes(q) ||

@@ -120,7 +120,7 @@ const FilterBar = ({ representantes = [], clientCountByRep = {}, onRepChange, on
             Limpar
           </button>
 
-          <Button size="sm" className="h-8 px-5 text-xs font-semibold" onClick={handleFilter}>
+          <Button size="sm" className="h-8 px-5 text-xs font-semibold bg-erp-navy hover:bg-erp-navy/90" onClick={handleFilter}>
             Filtrar
           </Button>
         </div>

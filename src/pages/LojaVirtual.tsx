@@ -326,7 +326,7 @@ const LojaVirtual = () => {
             </div>
             <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
               <MapPin size={16} style={{ color: B }} />
-              <span>Your Location</span>
+              <span>Sua Localização</span>
               <ChevronLeft size={14} className="rotate-[270deg]" />
             </div>
             <div className="flex-1 max-w-xl hidden md:flex">

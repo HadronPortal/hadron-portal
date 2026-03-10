@@ -5,7 +5,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import Spinner from '@/components/ui/spinner';
 
 interface CatalogoItem {
   pro_codpro: number;

@@ -464,21 +464,21 @@ const LojaVirtual = () => {
               style={{ background: `linear-gradient(135deg, hsl(220, 60%, 45%), ${BRAND})` }}
             >
               <div className="relative z-10">
-                <h3 className="text-lg font-bold text-white">Frescos & 100% Orgânicos</h3>
-                <p className="text-white/80 text-sm mt-1">Direto do produtor</p>
+                <h3 className="text-lg font-bold text-white">Marcas Premium</h3>
+                <p className="text-white/80 text-sm mt-1">Qualidade garantida</p>
                 <button className="mt-3 px-5 py-2 border border-white text-white rounded-lg text-sm hover:bg-white/20 transition">
-                  Comprar Agora
+                  Ver Mais
                 </button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-xl p-4 bg-gray-800 text-white flex flex-col justify-center">
-                <h4 className="text-sm font-bold">Vida Orgânica</h4>
-                <p className="text-xs text-gray-300 mt-1">Ofertas de Fim de Semana</p>
+                <h4 className="text-sm font-bold">Kit Econômico</h4>
+                <p className="text-xs text-gray-300 mt-1">Até 40% de desconto</p>
               </div>
               <div className="rounded-xl p-4 flex flex-col justify-center" style={{ backgroundColor: 'hsl(25, 90%, 92%)' }}>
-                <h4 className="text-sm font-bold text-gray-800">Comida Saudável</h4>
-                <p className="text-xs text-gray-600 mt-1">Desconto Especial</p>
+                <h4 className="text-sm font-bold text-gray-800">Cuidados Bebê</h4>
+                <p className="text-xs text-gray-600 mt-1">Linha completa</p>
               </div>
             </div>
           </div>

@@ -76,6 +76,10 @@ const Clientes = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>(
+    Object.fromEntries(COLUMNS.map(c => [c.key, true]))
+  );
+  const show = (key: string) => visibleCols[key] !== false;
 
   const fetchClients = async () => {
     setLoading(true);

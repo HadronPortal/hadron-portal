@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import {
@@ -6,60 +6,98 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, FileText } from 'lucide-react';
+import Spinner from '@/components/ui/spinner';
 
-interface PedidoFull {
-  codigo: string;
-  codCliente: string;
-  cliente: string;
-  subtexto?: string;
-  documento: string;
-  localizacao: string;
-  status: string;
-  statusColor: string;
-  valor: string;
-  pesoKg: string;
-  data: string;
-  erpCode?: string;
+interface OrderAPI {
+  orc_codorc: number;
+  orc_codter: number;
+  ter_nomter: string;
+  ter_fanter?: string;
+  ter_documento: string;
+  TEN_CIDLGR: string;
+  TEN_UF_LGR: string;
+  orc_status: string;
+  orc_vlrorc: number;
+  orc_peso: number;
+  orc_dtaorc: string;
+  orc_erp?: string;
+  [key: string]: unknown;
 }
 
-const mockPedidos: PedidoFull[] = [
-  {
-    codigo: '454',
-    codCliente: '15',
-    cliente: 'A SP DISTRIBUIDOR SAO PAULO LTDA',
-    documento: '67.567.339/0001-45',
-    localizacao: 'ARARAQUARA - SP',
-    status: 'Pedido Aprovado',
-    statusColor: 'bg-orange-500',
-    valor: 'R$1.225,67',
-    pesoKg: '10',
-    data: '18/02/2026, 11:58',
-    erpCode: 'ERP:2274',
-  },
-  {
-    codigo: '453',
-    codCliente: '2',
-    cliente: 'A SP PROCION SISTEMAS, SAO PAULO',
-    subtexto: 'A SP PROCION SISTEMAS DE S PAU',
-    documento: '57.711.657/0001-84',
-    localizacao: 'SAO CARLOS - SP',
-    status: 'Pagamento Confirmado',
-    statusColor: 'bg-green-500',
-    valor: 'R$18,44',
-    pesoKg: '0,25',
-    data: '08/01/2026, 00:31',
-  },
-];
+interface Dashboard {
+  sent: number;
+  sent_peso: number;
+  approved: number;
+  approved_peso: number;
+  invoiced: number;
+  invoiced_peso: number;
+  canceled: number;
+  canceled_peso: number;
+}
 
-const kpiCards = [
-  { label: 'Enviados', valor: 'R$ 18,44', peso: '0,25 Kg', color: 'bg-teal-600' },
-  { label: 'Aprovados', valor: 'R$ 1.225,67', peso: '10 Kg', color: 'bg-orange-500' },
-  { label: 'Faturados', valor: 'R$ 0', peso: '0 Kg', color: 'bg-cyan-500' },
-  { label: 'Cancelados', valor: 'R$ 0', peso: '0 Kg', color: 'bg-blue-700' },
-];
+const formatCurrency = (v: number) =>
+  'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const formatDate = (iso: string | null) => {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+};
+
+const formatDoc = (doc: string) => {
+  const d = (doc || '').replace(/\D/g, '');
+  if (d.length === 14) return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+  if (d.length === 11) return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  return doc;
+};
+
+const statusMap: Record<string, { label: string; color: string }> = {
+  'EN': { label: 'Enviado', color: 'bg-teal-600' },
+  'AP': { label: 'Aprovado', color: 'bg-orange-500' },
+  'FA': { label: 'Faturado', color: 'bg-cyan-500' },
+  'CA': { label: 'Cancelado', color: 'bg-red-500' },
+  'PC': { label: 'Pagamento Confirmado', color: 'bg-green-500' },
+  'PE': { label: 'Pendente', color: 'bg-yellow-500' },
+};
 
 const Pedidos = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [orders, setOrders] = useState<OrderAPI[]>([]);
+  const [dashboard, setDashboard] = useState<Dashboard>({ sent: 0, sent_peso: 0, approved: 0, approved_peso: 0, invoiced: 0, invoiced_peso: 0, canceled: 0, canceled_peso: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const res = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/fetch-orders?page=${page}&limit=${rowsPerPage}`
+        );
+        if (!res.ok) throw new Error('Falha ao buscar pedidos');
+        const data = await res.json();
+        setOrders(data.orders || []);
+        setDashboard(data.dashboard || dashboard);
+        setTotalRecords(data.total_records || 0);
+      } catch (err) {
+        console.error(err);
+        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [page, rowsPerPage]);
+
+  const kpiCards = [
+    { label: 'Enviados', valor: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, color: 'bg-teal-600' },
+    { label: 'Aprovados', valor: formatCurrency(dashboard.approved), peso: `${dashboard.approved_peso} Kg`, color: 'bg-orange-500' },
+    { label: 'Faturados', valor: formatCurrency(dashboard.invoiced), peso: `${dashboard.invoiced_peso} Kg`, color: 'bg-cyan-500' },
+    { label: 'Cancelados', valor: formatCurrency(dashboard.canceled), peso: `${dashboard.canceled_peso} Kg`, color: 'bg-blue-700' },
+  ];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -83,12 +121,11 @@ const Pedidos = () => {
           ))}
         </div>
 
-        {/* Controls row */}
         <div className="flex items-center justify-between">
-          <div className="flex flex-col">
+          <div className="flex items-center gap-3">
             <select
               value={rowsPerPage}
-              onChange={(e) => setRowsPerPage(Number(e.target.value))}
+              onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
               className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
             >
               <option value={10}>10</option>
@@ -96,71 +133,91 @@ const Pedidos = () => {
               <option value={50}>50</option>
               <option value={100}>100</option>
             </select>
-            <span className="text-xs text-muted-foreground mt-0.5">registros</span>
+            <span className="text-sm text-muted-foreground">{totalRecords} registros</span>
           </div>
-
           <Button variant="outline" size="sm" className="gap-1">
             Colunas <ChevronDown size={14} />
           </Button>
         </div>
 
-        {/* Table */}
-        <div className="bg-card rounded-lg border border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs font-bold text-foreground">CODIGO</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">CLIENTE</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">DOCUMENTO</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">LOCALIZACAO</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">STATUS</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">PESO(KG)</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">DATA</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mockPedidos.slice(0, rowsPerPage).map((pedido) => (
-                  <TableRow key={pedido.codigo} className="hover:bg-accent/30">
-                    <TableCell className="text-sm">{pedido.codigo}</TableCell>
-                    <TableCell className="text-sm">
-                      <div>{pedido.codCliente} - {pedido.cliente}</div>
-                      {pedido.subtexto && (
-                        <div className="text-xs text-muted-foreground">{pedido.subtexto}</div>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm whitespace-nowrap">{pedido.documento}</TableCell>
-                    <TableCell className="text-sm whitespace-nowrap">{pedido.localizacao}</TableCell>
-                    <TableCell className="text-sm">
-                      <span className={`${pedido.statusColor} text-white text-xs px-2 py-1 rounded`}>
-                        {pedido.status}
-                      </span>
-                      {pedido.erpCode && (
-                        <div className="text-xs text-muted-foreground mt-1">{pedido.erpCode}</div>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm whitespace-nowrap">{pedido.valor}</TableCell>
-                    <TableCell className="text-sm whitespace-nowrap">{pedido.pesoKg}</TableCell>
-                    <TableCell className="text-sm whitespace-nowrap">{pedido.data}</TableCell>
+        {loading ? (
+          <Spinner />
+        ) : error ? (
+          <div className="text-center py-12 text-destructive text-sm">{error}</div>
+        ) : (
+          <div className="bg-card rounded-lg border border-border overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs font-bold text-foreground">CÓDIGO</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">CLIENTE</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">DOCUMENTO</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">LOCALIZAÇÃO</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">STATUS</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">PESO(KG)</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">DATA</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {orders.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
+                        Nenhum pedido encontrado
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    orders.map((o: any) => {
+                      const code = o.orc_codorc || o.codigo || '';
+                      const st = statusMap[o.orc_status] || { label: o.orc_status || '—', color: 'bg-muted' };
+                      return (
+                        <TableRow key={code} className="hover:bg-accent/30">
+                          <TableCell className="text-sm">{code}</TableCell>
+                          <TableCell className="text-sm">
+                            <div>{o.orc_codter || ''} - {o.ter_nomter || o.cliente || ''}</div>
+                            {(o.ter_fanter || o.subtexto) && (
+                              <div className="text-xs text-muted-foreground">{o.ter_fanter || o.subtexto}</div>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">{formatDoc(o.ter_documento || o.documento || '')}</TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">
+                            {o.TEN_CIDLGR && o.TEN_UF_LGR ? `${o.TEN_CIDLGR} - ${o.TEN_UF_LGR}` : o.localizacao || '—'}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            <span className={`${st.color} text-white text-xs px-2 py-1 rounded`}>
+                              {st.label}
+                            </span>
+                            {o.orc_erp && (
+                              <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_erp}</div>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">{formatCurrency(o.orc_vlrorc || 0)}</TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">{o.orc_peso || 0}</TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">{formatDate(o.orc_dtaorc || '')}</TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Pagination */}
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>Mostrando de 1 até {mockPedidos.length} de {mockPedidos.length} registros.</span>
-          <div className="flex items-center gap-1">
-            <button className="px-2 py-1 border border-border rounded text-xs hover:bg-accent">&lt;&lt;</button>
-            <button className="px-2 py-1 border border-border rounded text-xs hover:bg-accent">&lt;</button>
-            <button className="px-2 py-1 border border-primary bg-primary text-primary-foreground rounded text-xs">1</button>
-            <button className="px-2 py-1 border border-border rounded text-xs hover:bg-accent">&gt;</button>
-            <button className="px-2 py-1 border border-border rounded text-xs hover:bg-accent">&gt;&gt;</button>
+        {totalRecords > rowsPerPage && (
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+              Anterior
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Página {page} de {Math.ceil(totalRecords / rowsPerPage)}
+            </span>
+            <Button variant="outline" size="sm" disabled={page >= Math.ceil(totalRecords / rowsPerPage)} onClick={() => setPage(p => p + 1)}>
+              Próxima
+            </Button>
           </div>
-        </div>
+        )}
       </main>
     </div>
   );

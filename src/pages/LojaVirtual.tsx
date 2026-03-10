@@ -457,7 +457,7 @@ const LojaVirtual = () => {
                   <span className="text-sm font-bold" style={{ color: B }}>${p.price.toFixed(2)}</span>
                   <span className="text-xs text-gray-400 line-through">${p.oldPrice.toFixed(2)}</span>
                 </div>
-                <p className="text-[10px] text-gray-400 mt-1">Sold: 30 Items</p>
+                <p className="text-[10px] text-gray-400 mt-1">Vendidos: 30 Itens</p>
                 <div className="flex gap-1.5 mt-2">
                   {['14', '23', '59', '56'].map((t, i) => (
                     <div key={i} className="w-8 h-8 rounded-md flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: B }}>{t}</div>

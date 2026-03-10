@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import {
@@ -60,6 +61,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 };
 
 const Pedidos = () => {
+  const navigate = useNavigate();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [orders, setOrders] = useState<OrderAPI[]>([]);
   const [dashboard, setDashboard] = useState<Dashboard>({ sent: 0, sent_peso: 0, approved: 0, approved_peso: 0, invoiced: 0, invoiced_peso: 0, canceled: 0, canceled_peso: 0 });
@@ -172,8 +174,8 @@ const Pedidos = () => {
                       const code = o.orc_codorc || o.codigo || '';
                       const st = statusMap[o.orc_status] || { label: o.orc_status || '—', color: 'bg-muted' };
                       return (
-                        <TableRow key={code} className="hover:bg-accent/30">
-                          <TableCell className="text-sm">{code}</TableCell>
+                        <TableRow key={code} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web || code}`)}>
+                          <TableCell className="text-sm font-semibold underline">{code}</TableCell>
                           <TableCell className="text-sm">
                             <div>{o.orc_codter || ''} - {o.ter_nomter || o.cliente || ''}</div>
                             {(o.ter_fanter || o.subtexto) && (

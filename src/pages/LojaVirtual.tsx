@@ -41,18 +41,18 @@ const dealProducts: Product[] = [
 ];
 
 const allProducts: Product[] = [
-  { id: 1, name: 'Bell pepper', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/1.png`, category: 'All' },
-  { id: 2, name: 'Potato', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/3.png`, category: 'Cooking', badge: '50%' },
-  { id: 3, name: 'Baby Chili', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/5.png`, category: 'Cooking' },
-  { id: 4, name: 'Broccoli', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/6.png`, category: 'Fruits & Vegetables', badge: '-25%' },
-  { id: 5, name: 'Peru', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/7.png`, category: 'Fruits & Vegetables' },
-  { id: 6, name: 'Avocado', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/9.png`, category: 'Fruits & Vegetables' },
-  { id: 7, name: 'Cucumber', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/11.png`, category: 'Fruits & Vegetables', badge: '-25%' },
-  { id: 8, name: 'Beetroot', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/12.png`, category: 'Cooking' },
-  { id: 9, name: 'Strawberry', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/13.png`, category: 'Fruits & Vegetables' },
-  { id: 10, name: 'Corn', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/15.png`, category: 'Cooking', badge: '50%' },
-  { id: 11, name: 'Cabbage', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/17.png`, category: 'Cooking', badge: '-25%' },
-  { id: 12, name: 'Ginger', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/18.png`, category: 'Cooking' },
+  { id: 1, name: 'Pimentão', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/1.png`, category: 'Todos' },
+  { id: 2, name: 'Batata', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/3.png`, category: 'Cozinha', badge: '50%' },
+  { id: 3, name: 'Pimenta', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/5.png`, category: 'Cozinha' },
+  { id: 4, name: 'Brócolis', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/6.png`, category: 'Frutas & Verduras', badge: '-25%' },
+  { id: 5, name: 'Peru', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/7.png`, category: 'Frutas & Verduras' },
+  { id: 6, name: 'Abacate', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/9.png`, category: 'Frutas & Verduras' },
+  { id: 7, name: 'Pepino', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/11.png`, category: 'Frutas & Verduras', badge: '-25%' },
+  { id: 8, name: 'Beterraba', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/12.png`, category: 'Cozinha' },
+  { id: 9, name: 'Morango', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/13.png`, category: 'Frutas & Verduras' },
+  { id: 10, name: 'Milho', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/15.png`, category: 'Cozinha', badge: '50%' },
+  { id: 11, name: 'Repolho', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/17.png`, category: 'Cozinha', badge: '-25%' },
+  { id: 12, name: 'Gengibre', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/18.png`, category: 'Cozinha' },
 ];
 
 const newProducts: Product[] = [

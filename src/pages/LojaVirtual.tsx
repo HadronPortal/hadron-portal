@@ -435,7 +435,7 @@ const LojaVirtual = () => {
               <div>
                 <h4 className="text-sm font-bold text-gray-800">{v.title}</h4>
                 <p className="text-xs text-gray-500 mt-0.5">{v.sub}</p>
-                <button className="text-xs font-semibold mt-2 flex items-center gap-1" style={{ color: B }}>View Offer <ArrowRight size={12} /></button>
+                <button className="text-xs font-semibold mt-2 flex items-center gap-1" style={{ color: B }}>Ver Oferta <ArrowRight size={12} /></button>
               </div>
             </div>
           ))}

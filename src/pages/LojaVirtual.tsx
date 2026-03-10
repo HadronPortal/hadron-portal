@@ -597,9 +597,9 @@ const LojaVirtual = () => {
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-3">Useful Links</h4>
+              <h4 className="text-sm font-bold text-white mb-3">Links Úteis</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                {['Home', 'Shop', 'About Us', 'Blog', 'Contact Us'].map(c => <li key={c} className="hover:text-white cursor-pointer">{c}</li>)}
+                {['Início', 'Loja', 'Sobre Nós', 'Blog', 'Contato'].map(c => <li key={c} className="hover:text-white cursor-pointer">{c}</li>)}
               </ul>
             </div>
             <div>

@@ -428,7 +428,7 @@ const LojaVirtual = () => {
 
       {/* ═══ Best Value ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-6">
-        <Carousel title="Best Value">
+        <Carousel title="Melhores Valores">
           {valueBanners.map((v, i) => (
             <div key={i} className="flex-shrink-0 w-[320px] rounded-xl p-5 flex items-center gap-4 cursor-pointer hover:shadow-md transition" style={{ backgroundColor: v.bg }}>
               <img src={v.img} alt="" className="w-24 h-24 object-contain" />

@@ -35,6 +35,7 @@ const tabs = [
 
 const Produtos = () => {
   const navigate = useNavigate();
+  const { representantes } = useRepresentantes();
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [search, setSearch] = useState('');

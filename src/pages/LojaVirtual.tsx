@@ -645,6 +645,7 @@ const LojaVirtual = () => {
         [style*="scrollbar"]::-webkit-scrollbar { display: none; }
       `}</style>
     </div>
+    </div>
   );
 };
 

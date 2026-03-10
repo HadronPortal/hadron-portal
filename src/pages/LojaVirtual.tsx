@@ -336,15 +336,26 @@ const LojaVirtual = () => {
                 <button className="px-5 text-white" style={{ backgroundColor: B }}><Search size={18} /></button>
               </div>
             </div>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span className="hidden lg:inline">Idioma</span>
-              <span className="hidden lg:inline">Real</span>
-              <button><RefreshCw size={20} /></button>
-              <button><Heart size={20} /></button>
+            <div className="flex items-center gap-5 text-gray-600">
+              <div className="hidden lg:flex items-center gap-2">
+                <Phone size={18} style={{ color: B }} />
+                <div className="text-xs leading-tight">
+                  <span className="text-gray-400">Entrega 24/7</span>
+                  <p className="font-bold text-gray-700">+55 11 9999-9999</p>
+                </div>
+              </div>
+              <button><Heart size={22} /></button>
               <button ref={cartIconRef} onClick={() => setCartOpen(true)} className="relative transition-transform">
-                <ShoppingCart size={20} />
-                {cartCount > 0 && <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center" style={{ backgroundColor: B }}>{cartCount}</span>}
+                <ShoppingCart size={22} />
+                {cartCount > 0 && <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center" style={{ backgroundColor: '#ff4f4f' }}>{cartCount}</span>}
               </button>
+              <div className="hidden md:flex items-center gap-2 cursor-pointer">
+                <User size={22} />
+                <div className="text-xs leading-tight">
+                  <span className="text-gray-400">Olá,</span>
+                  <p className="font-bold text-gray-700">Minha Conta</p>
+                </div>
+              </div>
             </div>
           </div>
           {/* Nav */}

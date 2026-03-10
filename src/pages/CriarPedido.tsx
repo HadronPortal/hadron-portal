@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/erp/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -131,11 +132,57 @@ const CriarPedido = () => {
       })
     : catalogo;
 
-  const handleEnviarPedido = () => {
-    const num = Math.floor(100000 + Math.random() * 900000).toString();
-    setPedidoNumero(num);
-    setStep(2);
-    toast({ title: 'Pedido enviado com sucesso!' });
+  const [enviando, setEnviando] = useState(false);
+
+  const handleEnviarPedido = async () => {
+    if (!selectedCliente || cart.length === 0) return;
+    setEnviando(true);
+    try {
+      const num = Math.floor(100000 + Math.random() * 900000).toString();
+
+      const { data: pedido, error: pedidoErr } = await supabase
+        .from('pedidos')
+        .insert({
+          numero: num,
+          cliente_codigo: selectedCliente.ter_codter,
+          cliente_nome: selectedCliente.ter_nomter,
+          cliente_documento: selectedCliente.ter_documento || null,
+          cliente_cidade: selectedCliente.TEN_CIDLGR || null,
+          cliente_uf: selectedCliente.TEN_UF_LGR || null,
+          subtotal,
+          desconto,
+          frete,
+          total,
+          status: 'EN',
+          representante,
+        })
+        .select('id')
+        .single();
+
+      if (pedidoErr) throw pedidoErr;
+
+      const itens = cart.map(item => ({
+        pedido_id: pedido.id,
+        produto_codigo: item.pro_codpro,
+        produto_nome: item.pro_despro,
+        produto_foto: item.pro_foto || null,
+        quantidade: item.quantidade,
+        preco_unitario: item.preco_unitario,
+        subtotal: item.quantidade * item.preco_unitario,
+      }));
+
+      const { error: itensErr } = await supabase.from('pedido_itens').insert(itens);
+      if (itensErr) throw itensErr;
+
+      setPedidoNumero(num);
+      setStep(2);
+      toast({ title: 'Pedido enviado com sucesso!' });
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Erro ao enviar pedido', description: 'Tente novamente.', variant: 'destructive' });
+    } finally {
+      setEnviando(false);
+    }
   };
 
   /* ─── render ─── */
@@ -419,8 +466,9 @@ const CriarPedido = () => {
                 <Button
                   className="w-full font-bold rounded-md py-3 text-base bg-erp-navy hover:bg-erp-navy/90 text-primary-foreground"
                   onClick={handleEnviarPedido}
+                  disabled={enviando}
                 >
-                  CONTINUAR
+                  {enviando ? 'Enviando...' : 'CONTINUAR'}
                 </Button>
                 <Button
                   variant="outline"

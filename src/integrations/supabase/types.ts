@@ -14,7 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pedido_itens: {
+        Row: {
+          id: string
+          pedido_id: string
+          preco_unitario: number
+          produto_codigo: number
+          produto_foto: string | null
+          produto_nome: string
+          quantidade: number
+          subtotal: number
+        }
+        Insert: {
+          id?: string
+          pedido_id: string
+          preco_unitario?: number
+          produto_codigo: number
+          produto_foto?: string | null
+          produto_nome: string
+          quantidade?: number
+          subtotal?: number
+        }
+        Update: {
+          id?: string
+          pedido_id?: string
+          preco_unitario?: number
+          produto_codigo?: number
+          produto_foto?: string | null
+          produto_nome?: string
+          quantidade?: number
+          subtotal?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedido_itens_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pedidos: {
+        Row: {
+          cliente_cidade: string | null
+          cliente_codigo: number
+          cliente_documento: string | null
+          cliente_nome: string
+          cliente_uf: string | null
+          created_at: string
+          desconto: number
+          frete: number
+          id: string
+          numero: string
+          representante: string | null
+          status: string
+          subtotal: number
+          total: number
+        }
+        Insert: {
+          cliente_cidade?: string | null
+          cliente_codigo: number
+          cliente_documento?: string | null
+          cliente_nome: string
+          cliente_uf?: string | null
+          created_at?: string
+          desconto?: number
+          frete?: number
+          id?: string
+          numero: string
+          representante?: string | null
+          status?: string
+          subtotal?: number
+          total?: number
+        }
+        Update: {
+          cliente_cidade?: string | null
+          cliente_codigo?: number
+          cliente_documento?: string | null
+          cliente_nome?: string
+          cliente_uf?: string | null
+          created_at?: string
+          desconto?: number
+          frete?: number
+          id?: string
+          numero?: string
+          representante?: string | null
+          status?: string
+          subtotal?: number
+          total?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

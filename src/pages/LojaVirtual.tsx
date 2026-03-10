@@ -611,7 +611,7 @@ const LojaVirtual = () => {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-6 text-center text-xs text-gray-500">
-            ©2026 Fastkart All rights reserved
+            ©2026 Fastkart Todos os direitos reservados
           </div>
         </div>
       </footer>

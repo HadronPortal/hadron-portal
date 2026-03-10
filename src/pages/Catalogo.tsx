@@ -99,7 +99,10 @@ const Catalogo = () => {
   };
 
   const filteredItems = searchQuery.trim()
-    ? items.filter(i => (i.pro_despro || '').toLowerCase().includes(searchQuery.toLowerCase()))
+    ? items.filter(i => {
+        const q = searchQuery.toLowerCase();
+        return (i.pro_despro || '').toLowerCase().includes(q) || String(i.pro_codpro).includes(q);
+      })
     : items;
 
   const formatSaldo = (saldo: string) => {

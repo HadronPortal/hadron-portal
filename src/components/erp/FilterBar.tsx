@@ -8,11 +8,45 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
-const FilterBar = () => {
+export interface Representante {
+  rep_codrep: number;
+  rep_nomrep: string;
+}
+
+interface FilterBarProps {
+  representantes?: Representante[];
+  onRepChange?: (repCodes: number[]) => void;
+  onSearch?: (query: string) => void;
+  onFilter?: (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => void;
+  onClear?: () => void;
+}
+
+const FilterBar = ({ representantes = [], onRepChange, onSearch, onFilter, onClear }: FilterBarProps) => {
   const [startDate, setStartDate] = useState<Date>(new Date(2026, 0, 8));
   const [endDate, setEndDate] = useState<Date>(new Date(2026, 2, 9));
+  const [selectedRep, setSelectedRep] = useState<string>('all');
+  const [search, setSearch] = useState('');
 
-  const formatDate = (date: Date) => format(date, 'dd/MM/yyyy');
+  const formatDateStr = (date: Date) => format(date, 'dd/MM/yyyy');
+
+  const handleRepChange = (value: string) => {
+    setSelectedRep(value);
+    const repCodes = value === 'all' ? [] : [Number(value)];
+    onRepChange?.(repCodes);
+  };
+
+  const handleFilter = () => {
+    const repCodes = selectedRep === 'all' ? [] : [Number(selectedRep)];
+    onFilter?.({ startDate, endDate, repCodes, search });
+  };
+
+  const handleClear = () => {
+    setSelectedRep('all');
+    setSearch('');
+    setStartDate(new Date(2026, 0, 8));
+    setEndDate(new Date(2026, 2, 9));
+    onClear?.();
+  };
 
   return (
     <div className="bg-transparent border-b border-border px-6 py-2.5">
@@ -24,7 +58,7 @@ const FilterBar = () => {
               variant="outline"
               className="w-56 h-9 text-sm justify-start font-normal"
             >
-              {formatDate(startDate)} | {formatDate(endDate)}
+              {formatDateStr(startDate)} | {formatDateStr(endDate)}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -54,30 +88,38 @@ const FilterBar = () => {
         </Popover>
 
         {/* Representantes */}
-        <Select>
-          <SelectTrigger className="w-48 h-9 text-sm">
+        <Select value={selectedRep} onValueChange={handleRepChange}>
+          <SelectTrigger className="w-56 h-9 text-sm">
             <SelectValue placeholder="REPRESENTANTES" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="rep1">Representante 1</SelectItem>
-            <SelectItem value="rep2">Representante 2</SelectItem>
+            <SelectItem value="all">Todos os Representantes</SelectItem>
+            {representantes.map((rep) => (
+              <SelectItem key={rep.rep_codrep} value={String(rep.rep_codrep)}>
+                {rep.rep_codrep} - {rep.rep_nomrep}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
         {/* Search */}
         <Input
           type="text"
-          placeholder="Nome Cliente,doc,local"
+          placeholder="Nome Cliente, doc, local"
           className="w-56 h-9 text-sm"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); onSearch?.(e.target.value); }}
         />
 
         <div className="flex items-center gap-3 ml-auto">
-          <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            onClick={handleClear}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
             Limpar
           </button>
 
-          <Button size="sm" className="h-8 px-5 text-xs font-semibold">
+          <Button size="sm" className="h-8 px-5 text-xs font-semibold" onClick={handleFilter}>
             Filtrar
           </Button>
         </div>

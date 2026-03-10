@@ -358,7 +358,7 @@ const LojaVirtual = () => {
               <Phone size={18} style={{ color: B }} />
               <span className="font-bold text-gray-700">(123) 456 7890</span>
               <button className="ml-4 flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-white rounded-lg" style={{ backgroundColor: B }}>
-                <Flame size={16} /> Hot Deals
+                <Flame size={16} /> Ofertas Quentes
               </button>
             </div>
           </div>

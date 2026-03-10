@@ -144,7 +144,7 @@ const Catalogo = () => {
           <div className="relative">
             {isFetching && (
               <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10 rounded-lg">
-                <Loader2 className="animate-spin text-muted-foreground" size={32} />
+                <div className="rounded-full border-[3px] border-muted border-t-primary animate-spin w-8 h-8" />
               </div>
             )}
           <div className={`bg-card rounded-lg border border-border overflow-hidden transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>

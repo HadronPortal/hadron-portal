@@ -75,29 +75,33 @@ const Pedidos = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const fetchOrders = async (repCodes: number[] = selectedRep) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      let url = `https://${projectId}.supabase.co/functions/v1/fetch-orders?page=${page}&limit=${rowsPerPage}`;
+      if (codter) url += `&codter=${codter}`;
+      if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Falha ao buscar pedidos');
+      const data = await res.json();
+      setOrders(data.orders || []);
+      setDashboard(data.dashboard || dashboard);
+      setTotalRecords(data.total_records || 0);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        let url = `https://${projectId}.supabase.co/functions/v1/fetch-orders?page=${page}&limit=${rowsPerPage}`;
-        if (codter) url += `&codter=${codter}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Falha ao buscar pedidos');
-        const data = await res.json();
-        setOrders(data.orders || []);
-        setDashboard(data.dashboard || dashboard);
-        setTotalRecords(data.total_records || 0);
-      } catch (err) {
-        console.error(err);
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    fetchOrders();
   }, [page, rowsPerPage, codter]);
 
   const clearClientFilter = () => {
@@ -105,6 +109,34 @@ const Pedidos = () => {
     searchParams.delete('nome');
     setSearchParams(searchParams);
   };
+
+  const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
+  const handleSearch = (query: string) => setSearchQuery(query);
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+    setSelectedRep(filters.repCodes);
+    setSearchQuery(filters.search);
+    setPage(1);
+    fetchOrders(filters.repCodes);
+  };
+  const handleClear = () => {
+    setSelectedRep([]);
+    setSearchQuery('');
+    setPage(1);
+    fetchOrders([]);
+  };
+
+  // Apply search filter on loaded orders
+  const filteredOrders = searchQuery.trim()
+    ? orders.filter(o => {
+        const q = searchQuery.toLowerCase();
+        return (
+          (o.ter_nomter || '').toLowerCase().includes(q) ||
+          (o.ter_fanter || '').toLowerCase().includes(q) ||
+          (o.ter_documento || '').includes(q) ||
+          (o.TEN_CIDLGR || '').toLowerCase().includes(q)
+        );
+      })
+    : orders;
 
   const kpiCards = [
     { label: 'Enviados', valor: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, color: 'bg-teal-600' },
@@ -116,7 +148,7 @@ const Pedidos = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar representantes={representantes} />
+      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       {clienteNome && (
         <div className="px-6 pt-2 text-sm text-muted-foreground">
@@ -185,14 +217,14 @@ const Pedidos = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.length === 0 ? (
+                  {filteredOrders.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
                         Nenhum pedido encontrado
                       </TableCell>
                     </TableRow>
                   ) : (
-                    orders.map((o: any) => {
+                    filteredOrders.map((o: any) => {
                       const code = o.orc_codorc || o.codigo || '';
                       const st = statusMap[o.orc_status] || { label: o.orc_status || '—', color: 'bg-muted' };
                       return (

@@ -42,6 +42,8 @@ const Cobrancas = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const clearClientFilter = () => {
     searchParams.delete('codter');
@@ -49,28 +51,56 @@ const Cobrancas = () => {
     setSearchParams(searchParams);
   };
 
+  const fetchCharges = async (repCodes: number[] = selectedRep) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      let url = `https://${projectId}.supabase.co/functions/v1/fetch-charges?page=${page}&limit=${rowsPerPage}`;
+      if (codter) url += `&codter=${codter}`;
+      if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Falha ao buscar cobranças');
+      const data = await res.json();
+      setCharges(data.charges || []);
+      setTotalRecords(data.total_records || 0);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        let url = `https://${projectId}.supabase.co/functions/v1/fetch-charges?page=${page}&limit=${rowsPerPage}`;
-        if (codter) url += `&codter=${codter}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Falha ao buscar cobranças');
-        const data = await res.json();
-        setCharges(data.charges || []);
-        setTotalRecords(data.total_records || 0);
-      } catch (err) {
-        console.error(err);
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    fetchCharges();
   }, [page, rowsPerPage, codter]);
+
+  const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
+  const handleSearch = (query: string) => setSearchQuery(query);
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+    setSelectedRep(filters.repCodes);
+    setSearchQuery(filters.search);
+    setPage(1);
+    fetchCharges(filters.repCodes);
+  };
+  const handleClear = () => {
+    setSelectedRep([]);
+    setSearchQuery('');
+    setPage(1);
+    fetchCharges([]);
+  };
+
+  const filteredCharges = searchQuery.trim()
+    ? charges.filter(c => {
+        const q = searchQuery.toLowerCase();
+        return (
+          (c.CLIENTE || '').toLowerCase().includes(q) ||
+          (c.REPRESENTANTE || '').toLowerCase().includes(q) ||
+          (c.rec_id_rec || '').includes(q)
+        );
+      })
+    : charges;
 
   const isOverdue = (vnc: string) => {
     if (!vnc) return false;
@@ -80,7 +110,7 @@ const Cobrancas = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar representantes={representantes} />
+      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       {clienteNome && (
         <div className="px-6 pt-2 text-sm text-muted-foreground">
@@ -135,14 +165,14 @@ const Cobrancas = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {charges.length === 0 ? (
+                  {filteredCharges.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center text-muted-foreground py-6">
                         Nenhuma cobrança encontrada
                       </TableCell>
                     </TableRow>
                   ) : (
-                    charges.map((c) => (
+                    filteredCharges.map((c) => (
                       <TableRow key={c.rec_id_rec} className="hover:bg-accent/30">
                         <TableCell className="text-sm font-mono whitespace-nowrap">{c.rec_id_rec}</TableCell>
                         <TableCell className="text-sm">

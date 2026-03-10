@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useTransition } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -30,50 +30,49 @@ const Catalogo = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const totalPages = Math.ceil(totalRecords / limit);
 
-  useEffect(() => {
-    const cacheKey = `${page}-${limit}`;
-    const cached = pageCache.get(cacheKey);
+  const fetchCatalogo = async (p: number, l: number, repCodes: number[] = selectedRep, signal?: AbortSignal) => {
+    try {
+      setIsFetching(true);
+      setError(null);
 
-    if (cached) {
-      setItems(cached.catalogs);
-      setTotalRecords(cached.total_records);
-      setInitialLoading(false);
-      return;
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      let url = `https://${projectId}.supabase.co/functions/v1/fetch-catalogo?page=${p}&limit=${l}`;
+      if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
+      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, signal });
+
+      if (!res.ok) throw new Error(`Erro ${res.status}`);
+      const data = await res.json();
+
+      const catalogs = (data?.catalogs || []).sort((a: CatalogoItem, b: CatalogoItem) => a.pro_codpro - b.pro_codpro);
+      return { catalogs, total_records: data?.total_records || 0 };
+    } catch (err: any) {
+      if (err.name === 'AbortError') return null;
+      throw err;
     }
+  };
 
+  useEffect(() => {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
 
-    const fetchCatalogo = async () => {
+    const load = async () => {
       try {
-        setIsFetching(true);
-        setError(null);
-
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const res = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/fetch-catalogo?page=${page}&limit=${limit}`,
-          { headers: { 'Content-Type': 'application/json' }, signal: controller.signal }
-        );
-
-        if (!res.ok) throw new Error(`Erro ${res.status}`);
-        const data = await res.json();
-
-        const catalogs = (data?.catalogs || []).sort((a: CatalogoItem, b: CatalogoItem) => a.pro_codpro - b.pro_codpro);
-        const result = { catalogs, total_records: data?.total_records || 0 };
-        pageCache.set(cacheKey, result);
-
-        if (!controller.signal.aborted) {
+        const result = await fetchCatalogo(page, limit, selectedRep, controller.signal);
+        if (result && !controller.signal.aborted) {
           setItems(result.catalogs);
           setTotalRecords(result.total_records);
         }
       } catch (err: any) {
-        if (err.name === 'AbortError') return;
-        console.error('Erro ao buscar catálogo:', err);
-        setError(err.message || 'Erro ao carregar catálogo');
+        if (!controller.signal.aborted) {
+          console.error('Erro ao buscar catálogo:', err);
+          setError(err.message || 'Erro ao carregar catálogo');
+        }
       } finally {
         if (!controller.signal.aborted) {
           setInitialLoading(false);
@@ -82,26 +81,26 @@ const Catalogo = () => {
       }
     };
 
-    // Prefetch next page
-    const prefetch = (p: number) => {
-      const key = `${p}-${limit}`;
-      if (pageCache.has(key) || p < 1) return;
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      fetch(`https://${projectId}.supabase.co/functions/v1/fetch-catalogo?page=${p}&limit=${limit}`, {
-        headers: { 'Content-Type': 'application/json' },
-      }).then(r => r.json()).then(data => {
-        pageCache.set(key, { catalogs: data?.catalogs || [], total_records: data?.total_records || 0 });
-      }).catch(() => {});
-    };
-
-    fetchCatalogo().then(() => {
-      // Prefetch adjacent pages
-      prefetch(page + 1);
-      if (page > 1) prefetch(page - 1);
-    });
-
+    load();
     return () => controller.abort();
-  }, [page, limit]);
+  }, [page, limit, selectedRep]);
+
+  const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
+  const handleSearch = (query: string) => setSearchQuery(query);
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+    setSelectedRep(filters.repCodes);
+    setSearchQuery(filters.search);
+    setPage(1);
+  };
+  const handleClear = () => {
+    setSelectedRep([]);
+    setSearchQuery('');
+    setPage(1);
+  };
+
+  const filteredItems = searchQuery.trim()
+    ? items.filter(i => (i.pro_despro || '').toLowerCase().includes(searchQuery.toLowerCase()))
+    : items;
 
   const formatSaldo = (saldo: string) => {
     const num = parseFloat(saldo);
@@ -115,7 +114,7 @@ const Catalogo = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar representantes={representantes} />
+      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Catálogo</h1>
@@ -125,7 +124,7 @@ const Catalogo = () => {
             <span className="text-xs text-muted-foreground">Itens por página:</span>
             <select
               value={limit}
-              onChange={(e) => { pageCache.clear(); setLimit(Number(e.target.value)); setPage(1); }}
+              onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
               className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
             >
               <option value={10}>10</option>
@@ -163,7 +162,7 @@ const Catalogo = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {items.map((item) => (
+                  {filteredItems.map((item) => (
                     <TableRow key={item.pro_codpro} className="hover:bg-accent/30">
                       <TableCell className="text-sm">{item.pro_codpro}</TableCell>
                       <TableCell>

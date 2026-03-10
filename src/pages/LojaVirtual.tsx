@@ -35,9 +35,9 @@ const valueBanners = [
 ];
 
 const dealProducts: Product[] = [
-  { id: 301, name: 'Eggplant', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/2.png`, category: 'Cooking', badge: 'Hot Deals' },
-  { id: 302, name: 'Onion', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/3.png`, category: 'Cooking', badge: 'Hot Deals' },
-  { id: 303, name: 'Bell pepper', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/1.png`, category: 'Cooking', badge: 'Hot Deals' },
+  { id: 301, name: 'Berinjela', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/2.png`, category: 'Cozinha', badge: 'Oferta' },
+  { id: 302, name: 'Cebola', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/3.png`, category: 'Cozinha', badge: 'Oferta' },
+  { id: 303, name: 'Pimentão', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/1.png`, category: 'Cozinha', badge: 'Oferta' },
 ];
 
 const allProducts: Product[] = [

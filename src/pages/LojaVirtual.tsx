@@ -564,10 +564,10 @@ const LojaVirtual = () => {
       <section className="border-t border-b bg-white py-8 mt-6">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { icon: Truck, title: 'Free Shipping', desc: 'Free Shipping world wide' },
-            { icon: Clock, title: '24 x 7 Service', desc: 'Online Service For New Customer' },
-            { icon: RotateCcw, title: 'Festival Offer', desc: 'New Online Special Festival' },
-            { icon: Headphones, title: 'Online Payment', desc: 'Secure Payment' },
+            { icon: Truck, title: 'Frete Grátis', desc: 'Frete grátis para todo o Brasil' },
+            { icon: Clock, title: 'Atendimento 24h', desc: 'Suporte online para novos clientes' },
+            { icon: RotateCcw, title: 'Ofertas Especiais', desc: 'Novas promoções toda semana' },
+            { icon: Headphones, title: 'Pagamento Online', desc: 'Pagamento seguro' },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: BL }}>

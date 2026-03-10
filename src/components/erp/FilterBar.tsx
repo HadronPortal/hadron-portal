@@ -15,6 +15,7 @@ export interface Representante {
 
 interface FilterBarProps {
   representantes?: Representante[];
+  clientCountByRep?: Record<number, number>;
   onRepChange?: (repCodes: number[]) => void;
   onSearch?: (query: string) => void;
   onFilter?: (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => void;

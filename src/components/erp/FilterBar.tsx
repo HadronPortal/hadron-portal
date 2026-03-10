@@ -15,13 +15,14 @@ export interface Representante {
 
 interface FilterBarProps {
   representantes?: Representante[];
+  clientCountByRep?: Record<number, number>;
   onRepChange?: (repCodes: number[]) => void;
   onSearch?: (query: string) => void;
   onFilter?: (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => void;
   onClear?: () => void;
 }
 
-const FilterBar = ({ representantes = [], onRepChange, onSearch, onFilter, onClear }: FilterBarProps) => {
+const FilterBar = ({ representantes = [], clientCountByRep = {}, onRepChange, onSearch, onFilter, onClear }: FilterBarProps) => {
   const [startDate, setStartDate] = useState<Date>(new Date(2026, 0, 8));
   const [endDate, setEndDate] = useState<Date>(new Date(2026, 2, 9));
   const [selectedRep, setSelectedRep] = useState<string>('all');
@@ -96,7 +97,7 @@ const FilterBar = ({ representantes = [], onRepChange, onSearch, onFilter, onCle
             <SelectItem value="all">Todos os Representantes</SelectItem>
             {representantes.map((rep) => (
               <SelectItem key={rep.rep_codrep} value={String(rep.rep_codrep)}>
-                {rep.rep_codrep} - {rep.rep_nomrep}
+                {rep.rep_codrep}-{rep.rep_nomrep} ({clientCountByRep[rep.rep_codrep] ?? 0})
               </SelectItem>
             ))}
           </SelectContent>

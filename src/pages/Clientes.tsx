@@ -126,10 +126,15 @@ const Clientes = () => {
 
   const visibleCount = COLUMNS.filter(col => show(col.key)).length;
 
+  const clientCountByRep = clients.reduce<Record<number, number>>((acc, c) => {
+    acc[c.COD_REP] = (acc[c.COD_REP] || 0) + 1;
+    return acc;
+  }, {});
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} />
+      <FilterBar representantes={representantes} clientCountByRep={clientCountByRep} onRepChange={handleRepChange} />
 
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Clientes</h1>

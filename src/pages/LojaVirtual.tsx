@@ -373,12 +373,12 @@ const LojaVirtual = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-7 rounded-2xl p-8 md:p-12 flex items-center min-h-[380px] relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #f0faf6, #e0f2eb)' }}>
             <div className="relative z-10 max-w-md">
-              <span className="text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGANIC</span>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Fresh</h1>
-              <h2 className="text-2xl text-gray-400 mt-1">Fruit & Vegetables</h2>
-              <p className="text-sm text-gray-400 mt-3">Free shipping on all your order. we deliver you enjoy</p>
+              <span className="text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGÂNICO</span>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Frescos</h1>
+              <h2 className="text-2xl text-gray-400 mt-1">Frutas & Verduras</h2>
+              <p className="text-sm text-gray-400 mt-3">Frete grátis em todos os pedidos. Nós entregamos, você aproveita</p>
               <button className="mt-6 px-7 py-3 rounded-lg text-white text-sm font-semibold flex items-center gap-2 hover:shadow-lg transition" style={{ backgroundColor: B }}>
-                Shop Now <ArrowRight size={16} />
+                Comprar Agora <ArrowRight size={16} />
               </button>
             </div>
             <img src={`${IMG}/home/1.png`} alt="" className="absolute right-0 bottom-0 h-full max-h-[350px] object-contain hidden md:block" />

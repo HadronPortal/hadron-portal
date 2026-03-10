@@ -340,7 +340,7 @@ const LojaVirtual = () => {
               <span className="hidden lg:inline">Dollar</span>
               <button><RefreshCw size={20} /></button>
               <button><Heart size={20} /></button>
-              <button onClick={() => setCartOpen(true)} className="relative">
+              <button ref={cartIconRef} onClick={() => setCartOpen(true)} className="relative transition-transform">
                 <ShoppingCart size={20} />
                 {cartCount > 0 && <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center" style={{ backgroundColor: B }}>{cartCount}</span>}
               </button>

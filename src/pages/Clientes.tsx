@@ -141,9 +141,13 @@ const Clientes = () => {
     : repFiltered;
 
   const dateFiltered = searchFiltered.filter(c => {
-    if (!c.ULT_VENDA) return true;
-    const d = new Date(c.ULT_VENDA);
-    return d >= dateRange.start && d <= dateRange.end;
+    const d = c.ULT_VENDA ? new Date(c.ULT_VENDA) : c.ter_dta_cad ? new Date(c.ter_dta_cad) : null;
+    if (!d) return false;
+    const start = new Date(dateRange.start);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(dateRange.end);
+    end.setHours(23, 59, 59, 999);
+    return d >= start && d <= end;
   });
 
   const filtered = activeTab === 'todos'

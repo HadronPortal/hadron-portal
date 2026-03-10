@@ -366,7 +366,7 @@ const LojaVirtual = () => {
             {['Início', 'Loja', 'Produtos', 'Mega Menu', 'Blog', 'Páginas', 'Vendedor'].map(item => (
               <button key={item} className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium">{item}</button>
             ))}
-            <button className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-white rounded-lg" style={{ backgroundColor: B }}>
+            <button className="ml-auto flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-white rounded-lg" style={{ backgroundColor: B }}>
               <Flame size={16} /> Ofertas Quentes
             </button>
           </div>

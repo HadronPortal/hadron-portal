@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -6,6 +6,7 @@ import KpiCards from '@/components/erp/KpiCards';
 import OrdersTable from '@/components/erp/OrdersTable';
 import ClientsTable from '@/components/erp/ClientsTable';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useApiFetch } from '@/hooks/use-api-fetch';
 
 interface DashboardAPIResponse {
   cards: {
@@ -43,75 +44,63 @@ interface DashboardAPIResponse {
   evolucao_vendas: unknown[];
 }
 
+function mapStatus(status: string): 'aprovado' | 'confirmado' | 'pendente' | 'cancelado' {
+  const s = (status || '').toLowerCase();
+  if (s.includes('aprov')) return 'aprovado';
+  if (s.includes('confirm') || s.includes('fatur')) return 'confirmado';
+  if (s.includes('cancel')) return 'cancelado';
+  return 'pendente';
+}
+
 const Index = () => {
-  const [data, setData] = useState<DashboardAPIResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { representantes } = useRepresentantes();
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchData = async (repCodes: number[] = []) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      let url = `https://${projectId}.supabase.co/functions/v1/fetch-dashboard`;
-      if (repCodes.length > 0) url += `?rep=${repCodes.join(',')}`;
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 30000);
-      const res = await fetch(url, { signal: controller.signal });
-      clearTimeout(timeout);
-      if (!res.ok) throw new Error('Falha ao buscar dashboard');
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      setData(json);
-    } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        setError('Tempo limite excedido. Tente novamente.');
-      } else {
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data, isLoading: loading, error } = useApiFetch<DashboardAPIResponse>({
+    queryKey: ['dashboard', repParam || 'all'],
+    endpoint: 'fetch-dashboard',
+    params: repParam ? { rep: repParam } : {},
+    staleTime: 2 * 60 * 1000,
+  });
 
-  const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
-  const handleSearch = (query: string) => setSearchQuery(query);
-  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+  const handleRepChange = useCallback((repCodes: number[]) => setSelectedRep(repCodes), []);
+  const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
+  const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
-    fetchData(filters.repCodes);
-  };
-  const handleClear = () => {
+  }, []);
+  const handleClear = useCallback(() => {
     setSelectedRep([]);
     setSearchQuery('');
-    fetchData([]);
-  };
+  }, []);
 
-  const orders = (data?.ultimos_pedidos || []).map((p) => ({
-    id: String(p.orc_codorc),
-    codigo: String(p.orc_codorc),
-    cliente_nome: p.orc_nomcli || '',
-    cliente_cnpj: p.orc_cgccli || '',
-    localizacao: [p.orc_cidcli, p.orc_estcli].filter(Boolean).join(' - '),
-    status: mapStatus(p.orc_status),
-    valor: p.orc_vlrtot || 0,
-    data_pedido: p.orc_dta || '',
-    erp_code: p.orc_coderp ? `ERP:${p.orc_coderp}` : undefined,
-  }));
+  const orders = useMemo(() =>
+    (data?.ultimos_pedidos || []).map((p) => ({
+      id: String(p.orc_codorc),
+      codigo: String(p.orc_codorc),
+      cliente_nome: p.orc_nomcli || '',
+      cliente_cnpj: p.orc_cgccli || '',
+      localizacao: [p.orc_cidcli, p.orc_estcli].filter(Boolean).join(' - '),
+      status: mapStatus(p.orc_status),
+      valor: p.orc_vlrtot || 0,
+      data_pedido: p.orc_dta || '',
+      erp_code: p.orc_coderp ? `ERP:${p.orc_coderp}` : undefined,
+    })),
+    [data?.ultimos_pedidos]
+  );
 
-  const clients = (data?.ultimos_clientes || []).map((c) => ({
-    id: String(c.cli_codcli),
-    nome: c.cli_nomcli || '',
-    localizacao: [c.cli_cidcli, c.cli_estcli].filter(Boolean).join(' - '),
-    data_cadastro: c.cli_dta_cad || '',
-  }));
+  const clients = useMemo(() =>
+    (data?.ultimos_clientes || []).map((c) => ({
+      id: String(c.cli_codcli),
+      nome: c.cli_nomcli || '',
+      localizacao: [c.cli_cidcli, c.cli_estcli].filter(Boolean).join(' - '),
+      data_cadastro: c.cli_dta_cad || '',
+    })),
+    [data?.ultimos_clientes]
+  );
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -131,7 +120,7 @@ const Index = () => {
             <Skeleton className="h-64 rounded-lg" />
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-destructive text-sm">{error}</div>
+          <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
         ) : data ? (
           <>
             <KpiCards
@@ -152,13 +141,5 @@ const Index = () => {
     </div>
   );
 };
-
-function mapStatus(status: string): 'aprovado' | 'confirmado' | 'pendente' | 'cancelado' {
-  const s = (status || '').toLowerCase();
-  if (s.includes('aprov')) return 'aprovado';
-  if (s.includes('confirm') || s.includes('fatur')) return 'confirmado';
-  if (s.includes('cancel')) return 'cancelado';
-  return 'pendente';
-}
 
 export default Index;

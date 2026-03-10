@@ -58,16 +58,44 @@ serve(async (req) => {
       });
     }
 
-    const { token, cookies } = await getAuth();
+    // Try different param names
+    const bodies = [
+      { id: parseInt(orderId), orc_codrep: [3] },
+      { order_id: parseInt(orderId), orc_codrep: [3] },
+      { orc_id: parseInt(orderId), orc_codrep: [3] },
+    ];
 
-    const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiOrderDetails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Cookie': cookies,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ orc_codorc: parseInt(orderId), orc_codrep: [3] }),
+    let responseText = '';
+    let ok = false;
+
+    for (const body of bodies) {
+      console.log('Trying body:', JSON.stringify(body));
+      const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiOrderDetails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Cookie': cookies,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      responseText = await res.text();
+      console.log('Response:', responseText.substring(0, 300));
+
+      if (res.ok && !responseText.includes('"error"')) {
+        ok = true;
+        break;
+      }
+      // Check if we got data even with "error" status
+      try {
+        const parsed = JSON.parse(responseText);
+        if (parsed.order || parsed.items || parsed.products) {
+          ok = true;
+          break;
+        }
+      } catch {}
+    }
     });
 
     const responseText = await res.text();

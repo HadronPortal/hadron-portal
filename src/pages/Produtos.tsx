@@ -1,55 +1,73 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
-import { productImages } from '@/lib/product-images';
+import { Button } from '@/components/ui/button';
+import Spinner from '@/components/ui/spinner';
 
-interface ProdutoItem {
-  cod: string;
-  descricao: string;
-  qtde: string;
-  peso: string;
-  valor: string;
-  tipo: 'todos' | 'amostra' | 'bonificados';
-  img: string;
+interface ProductAPI {
+  codpro: number;
+  produto: string;
+  foto: string;
+  qtde: number;
+  peso_un: number;
+  valor: number;
+  tipo_op_banco?: string;
+  gtin?: string;
+  [key: string]: unknown;
 }
 
-const mockProdutos: ProdutoItem[] = [
-  { cod: '1002', descricao: 'PIMENTA VERMELHA', qtde: '10.000', peso: '10kg', valor: 'R$1.225,67', tipo: 'todos', img: 'pimenta' },
-  { cod: '1003', descricao: 'BORRACHA ALTO IMPACTO', qtde: '5.000', peso: '25kg', valor: 'R$3.450,00', tipo: 'todos', img: 'borracha' },
-  { cod: '1004', descricao: 'COLEIRA DE COURO FORRADA', qtde: '2.500', peso: '3kg', valor: 'R$882,50', tipo: 'todos', img: 'coleira' },
-  { cod: '1005', descricao: 'GASOLINA PREMIUM', qtde: '50.000', peso: '1.000kg', valor: 'R$45.330,00', tipo: 'todos', img: 'gasolina' },
-  { cod: '1006', descricao: 'DESODORANTE IMPORTADO', qtde: '1.200', peso: '8kg', valor: 'R$735,90', tipo: 'amostra', img: 'desodorante' },
-  { cod: '1007', descricao: 'TUBO DE ENSAIO 50ML', qtde: '3.000', peso: '5kg', valor: 'R$1.234,56', tipo: 'todos', img: 'tubo-ensaio' },
-  { cod: '1008', descricao: 'VALVULA IMPORTADA HD', qtde: '800', peso: '15kg', valor: 'R$6.580,00', tipo: 'bonificados', img: 'valvula' },
-  { cod: '1009', descricao: 'BANANA NANICA', qtde: '20.000', peso: '500kg', valor: 'R$12.000,00', tipo: 'todos', img: 'banana' },
-  { cod: '1010', descricao: 'CAFE TORRADO ESPECIAL', qtde: '7.500', peso: '75kg', valor: 'R$8.925,00', tipo: 'amostra', img: 'cafe' },
-  { cod: '1011', descricao: 'OLEO ESSENCIAL LAVANDA', qtde: '600', peso: '2kg', valor: 'R$2.340,00', tipo: 'todos', img: 'oleo' },
-  { cod: '1012', descricao: 'PARAFUSO INOX M8', qtde: '100.000', peso: '200kg', valor: 'R$5.600,00', tipo: 'bonificados', img: 'parafuso' },
-  { cod: '1013', descricao: 'RESINA EPOXI TRANSPARENTE', qtde: '1.500', peso: '30kg', valor: 'R$4.125,00', tipo: 'todos', img: 'resina' },
-  { cod: '1014', descricao: 'FITA ADESIVA INDUSTRIAL', qtde: '8.000', peso: '12kg', valor: 'R$960,00', tipo: 'amostra', img: 'fita' },
-  { cod: '1015', descricao: 'CIMENTO PORTLAND CP-V', qtde: '30.000', peso: '1.500kg', valor: 'R$22.500,00', tipo: 'todos', img: 'cimento' },
-  { cod: '1016', descricao: 'LUVA LATEX PROCEDIMENTO', qtde: '50.000', peso: '40kg', valor: 'R$3.750,00', tipo: 'bonificados', img: 'luva' },
-];
+const formatCurrency = (v: number) =>
+  'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?url=`;
 
 const tabs = [
   { key: 'todos', label: 'Todos' },
-  { key: 'amostra', label: 'Amostra Grátis' },
-  { key: 'bonificados', label: 'Bonificados' },
+  { key: 'AG', label: 'Amostra Grátis' },
+  { key: 'BN', label: 'Bonificados' },
 ] as const;
 
 const Produtos = () => {
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [search, setSearch] = useState('');
+  const [products, setProducts] = useState<ProductAPI[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const res = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/fetch-products?page=${page}&limit=${rowsPerPage}`
+        );
+        if (!res.ok) throw new Error('Falha ao buscar produtos');
+        const data = await res.json();
+        setProducts(data.products || []);
+        setTotalRecords(data.total_records || 0);
+      } catch (err) {
+        console.error(err);
+        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [page, rowsPerPage]);
 
   const filtered = (activeTab === 'todos'
-    ? mockProdutos
-    : mockProdutos.filter((p) => p.tipo === activeTab)
-  ).filter((p) => p.descricao.toLowerCase().includes(search.toLowerCase()));
+    ? products
+    : products.filter((p) => p.tipo_op_banco === activeTab)
+  ).filter((p) => (p.produto || '').toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -76,10 +94,10 @@ const Produtos = () => {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex flex-col">
+          <div className="flex items-center gap-3">
             <select
               value={rowsPerPage}
-              onChange={(e) => setRowsPerPage(Number(e.target.value))}
+              onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
               className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
             >
               <option value={10}>10</option>
@@ -87,7 +105,7 @@ const Produtos = () => {
               <option value={50}>50</option>
               <option value={100}>100</option>
             </select>
-            <span className="text-xs text-muted-foreground mt-0.5">registros</span>
+            <span className="text-sm text-muted-foreground">{totalRecords} registros</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -100,51 +118,78 @@ const Produtos = () => {
           </div>
         </div>
 
-        <div className="bg-card rounded-lg border border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs font-bold text-foreground">COD</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">FOTO</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">DESCRICAO</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">QTDE</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">PESO</TableHead>
-                  <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.slice(0, rowsPerPage).map((produto) => (
-                  <TableRow key={produto.cod} className="hover:bg-accent/30">
-                    <TableCell className="text-sm">{produto.cod}</TableCell>
-                    <TableCell>
-                      <img
-                        src={productImages[produto.img]}
-                        alt={produto.descricao}
-                        className="w-14 h-14 object-contain rounded bg-muted"
-                      />
-                    </TableCell>
-                    <TableCell className="text-sm font-medium">{produto.descricao}</TableCell>
-                    <TableCell className="text-sm">{produto.qtde}</TableCell>
-                    <TableCell className="text-sm">{produto.peso}</TableCell>
-                    <TableCell className="text-sm">{produto.valor}</TableCell>
+        {loading ? (
+          <Spinner />
+        ) : error ? (
+          <div className="text-center py-12 text-destructive text-sm">{error}</div>
+        ) : (
+          <div className="bg-card rounded-lg border border-border overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs font-bold text-foreground">COD</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">FOTO</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">DESCRIÇÃO</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">QTDE</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">PESO</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filtered.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground py-6">
+                        Nenhum produto encontrado
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filtered.map((p) => {
+                      const imgUrl = p.foto
+                        ? `${PROXY_BASE}${encodeURIComponent(`https://dev.hadronweb.com.br/user_data/DEV/products/${p.foto}`)}`
+                        : '';
+                      return (
+                        <TableRow key={p.codpro} className="hover:bg-accent/30">
+                          <TableCell className="text-sm">{p.codpro}</TableCell>
+                          <TableCell>
+                            {imgUrl ? (
+                              <img
+                                src={imgUrl}
+                                alt={p.produto}
+                                className="w-14 h-14 object-contain rounded bg-muted"
+                                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                              />
+                            ) : (
+                              <div className="w-14 h-14 rounded bg-muted" />
+                            )}
+                          </TableCell>
+                          <TableCell className="text-sm font-medium">{p.produto}</TableCell>
+                          <TableCell className="text-sm">{p.qtde ?? 0}</TableCell>
+                          <TableCell className="text-sm">{((p.qtde ?? 0) * (p.peso_un ?? 0)).toFixed(1)} Kg</TableCell>
+                          <TableCell className="text-sm">{formatCurrency(p.valor ?? 0)}</TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>Mostrando de 1 até {filtered.length} de {filtered.length} registros.</span>
-          <div className="flex items-center gap-1">
-            <button className="px-3 py-1 border border-border rounded text-xs hover:bg-accent">Primeira</button>
-            <button className="px-3 py-1 border border-border rounded text-xs hover:bg-accent">Anterior</button>
-            <button className="px-3 py-1 border border-primary bg-primary text-primary-foreground rounded text-xs">1</button>
-            <button className="px-3 py-1 border border-border rounded text-xs hover:bg-accent">Próxima</button>
-            <button className="px-3 py-1 border border-border rounded text-xs hover:bg-accent">Última</button>
+        {totalRecords > rowsPerPage && (
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+              Anterior
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Página {page} de {Math.ceil(totalRecords / rowsPerPage)}
+            </span>
+            <Button variant="outline" size="sm" disabled={page >= Math.ceil(totalRecords / rowsPerPage)} onClick={() => setPage(p => p + 1)}>
+              Próxima
+            </Button>
           </div>
-        </div>
+        )}
       </main>
     </div>
   );

@@ -60,7 +60,8 @@ const Catalogo = () => {
         if (!res.ok) throw new Error(`Erro ${res.status}`);
         const data = await res.json();
 
-        const result = { catalogs: data?.catalogs || [], total_records: data?.total_records || 0 };
+        const catalogs = (data?.catalogs || []).sort((a: CatalogoItem, b: CatalogoItem) => a.pro_codpro - b.pro_codpro);
+        const result = { catalogs, total_records: data?.total_records || 0 };
         pageCache.set(cacheKey, result);
 
         if (!controller.signal.aborted) {

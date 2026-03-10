@@ -6,13 +6,15 @@ export interface Representante {
 }
 
 const fetchReps = async (): Promise<Representante[]> => {
+  const token = localStorage.getItem('hadron_token');
+  if (!token) return [];
+
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
   const res = await fetch(
-    `https://${projectId}.supabase.co/functions/v1/fetch-reps`
+    `https://${projectId}.supabase.co/functions/v1/fetch-reps?token=${encodeURIComponent(token)}`
   );
   if (!res.ok) return [];
   const data = await res.json();
-  // Support both { data: [...] } and { representantes: [...] } formats
   return data.data || data.representantes || [];
 };
 

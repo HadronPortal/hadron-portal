@@ -5,63 +5,29 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-let cachedToken: string | null = null;
-let cachedCookies = '';
-let tokenExpiry = 0;
-
-async function getAuth(): Promise<{ token: string; cookies: string }> {
-  if (cachedToken && Date.now() < tokenExpiry) {
-    return { token: cachedToken, cookies: cachedCookies };
-  }
-
-  const email = Deno.env.get('HADRON_API_EMAIL');
-  const password = Deno.env.get('HADRON_API_PASSWORD');
-  if (!email || !password) throw new Error('Missing API credentials');
-
-  const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ aus_email: email, aus_senha: password }),
-    redirect: 'manual',
-  });
-
-  const cookies: string[] = [];
-  for (const [key, value] of loginRes.headers.entries()) {
-    if (key.toLowerCase() === 'set-cookie') {
-      cookies.push(value.split(';')[0]);
-    }
-  }
-
-  const loginData = await loginRes.json();
-  if (!loginData.success) throw new Error(`Login failed: ${JSON.stringify(loginData)}`);
-
-  cachedToken = loginData.access_token;
-  cachedCookies = cookies.join('; ');
-  tokenExpiry = Date.now() + 25 * 60 * 1000;
-
-  return { token: cachedToken!, cookies: cachedCookies };
-}
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { token, cookies } = await getAuth();
+    const url = new URL(req.url);
+    const userToken = url.searchParams.get('token') || '';
+
+    if (!userToken) {
+      throw new Error('Missing user token');
+    }
 
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiListaReps', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Cookie': cookies,
+        'Authorization': `Bearer ${userToken}`,
       },
     });
 
     const responseText = await res.text();
 
     if (!res.ok) {
-      cachedToken = null;
       throw new Error(`Reps fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
     }
 

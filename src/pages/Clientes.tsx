@@ -64,16 +64,12 @@ const Clientes = () => {
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  const fetchClients = async (repCodes?: number[]) => {
+  const fetchClients = async () => {
     setLoading(true);
     setError(null);
     try {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      let url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?page=${page}&limit=${rowsPerPage}`;
-      const reps = repCodes ?? selectedRep;
-      if (reps.length > 0) {
-        url += `&rep=${reps.join(',')}`;
-      }
+      const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?page=${page}&limit=1000`;
       const res = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
       if (!res.ok) throw new Error('Falha ao buscar clientes');
       const result = await res.json();
@@ -90,12 +86,10 @@ const Clientes = () => {
 
   useEffect(() => {
     fetchClients();
-  }, [page, rowsPerPage]);
+  }, [page]);
 
   const handleRepChange = (repCodes: number[]) => {
     setSelectedRep(repCodes);
-    setPage(1);
-    fetchClients(repCodes);
   };
 
   const filtered = activeTab === 'todos'

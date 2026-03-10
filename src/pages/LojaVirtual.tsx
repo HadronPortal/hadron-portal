@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   ShoppingCart, Heart, Search, MapPin, Phone,
   ChevronLeft, ChevronRight, Star, Truck, Shield,
@@ -101,7 +101,7 @@ const Carousel = ({ children, title }: { children: React.ReactNode; title: strin
 };
 
 // ─── Product Card ───────────────────────────────────────────────────────
-const ProductCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product) => void }) => (
+const ProductCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product, e: React.MouseEvent) => void }) => (
   <div className="group bg-white rounded-lg border border-gray-100 overflow-hidden hover:shadow-lg transition-all relative">
     {product.badge && (
       <span className="absolute top-2 left-2 z-10 text-[10px] font-bold px-2 py-0.5 rounded text-white" style={{ backgroundColor: B }}>{product.badge}</span>
@@ -122,7 +122,7 @@ const ProductCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product)
           <span className="text-sm font-bold" style={{ color: B }}>${product.price.toFixed(2)}</span>
           <span className="text-xs text-gray-400 line-through ml-1">${product.oldPrice.toFixed(2)}</span>
         </div>
-        <button onClick={() => onAdd(product)} className="w-7 h-7 rounded-full flex items-center justify-center text-white transition hover:scale-110" style={{ backgroundColor: B }}>
+        <button onClick={(e) => onAdd(product, e)} className="w-7 h-7 rounded-full flex items-center justify-center text-white transition hover:scale-110" style={{ backgroundColor: B }}>
           <Plus size={14} />
         </button>
       </div>
@@ -131,7 +131,7 @@ const ProductCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product)
 );
 
 // ─── Mini Product Card (for carousels) ──────────────────────────────────
-const MiniCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product) => void }) => (
+const MiniCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product, e: React.MouseEvent) => void }) => (
   <div className="flex-shrink-0 w-[180px] group bg-white rounded-lg border border-gray-100 overflow-hidden hover:shadow-md transition-all">
     <div className="aspect-square flex items-center justify-center p-3 bg-[#fafafa]">
       <img src={product.image} alt={product.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
@@ -143,7 +143,7 @@ const MiniCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product) =>
           <span className="text-xs font-bold" style={{ color: B }}>${product.price.toFixed(2)}</span>
           <span className="text-[10px] text-gray-400 line-through ml-1">${product.oldPrice.toFixed(2)}</span>
         </div>
-        <button onClick={() => onAdd(product)} className="w-6 h-6 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: B }}>
+        <button onClick={(e) => onAdd(product, e)} className="w-6 h-6 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: B }}>
           <Plus size={12} />
         </button>
       </div>
@@ -241,6 +241,7 @@ const LojaVirtual = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [bagExpanded, setBagExpanded] = useState(false);
   const bagTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cartIconRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
 
   const filtered = activeTab === 'All' ? allProducts : allProducts.filter(p => p.category === activeTab);
@@ -251,7 +252,51 @@ const LojaVirtual = () => {
     bagTimer.current = setTimeout(() => setBagExpanded(false), 3000);
   }, []);
 
-  const addToCart = (p: Product) => {
+  const flyToCart = useCallback((imgSrc: string, startX: number, startY: number) => {
+    const cartEl = cartIconRef.current;
+    if (!cartEl) return;
+    const cartRect = cartEl.getBoundingClientRect();
+    const endX = cartRect.left + cartRect.width / 2;
+    const endY = cartRect.top + cartRect.height / 2;
+
+    const flyEl = document.createElement('img');
+    flyEl.src = imgSrc;
+    flyEl.style.cssText = `
+      position: fixed; z-index: 9999; width: 60px; height: 60px; object-fit: contain;
+      left: ${startX - 30}px; top: ${startY - 30}px;
+      border-radius: 50%; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      pointer-events: none; transition: all 0.7s cubic-bezier(0.2, 1, 0.3, 1);
+    `;
+    document.body.appendChild(flyEl);
+
+    requestAnimationFrame(() => {
+      flyEl.style.left = `${endX - 15}px`;
+      flyEl.style.top = `${endY - 15}px`;
+      flyEl.style.width = '30px';
+      flyEl.style.height = '30px';
+      flyEl.style.opacity = '0.3';
+    });
+
+    setTimeout(() => {
+      flyEl.remove();
+      // pulse the cart icon
+      if (cartEl) {
+        cartEl.style.transform = 'scale(1.3)';
+        setTimeout(() => { cartEl.style.transform = 'scale(1)'; }, 200);
+      }
+    }, 700);
+  }, []);
+
+  const addToCart = (p: Product, e?: React.MouseEvent) => {
+    if (e) {
+      const btn = e.currentTarget as HTMLElement;
+      const card = btn.closest('.group');
+      const img = card?.querySelector('img');
+      if (img) {
+        const rect = img.getBoundingClientRect();
+        flyToCart(p.image, rect.left + rect.width / 2, rect.top + rect.height / 2);
+      }
+    }
     setCart(prev => {
       const ex = prev.find(i => i.id === p.id);
       if (ex) return prev.map(i => i.id === p.id ? { ...i, qty: i.qty + 1 } : i);
@@ -295,7 +340,7 @@ const LojaVirtual = () => {
               <span className="hidden lg:inline">Dollar</span>
               <button><RefreshCw size={20} /></button>
               <button><Heart size={20} /></button>
-              <button onClick={() => setCartOpen(true)} className="relative">
+              <button ref={cartIconRef} onClick={() => setCartOpen(true)} className="relative transition-transform">
                 <ShoppingCart size={20} />
                 {cartCount > 0 && <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center" style={{ backgroundColor: B }}>{cartCount}</span>}
               </button>

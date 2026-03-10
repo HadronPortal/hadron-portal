@@ -50,7 +50,7 @@ serve(async (req) => {
   try {
     const { token, cookies } = await getAuth();
 
-    const res = await fetch('https://dev.hadronweb.com.br/app/pages/apiListaRepsDropdown', {
+    const res = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiListaRepsDropdown', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

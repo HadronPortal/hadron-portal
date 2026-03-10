@@ -80,7 +80,7 @@ const Cobrancas = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar />
+      <FilterBar representantes={representantes} />
 
       {clienteNome && (
         <div className="px-6 pt-2 text-sm text-muted-foreground">

@@ -1,15 +1,30 @@
+import { useNavigate } from 'react-router-dom';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import type { Order } from '@/lib/mock-data';
+
+export interface Order {
+  id: string;
+  codigo: string;
+  cliente_nome: string;
+  cliente_cnpj: string;
+  localizacao: string;
+  status: 'aprovado' | 'confirmado' | 'pendente' | 'cancelado';
+  valor: number;
+  data_pedido: string;
+  erp_code?: string;
+}
 
 const statusConfig: Record<Order['status'], { label: string; bg: string; text: string }> = {
-  aprovado: { label: 'Pedido Aprovado', bg: 'bg-orange-400', text: 'text-white' },
-  confirmado: { label: 'Pagamento Confirmado', bg: 'bg-emerald-500', text: 'text-white' },
-  pendente: { label: 'Pedido Pendente', bg: 'bg-gray-400', text: 'text-white' },
+  aprovado: { label: 'Aprovado', bg: 'bg-orange-400', text: 'text-white' },
+  confirmado: { label: 'Confirmado', bg: 'bg-emerald-500', text: 'text-white' },
+  pendente: { label: 'Pendente', bg: 'bg-gray-400', text: 'text-white' },
+  cancelado: { label: 'Cancelado', bg: 'bg-red-500', text: 'text-white' },
 };
 
 const OrdersTable = ({ orders }: { orders: Order[] }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-card rounded-lg border border-border overflow-hidden">
       <div className="px-5 py-3 border-b border-border">
@@ -33,14 +48,18 @@ const OrdersTable = ({ orders }: { orders: Order[] }) => {
             {orders.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-muted-foreground py-6">
-                  ---
+                  Nenhum pedido encontrado
                 </TableCell>
               </TableRow>
             ) : (
               orders.map((order) => {
                 const status = statusConfig[order.status];
                 return (
-                  <TableRow key={order.id} className="hover:bg-accent/30">
+                  <TableRow
+                    key={order.id}
+                    className="hover:bg-accent/30 cursor-pointer"
+                    onClick={() => navigate(`/pedidos/${order.codigo}`)}
+                  >
                     <TableCell className="text-sm">{order.codigo}</TableCell>
                     <TableCell>
                       <div className="text-sm">{order.cliente_nome}</div>

@@ -5,7 +5,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye, CreditCard, ChevronDown, Loader2 } from 'lucide-react';
+import { Eye, CreditCard, ChevronDown } from 'lucide-react';
+import Spinner from '@/components/ui/spinner';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ClienteAPI {
@@ -152,10 +153,7 @@ const Clientes = () => {
         <div className="bg-card rounded-lg border border-border overflow-hidden">
           <div className="overflow-x-auto">
             {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="animate-spin text-muted-foreground" size={24} />
-                <span className="ml-2 text-sm text-muted-foreground">Carregando clientes...</span>
-              </div>
+              <Spinner />
             ) : error ? (
               <div className="text-center py-12 text-destructive text-sm">{error}</div>
             ) : (

@@ -5,7 +5,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import Spinner from '@/components/ui/spinner';
 
 interface CatalogoItem {
   pro_codpro: number;
@@ -136,16 +137,14 @@ const Catalogo = () => {
         </div>
 
         {initialLoading && items.length === 0 ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-muted-foreground" size={32} />
-          </div>
+          <Spinner />
         ) : error && items.length === 0 ? (
           <div className="text-center py-20 text-destructive">{error}</div>
         ) : (
           <div className="relative">
             {isFetching && (
               <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10 rounded-lg">
-                <Loader2 className="animate-spin text-muted-foreground" size={32} />
+                <div className="rounded-full border-[3px] border-muted border-t-primary animate-spin w-8 h-8" />
               </div>
             )}
           <div className={`bg-card rounded-lg border border-border overflow-hidden transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>

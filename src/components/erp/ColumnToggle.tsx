@@ -35,7 +35,7 @@ const ColumnToggle = ({ columns, visible, onChange }: ColumnToggleProps) => {
         Colunas <ChevronDown size={14} />
       </Button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 bg-card border border-border rounded-lg shadow-lg py-1 min-w-[180px]">
+        <div className="absolute right-0 top-full mt-1 z-50 bg-background border border-border rounded-lg shadow-lg py-1 min-w-[180px]">
           {columns.map((col) => (
             <button
               key={col.key}

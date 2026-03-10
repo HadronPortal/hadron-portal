@@ -155,9 +155,8 @@ const Clientes = () => {
         ) : error ? (
           <div className="text-center py-12 text-destructive text-sm">{error}</div>
         ) : (
-        <div className="bg-card rounded-lg border border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            ) : (
+          <div className="bg-card rounded-lg border border-border overflow-hidden">
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -215,8 +214,8 @@ const Clientes = () => {
                   )}
                 </TableBody>
               </Table>
+            </div>
           </div>
-        </div>
         )}
 
         {/* Pagination */}

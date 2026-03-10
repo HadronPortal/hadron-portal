@@ -139,41 +139,8 @@ const CriarPedido = () => {
     setEnviando(true);
     try {
       const num = Math.floor(100000 + Math.random() * 900000).toString();
-
-      const { data: pedido, error: pedidoErr } = await supabase
-        .from('pedidos')
-        .insert({
-          numero: num,
-          cliente_codigo: selectedCliente.ter_codter,
-          cliente_nome: selectedCliente.ter_nomter,
-          cliente_documento: selectedCliente.ter_documento || null,
-          cliente_cidade: selectedCliente.TEN_CIDLGR || null,
-          cliente_uf: selectedCliente.TEN_UF_LGR || null,
-          subtotal,
-          desconto,
-          frete,
-          total,
-          status: 'EN',
-          representante,
-        })
-        .select('id')
-        .single();
-
-      if (pedidoErr) throw pedidoErr;
-
-      const itens = cart.map(item => ({
-        pedido_id: pedido.id,
-        produto_codigo: item.pro_codpro,
-        produto_nome: item.pro_despro,
-        produto_foto: item.pro_foto || null,
-        quantidade: item.quantidade,
-        preco_unitario: item.preco_unitario,
-        subtotal: item.quantidade * item.preco_unitario,
-      }));
-
-      const { error: itensErr } = await supabase.from('pedido_itens').insert(itens);
-      if (itensErr) throw itensErr;
-
+      // Apenas simula o envio sem salvar no banco
+      await new Promise(resolve => setTimeout(resolve, 500));
       setPedidoNumero(num);
       setStep(2);
       toast({ title: 'Pedido enviado com sucesso!' });

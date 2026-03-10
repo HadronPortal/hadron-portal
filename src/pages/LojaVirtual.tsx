@@ -322,7 +322,8 @@ const LojaVirtual = () => {
           {/* Top */}
           <div className="flex items-center justify-between py-3 gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-black text-gray-800">Fast<span style={{ color: B }}>kart.</span></span>
+              <img src="/lovable-uploads/51f7d872-880c-4be1-99b8-35fbb58cc720.png" alt="Hádron" className="h-8 object-contain" />
+              <span className="text-2xl font-black text-gray-800">Hádron <span style={{ color: B }}>Shop</span></span>
             </div>
             <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
               <MapPin size={16} style={{ color: B }} />
@@ -546,7 +547,7 @@ const LojaVirtual = () => {
           <div className="relative z-10 text-white">
             <h4 className="text-sm uppercase tracking-wider">Experimente Nosso Novo</h4>
             <h2 className="text-2xl md:text-3xl font-bold mt-2">100% Orgânico Melhor Qualidade Melhor Preço</h2>
-            <p className="text-sm text-white/70 mt-2">Melhor Qualidade Alimentar Fastkart</p>
+            <p className="text-sm text-white/70 mt-2">Melhor Qualidade Alimentar Hádron Shop</p>
             <button className="mt-4 px-6 py-2.5 bg-white rounded-lg text-sm font-bold" style={{ color: B }}>Comprar Agora</button>
           </div>
         </div>
@@ -587,7 +588,10 @@ const LojaVirtual = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <span className="text-xl font-black text-white">Fast<span style={{ color: B }}>kart.</span></span>
+              <div className="flex items-center gap-2">
+                <img src="/lovable-uploads/51f7d872-880c-4be1-99b8-35fbb58cc720.png" alt="Hádron" className="h-6 object-contain" />
+                <span className="text-xl font-black text-white">Hádron <span style={{ color: B }}>Shop</span></span>
+              </div>
               <p className="text-sm text-gray-400 mt-3">Somos uma loja online oferecendo uma variedade de produtos frescos e orgânicos com entrega rápida.</p>
             </div>
             <div>
@@ -611,7 +615,7 @@ const LojaVirtual = () => {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-6 text-center text-xs text-gray-500">
-            ©2026 Fastkart Todos os direitos reservados
+            ©2026 Hádron Shop Todos os direitos reservados
           </div>
         </div>
       </footer>

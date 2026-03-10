@@ -233,7 +233,7 @@ const FloatingCartBag = ({
   const extraCount = cart.length - 3;
 
   return (
-    <div className="fixed bottom-6 right-6 z-[997] flex flex-col items-end gap-2">
+    <div className="fixed top-1/2 -translate-y-1/2 right-0 z-[997] flex flex-col items-end gap-2">
       {/* Expanded view */}
       {expanded && cart.length > 0 && (
         <div

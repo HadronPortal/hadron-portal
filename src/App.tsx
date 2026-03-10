@@ -47,17 +47,17 @@ const App = () => (
       <BrowserRouter>
         <Suspense fallback={<PageFallback />}>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/clientes" element={<Clientes />} />
-            <Route path="/cobrancas" element={<Cobrancas />} />
-            <Route path="/analitico" element={<Analitico />} />
-            <Route path="/pedidos" element={<Pedidos />} />
-            <Route path="/pedidos/criar" element={<CriarPedido />} />
-            <Route path="/pedidos/:id" element={<PedidoDetalhe />} />
-            <Route path="/produtos" element={<Produtos />} />
-            <Route path="/produtos/:id" element={<ProdutoDetalhe />} />
-            <Route path="/catalogo" element={<Catalogo />} />
-            <Route path="/loja" element={<LojaVirtual />} />
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/clientes" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
+            <Route path="/cobrancas" element={<ProtectedRoute><Cobrancas /></ProtectedRoute>} />
+            <Route path="/analitico" element={<ProtectedRoute><Analitico /></ProtectedRoute>} />
+            <Route path="/pedidos" element={<ProtectedRoute><Pedidos /></ProtectedRoute>} />
+            <Route path="/pedidos/criar" element={<ProtectedRoute><CriarPedido /></ProtectedRoute>} />
+            <Route path="/pedidos/:id" element={<ProtectedRoute><PedidoDetalhe /></ProtectedRoute>} />
+            <Route path="/produtos" element={<ProtectedRoute><Produtos /></ProtectedRoute>} />
+            <Route path="/produtos/:id" element={<ProtectedRoute><ProdutoDetalhe /></ProtectedRoute>} />
+            <Route path="/catalogo" element={<ProtectedRoute><Catalogo /></ProtectedRoute>} />
+            <Route path="/loja" element={<ProtectedRoute><LojaVirtual /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

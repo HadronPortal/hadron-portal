@@ -5,9 +5,22 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye, CreditCard, ChevronDown } from 'lucide-react';
+import { Eye, CreditCard } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import { supabase } from '@/integrations/supabase/client';
+import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
+
+const COLUMNS: ColumnDef[] = [
+  { key: 'cod', label: 'COD' },
+  { key: 'descricao', label: 'DESCRICAO' },
+  { key: 'documento', label: 'DOCUMENTO' },
+  { key: 'local', label: 'LOCAL' },
+  { key: 'representante', label: 'REPRESENTANTE' },
+  { key: 'vendas', label: 'VENDAS' },
+  { key: 'ult_pedido', label: 'ULT PEDIDO' },
+  { key: 'cadastro', label: 'CADASTRO' },
+  { key: 'acao', label: 'AÇÃO' },
+];
 
 interface ClienteAPI {
   ter_codter: number;
@@ -63,6 +76,10 @@ const Clientes = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>(
+    Object.fromEntries(COLUMNS.map(c => [c.key, true]))
+  );
+  const show = (key: string) => visibleCols[key] !== false;
 
   const fetchClients = async () => {
     setLoading(true);
@@ -92,7 +109,6 @@ const Clientes = () => {
     setSelectedRep(repCodes);
   };
 
-  // Filter by selected representative first
   const repFiltered = selectedRep.length > 0
     ? clients.filter(c => selectedRep.includes(c.COD_REP))
     : clients;
@@ -108,6 +124,8 @@ const Clientes = () => {
           return d >= sixMonthsAgo;
         });
 
+  const visibleCount = COLUMNS.filter(col => show(col.key)).length;
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
@@ -116,7 +134,6 @@ const Clientes = () => {
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Clientes</h1>
 
-        {/* Tabs */}
         <div className="flex items-center gap-2">
           {tabs.map((tab) => (
             <button
@@ -133,7 +150,6 @@ const Clientes = () => {
           ))}
         </div>
 
-        {/* Controls row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <select
@@ -151,12 +167,9 @@ const Clientes = () => {
             </span>
           </div>
 
-          <Button variant="outline" size="sm" className="gap-1">
-            Colunas <ChevronDown size={14} />
-          </Button>
+          <ColumnToggle columns={COLUMNS} visible={visibleCols} onChange={setVisibleCols} />
         </div>
 
-        {/* Table */}
         {loading ? (
           <Spinner />
         ) : error ? (
@@ -167,55 +180,57 @@ const Clientes = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs font-bold text-foreground">COD</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">DESCRIÇÃO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">DOCUMENTO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">LOCAL</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">VENDAS</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">ULT PEDIDO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">CADASTRO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">AÇÃO</TableHead>
+                    {show('cod') && <TableHead className="text-xs font-bold text-foreground">COD</TableHead>}
+                    {show('descricao') && <TableHead className="text-xs font-bold text-foreground">DESCRIÇÃO</TableHead>}
+                    {show('documento') && <TableHead className="text-xs font-bold text-foreground">DOCUMENTO</TableHead>}
+                    {show('local') && <TableHead className="text-xs font-bold text-foreground">LOCAL</TableHead>}
+                    {show('representante') && <TableHead className="text-xs font-bold text-foreground">REPRESENTANTE</TableHead>}
+                    {show('vendas') && <TableHead className="text-xs font-bold text-foreground">VENDAS</TableHead>}
+                    {show('ult_pedido') && <TableHead className="text-xs font-bold text-foreground">ULT PEDIDO</TableHead>}
+                    {show('cadastro') && <TableHead className="text-xs font-bold text-foreground">CADASTRO</TableHead>}
+                    {show('acao') && <TableHead className="text-xs font-bold text-foreground">AÇÃO</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
+                      <TableCell colSpan={visibleCount} className="text-center text-muted-foreground py-6">
                         Nenhum cliente encontrado
                       </TableCell>
                     </TableRow>
                   ) : (
                     filtered.map((c) => (
                       <TableRow key={c.ter_codter} className="hover:bg-accent/30">
-                        <TableCell className="text-sm whitespace-nowrap">{c.ter_codter}</TableCell>
-                        <TableCell className="text-sm">
-                          <span className="font-semibold underline cursor-pointer">{c.ter_nomter}</span>
-                          {c.ter_fanter && (
-                            <div className="text-xs text-muted-foreground">{c.ter_fanter}</div>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">{formatDoc(c.ter_documento)}</TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">{c.TEN_CIDLGR} - {c.TEN_UF_LGR}</TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">
-                          {formatCurrency(c.TOTAL_VENDAS)} ({c.QUANT_VENDAS ?? 0})
-                        </TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">
-                          {c.ULT_VENDA ? formatDate(c.ULT_VENDA) : '—'}
-                          {c.ULT_CODORC && (
-                            <div className="text-xs text-muted-foreground">ORC.{c.ULT_CODORC}</div>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">{formatDate(c.ter_dta_cad)}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <button className="text-muted-foreground hover:text-foreground" title="Ver">
-                              <Eye size={16} />
-                            </button>
-                            <button className="text-muted-foreground hover:text-foreground" title="Pedidos">
-                              <CreditCard size={16} />
-                            </button>
-                          </div>
-                        </TableCell>
+                        {show('cod') && <TableCell className="text-sm whitespace-nowrap">{c.ter_codter}</TableCell>}
+                        {show('descricao') && (
+                          <TableCell className="text-sm">
+                            <span className="font-semibold underline cursor-pointer">{c.ter_nomter}</span>
+                            {c.ter_fanter && <div className="text-xs text-muted-foreground">{c.ter_fanter}</div>}
+                          </TableCell>
+                        )}
+                        {show('documento') && <TableCell className="text-sm whitespace-nowrap">{formatDoc(c.ter_documento)}</TableCell>}
+                        {show('local') && <TableCell className="text-sm whitespace-nowrap">{c.TEN_CIDLGR} - {c.TEN_UF_LGR}</TableCell>}
+                        {show('representante') && <TableCell className="text-sm whitespace-nowrap">{c.COD_REP}</TableCell>}
+                        {show('vendas') && (
+                          <TableCell className="text-sm whitespace-nowrap">
+                            {formatCurrency(c.TOTAL_VENDAS)} ({c.QUANT_VENDAS ?? 0})
+                          </TableCell>
+                        )}
+                        {show('ult_pedido') && (
+                          <TableCell className="text-sm whitespace-nowrap">
+                            {c.ULT_VENDA ? formatDate(c.ULT_VENDA) : '—'}
+                            {c.ULT_CODORC && <div className="text-xs text-muted-foreground">ORC.{c.ULT_CODORC}</div>}
+                          </TableCell>
+                        )}
+                        {show('cadastro') && <TableCell className="text-sm whitespace-nowrap">{formatDate(c.ter_dta_cad)}</TableCell>}
+                        {show('acao') && (
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <button className="text-muted-foreground hover:text-foreground" title="Ver"><Eye size={16} /></button>
+                              <button className="text-muted-foreground hover:text-foreground" title="Pedidos"><CreditCard size={16} /></button>
+                            </div>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))
                   )}
@@ -225,26 +240,15 @@ const Clientes = () => {
           </div>
         )}
 
-        {/* Pagination */}
         {totalRecords > rowsPerPage && (
           <div className="flex items-center justify-center gap-2 pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage(p => p - 1)}
-            >
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
               Anterior
             </Button>
             <span className="text-sm text-muted-foreground">
               Página {page} de {Math.ceil(totalRecords / rowsPerPage)}
             </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= Math.ceil(totalRecords / rowsPerPage)}
-              onClick={() => setPage(p => p + 1)}
-            >
+            <Button variant="outline" size="sm" disabled={page >= Math.ceil(totalRecords / rowsPerPage)} onClick={() => setPage(p => p + 1)}>
               Próxima
             </Button>
           </div>

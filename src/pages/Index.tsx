@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
+import { useRepresentantes } from '@/hooks/use-representantes';
 import KpiCards from '@/components/erp/KpiCards';
 import OrdersTable from '@/components/erp/OrdersTable';
 import ClientsTable from '@/components/erp/ClientsTable';

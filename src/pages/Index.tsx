@@ -58,13 +58,20 @@ const Index = () => {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       let url = `https://${projectId}.supabase.co/functions/v1/fetch-dashboard`;
       if (repCodes.length > 0) url += `?rep=${repCodes.join(',')}`;
-      const res = await fetch(url);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeout);
       if (!res.ok) throw new Error('Falha ao buscar dashboard');
       const json = await res.json();
       if (json.error) throw new Error(json.error);
       setData(json);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setError('Tempo limite excedido. Tente novamente.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      }
     } finally {
       setLoading(false);
     }

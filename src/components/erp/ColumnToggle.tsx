@@ -35,20 +35,19 @@ const ColumnToggle = ({ columns, visible, onChange }: ColumnToggleProps) => {
         Colunas <ChevronDown size={14} />
       </Button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 bg-card border border-border rounded-lg shadow-lg py-2 min-w-[180px]">
+        <div className="absolute right-0 top-full mt-1 z-50 bg-card border border-border rounded-lg shadow-lg py-1 min-w-[180px]">
           {columns.map((col) => (
-            <label
+            <button
               key={col.key}
-              className="flex items-center gap-2 px-4 py-1.5 text-sm text-foreground hover:bg-accent/40 cursor-pointer select-none"
+              onClick={() => toggle(col.key)}
+              className={`w-full text-left px-4 py-2 text-sm cursor-pointer select-none transition-colors ${
+                visible[col.key] !== false
+                  ? 'text-foreground font-medium bg-accent/30'
+                  : 'text-muted-foreground'
+              } hover:bg-accent/50`}
             >
-              <input
-                type="checkbox"
-                checked={visible[col.key] !== false}
-                onChange={() => toggle(col.key)}
-                className="accent-primary"
-              />
               {col.label}
-            </label>
+            </button>
           ))}
         </div>
       )}

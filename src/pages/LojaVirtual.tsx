@@ -397,6 +397,14 @@ const LojaVirtual = () => {
       {/* ── Cart Sidebar ── */}
       <CartSidebar open={cartOpen} cart={cart} onClose={() => setCartOpen(false)} onUpdateQty={updateQty} onRemove={removeFromCart} />
 
+      {/* ── Floating Cart Bag ── */}
+      <FloatingCartBag
+        cart={cart}
+        expanded={bagExpanded}
+        onToggle={() => setBagExpanded((v) => !v)}
+        onOpenCart={() => { setBagExpanded(false); setCartOpen(true); }}
+      />
+
       {/* ── Hero Banner ── */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

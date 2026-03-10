@@ -244,7 +244,7 @@ const LojaVirtual = () => {
   const cartIconRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
 
-  const filtered = activeTab === 'All' ? allProducts : allProducts.filter(p => p.category === activeTab);
+  const filtered = activeTab === 'Todos' ? allProducts : allProducts.filter(p => p.category === activeTab);
 
   const expandBag = useCallback(() => {
     setBagExpanded(true);

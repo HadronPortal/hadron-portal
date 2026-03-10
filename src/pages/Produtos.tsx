@@ -151,7 +151,7 @@ const Produtos = () => {
                         ? `${PROXY_BASE}${encodeURIComponent(`https://dev.hadronweb.com.br/user_data/DEV/products/${p.foto}`)}`
                         : '';
                       return (
-                        <TableRow key={p.codpro} className="hover:bg-accent/30">
+                        <TableRow key={p.codpro} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/produtos/${p.codpro}`)}>
                           <TableCell className="text-sm">{p.codpro}</TableCell>
                           <TableCell>
                             {imgUrl ? (

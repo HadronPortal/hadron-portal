@@ -603,7 +603,7 @@ const LojaVirtual = () => {
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-3">Contact Us</h4>
+              <h4 className="text-sm font-bold text-white mb-3">Contato</h4>
               <div className="space-y-2 text-sm text-gray-400">
                 <div className="flex items-center gap-2"><MapPin size={14} style={{ color: B }} /><span>1418 Riverwood Drive, CA 96052</span></div>
                 <div className="flex items-center gap-2"><Phone size={14} style={{ color: B }} /><span>(123) 456 7890</span></div>

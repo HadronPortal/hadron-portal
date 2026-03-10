@@ -312,11 +312,6 @@ const CriarPedido = () => {
             <div className="lg:col-span-2 bg-card rounded-lg border border-border shadow-sm">
               <div className="flex items-center justify-between px-5 py-4 border-b border-border">
                 <h2 className="text-lg font-bold text-foreground">Resumo do Pedido</h2>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="text-xs" onClick={() => setStep(0)}>
-                    ← Voltar
-                  </Button>
-                </div>
               </div>
 
               <div className="overflow-x-auto">

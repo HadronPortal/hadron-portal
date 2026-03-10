@@ -48,7 +48,7 @@ const Header = () => {
       </div>
 
       {/* Navigation bar */}
-      <div className="bg-[hsl(var(--erp-header))] border-t border-primary-foreground/10 px-6 py-2 flex items-center">
+      <div className="bg-[hsl(var(--erp-header))] border-t border-primary-foreground/10 px-6 py-2 flex items-center -mt-1">
         {/* Left button */}
         <button
           onClick={() => navigate('/catalogo')}

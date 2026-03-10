@@ -3,7 +3,7 @@ import {
   ShoppingCart, Heart, Search, MapPin, Phone,
   ChevronLeft, ChevronRight, Star, Truck, Shield,
   RotateCcw, Headphones, Plus, Minus, X, Menu,
-  ArrowRight, Eye, Flame, RefreshCw, Clock,
+  ArrowRight, Eye, Flame, RefreshCw, Clock, User,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 

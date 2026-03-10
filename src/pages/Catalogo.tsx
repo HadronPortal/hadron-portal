@@ -6,8 +6,20 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
+
+const CATALOGO_COLUMNS: ColumnDef[] = [
+  { key: 'cod', label: 'COD PROD' },
+  { key: 'foto', label: 'FOTO' },
+  { key: 'descricao', label: 'DESCRIÇÃO' },
+  { key: 'grupo', label: 'GRUPO' },
+  { key: 'prev_saida', label: 'PREV SAÍDA' },
+  { key: 'prev_entra', label: 'PREV ENTRA' },
+  { key: 'saldo_atual', label: 'SALDO ATUAL' },
+  { key: 'saldo_futuro', label: 'SALDO FUTURO' },
+];
 
 interface CatalogoItem {
   pro_codpro: number;

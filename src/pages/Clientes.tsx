@@ -168,9 +168,7 @@ const Clientes = () => {
             </span>
           </div>
 
-          <Button variant="outline" size="sm" className="gap-1">
-            Colunas <ChevronDown size={14} />
-          </Button>
+          <ColumnToggle columns={COLUMNS} visible={visibleCols} onChange={setVisibleCols} />
         </div>
 
         {/* Table */}

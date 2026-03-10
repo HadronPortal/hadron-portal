@@ -25,38 +25,39 @@ const Header = () => {
         DEV|00-PROCION TESTE DEV WEB LTDA
       </div>
       {/* Main header */}
-      <div className="flex items-center justify-between px-6 py-4">
+      <div className="relative flex items-center px-6 py-4">
+        {/* Logo - left */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
           <img alt="Hádron Portal" className="w-[60px] h-[60px] object-contain -mt-2" src={logoImg} />
           <span className="text-base font-medium tracking-wide">Hádron Portal</span>
         </div>
 
-        <div className="flex items-center gap-6">
-          <nav className="flex items-center gap-4">
-            {navItems.map(({ icon: Icon, label, path }) => (
-              <button
-                key={label}
-                title={label}
-                onClick={() => path !== '#' && navigate(path)}
-                className="p-1.5 hover:opacity-80 transition-opacity"
-              >
-                <Icon size={20} />
-              </button>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-3 border-l border-primary-foreground/20 pl-6">
-            <User size={20} className="opacity-70" />
-            <span className="text-sm opacity-80 hidden md:inline">3-SUPERVISOR REGIAO 1</span>
+        {/* Nav - centered */}
+        <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-4">
+          {navItems.map(({ icon: Icon, label, path }) => (
             <button
-              onClick={() => navigate('/login')}
-              title="Sair"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-primary-foreground/10 transition-colors text-sm"
+              key={label}
+              title={label}
+              onClick={() => path !== '#' && navigate(path)}
+              className="p-1.5 hover:opacity-80 transition-opacity"
             >
-              <LogOut size={16} />
-              <span className="hidden sm:inline">Sair</span>
+              <Icon size={20} />
             </button>
-          </div>
+          ))}
+        </nav>
+
+        {/* User - right */}
+        <div className="ml-auto flex items-center gap-3 border-l border-primary-foreground/20 pl-6">
+          <User size={20} className="opacity-70" />
+          <span className="text-sm opacity-80 hidden md:inline">3-SUPERVISOR REGIAO 1</span>
+          <button
+            onClick={() => navigate('/login')}
+            title="Sair"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-primary-foreground/10 transition-colors text-sm"
+          >
+            <LogOut size={16} />
+            <span className="hidden sm:inline">Sair</span>
+          </button>
         </div>
       </div>
     </header>

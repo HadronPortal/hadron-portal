@@ -21,6 +21,7 @@ interface CatalogoItem {
 const pageCache = new Map<string, { catalogs: CatalogoItem[]; total_records: number }>();
 
 const Catalogo = () => {
+  const { representantes } = useRepresentantes();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
   const [items, setItems] = useState<CatalogoItem[]>([]);

@@ -32,7 +32,13 @@ async function getAuth(): Promise<{ token: string; cookies: string }> {
     }
   }
 
-  const loginData = await loginRes.json();
+  const loginText = await loginRes.text();
+  let loginData;
+  try {
+    loginData = JSON.parse(loginText);
+  } catch {
+    throw new Error(`Login response is not JSON: ${loginText.substring(0, 300)}`);
+  }
   if (!loginData.success) throw new Error(`Login failed: ${JSON.stringify(loginData)}`);
 
   cachedToken = loginData.access_token;
@@ -55,17 +61,15 @@ serve(async (req) => {
 
     const { token, cookies } = await getAuth();
 
-    const requestBody: Record<string, unknown> = {
-      pagination: { page, limit },
+    // When filtering by client, fetch a large batch and filter server-side
+    // because the API does not support codter filtering natively
+    const apiLimit = codter ? 5000 : limit;
+    const apiPage = codter ? 1 : page;
+
+    const requestBody = {
+      pagination: { page: apiPage, limit: apiLimit },
       orc_codrep: [3],
     };
-    if (codter) {
-      requestBody.orc_codter = parseInt(codter);
-      requestBody.rec_codter = parseInt(codter);
-      requestBody.codter = parseInt(codter);
-    }
-
-    console.log('Request body:', JSON.stringify(requestBody));
 
     const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCharges', {
       method: 'POST',
@@ -89,6 +93,17 @@ serve(async (req) => {
       data = JSON.parse(responseText);
     } catch {
       throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`);
+    }
+
+    // Filter by client code if specified
+    if (codter) {
+      const codterNum = parseInt(codter);
+      const allCharges = data.charges || [];
+      const filtered = allCharges.filter((c: { CODTER: number }) => c.CODTER === codterNum);
+      const start = (page - 1) * limit;
+      const paged = filtered.slice(start, start + limit);
+      data.charges = paged;
+      data.total_records = filtered.length;
     }
 
     return new Response(JSON.stringify(data), {

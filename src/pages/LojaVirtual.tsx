@@ -552,7 +552,7 @@ const LojaVirtual = () => {
       {/* ═══ Full-width Banner ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         <div className="rounded-2xl p-10 relative overflow-hidden min-h-[200px] flex items-center justify-center text-center" style={{ background: `linear-gradient(135deg, ${B}, #099575)` }}>
-          <img src={`${IMG}/banner/3.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
+          <img src={`${IMG}/banner/3.png`} alt="" className="absolute inset-0 w-full h-full object-cover" />
           <div className="relative z-10 text-white">
             <h4 className="text-sm uppercase tracking-wider">Experimente Nosso Novo</h4>
             <h2 className="text-2xl md:text-3xl font-bold mt-2">100% Orgânico Melhor Qualidade Melhor Preço</h2>

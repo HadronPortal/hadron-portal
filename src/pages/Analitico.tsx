@@ -52,34 +52,56 @@ const Analitico = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const fetchAnalytics = async (repCodes: number[] = selectedRep) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      let url = `https://${projectId}.supabase.co/functions/v1/fetch-analytics?page=${page}&limit=${rowsPerPage}`;
+      if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Falha ao buscar analítico');
+      const data = await res.json();
+      setProducts(data.products || []);
+      setPeriods((data.periods || []).filter((p: Period) => p.chave !== 'TOTAL'));
+      setTotalRecords(data.total_records || 0);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const res = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/fetch-analytics?page=${page}&limit=${rowsPerPage}`
-        );
-        if (!res.ok) throw new Error('Falha ao buscar analítico');
-        const data = await res.json();
-        setProducts(data.products || []);
-        setPeriods((data.periods || []).filter((p: Period) => p.chave !== 'TOTAL'));
-        setTotalRecords(data.total_records || 0);
-      } catch (err) {
-        console.error(err);
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    fetchAnalytics();
   }, [page, rowsPerPage]);
 
-  const filtered = activeTab === 'todos'
+  const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
+  const handleSearch = (query: string) => setSearchQuery(query);
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+    setSelectedRep(filters.repCodes);
+    setSearchQuery(filters.search);
+    setPage(1);
+    fetchAnalytics(filters.repCodes);
+  };
+  const handleClear = () => {
+    setSelectedRep([]);
+    setSearchQuery('');
+    setPage(1);
+    fetchAnalytics([]);
+  };
+
+  const tabFiltered = activeTab === 'todos'
     ? products
     : products.filter((p) => p.tipo_op_banco === activeTab);
+
+  const filtered = searchQuery.trim()
+    ? tabFiltered.filter(p => (p.produto || '').toLowerCase().includes(searchQuery.toLowerCase()))
+    : tabFiltered;
 
   // Calculate totals from periods data
   const totalPeriod = periods.length > 0 ? periods : [];
@@ -92,7 +114,7 @@ const Analitico = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar representantes={representantes} />
+      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Analítico Período</h1>

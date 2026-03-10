@@ -48,7 +48,16 @@ serve(async (req) => {
   }
 
   try {
+    const url = new URL(req.url);
+    const repParam = url.searchParams.get('rep');
+
     const { token, cookies } = await getAuth();
+
+    const requestBody: Record<string, unknown> = {};
+
+    if (repParam) {
+      requestBody.orc_codrep = repParam.split(',').map(Number);
+    }
 
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiDashboard', {
       method: 'POST',
@@ -57,7 +66,7 @@ serve(async (req) => {
         'Cookie': cookies,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify(requestBody),
     });
 
     const responseText = await res.text();

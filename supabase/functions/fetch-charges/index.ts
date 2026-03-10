@@ -58,6 +58,7 @@ serve(async (req) => {
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '50');
     const codter = url.searchParams.get('codter');
+    const repParam = url.searchParams.get('rep');
 
     const { token, cookies } = await getAuth();
 
@@ -66,9 +67,13 @@ serve(async (req) => {
     const apiLimit = codter ? 5000 : limit;
     const apiPage = codter ? 1 : page;
 
-    const requestBody = {
+    const requestBody: Record<string, unknown> = {
       pagination: { page: apiPage, limit: apiLimit },
     };
+
+    if (repParam) {
+      requestBody.orc_codrep = repParam.split(',').map(Number);
+    }
 
     const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCharges', {
       method: 'POST',

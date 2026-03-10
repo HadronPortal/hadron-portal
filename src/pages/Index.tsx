@@ -6,7 +6,6 @@ import KpiCards from '@/components/erp/KpiCards';
 import OrdersTable from '@/components/erp/OrdersTable';
 import ClientsTable from '@/components/erp/ClientsTable';
 import { Skeleton } from '@/components/ui/skeleton';
-import Spinner from '@/components/ui/spinner';
 
 interface DashboardAPIResponse {
   cards: {
@@ -49,28 +48,44 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { representantes } = useRepresentantes();
+  const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const fetchData = async (repCodes: number[] = []) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      let url = `https://${projectId}.supabase.co/functions/v1/fetch-dashboard`;
+      if (repCodes.length > 0) url += `?rep=${repCodes.join(',')}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Falha ao buscar dashboard');
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      setData(json);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const res = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/fetch-dashboard`
-        );
-        if (!res.ok) throw new Error('Falha ao buscar dashboard');
-        const json = await res.json();
-        if (json.error) throw new Error(json.error);
-        setData(json);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
+
+  const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
+  const handleSearch = (query: string) => setSearchQuery(query);
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+    setSelectedRep(filters.repCodes);
+    setSearchQuery(filters.search);
+    fetchData(filters.repCodes);
+  };
+  const handleClear = () => {
+    setSelectedRep([]);
+    setSearchQuery('');
+    fetchData([]);
+  };
 
   const orders = (data?.ultimos_pedidos || []).map((p) => ({
     id: String(p.orc_codorc),
@@ -94,7 +109,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar representantes={representantes} />
+      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-6 py-5 space-y-5">
         <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>

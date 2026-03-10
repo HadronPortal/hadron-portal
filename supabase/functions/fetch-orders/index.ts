@@ -58,6 +58,7 @@ serve(async (req) => {
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '50');
     const codter = url.searchParams.get('codter');
+    const repParam = url.searchParams.get('rep');
 
     const { token, cookies } = await getAuth();
 
@@ -67,6 +68,10 @@ serve(async (req) => {
 
     if (codter) {
       requestBody.orc_codter = Number(codter);
+    }
+
+    if (repParam) {
+      requestBody.orc_codrep = repParam.split(',').map(Number);
     }
 
     const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiOrders', {

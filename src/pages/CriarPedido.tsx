@@ -466,8 +466,9 @@ const CriarPedido = () => {
                 <Button
                   className="w-full font-bold rounded-md py-3 text-base bg-erp-navy hover:bg-erp-navy/90 text-primary-foreground"
                   onClick={handleEnviarPedido}
+                  disabled={enviando}
                 >
-                  CONTINUAR
+                  {enviando ? 'Enviando...' : 'CONTINUAR'}
                 </Button>
                 <Button
                   variant="outline"

@@ -49,7 +49,11 @@ const Header = () => {
             <User size={20} className="opacity-70" />
             <span className="text-sm opacity-80 hidden md:inline">3-SUPERVISOR REGIAO 1</span>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => {
+                localStorage.removeItem('hadron_token');
+                localStorage.removeItem('hadron_user');
+                navigate('/login');
+              }}
               title="Sair"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-primary-foreground/10 transition-colors text-sm"
             >

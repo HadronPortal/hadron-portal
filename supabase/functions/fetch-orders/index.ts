@@ -32,7 +32,13 @@ async function getAuth(): Promise<{ token: string; cookies: string }> {
     }
   }
 
-  const loginData = await loginRes.json();
+  const loginText = await loginRes.text();
+  let loginData;
+  try {
+    loginData = JSON.parse(loginText);
+  } catch {
+    throw new Error(`Login response is not JSON: ${loginText.substring(0, 300)}`);
+  }
   if (!loginData.success) throw new Error(`Login failed: ${JSON.stringify(loginData)}`);
 
   cachedToken = loginData.access_token;

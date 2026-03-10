@@ -56,12 +56,12 @@ const allProducts: Product[] = [
 ];
 
 const newProducts: Product[] = [
-  { id: 101, name: 'Potato', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/4.png`, category: 'Cooking' },
-  { id: 102, name: 'Broccoli', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/5.png`, category: 'Fruits & Vegetables' },
-  { id: 103, name: 'Carrot', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/6.png`, category: 'Fruits & Vegetables' },
-  { id: 104, name: 'Tomato', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/1.png`, category: 'Fruits & Vegetables' },
-  { id: 105, name: 'Red onion', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/2.png`, category: 'Cooking' },
-  { id: 106, name: 'Carrot', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/3.png`, category: 'Fruits & Vegetables' },
+  { id: 101, name: 'Batata', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/4.png`, category: 'Cozinha' },
+  { id: 102, name: 'Brócolis', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/5.png`, category: 'Frutas & Verduras' },
+  { id: 103, name: 'Cenoura', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/6.png`, category: 'Frutas & Verduras' },
+  { id: 104, name: 'Tomate', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/1.png`, category: 'Frutas & Verduras' },
+  { id: 105, name: 'Cebola Roxa', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/2.png`, category: 'Cozinha' },
+  { id: 106, name: 'Cenoura', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/3.png`, category: 'Frutas & Verduras' },
 ];
 
 const featureProducts: Product[] = [

@@ -322,7 +322,8 @@ const LojaVirtual = () => {
           {/* Top */}
           <div className="flex items-center justify-between py-3 gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-black text-gray-800">Fast<span style={{ color: B }}>kart.</span></span>
+              <img src="/lovable-uploads/51f7d872-880c-4be1-99b8-35fbb58cc720.png" alt="Hádron" className="h-8 object-contain" />
+              <span className="text-2xl font-black text-gray-800">Hádron <span style={{ color: B }}>Shop</span></span>
             </div>
             <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
               <MapPin size={16} style={{ color: B }} />

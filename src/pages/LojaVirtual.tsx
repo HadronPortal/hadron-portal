@@ -3,6 +3,21 @@ import { ShoppingCart, Heart, Eye, Search, MapPin, Phone, ChevronLeft, ChevronRi
 import { useToast } from '@/hooks/use-toast';
 import logoImg from '@/assets/icon_hadronweb.png';
 
+// Product images
+import imgHero from '@/assets/shop/hero-hygiene.jpg';
+import imgShampoo from '@/assets/shop/shampoo.png';
+import imgSabonete from '@/assets/shop/sabonete.png';
+import imgCremeDental from '@/assets/shop/creme-dental.png';
+import imgSaboneteLiquido from '@/assets/shop/sabonete-liquido.png';
+import imgPapelHigienico from '@/assets/shop/papel-higienico.png';
+import imgCondicionador from '@/assets/shop/condicionador.png';
+import imgDesodorante from '@/assets/shop/desodorante.png';
+import imgLencoUmedecido from '@/assets/shop/lenco-umedecido.png';
+import imgEscovaDental from '@/assets/shop/escova-dental.png';
+import imgEnxaguante from '@/assets/shop/enxaguante.png';
+import imgProtetorSolar from '@/assets/shop/protetor-solar.png';
+import imgCotonete from '@/assets/shop/cotonete.png';
+
 // ─── Brand Color ────────────────────────────────────────────────────────
 const BRAND = 'hsl(220, 70%, 50%)';
 const BRAND_LIGHT = 'hsl(220, 70%, 95%)';
@@ -22,41 +37,41 @@ type CartItem = Product & { qty: number };
 
 // ─── Mock Data ──────────────────────────────────────────────────────────
 const categories = [
-  { name: 'Óleos & Grãos', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/1.png' },
-  { name: 'Farinhas & Cereais', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/2.png' },
-  { name: 'Mercearia', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/3.png' },
-  { name: 'Grãos & Legumes', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/4.png' },
-  { name: 'Bebidas', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/5.png' },
-  { name: 'Frutas & Verduras', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/6.png' },
-  { name: 'Prontos p/ Consumo', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/7.png' },
-  { name: 'Misturas Instantâneas', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/8.png' },
+  { name: 'Cabelos', image: imgShampoo },
+  { name: 'Higiene Bucal', image: imgCremeDental },
+  { name: 'Corpo & Banho', image: imgSaboneteLiquido },
+  { name: 'Desodorantes', image: imgDesodorante },
+  { name: 'Papel & Descartáveis', image: imgPapelHigienico },
+  { name: 'Cuidados com a Pele', image: imgProtetorSolar },
+  { name: 'Bebê & Infantil', image: imgLencoUmedecido },
+  { name: 'Acessórios', image: imgCotonete },
 ];
 
 const allProducts: Product[] = [
-  { id: 1, name: 'Pimentão', price: 12.90, oldPrice: 15.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/1.png', category: 'Verduras' },
-  { id: 2, name: 'Berinjela', price: 8.50, oldPrice: 10.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/2.png', category: 'Verduras' },
-  { id: 3, name: 'Cebola', price: 5.90, oldPrice: 7.20, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/3.png', category: 'Verduras' },
-  { id: 4, name: 'Batata', price: 6.50, oldPrice: 8.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/4.png', category: 'Verduras', badge: '-20%' },
-  { id: 5, name: 'Pimenta', price: 4.90, oldPrice: 6.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/5.png', category: 'Temperos' },
-  { id: 6, name: 'Brócolis', price: 9.90, oldPrice: 12.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/6.png', category: 'Verduras', badge: '-25%' },
-  { id: 7, name: 'Abacate', price: 7.90, oldPrice: 9.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/9.png', category: 'Frutas' },
-  { id: 8, name: 'Pepino', price: 3.90, oldPrice: 5.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/11.png', category: 'Verduras', badge: '-25%' },
-  { id: 9, name: 'Beterraba', price: 5.50, oldPrice: 7.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/12.png', category: 'Verduras' },
-  { id: 10, name: 'Morango', price: 14.90, oldPrice: 18.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/13.png', category: 'Frutas' },
-  { id: 11, name: 'Milho', price: 4.50, oldPrice: 6.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/15.png', category: 'Verduras', badge: '50%' },
-  { id: 12, name: 'Repolho', price: 3.50, oldPrice: 4.90, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/17.png', category: 'Verduras' },
+  { id: 1, name: 'Shampoo 400ml', price: 18.90, oldPrice: 24.50, image: imgShampoo, category: 'Cabelos' },
+  { id: 2, name: 'Condicionador 400ml', price: 19.90, oldPrice: 25.00, image: imgCondicionador, category: 'Cabelos' },
+  { id: 3, name: 'Sabonete Barra 90g', price: 3.50, oldPrice: 4.90, image: imgSabonete, category: 'Corpo & Banho' },
+  { id: 4, name: 'Sabonete Líquido 250ml', price: 12.90, oldPrice: 16.00, image: imgSaboneteLiquido, category: 'Corpo & Banho', badge: '-20%' },
+  { id: 5, name: 'Creme Dental 90g', price: 6.90, oldPrice: 8.50, image: imgCremeDental, category: 'Higiene Bucal' },
+  { id: 6, name: 'Desodorante Roll-on 50ml', price: 14.90, oldPrice: 19.00, image: imgDesodorante, category: 'Desodorantes', badge: '-25%' },
+  { id: 7, name: 'Papel Higiênico 12un', price: 22.90, oldPrice: 28.00, image: imgPapelHigienico, category: 'Papel & Descartáveis' },
+  { id: 8, name: 'Lenço Umedecido 100un', price: 15.90, oldPrice: 19.90, image: imgLencoUmedecido, category: 'Bebê & Infantil', badge: '-20%' },
+  { id: 9, name: 'Escova Dental', price: 8.90, oldPrice: 11.00, image: imgEscovaDental, category: 'Higiene Bucal' },
+  { id: 10, name: 'Enxaguante Bucal 500ml', price: 16.90, oldPrice: 21.00, image: imgEnxaguante, category: 'Higiene Bucal' },
+  { id: 11, name: 'Protetor Solar FPS50', price: 39.90, oldPrice: 52.00, image: imgProtetorSolar, category: 'Cuidados com a Pele', badge: '-23%' },
+  { id: 12, name: 'Cotonete 150un', price: 7.50, oldPrice: 9.90, image: imgCotonete, category: 'Acessórios' },
 ];
 
 const newProducts: Product[] = [
-  { id: 101, name: 'Tomate', price: 8.90, oldPrice: 11.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/1.png', category: 'Verduras' },
-  { id: 102, name: 'Cebola Roxa', price: 7.50, oldPrice: 9.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/2.png', category: 'Verduras' },
-  { id: 103, name: 'Cenoura', price: 5.90, oldPrice: 7.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/3.png', category: 'Verduras' },
-  { id: 104, name: 'Batata Doce', price: 6.90, oldPrice: 8.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/4.png', category: 'Verduras' },
-  { id: 105, name: 'Brócolis Ninja', price: 11.90, oldPrice: 14.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/5.png', category: 'Verduras' },
-  { id: 106, name: 'Cenoura Baby', price: 9.90, oldPrice: 12.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/6.png', category: 'Verduras' },
+  { id: 101, name: 'Shampoo Anticaspa', price: 22.90, oldPrice: 28.00, image: imgShampoo, category: 'Cabelos' },
+  { id: 102, name: 'Sabonete Antibacteriano', price: 5.90, oldPrice: 7.50, image: imgSabonete, category: 'Corpo & Banho' },
+  { id: 103, name: 'Creme Dental Clareador', price: 12.90, oldPrice: 16.00, image: imgCremeDental, category: 'Higiene Bucal' },
+  { id: 104, name: 'Desodorante Aerosol', price: 16.90, oldPrice: 21.00, image: imgDesodorante, category: 'Desodorantes' },
+  { id: 105, name: 'Condicionador Hidratante', price: 24.90, oldPrice: 30.00, image: imgCondicionador, category: 'Cabelos' },
+  { id: 106, name: 'Protetor Labial', price: 9.90, oldPrice: 13.00, image: imgProtetorSolar, category: 'Cuidados com a Pele' },
 ];
 
-const productTabs = ['Todos', 'Verduras', 'Frutas', 'Temperos'];
+const productTabs = ['Todos', 'Cabelos', 'Corpo & Banho', 'Higiene Bucal', 'Desodorantes'];
 
 // ─── Floating Cart Indicator ────────────────────────────────────────────
 const FlyToCart = ({ from, onDone }: { from: { x: number; y: number }; onDone: () => void }) => {
@@ -344,7 +359,7 @@ const LojaVirtual = () => {
 
       {/* ── Top Bar ── */}
       <div className="text-xs text-center py-2 px-4" style={{ backgroundColor: BRAND, color: 'white' }}>
-        Frete grátis em compras acima de R$ 150,00! 🚚
+        Frete grátis em compras acima de R$ 200,00! 🚚 Distribuidora de Higiene & Beleza
       </div>
 
       {/* ── Header ── */}
@@ -419,25 +434,25 @@ const LojaVirtual = () => {
           >
             <div className="relative z-10 max-w-md">
               <span className="text-xs font-bold uppercase tracking-widest" style={{ color: BRAND }}>
-                ORGÂNICO
+                HIGIENE & BELEZA
               </span>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mt-2 leading-tight">
-                100% Frescos
+                Cuidado Pessoal
               </h1>
-              <h2 className="text-xl md:text-2xl text-gray-500 mt-1">Frutas & Verduras</h2>
+              <h2 className="text-xl md:text-2xl text-gray-500 mt-1">Para toda a família</h2>
               <p className="text-sm text-gray-500 mt-3">
-                Frete grátis em todos os pedidos. Entregamos para você aproveitar.
+                Produtos de higiene, beleza e cuidados pessoais com os melhores preços.
               </p>
               <button
                 className="mt-5 px-6 py-2.5 rounded-lg text-white text-sm font-semibold transition-transform hover:scale-105"
                 style={{ backgroundColor: BRAND }}
               >
-                Comprar Agora
+                Ver Produtos
               </button>
             </div>
             <img
-              src="https://themes.pixelstrap.com/fastkart/assets/images/veg-3/home/1.png"
-              alt="Hero"
+              src={imgHero}
+              alt="Produtos de Higiene"
               className="absolute right-0 bottom-0 h-full max-h-[300px] object-contain opacity-90 hidden md:block"
             />
           </div>
@@ -449,21 +464,21 @@ const LojaVirtual = () => {
               style={{ background: `linear-gradient(135deg, hsl(220, 60%, 45%), ${BRAND})` }}
             >
               <div className="relative z-10">
-                <h3 className="text-lg font-bold text-white">Frescos & 100% Orgânicos</h3>
-                <p className="text-white/80 text-sm mt-1">Direto do produtor</p>
+                <h3 className="text-lg font-bold text-white">Marcas Premium</h3>
+                <p className="text-white/80 text-sm mt-1">Qualidade garantida</p>
                 <button className="mt-3 px-5 py-2 border border-white text-white rounded-lg text-sm hover:bg-white/20 transition">
-                  Comprar Agora
+                  Ver Mais
                 </button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-xl p-4 bg-gray-800 text-white flex flex-col justify-center">
-                <h4 className="text-sm font-bold">Vida Orgânica</h4>
-                <p className="text-xs text-gray-300 mt-1">Ofertas de Fim de Semana</p>
+                <h4 className="text-sm font-bold">Kit Econômico</h4>
+                <p className="text-xs text-gray-300 mt-1">Até 40% de desconto</p>
               </div>
               <div className="rounded-xl p-4 flex flex-col justify-center" style={{ backgroundColor: 'hsl(25, 90%, 92%)' }}>
-                <h4 className="text-sm font-bold text-gray-800">Comida Saudável</h4>
-                <p className="text-xs text-gray-600 mt-1">Desconto Especial</p>
+                <h4 className="text-sm font-bold text-gray-800">Cuidados Bebê</h4>
+                <p className="text-xs text-gray-600 mt-1">Linha completa</p>
               </div>
             </div>
           </div>
@@ -491,9 +506,9 @@ const LojaVirtual = () => {
       <section className="max-w-7xl mx-auto px-4 py-6">
         <Carousel title="Melhores Ofertas">
           {[
-            { title: 'Economize Mais!', sub: 'Vegetais Orgânicos', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/2.png', bg: 'hsl(220, 40%, 92%)' },
-            { title: 'Hot Deals!', sub: 'Frutas & Verduras', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/3.png', bg: 'hsl(30, 80%, 92%)' },
-            { title: 'Compre Mais, Pague Menos', sub: 'Frutas & Verduras', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/1.png', bg: 'hsl(200, 40%, 92%)' },
+            { title: 'Kits Econômicos!', sub: 'Shampoo + Condicionador', img: imgShampoo, bg: 'hsl(220, 40%, 92%)' },
+            { title: 'Promoção Bebê!', sub: 'Fraldas & Lenços', img: imgLencoUmedecido, bg: 'hsl(30, 80%, 92%)' },
+            { title: 'Compre 3, Pague 2', sub: 'Sabonetes selecionados', img: imgSabonete, bg: 'hsl(200, 40%, 92%)' },
           ].map((v, i) => (
             <div
               key={i}
@@ -546,25 +561,25 @@ const LojaVirtual = () => {
         <div className="grid md:grid-cols-2 gap-4">
           <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(220, 30%, 94%), hsl(220, 50%, 88%))' }}>
             <div>
-              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: BRAND }}>Premium</span>
-              <h3 className="text-lg font-bold text-gray-800 mt-1">Vegetais Frescos & Consumo Diário</h3>
-              <p className="text-sm text-gray-500">Ganhe 50% de desconto extra</p>
+              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: BRAND }}>Atacado</span>
+              <h3 className="text-lg font-bold text-gray-800 mt-1">Produtos de Higiene por Caixa</h3>
+              <p className="text-sm text-gray-500">Desconto progressivo para distribuidores</p>
               <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: BRAND }}>
-                Comprar Agora
+                Ver Ofertas
               </button>
             </div>
-            <img src="https://themes.pixelstrap.com/fastkart/assets/images/veg-3/banner/1.png" alt="" className="absolute right-4 bottom-0 h-[160px] object-contain hidden sm:block" />
+            <img src={imgSaboneteLiquido} alt="" className="absolute right-4 bottom-2 h-[140px] object-contain hidden sm:block" />
           </div>
           <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(25, 80%, 94%), hsl(30, 60%, 88%))' }}>
             <div>
-              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: 'hsl(25, 90%, 55%)' }}>Disponível</span>
-              <h3 className="text-lg font-bold text-gray-800 mt-1">100% Natural & Frutas Saudáveis</h3>
-              <p className="text-sm text-gray-500">Especial de Fim de Semana</p>
+              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: 'hsl(25, 90%, 55%)' }}>Novidade</span>
+              <h3 className="text-lg font-bold text-gray-800 mt-1">Linha Dermatológica</h3>
+              <p className="text-sm text-gray-500">Cuidados especiais para a pele</p>
               <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: 'hsl(25, 90%, 55%)' }}>
-                Comprar Agora
+                Conhecer
               </button>
             </div>
-            <img src="https://themes.pixelstrap.com/fastkart/assets/images/veg-3/banner/2.png" alt="" className="absolute right-4 bottom-0 h-[160px] object-contain hidden sm:block" />
+            <img src={imgProtetorSolar} alt="" className="absolute right-4 bottom-2 h-[140px] object-contain hidden sm:block" />
           </div>
         </div>
       </section>
@@ -612,16 +627,16 @@ const LojaVirtual = () => {
                 <span className="text-lg font-bold text-white">HádronShop</span>
               </div>
               <p className="text-sm text-gray-400">
-                Sua loja online de produtos frescos e de qualidade.
+                Distribuidora de produtos de higiene, beleza e cuidados pessoais.
               </p>
             </div>
             <div>
               <h4 className="text-sm font-bold text-white mb-3">Categorias</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li className="hover:text-white cursor-pointer">Verduras</li>
-                <li className="hover:text-white cursor-pointer">Frutas</li>
-                <li className="hover:text-white cursor-pointer">Mercearia</li>
-                <li className="hover:text-white cursor-pointer">Bebidas</li>
+                <li className="hover:text-white cursor-pointer">Cabelos</li>
+                <li className="hover:text-white cursor-pointer">Higiene Bucal</li>
+                <li className="hover:text-white cursor-pointer">Corpo & Banho</li>
+                <li className="hover:text-white cursor-pointer">Desodorantes</li>
               </ul>
             </div>
             <div>

@@ -19,8 +19,8 @@ import imgProtetorSolar from '@/assets/shop/protetor-solar.png';
 import imgCotonete from '@/assets/shop/cotonete.png';
 
 // ─── Brand Color ────────────────────────────────────────────────────────
-const BRAND = 'hsl(220, 70%, 50%)';
-const BRAND_LIGHT = 'hsl(220, 70%, 95%)';
+const BRAND = 'hsl(145, 63%, 42%)';
+const BRAND_LIGHT = 'hsl(145, 60%, 95%)';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 type Product = {
@@ -430,7 +430,7 @@ const LojaVirtual = () => {
           {/* Main Banner */}
           <div
             className="lg:col-span-7 rounded-xl p-8 md:p-12 flex items-center min-h-[320px] relative overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, hsl(220, 30%, 96%), hsl(220, 40%, 90%))' }}
+            style={{ background: 'linear-gradient(135deg, hsl(145, 30%, 96%), hsl(145, 40%, 90%))' }}
           >
             <div className="relative z-10 max-w-md">
               <span className="text-xs font-bold uppercase tracking-widest" style={{ color: BRAND }}>
@@ -461,7 +461,7 @@ const LojaVirtual = () => {
           <div className="lg:col-span-5 grid grid-rows-2 gap-4">
             <div
               className="rounded-xl p-6 flex items-center justify-center text-center relative overflow-hidden"
-              style={{ background: `linear-gradient(135deg, hsl(220, 60%, 45%), ${BRAND})` }}
+              style={{ background: `linear-gradient(135deg, hsl(145, 60%, 35%), ${BRAND})` }}
             >
               <div className="relative z-10">
                 <h3 className="text-lg font-bold text-white">Marcas Premium</h3>
@@ -491,7 +491,7 @@ const LojaVirtual = () => {
           {categories.map((cat) => (
             <div
               key={cat.name}
-              className="flex-shrink-0 w-[130px] flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer group"
+              className="flex-shrink-0 w-[130px] flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:shadow-md hover:border-green-200 transition-all cursor-pointer group"
             >
               <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden">
                 <img src={cat.image} alt={cat.name} className="w-14 h-14 object-contain group-hover:scale-110 transition-transform" />
@@ -506,9 +506,9 @@ const LojaVirtual = () => {
       <section className="max-w-7xl mx-auto px-4 py-6">
         <Carousel title="Melhores Ofertas">
           {[
-            { title: 'Kits Econômicos!', sub: 'Shampoo + Condicionador', img: imgShampoo, bg: 'hsl(220, 40%, 92%)' },
+            { title: 'Kits Econômicos!', sub: 'Shampoo + Condicionador', img: imgShampoo, bg: 'hsl(145, 40%, 92%)' },
             { title: 'Promoção Bebê!', sub: 'Fraldas & Lenços', img: imgLencoUmedecido, bg: 'hsl(30, 80%, 92%)' },
-            { title: 'Compre 3, Pague 2', sub: 'Sabonetes selecionados', img: imgSabonete, bg: 'hsl(200, 40%, 92%)' },
+            { title: 'Compre 3, Pague 2', sub: 'Sabonetes selecionados', img: imgSabonete, bg: 'hsl(145, 30%, 92%)' },
           ].map((v, i) => (
             <div
               key={i}
@@ -559,7 +559,7 @@ const LojaVirtual = () => {
       {/* ── Promotional Banners ── */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(220, 30%, 94%), hsl(220, 50%, 88%))' }}>
+          <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(145, 30%, 94%), hsl(145, 50%, 88%))' }}>
             <div>
               <span className="text-xs uppercase tracking-wider font-bold" style={{ color: BRAND }}>Atacado</span>
               <h3 className="text-lg font-bold text-gray-800 mt-1">Produtos de Higiene por Caixa</h3>

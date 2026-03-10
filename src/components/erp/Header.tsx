@@ -9,7 +9,7 @@ const navItems = [
   { icon: LayoutGrid, label: 'Pedidos', path: '/pedidos' },
   { icon: Grid3X3, label: 'Produtos', path: '/produtos' },
   { icon: Box, label: 'Catálogo', path: '/catalogo' },
-  { icon: ShoppingBag, label: 'Loja Virtual', path: '#' },
+  { icon: ShoppingBag, label: 'Loja Virtual', path: '/loja' },
 ];
 
 const Header = () => {

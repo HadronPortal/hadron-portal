@@ -58,44 +58,45 @@ const Clientes = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
   const [representantes, setRepresentantes] = useState<Representante[]>([]);
+  const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const { data, error: fnError } = await supabase.functions.invoke('fetch-clients', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          body: null,
-        });
-
-        // Build URL manually for GET with query params
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const res = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/fetch-clients?page=${page}&limit=${rowsPerPage}`,
-          { headers: { 'Content-Type': 'application/json' } }
-        );
-        
-        if (!res.ok) throw new Error('Falha ao buscar clientes');
-        const result = await res.json();
-        
-        setClients(result.clients || []);
-        setRepresentantes(result.representantes || []);
-        setTotalRecords(result.total_records || 0);
-      } catch (err) {
-        console.error(err);
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      } finally {
-        setLoading(false);
+  const fetchClients = async (repCodes?: number[]) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      let url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?page=${page}&limit=${rowsPerPage}`;
+      const reps = repCodes ?? selectedRep;
+      if (reps.length > 0) {
+        url += `&rep=${reps.join(',')}`;
       }
-    };
+      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
+      if (!res.ok) throw new Error('Falha ao buscar clientes');
+      const result = await res.json();
+      setClients(result.clients || []);
+      setRepresentantes(result.representantes || []);
+      setTotalRecords(result.total_records || 0);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchClients();
   }, [page, rowsPerPage]);
+
+  const handleRepChange = (repCodes: number[]) => {
+    setSelectedRep(repCodes);
+    setPage(1);
+    fetchClients(repCodes);
+  };
 
   const filtered = activeTab === 'todos'
     ? clients
@@ -111,7 +112,7 @@ const Clientes = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar representantes={representantes} />
+      <FilterBar representantes={representantes} onRepChange={handleRepChange} />
 
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Clientes</h1>

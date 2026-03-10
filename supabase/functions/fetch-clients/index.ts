@@ -54,6 +54,17 @@ serve(async (req) => {
 
     const { token, cookies } = await getAuth();
 
+    // Parse optional filters from request body
+    let bodyParams: Record<string, unknown> = {};
+    if (req.method === 'POST') {
+      try { bodyParams = await req.json(); } catch { /* empty */ }
+    }
+
+    const requestBody: Record<string, unknown> = {
+      pagination: { page, limit },
+      ...bodyParams,
+    };
+
     const clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiClients', {
       method: 'POST',
       headers: {
@@ -61,7 +72,7 @@ serve(async (req) => {
         'Cookie': cookies,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ pagination: { page, limit } }),
+      body: JSON.stringify(requestBody),
     });
 
     const responseText = await clientsRes.text();

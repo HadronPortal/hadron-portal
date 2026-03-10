@@ -42,9 +42,9 @@ const ColumnToggle = ({ columns, visible, onChange }: ColumnToggleProps) => {
               onClick={() => toggle(col.key)}
               className={`w-full text-left px-4 py-2 text-sm cursor-pointer select-none transition-colors ${
                 visible[col.key] !== false
-                  ? 'text-foreground font-medium bg-accent/30'
-                  : 'text-muted-foreground'
-              } hover:bg-accent/50`}
+                  ? 'text-foreground font-medium bg-transparent'
+                  : 'text-muted-foreground bg-transparent'
+              } hover:bg-accent/10`}
             >
               {col.label}
             </button>

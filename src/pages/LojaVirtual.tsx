@@ -387,9 +387,9 @@ const LojaVirtual = () => {
             <div className="rounded-2xl p-7 flex items-center justify-center text-center relative overflow-hidden" style={{ backgroundColor: B }}>
               <img src={`${IMG}/home/2.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40" />
               <div className="relative z-10">
-                <h3 className="text-lg font-bold text-white">Fresh & 100% Organic</h3>
-                <p className="text-white/70 text-sm mt-1">farmer's market</p>
-                <button className="mt-4 px-5 py-2 border-2 border-white text-white rounded-lg text-sm font-medium hover:bg-white/20 transition">Shop Now</button>
+                <h3 className="text-lg font-bold text-white">Frescos & 100% Orgânicos</h3>
+                <p className="text-white/70 text-sm mt-1">feira do produtor</p>
+                <button className="mt-4 px-5 py-2 border-2 border-white text-white rounded-lg text-sm font-medium hover:bg-white/20 transition">Comprar Agora</button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">

@@ -54,6 +54,7 @@ const CriarPedido = () => {
   const [catalogo, setCatalogo] = useState<CatalogoItem[]>([]);
   const [produtoSearch, setProdutoSearch] = useState('');
   const [loadingCatalogo, setLoadingCatalogo] = useState(false);
+  const [showProdutoDropdown, setShowProdutoDropdown] = useState(false);
 
   /* carrinho */
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -64,12 +65,12 @@ const CriarPedido = () => {
 
   /* ─── fetch clientes ─── */
   const fetchClientes = useCallback(async (search: string) => {
-    if (search.length < 2) { setClientes([]); return; }
     setLoadingClientes(true);
     try {
-      const res = await fetch(`${BASE}/fetch-clients?page=1&limit=20`);
+      const res = await fetch(`${BASE}/fetch-clients?page=1&limit=50`);
       const data = await res.json();
       const all: ClienteAPI[] = data?.clients || [];
+      if (!search.trim()) { setClientes(all); return; }
       const q = search.toLowerCase();
       setClientes(all.filter(c =>
         (c.ter_nomter || '').toLowerCase().includes(q) ||
@@ -156,9 +157,12 @@ const CriarPedido = () => {
               <h2 className="text-lg font-bold text-foreground">Itens do Produtos</h2>
               <div className="relative w-56">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input value={produtoSearch} onChange={e => setProdutoSearch(e.target.value)} placeholder="Buscar produtos" className="pl-9 h-9 text-sm" />
-                {/* Dropdown results */}
-                {produtoSearch.trim().length > 0 && (
+                <Input value={produtoSearch}
+                  onChange={e => { setProdutoSearch(e.target.value); setShowProdutoDropdown(true); }}
+                  onDoubleClick={() => setShowProdutoDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowProdutoDropdown(false), 200)}
+                  placeholder="Buscar produtos" className="pl-9 h-9 text-sm" />
+                {showProdutoDropdown && (
                   <div className="absolute z-50 top-full mt-1 w-80 right-0 bg-card border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
                     {loadingCatalogo ? (
                       <div className="p-3 text-center text-xs text-muted-foreground">Buscando...</div>
@@ -171,7 +175,7 @@ const CriarPedido = () => {
                           <button
                             key={item.pro_codpro}
                             className="w-full text-left px-3 py-2.5 hover:bg-accent/30 transition-colors border-b border-border last:border-0 flex items-center gap-3"
-                            onClick={() => { addToCart(item); setProdutoSearch(''); }}
+                            onClick={() => { addToCart(item); setProdutoSearch(''); setShowProdutoDropdown(false); }}
                           >
                             <div className="w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
                               {item.pro_foto ? (
@@ -206,9 +210,13 @@ const CriarPedido = () => {
                   </div>
                 ) : (
                   <div className="relative">
-                    <Input value={clienteSearch} onChange={e => { setClienteSearch(e.target.value); setShowClienteDropdown(true); }} onFocus={() => setShowClienteDropdown(true)}
+                    <Input value={clienteSearch}
+                      onChange={e => { setClienteSearch(e.target.value); setShowClienteDropdown(true); }}
+                      onDoubleClick={() => { fetchClientes(''); setShowClienteDropdown(true); }}
+                      onFocus={() => { if (clienteSearch.length >= 2) setShowClienteDropdown(true); }}
+                      onBlur={() => setTimeout(() => setShowClienteDropdown(false), 200)}
                       placeholder="Buscar cliente..." className="h-8 text-sm" />
-                    {showClienteDropdown && clienteSearch.length >= 2 && (
+                    {showClienteDropdown && (
                       <div className="absolute z-50 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                         {loadingClientes ? (
                           <div className="p-2 text-center text-xs text-muted-foreground">Buscando...</div>

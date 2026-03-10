@@ -430,7 +430,7 @@ const LojaVirtual = () => {
           {/* Main Banner */}
           <div
             className="lg:col-span-7 rounded-xl p-8 md:p-12 flex items-center min-h-[320px] relative overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, hsl(220, 30%, 96%), hsl(220, 40%, 90%))' }}
+            style={{ background: 'linear-gradient(135deg, hsl(145, 30%, 96%), hsl(145, 40%, 90%))' }}
           >
             <div className="relative z-10 max-w-md">
               <span className="text-xs font-bold uppercase tracking-widest" style={{ color: BRAND }}>

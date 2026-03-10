@@ -63,7 +63,6 @@ serve(async (req) => {
 
     const requestBody: Record<string, unknown> = {
       pagination: { page, limit },
-      orc_codrep: [3],
     };
 
     if (codter) {

@@ -56,7 +56,6 @@ serve(async (req) => {
 
     const requestBody = {
       pagination: { page, limit },
-      orc_codrep: [3],
     };
 
     const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiAnalytics', {

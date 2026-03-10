@@ -61,7 +61,7 @@ serve(async (req) => {
         'Cookie': cookies,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ pagination: { page, limit }, orc_codrep: [3] }),
+      body: JSON.stringify({ pagination: { page, limit } }),
     });
 
     const responseText = await res.text();

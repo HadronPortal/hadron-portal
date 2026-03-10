@@ -131,7 +131,7 @@ const ProductCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product,
 );
 
 // ─── Mini Product Card (for carousels) ──────────────────────────────────
-const MiniCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product) => void }) => (
+const MiniCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product, e: React.MouseEvent) => void }) => (
   <div className="flex-shrink-0 w-[180px] group bg-white rounded-lg border border-gray-100 overflow-hidden hover:shadow-md transition-all">
     <div className="aspect-square flex items-center justify-center p-3 bg-[#fafafa]">
       <img src={product.image} alt={product.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
@@ -143,7 +143,7 @@ const MiniCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product) =>
           <span className="text-xs font-bold" style={{ color: B }}>${product.price.toFixed(2)}</span>
           <span className="text-[10px] text-gray-400 line-through ml-1">${product.oldPrice.toFixed(2)}</span>
         </div>
-        <button onClick={() => onAdd(product)} className="w-6 h-6 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: B }}>
+        <button onClick={(e) => onAdd(product, e)} className="w-6 h-6 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: B }}>
           <Plus size={12} />
         </button>
       </div>

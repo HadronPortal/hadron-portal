@@ -215,9 +215,9 @@ const Clientes = () => {
                   )}
                 </TableBody>
               </Table>
-            )}
           </div>
         </div>
+        )}
 
         {/* Pagination */}
         {totalRecords > rowsPerPage && (

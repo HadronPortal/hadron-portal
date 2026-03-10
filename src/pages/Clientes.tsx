@@ -153,10 +153,7 @@ const Clientes = () => {
         <div className="bg-card rounded-lg border border-border overflow-hidden">
           <div className="overflow-x-auto">
             {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="animate-spin text-muted-foreground" size={24} />
-                <span className="ml-2 text-sm text-muted-foreground">Carregando clientes...</span>
-              </div>
+              <Spinner />
             ) : error ? (
               <div className="text-center py-12 text-destructive text-sm">{error}</div>
             ) : (

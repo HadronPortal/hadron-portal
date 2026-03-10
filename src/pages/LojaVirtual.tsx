@@ -461,7 +461,7 @@ const LojaVirtual = () => {
           <div className="lg:col-span-5 grid grid-rows-2 gap-4">
             <div
               className="rounded-xl p-6 flex items-center justify-center text-center relative overflow-hidden"
-              style={{ background: `linear-gradient(135deg, hsl(220, 60%, 45%), ${BRAND})` }}
+              style={{ background: `linear-gradient(135deg, hsl(145, 60%, 35%), ${BRAND})` }}
             >
               <div className="relative z-10">
                 <h3 className="text-lg font-bold text-white">Marcas Premium</h3>

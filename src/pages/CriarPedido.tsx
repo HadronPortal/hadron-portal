@@ -153,15 +153,52 @@ const CriarPedido = () => {
 
         {/* ═══════════════ STEP 1: Lista de Produtos ═══════════════ */}
         {step === 0 && (
-          <div className="bg-card rounded-lg border border-border shadow-sm">
-            {/* Header */}
-            <div className="px-5 py-4 border-b border-border">
+          <div className="bg-card rounded-lg border border-border shadow-sm max-w-3xl mx-auto">
+            {/* Header with search */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
               <h2 className="text-lg font-bold text-foreground">Itens do Produtos</h2>
+              <div className="relative w-56">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input value={produtoSearch} onChange={e => setProdutoSearch(e.target.value)} placeholder="Buscar produtos" className="pl-9 h-9 text-sm" />
+                {/* Dropdown results */}
+                {produtoSearch.trim().length > 0 && (
+                  <div className="absolute z-50 top-full mt-1 w-80 right-0 bg-card border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                    {loadingCatalogo ? (
+                      <div className="p-3 text-center text-xs text-muted-foreground">Buscando...</div>
+                    ) : filteredCatalogo.length === 0 ? (
+                      <div className="p-3 text-center text-xs text-muted-foreground">Nenhum produto encontrado</div>
+                    ) : (
+                      filteredCatalogo.slice(0, 20).map(item => {
+                        const inCart = cart.some(c => c.pro_codpro === item.pro_codpro);
+                        return (
+                          <button
+                            key={item.pro_codpro}
+                            className="w-full text-left px-3 py-2.5 hover:bg-accent/30 transition-colors border-b border-border last:border-0 flex items-center gap-3"
+                            onClick={() => { addToCart(item); setProdutoSearch(''); }}
+                          >
+                            <div className="w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
+                              {item.pro_foto ? (
+                                <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
+                                  onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                              ) : <div className="w-full h-full" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium truncate">{item.pro_despro}</div>
+                              <div className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</div>
+                            </div>
+                            {inCart && <span className="text-xs text-erp-green font-medium">✓ No carrinho</span>}
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Cliente row (compact) */}
+            {/* Cliente row */}
             <div className="px-5 py-3 border-b border-border">
-              <div className="max-w-md relative">
+              <div className="max-w-sm relative">
                 <label className="text-xs font-semibold text-muted-foreground mb-1 block">Cliente *</label>
                 {selectedCliente ? (
                   <div className="flex items-center gap-2 bg-muted rounded-md px-3 py-1.5 text-sm">
@@ -194,148 +231,77 @@ const CriarPedido = () => {
               </div>
             </div>
 
-            {/* Search products below client */}
-            <div className="px-5 py-3 border-b border-border">
-              <div className="relative max-w-md">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input value={produtoSearch} onChange={e => setProdutoSearch(e.target.value)} placeholder="Buscar produtos por nome ou código..." className="pl-9 h-9 text-sm" />
-              </div>
-            </div>
-
-            {/* Cart items (always visible) */}
-            {cart.length > 0 && (
-              <div className="border-b border-border">
-                <div className="px-5 py-2">
-                  <span className="text-xs font-semibold text-muted-foreground">Itens adicionados ({cart.length})</span>
-                </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs font-bold text-foreground">Produto</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">SKU</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground w-28">Qtd</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground text-center w-16"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {cart.map(item => (
-                      <TableRow key={`cart-${item.pro_codpro}`} className="bg-accent/10">
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded bg-muted flex-shrink-0 overflow-hidden">
-                              {item.pro_foto ? (
-                                <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
-                                  onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                              ) : <div className="w-full h-full" />}
-                            </div>
-                            <span className="text-sm font-medium">{item.pro_despro}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1 border border-border rounded-md w-fit">
-                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, -1)}>
-                              <Minus size={12} />
-                            </Button>
-                            <span className="w-6 text-center text-sm">{item.quantidade}</span>
-                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, 1)}>
-                              <Plus size={12} />
-                            </Button>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive" onClick={() => removeFromCart(item.pro_codpro)}>
-                            <Trash2 size={14} />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-
-            {/* Search results */}
+            {/* Products table (cart items) */}
             <div className="overflow-x-auto">
-              {!produtoSearch.trim() ? (
-                <div className="px-5 py-8 text-center text-sm text-muted-foreground">
-                  Digite no campo de busca acima para encontrar produtos
-                </div>
-              ) : loadingCatalogo ? <div className="p-8"><Spinner /></div> : filteredCatalogo.length === 0 ? (
-                <div className="px-5 py-8 text-center text-sm text-muted-foreground">
-                  Nenhum produto encontrado para "{produtoSearch}"
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs font-bold text-foreground">Produto</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">SKU</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground">Preço</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground w-28">Qtd</TableHead>
+                    <TableHead className="text-xs font-bold text-foreground text-center">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {cart.length === 0 ? (
                     <TableRow>
-                      <TableHead className="text-xs font-bold text-foreground">Produto</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">SKU</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">Preço</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground w-32">Qtd</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground text-center">Ações</TableHead>
+                      <TableCell colSpan={5} className="text-center text-muted-foreground py-4 text-sm">
+                        —
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredCatalogo.slice(0, 30).map(item => {
-                      const inCart = cart.find(c => c.pro_codpro === item.pro_codpro);
-                      return (
-                        <TableRow key={item.pro_codpro} className="hover:bg-accent/30">
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded bg-muted flex-shrink-0 overflow-hidden">
-                                {item.pro_foto ? (
-                                  <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
-                                    onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                                ) : <div className="w-full h-full" />}
-                              </div>
-                              <span className="text-sm font-medium">{item.pro_despro}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</TableCell>
-                          <TableCell className="text-sm">{fmt(0)}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1 border border-border rounded-md w-fit">
-                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => inCart && updateQty(item.pro_codpro, -1)} disabled={!inCart}>
-                                <Minus size={12} />
-                              </Button>
-                              <span className="w-6 text-center text-sm">{inCart?.quantidade || 0}</span>
-                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => inCart ? updateQty(item.pro_codpro, 1) : addToCart(item)}>
-                                <Plus size={12} />
-                              </Button>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <Button size="sm" className="gap-1 bg-erp-navy hover:bg-erp-navy/90 text-xs" onClick={() => addToCart(item)}>
-                              Adicionar
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              )}
+                  ) : cart.map(item => (
+                    <TableRow key={`cart-${item.pro_codpro}`}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded bg-muted flex-shrink-0 overflow-hidden">
+                            {item.pro_foto ? (
+                              <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
+                                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                            ) : <div className="w-full h-full" />}
+                          </div>
+                          <span className="text-sm font-medium">{item.pro_despro}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</TableCell>
+                      <TableCell className="text-sm">
+                        <Input type="number" value={item.preco_unitario || ''} onChange={e => updatePrice(item.pro_codpro, parseFloat(e.target.value) || 0)}
+                          className="w-20 h-7 text-xs" placeholder="0,00" step="0.01" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1 border border-border rounded-md w-fit">
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, -1)}>
+                            <Minus size={12} />
+                          </Button>
+                          <span className="w-6 text-center text-sm">{item.quantidade}</span>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, 1)}>
+                            <Plus size={12} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive" onClick={() => removeFromCart(item.pro_codpro)}>
+                          <Trash2 size={14} />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
 
-            {/* Cart summary at bottom */}
-            <div className="px-5 py-4 border-t border-border">
-              {cart.length === 0 ? (
-                <div className="text-center text-sm text-muted-foreground bg-muted/50 rounded-md py-3">
-                  Nenhum item adicionado ao pedido
-                </div>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">{cart.length} produto(s) adicionado(s) — {cart.reduce((s, c) => s + c.quantidade, 0)} unidades</span>
-                  <Button className="bg-erp-navy hover:bg-erp-navy/90 gap-2" disabled={!selectedCliente} onClick={() => setStep(1)}>
-                    Avançar para Resumo
-                  </Button>
-                </div>
-              )}
+            {/* Bottom */}
+            <div className="px-5 py-3 border-t border-border bg-muted/30 rounded-b-lg text-center text-sm text-muted-foreground">
+              {cart.length === 0 ? 'Nenhum item adicionado ao pedido' : `${cart.length} produto(s) — ${cart.reduce((s, c) => s + c.quantidade, 0)} unidades`}
             </div>
 
-            <div className="px-5 pb-3 text-xs text-muted-foreground">
-              Preços de dúvida? Cheque nossa central de suporte ou entre em contato →
+            <div className="px-5 py-3 flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Preços de dúvida? Cheque nossa central de suporte ou entre em contato →</span>
+              {cart.length > 0 && (
+                <Button className="bg-erp-navy hover:bg-erp-navy/90 gap-2" disabled={!selectedCliente} onClick={() => setStep(1)}>
+                  Avançar para Resumo
+                </Button>
+              )}
             </div>
           </div>
         )}

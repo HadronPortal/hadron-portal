@@ -33,5 +33,6 @@ export function useApiFetch<T = any>({
     },
     enabled,
     staleTime,
+    placeholderData: placeholderData as any,
   });
 }

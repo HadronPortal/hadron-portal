@@ -61,8 +61,6 @@ serve(async (req) => {
 
     if (repParam) {
       requestBody.orc_codrep = repParam.split(',').map(Number);
-    } else {
-      requestBody.orc_codrep = [3];
     }
 
     const clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiClients', {

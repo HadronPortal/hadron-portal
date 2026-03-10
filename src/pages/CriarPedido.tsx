@@ -210,9 +210,13 @@ const CriarPedido = () => {
                   </div>
                 ) : (
                   <div className="relative">
-                    <Input value={clienteSearch} onChange={e => { setClienteSearch(e.target.value); setShowClienteDropdown(true); }} onFocus={() => setShowClienteDropdown(true)}
+                    <Input value={clienteSearch}
+                      onChange={e => { setClienteSearch(e.target.value); setShowClienteDropdown(true); }}
+                      onDoubleClick={() => { fetchClientes(''); setShowClienteDropdown(true); }}
+                      onFocus={() => { if (clienteSearch.length >= 2) setShowClienteDropdown(true); }}
+                      onBlur={() => setTimeout(() => setShowClienteDropdown(false), 200)}
                       placeholder="Buscar cliente..." className="h-8 text-sm" />
-                    {showClienteDropdown && clienteSearch.length >= 2 && (
+                    {showClienteDropdown && (
                       <div className="absolute z-50 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                         {loadingClientes ? (
                           <div className="p-2 text-center text-xs text-muted-foreground">Buscando...</div>

@@ -591,9 +591,9 @@ const LojaVirtual = () => {
               <p className="text-sm text-gray-400 mt-3">Somos uma loja online oferecendo uma variedade de produtos frescos e orgânicos com entrega rápida.</p>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-3">Categories</h4>
+              <h4 className="text-sm font-bold text-white mb-3">Categorias</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                {['Vegetables & Fruit', 'Beverages', 'Cooking', 'Snacks & Munchies'].map(c => <li key={c} className="hover:text-white cursor-pointer">{c}</li>)}
+                {['Verduras & Frutas', 'Bebidas', 'Cozinha', 'Lanches & Petiscos'].map(c => <li key={c} className="hover:text-white cursor-pointer">{c}</li>)}
               </ul>
             </div>
             <div>

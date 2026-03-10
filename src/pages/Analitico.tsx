@@ -44,6 +44,7 @@ const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase
 
 const Analitico = () => {
   const [activeTab, setActiveTab] = useState<string>('todos');
+  const { representantes } = useRepresentantes();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [products, setProducts] = useState<ProductAnalytics[]>([]);
   const [periods, setPeriods] = useState<Period[]>([]);

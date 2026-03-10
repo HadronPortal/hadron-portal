@@ -59,11 +59,12 @@ const Index = () => {
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
 
-  const { data, isLoading: loading, error } = useApiFetch<DashboardAPIResponse>({
+  const { data, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
     queryKey: ['dashboard', repParam || 'all'],
     endpoint: 'fetch-dashboard',
     params: repParam ? { rep: repParam } : {},
     staleTime: 2 * 60 * 1000,
+    placeholderData: (prev) => prev,
   });
 
   const handleRepChange = useCallback((repCodes: number[]) => setSelectedRep(repCodes), []);

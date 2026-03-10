@@ -201,9 +201,17 @@ const CriarPedido = () => {
               </div>
             </div>
 
-            {/* Catalog table */}
+            {/* Catalog table - only show when searching */}
             <div className="overflow-x-auto">
-              {loadingCatalogo ? <div className="p-8"><Spinner /></div> : (
+              {!produtoSearch.trim() ? (
+                <div className="px-5 py-8 text-center text-sm text-muted-foreground">
+                  Digite no campo de busca acima para encontrar produtos
+                </div>
+              ) : loadingCatalogo ? <div className="p-8"><Spinner /></div> : filteredCatalogo.length === 0 ? (
+                <div className="px-5 py-8 text-center text-sm text-muted-foreground">
+                  Nenhum produto encontrado para "{produtoSearch}"
+                </div>
+              ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>

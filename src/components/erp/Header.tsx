@@ -1,4 +1,4 @@
-import { Home, Users, Gauge, LayoutGrid, Grid3X3, Box, ShoppingBag, LogOut, User, DollarSign } from 'lucide-react';
+import { Home, Users, Gauge, ClipboardList, LayoutGrid, Box, ShoppingBag, LogOut, User, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import logoImg from '@/assets/icon_hadronweb.png';
 

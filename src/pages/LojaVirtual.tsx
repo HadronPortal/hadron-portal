@@ -506,9 +506,9 @@ const LojaVirtual = () => {
       <section className="max-w-7xl mx-auto px-4 py-6">
         <Carousel title="Melhores Ofertas">
           {[
-            { title: 'Economize Mais!', sub: 'Vegetais Orgânicos', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/2.png', bg: 'hsl(220, 40%, 92%)' },
-            { title: 'Hot Deals!', sub: 'Frutas & Verduras', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/3.png', bg: 'hsl(30, 80%, 92%)' },
-            { title: 'Compre Mais, Pague Menos', sub: 'Frutas & Verduras', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/1.png', bg: 'hsl(200, 40%, 92%)' },
+            { title: 'Kits Econômicos!', sub: 'Shampoo + Condicionador', img: imgShampoo, bg: 'hsl(220, 40%, 92%)' },
+            { title: 'Promoção Bebê!', sub: 'Fraldas & Lenços', img: imgLencoUmedecido, bg: 'hsl(30, 80%, 92%)' },
+            { title: 'Compre 3, Pague 2', sub: 'Sabonetes selecionados', img: imgSabonete, bg: 'hsl(200, 40%, 92%)' },
           ].map((v, i) => (
             <div
               key={i}

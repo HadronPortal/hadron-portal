@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Eye, CreditCard } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
-import { supabase } from '@/integrations/supabase/client';
+import { useRepresentantes } from '@/hooks/use-representantes';
 import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
 
 const COLUMNS: ColumnDef[] = [
@@ -69,10 +69,10 @@ const formatCurrency = (v: number | null) => {
 
 const Clientes = () => {
   const navigate = useNavigate();
+  const { representantes } = useRepresentantes();
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
-  const [representantes, setRepresentantes] = useState<Representante[]>([]);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
@@ -95,7 +95,6 @@ const Clientes = () => {
       if (!res.ok) throw new Error('Falha ao buscar clientes');
       const result = await res.json();
       setClients(result.clients || []);
-      setRepresentantes(result.representantes || []);
       setTotalRecords(result.total_records || 0);
     } catch (err) {
       console.error(err);

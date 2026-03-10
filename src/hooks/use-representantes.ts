@@ -12,7 +12,8 @@ const fetchReps = async (): Promise<Representante[]> => {
   );
   if (!res.ok) return [];
   const data = await res.json();
-  return data.data || [];
+  // Support both { data: [...] } and { representantes: [...] } formats
+  return data.data || data.representantes || [];
 };
 
 export function useRepresentantes() {

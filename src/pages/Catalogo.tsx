@@ -170,34 +170,42 @@ const Catalogo = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs font-bold text-foreground">CÓD</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">FOTO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">DESCRIÇÃO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">GRUPO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground text-right">SALDO</TableHead>
+                    {visibleCols.cod !== false && <TableHead className="text-xs font-bold text-foreground">CÓD PROD</TableHead>}
+                    {visibleCols.foto !== false && <TableHead className="text-xs font-bold text-foreground">FOTO</TableHead>}
+                    {visibleCols.descricao !== false && <TableHead className="text-xs font-bold text-foreground">DESCRIÇÃO</TableHead>}
+                    {visibleCols.grupo !== false && <TableHead className="text-xs font-bold text-foreground">GRUPO</TableHead>}
+                    {visibleCols.prev_saida !== false && <TableHead className="text-xs font-bold text-foreground text-right">PREV SAÍDA</TableHead>}
+                    {visibleCols.prev_entra !== false && <TableHead className="text-xs font-bold text-foreground text-right">PREV ENTRA</TableHead>}
+                    {visibleCols.saldo_atual !== false && <TableHead className="text-xs font-bold text-foreground text-right">SALDO ATUAL</TableHead>}
+                    {visibleCols.saldo_futuro !== false && <TableHead className="text-xs font-bold text-foreground text-right">SALDO FUTURO</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredItems.map((item) => (
                     <TableRow key={item.pro_codpro} className="hover:bg-accent/30">
-                      <TableCell className="text-sm">{item.pro_codpro}</TableCell>
-                      <TableCell>
-                        {item.pro_foto ? (
-                          <img
-                            src={getImageUrl(item.pro_foto)}
-                            alt={item.pro_despro}
-                            className="w-14 h-14 object-contain rounded bg-muted"
-                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                          />
-                        ) : (
-                          <div className="w-14 h-14 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">
-                            N/A
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm font-medium">{item.pro_despro}</TableCell>
-                      <TableCell className="text-sm">{item.NOME_GRUPO || '—'}</TableCell>
-                      <TableCell className="text-sm text-right">{formatSaldo(item.SALDOS)}</TableCell>
+                      {visibleCols.cod !== false && <TableCell className="text-sm">{item.pro_codpro}</TableCell>}
+                      {visibleCols.foto !== false && (
+                        <TableCell>
+                          {item.pro_foto ? (
+                            <img
+                              src={getImageUrl(item.pro_foto)}
+                              alt={item.pro_despro}
+                              className="w-14 h-14 object-contain rounded bg-muted"
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                            />
+                          ) : (
+                            <div className="w-14 h-14 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">
+                              N/A
+                            </div>
+                          )}
+                        </TableCell>
+                      )}
+                      {visibleCols.descricao !== false && <TableCell className="text-sm font-medium">{item.pro_despro}</TableCell>}
+                      {visibleCols.grupo !== false && <TableCell className="text-sm">{item.NOME_GRUPO || '—'}</TableCell>}
+                      {visibleCols.prev_saida !== false && <TableCell className="text-sm text-right">—</TableCell>}
+                      {visibleCols.prev_entra !== false && <TableCell className="text-sm text-right">—</TableCell>}
+                      {visibleCols.saldo_atual !== false && <TableCell className="text-sm text-right">{formatSaldo(item.SALDOS)}</TableCell>}
+                      {visibleCols.saldo_futuro !== false && <TableCell className="text-sm text-right">—</TableCell>}
                     </TableRow>
                   ))}
                 </TableBody>

@@ -491,7 +491,7 @@ const LojaVirtual = () => {
           {categories.map((cat) => (
             <div
               key={cat.name}
-              className="flex-shrink-0 w-[130px] flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer group"
+              className="flex-shrink-0 w-[130px] flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:shadow-md hover:border-green-200 transition-all cursor-pointer group"
             >
               <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden">
                 <img src={cat.image} alt={cat.name} className="w-14 h-14 object-contain group-hover:scale-110 transition-transform" />

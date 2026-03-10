@@ -18,20 +18,20 @@ type CartItem = Product & { qty: number };
 
 // ─── Data ───────────────────────────────────────────────────────────────
 const categories = [
-  { name: 'Oils, Refined & Ghee', img: `${IMG}/category/1.png` },
-  { name: 'Rice, Flour & Grains', img: `${IMG}/category/2.png` },
-  { name: 'Food Cupboard', img: `${IMG}/category/3.png` },
-  { name: 'Dals & Pulses', img: `${IMG}/category/4.png` },
-  { name: 'Drinks & Beverages', img: `${IMG}/category/5.png` },
-  { name: 'Fresh Fruits & Vegetables', img: `${IMG}/category/6.png` },
-  { name: 'Ready to eat Meals', img: `${IMG}/category/7.png` },
-  { name: 'Instant Mixes', img: `${IMG}/category/8.png` },
+  { name: 'Óleos & Manteigas', img: `${IMG}/category/1.png` },
+  { name: 'Arroz, Farinha & Grãos', img: `${IMG}/category/2.png` },
+  { name: 'Despensa', img: `${IMG}/category/3.png` },
+  { name: 'Leguminosas', img: `${IMG}/category/4.png` },
+  { name: 'Bebidas', img: `${IMG}/category/5.png` },
+  { name: 'Frutas & Verduras', img: `${IMG}/category/6.png` },
+  { name: 'Pratos Prontos', img: `${IMG}/category/7.png` },
+  { name: 'Misturas Instantâneas', img: `${IMG}/category/8.png` },
 ];
 
 const valueBanners = [
-  { title: 'Buy more, Save more', sub: 'Fruit & Vegetables', img: `${IMG}/value/1.png`, bg: '#e8f5f1' },
-  { title: 'Save More!', sub: 'Organic Vegetable', img: `${IMG}/value/2.png`, bg: '#fff5e6' },
-  { title: 'Hot Deals!', sub: 'Fruit & Vegetables', img: `${IMG}/value/3.png`, bg: '#f0e8ff' },
+  { title: 'Compre mais, Economize mais', sub: 'Frutas & Verduras', img: `${IMG}/value/1.png`, bg: '#e8f5f1' },
+  { title: 'Economize Mais!', sub: 'Vegetais Orgânicos', img: `${IMG}/value/2.png`, bg: '#fff5e6' },
+  { title: 'Ofertas Quentes!', sub: 'Frutas & Verduras', img: `${IMG}/value/3.png`, bg: '#f0e8ff' },
 ];
 
 const dealProducts: Product[] = [

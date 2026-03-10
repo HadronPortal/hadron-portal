@@ -18,7 +18,8 @@ export function useApiFetch<T = any>({
   params = {},
   enabled = true,
   staleTime,
-}: UseApiFetchOptions) {
+  placeholderData,
+}: UseApiFetchOptions<T>) {
   return useQuery<T>({
     queryKey,
     queryFn: async ({ signal }) => {

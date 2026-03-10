@@ -359,7 +359,7 @@ const LojaVirtual = () => {
             </div>
           </div>
           {/* Nav */}
-          <div className="hidden md:flex items-center justify-center gap-1 pb-2 border-t pt-2">
+          <div className="hidden md:flex items-center gap-1 pb-2 border-t pt-2">
             <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-semibold" style={{ backgroundColor: B }}>
               <Menu size={16} /> Todas as Categorias
             </button>

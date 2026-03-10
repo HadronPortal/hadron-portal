@@ -61,7 +61,11 @@ serve(async (req) => {
     };
     if (codter) {
       requestBody.orc_codter = parseInt(codter);
+      requestBody.rec_codter = parseInt(codter);
+      requestBody.codter = parseInt(codter);
     }
+
+    console.log('Request body:', JSON.stringify(requestBody));
 
     const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCharges', {
       method: 'POST',

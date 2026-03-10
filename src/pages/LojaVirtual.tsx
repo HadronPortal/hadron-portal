@@ -579,7 +579,7 @@ const LojaVirtual = () => {
                 Conhecer
               </button>
             </div>
-            <img src="https://themes.pixelstrap.com/fastkart/assets/images/veg-3/banner/2.png" alt="" className="absolute right-4 bottom-0 h-[160px] object-contain hidden sm:block" />
+            <img src={imgProtetorSolar} alt="" className="absolute right-4 bottom-2 h-[140px] object-contain hidden sm:block" />
           </div>
         </div>
       </section>

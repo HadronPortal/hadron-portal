@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
-import { supabase } from '@/integrations/supabase/client';
+
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -90,33 +90,10 @@ const Pedidos = () => {
       const res = await fetch(url);
       if (!res.ok) throw new Error('Falha ao buscar pedidos');
       const data = await res.json();
-      const apiOrders: OrderAPI[] = data.orders || [];
 
-      // Fetch local orders from database
-      const { data: localOrders } = await supabase
-        .from('pedidos')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      const mappedLocal: OrderAPI[] = (localOrders || []).map((p: any) => ({
-        orc_codorc: 0,
-        orc_codorc_web: p.id,
-        orc_codter: p.cliente_codigo,
-        ter_nomter: p.cliente_nome,
-        ter_documento: p.cliente_documento || '',
-        TEN_CIDLGR: p.cliente_cidade || '',
-        TEN_UF_LGR: p.cliente_uf || '',
-        orc_status: p.status,
-        orc_vlrorc: Number(p.total),
-        orc_peso: 0,
-        orc_dtaorc: p.created_at,
-        _local: true,
-        _numero: p.numero,
-      }));
-
-      setOrders([...mappedLocal, ...apiOrders]);
+      setOrders(data.orders || []);
       setDashboard(data.dashboard || dashboard);
-      setTotalRecords((data.total_records || 0) + mappedLocal.length);
+      setTotalRecords(data.total_records || 0);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
@@ -259,7 +236,7 @@ const Pedidos = () => {
                       const st = statusMap[o.orc_status] || { label: o.orc_status || '—', color: 'bg-muted' };
                       return (
                         <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web || code}`)}>
-                          <TableCell className="text-sm font-semibold underline">{(o as any)._numero || code}</TableCell>
+                          <TableCell className="text-sm font-semibold underline">{code}</TableCell>
                           <TableCell className="text-sm">
                             <div>{o.orc_codter || ''} - {o.ter_nomter || o.cliente || ''}</div>
                             {(o.ter_fanter || o.subtexto) && (

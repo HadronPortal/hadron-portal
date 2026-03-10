@@ -506,7 +506,7 @@ const LojaVirtual = () => {
       <section className="max-w-7xl mx-auto px-4 py-6">
         <Carousel title="Melhores Ofertas">
           {[
-            { title: 'Kits Econômicos!', sub: 'Shampoo + Condicionador', img: imgShampoo, bg: 'hsl(220, 40%, 92%)' },
+            { title: 'Kits Econômicos!', sub: 'Shampoo + Condicionador', img: imgShampoo, bg: 'hsl(145, 40%, 92%)' },
             { title: 'Promoção Bebê!', sub: 'Fraldas & Lenços', img: imgLencoUmedecido, bg: 'hsl(30, 80%, 92%)' },
             { title: 'Compre 3, Pague 2', sub: 'Sabonetes selecionados', img: imgSabonete, bg: 'hsl(200, 40%, 92%)' },
           ].map((v, i) => (

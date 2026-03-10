@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   ShoppingCart, Heart, Search, MapPin, Phone,
   ChevronLeft, ChevronRight, Star, Truck, Shield,

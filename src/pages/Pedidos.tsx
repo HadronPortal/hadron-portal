@@ -258,8 +258,8 @@ const Pedidos = () => {
                       const code = o.orc_codorc || o.codigo || '';
                       const st = statusMap[o.orc_status] || { label: o.orc_status || '—', color: 'bg-muted' };
                       return (
-                        <TableRow key={code} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web || code}`)}>
-                          <TableCell className="text-sm font-semibold underline">{code}</TableCell>
+                        <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web || code}`)}>
+                          <TableCell className="text-sm font-semibold underline">{(o as any)._numero || code}</TableCell>
                           <TableCell className="text-sm">
                             <div>{o.orc_codter || ''} - {o.ter_nomter || o.cliente || ''}</div>
                             {(o.ter_fanter || o.subtexto) && (

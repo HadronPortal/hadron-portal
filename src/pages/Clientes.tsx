@@ -85,6 +85,7 @@ const Clientes = () => {
         const result = await res.json();
         
         setClients(result.clients || []);
+        setRepresentantes(result.representantes || []);
         setTotalRecords(result.total_records || 0);
       } catch (err) {
         console.error(err);

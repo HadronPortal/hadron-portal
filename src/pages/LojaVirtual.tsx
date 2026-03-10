@@ -65,12 +65,12 @@ const newProducts: Product[] = [
 ];
 
 const featureProducts: Product[] = [
-  { id: 201, name: 'Bell pepper', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/10.png`, category: 'Fruits & Vegetables' },
-  { id: 202, name: 'Pea', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/11.png`, category: 'Fruits & Vegetables' },
-  { id: 203, name: 'Avocado', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/12.png`, category: 'Fruits & Vegetables' },
-  { id: 204, name: 'Garlic', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/7.png`, category: 'Cooking' },
-  { id: 205, name: 'Beetroot', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/8.png`, category: 'Cooking' },
-  { id: 206, name: 'Eggplant', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/9.png`, category: 'Cooking' },
+  { id: 201, name: 'Pimentão', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/10.png`, category: 'Frutas & Verduras' },
+  { id: 202, name: 'Ervilha', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/11.png`, category: 'Frutas & Verduras' },
+  { id: 203, name: 'Abacate', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/12.png`, category: 'Frutas & Verduras' },
+  { id: 204, name: 'Alho', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/7.png`, category: 'Cozinha' },
+  { id: 205, name: 'Beterraba', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/8.png`, category: 'Cozinha' },
+  { id: 206, name: 'Berinjela', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/9.png`, category: 'Cozinha' },
 ];
 
 const productTabs = ['All', 'Cooking', 'Fruits & Vegetables', 'Beverage', 'Dairy'];

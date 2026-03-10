@@ -1,7 +1,13 @@
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import type { Client } from '@/lib/mock-data';
+
+export interface Client {
+  id: string;
+  nome: string;
+  localizacao: string;
+  data_cadastro: string;
+}
 
 const ClientsTable = ({ clients }: { clients: Client[] }) => {
   return (
@@ -24,7 +30,7 @@ const ClientsTable = ({ clients }: { clients: Client[] }) => {
             {clients.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="text-center text-muted-foreground py-6">
-                  ---
+                  Nenhum cliente encontrado
                 </TableCell>
               </TableRow>
             ) : (

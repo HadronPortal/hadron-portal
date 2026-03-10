@@ -2,6 +2,7 @@ interface KpiCardsProps {
   enviados: number;
   aprovados: number;
   faturados: number;
+  cancelados: number;
   clientesPositivados: number;
 }
 
@@ -12,12 +13,13 @@ const cards: { key: keyof KpiCardsProps; label: string; color: string; isCurrenc
   { key: 'enviados', label: 'ENVIADOS', color: 'hsl(var(--erp-blue))', isCurrency: true },
   { key: 'aprovados', label: 'APROVADOS', color: 'hsl(var(--erp-green))', isCurrency: true },
   { key: 'faturados', label: 'FATURADOS', color: 'hsl(var(--erp-navy))', isCurrency: true },
-  { key: 'clientesPositivados', label: 'CLIENTES POSITIVADOS', color: 'hsl(var(--erp-amber))', isCurrency: false },
+  { key: 'cancelados', label: 'CANCELADOS', color: 'hsl(var(--destructive))', isCurrency: true },
+  { key: 'clientesPositivados', label: 'POSITIVADOS', color: 'hsl(var(--erp-amber))', isCurrency: false },
 ];
 
 const KpiCards = (props: KpiCardsProps) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       {cards.map(({ key, label, color, isCurrency }) => (
         <div
           key={key}

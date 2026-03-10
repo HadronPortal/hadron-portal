@@ -73,10 +73,7 @@ const Clientes = () => {
   const [representantes, setRepresentantes] = useState<Representante[]>([]);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateRange, setDateRange] = useState<{ start: Date; end: Date }>({
-    start: new Date(2026, 0, 8),
-    end: new Date(2026, 2, 9),
-  });
+  const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);

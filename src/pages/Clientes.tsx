@@ -272,8 +272,20 @@ const Clientes = () => {
                         {show('acao') && (
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <button className="text-muted-foreground hover:text-foreground" title="Ver"><Eye size={16} /></button>
-                              <button className="text-muted-foreground hover:text-foreground" title="Pedidos"><CreditCard size={16} /></button>
+                              <button
+                                className="text-muted-foreground hover:text-foreground"
+                                title="Ver Pedidos"
+                                onClick={() => navigate(`/pedidos?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}
+                              >
+                                <Eye size={16} />
+                              </button>
+                              <button
+                                className="text-muted-foreground hover:text-foreground"
+                                title="Cobranças"
+                                onClick={() => navigate(`/cobrancas?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}
+                              >
+                                <CreditCard size={16} />
+                              </button>
                             </div>
                           </TableCell>
                         )}

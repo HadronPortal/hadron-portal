@@ -349,9 +349,9 @@ const LojaVirtual = () => {
           {/* Nav */}
           <div className="hidden md:flex items-center gap-1 pb-2 border-t pt-2">
             <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-semibold" style={{ backgroundColor: B }}>
-              <Menu size={16} /> All Categories
+              <Menu size={16} /> Todas as Categorias
             </button>
-            {['Home', 'Shop', 'Product', 'Mega Menu', 'Blog', 'Pages', 'Seller'].map(item => (
+            {['Início', 'Loja', 'Produtos', 'Mega Menu', 'Blog', 'Páginas', 'Vendedor'].map(item => (
               <button key={item} className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium">{item}</button>
             ))}
             <div className="ml-auto flex items-center gap-2">

@@ -210,7 +210,7 @@ const FloatingBag = ({ cart, expanded, onToggle, onOpen }: {
       {expanded && (
         <div className="rounded-xl p-4 shadow-2xl min-w-[180px] cursor-pointer mr-1" style={{ backgroundColor: B }} onClick={onOpen}>
           <div className="flex items-center justify-between mb-2 text-white">
-            <span className="text-sm font-bold">{count} Items</span>
+            <span className="text-sm font-bold">{count} Itens</span>
             <button onClick={e => { e.stopPropagation(); onToggle(); }} className="text-white/70 hover:text-white"><X size={14} /></button>
           </div>
           <div className="flex gap-1 mb-2">

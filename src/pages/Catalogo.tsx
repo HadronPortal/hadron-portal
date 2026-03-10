@@ -137,9 +137,7 @@ const Catalogo = () => {
         </div>
 
         {initialLoading && items.length === 0 ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-muted-foreground" size={32} />
-          </div>
+          <Spinner />
         ) : error && items.length === 0 ? (
           <div className="text-center py-20 text-destructive">{error}</div>
         ) : (

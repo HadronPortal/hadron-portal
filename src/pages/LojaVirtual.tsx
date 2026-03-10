@@ -494,9 +494,9 @@ const LojaVirtual = () => {
             <img src={`${IMG}/banner/1.png`} alt="" className="absolute right-4 bottom-0 h-[180px] object-contain hidden sm:block" />
             <div className="relative z-10">
               <span className="text-xs uppercase tracking-wider font-bold" style={{ color: B }}>Premium</span>
-              <h3 className="text-lg font-bold text-gray-800 mt-1">Fresh Vegetable & Daily Eating</h3>
-              <p className="text-sm text-gray-500">Get Extra 50% Off</p>
-              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: B }}>Shop Now</button>
+              <h3 className="text-lg font-bold text-gray-800 mt-1">Vegetais Frescos & Alimentação Diária</h3>
+              <p className="text-sm text-gray-500">Ganhe 50% de Desconto Extra</p>
+              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: B }}>Comprar Agora</button>
             </div>
           </div>
           <div className="rounded-2xl p-8 relative overflow-hidden min-h-[200px] flex items-center" style={{ background: 'linear-gradient(135deg, #fff5e6, #ffe8c8)' }}>

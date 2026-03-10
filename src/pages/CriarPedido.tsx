@@ -7,7 +7,7 @@ import Spinner from '@/components/ui/spinner';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus, Minus, Trash2, Search, ShoppingCart, ArrowLeft, X } from 'lucide-react';
+import { Plus, Minus, Search, ArrowLeft, X, Trash2, CheckCircle2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 /* ─── types ─── */
@@ -36,12 +36,12 @@ interface CartItem extends CatalogoItem {
 const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 const BASE = `https://${projectId}.supabase.co/functions/v1`;
 
-/* ─── steps ─── */
-const steps = ['Carrinho', 'Checkout', 'Pedido'] as const;
+const fmt = (v: number) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const CriarPedido = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+  const [pedidoNumero, setPedidoNumero] = useState('');
 
   /* cliente */
   const [clientes, setClientes] = useState<ClienteAPI[]>([]);
@@ -50,16 +50,16 @@ const CriarPedido = () => {
   const [loadingClientes, setLoadingClientes] = useState(false);
   const [showClienteDropdown, setShowClienteDropdown] = useState(false);
 
-  /* catalogo / produtos */
+  /* catalogo */
   const [catalogo, setCatalogo] = useState<CatalogoItem[]>([]);
   const [produtoSearch, setProdutoSearch] = useState('');
   const [loadingCatalogo, setLoadingCatalogo] = useState(false);
-  const [showProdutoModal, setShowProdutoModal] = useState(false);
 
   /* carrinho */
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [desconto, setDesconto] = useState(0);
+  const [frete, setFrete] = useState(0);
 
-  /* representante (mock logged-in) */
   const representante = 'REPRESENTANTE ONLINE';
 
   /* ─── fetch clientes ─── */
@@ -85,7 +85,7 @@ const CriarPedido = () => {
     return () => clearTimeout(t);
   }, [clienteSearch, fetchClientes]);
 
-  /* ─── fetch catalogo ─── */
+  /* ─── fetch catalogo on mount ─── */
   const fetchCatalogo = useCallback(async () => {
     setLoadingCatalogo(true);
     try {
@@ -96,42 +96,32 @@ const CriarPedido = () => {
     finally { setLoadingCatalogo(false); }
   }, []);
 
-  useEffect(() => {
-    if (showProdutoModal && catalogo.length === 0) fetchCatalogo();
-  }, [showProdutoModal, catalogo.length, fetchCatalogo]);
+  useEffect(() => { fetchCatalogo(); }, [fetchCatalogo]);
 
   /* ─── cart ops ─── */
   const addToCart = (item: CatalogoItem) => {
     setCart(prev => {
       const existing = prev.find(c => c.pro_codpro === item.pro_codpro);
-      if (existing) {
-        return prev.map(c => c.pro_codpro === item.pro_codpro ? { ...c, quantidade: c.quantidade + 1 } : c);
-      }
+      if (existing) return prev.map(c => c.pro_codpro === item.pro_codpro ? { ...c, quantidade: c.quantidade + 1 } : c);
       return [...prev, { ...item, quantidade: 1, preco_unitario: 0 }];
     });
     toast({ title: 'Produto adicionado', description: item.pro_despro });
   };
 
   const updateQty = (codpro: number, delta: number) => {
-    setCart(prev => prev.map(c => {
-      if (c.pro_codpro !== codpro) return c;
-      const newQty = Math.max(1, c.quantidade + delta);
-      return { ...c, quantidade: newQty };
-    }));
+    setCart(prev => prev.map(c => c.pro_codpro !== codpro ? c : { ...c, quantidade: Math.max(1, c.quantidade + delta) }));
   };
 
-  const removeFromCart = (codpro: number) => {
-    setCart(prev => prev.filter(c => c.pro_codpro !== codpro));
-  };
+  const removeFromCart = (codpro: number) => setCart(prev => prev.filter(c => c.pro_codpro !== codpro));
 
   const updatePrice = (codpro: number, price: number) => {
     setCart(prev => prev.map(c => c.pro_codpro === codpro ? { ...c, preco_unitario: price } : c));
   };
 
   const subtotal = cart.reduce((s, c) => s + c.quantidade * c.preco_unitario, 0);
+  const total = subtotal - desconto + frete;
 
-  const getImageUrl = (filename: string) =>
-    `${BASE}/proxy-image?file=${encodeURIComponent(filename)}`;
+  const getImageUrl = (filename: string) => `${BASE}/proxy-image?file=${encodeURIComponent(filename)}`;
 
   const filteredCatalogo = produtoSearch.trim()
     ? catalogo.filter(c => {
@@ -140,272 +130,122 @@ const CriarPedido = () => {
       })
     : catalogo;
 
+  const handleEnviarPedido = () => {
+    const num = Math.floor(100000 + Math.random() * 900000).toString();
+    setPedidoNumero(num);
+    setStep(2);
+    toast({ title: 'Pedido enviado com sucesso!' });
+  };
+
+  /* ─── render ─── */
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-
-      <main className="flex-1 px-6 py-5 space-y-6 max-w-7xl mx-auto w-full">
-        {/* Back + Title */}
+      <main className="flex-1 px-6 py-5 space-y-6 max-w-6xl mx-auto w-full">
+        {/* Back */}
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => navigate('/pedidos')}>
             <ArrowLeft size={16} className="mr-1" /> Voltar
           </Button>
           <h1 className="text-2xl font-bold text-foreground">Criar Pedido</h1>
+          <span className="text-xs text-muted-foreground ml-auto">Rep: {representante}</span>
         </div>
 
-        {/* Stepper */}
-        <div className="flex items-center justify-center gap-0">
-          {steps.map((s, i) => (
-            <div key={s} className="flex items-center">
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                i <= step ? 'bg-erp-navy text-primary-foreground' : 'bg-muted text-muted-foreground'
-              }`}>
-                {i === 0 && <ShoppingCart size={14} />}
-                {s}
-              </div>
-              {i < steps.length - 1 && (
-                <div className={`w-16 h-0.5 ${i < step ? 'bg-erp-navy' : 'bg-border'}`} />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Step 0: Cart */}
+        {/* ═══════════════ STEP 1: Lista de Produtos ═══════════════ */}
         {step === 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left: Cart items */}
-            <div className="lg:col-span-2 space-y-4">
-              {/* Cliente selector */}
-              <div className="bg-card rounded-lg border border-border p-4 space-y-3">
-                <label className="text-sm font-semibold text-foreground">Cliente *</label>
+          <div className="bg-card rounded-lg border border-border shadow-sm">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <h2 className="text-lg font-bold text-foreground">Itens do Produtos</h2>
+              <div className="relative w-52">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input value={produtoSearch} onChange={e => setProdutoSearch(e.target.value)} placeholder="Buscar produtos" className="pl-9 h-9 text-sm" />
+              </div>
+            </div>
+
+            {/* Cliente + Rep row */}
+            <div className="px-5 py-3 border-b border-border flex items-center gap-4">
+              <div className="flex-1 relative">
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Cliente *</label>
                 {selectedCliente ? (
-                  <div className="flex items-center justify-between bg-muted rounded-md px-3 py-2">
-                    <div>
-                      <span className="font-medium text-sm">{selectedCliente.ter_codter} — {selectedCliente.ter_nomter}</span>
-                      {selectedCliente.TEN_CIDLGR && (
-                        <span className="text-xs text-muted-foreground ml-2">
-                          {selectedCliente.TEN_CIDLGR}{selectedCliente.TEN_UF_LGR ? ` - ${selectedCliente.TEN_UF_LGR}` : ''}
-                        </span>
-                      )}
-                    </div>
-                    <Button variant="ghost" size="sm" onClick={() => { setSelectedCliente(null); setClienteSearch(''); }}>
-                      <X size={14} />
+                  <div className="flex items-center gap-2 bg-muted rounded-md px-3 py-1.5 text-sm">
+                    <span className="font-medium">{selectedCliente.ter_codter} — {selectedCliente.ter_nomter}</span>
+                    <Button variant="ghost" size="sm" className="h-5 w-5 p-0 ml-auto" onClick={() => { setSelectedCliente(null); setClienteSearch(''); }}>
+                      <X size={12} />
                     </Button>
                   </div>
                 ) : (
                   <div className="relative">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      value={clienteSearch}
-                      onChange={(e) => { setClienteSearch(e.target.value); setShowClienteDropdown(true); }}
-                      onFocus={() => setShowClienteDropdown(true)}
-                      placeholder="Buscar cliente por nome, código ou documento..."
-                      className="pl-9"
-                    />
+                    <Input value={clienteSearch} onChange={e => { setClienteSearch(e.target.value); setShowClienteDropdown(true); }} onFocus={() => setShowClienteDropdown(true)}
+                      placeholder="Buscar cliente..." className="h-8 text-sm" />
                     {showClienteDropdown && clienteSearch.length >= 2 && (
-                      <div className="absolute z-50 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                      <div className="absolute z-50 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                         {loadingClientes ? (
-                          <div className="p-3 text-center text-sm text-muted-foreground">Buscando...</div>
+                          <div className="p-2 text-center text-xs text-muted-foreground">Buscando...</div>
                         ) : clientes.length === 0 ? (
-                          <div className="p-3 text-center text-sm text-muted-foreground">Nenhum cliente encontrado</div>
-                        ) : (
-                          clientes.map(c => (
-                            <button
-                              key={c.ter_codter}
-                              className="w-full text-left px-4 py-2.5 hover:bg-accent/30 transition-colors border-b border-border last:border-0"
-                              onClick={() => { setSelectedCliente(c); setShowClienteDropdown(false); setClienteSearch(''); }}
-                            >
-                              <div className="text-sm font-medium">{c.ter_codter} — {c.ter_nomter}</div>
-                              <div className="text-xs text-muted-foreground">
-                                {c.ter_documento && `Doc: ${c.ter_documento}`}
-                                {c.TEN_CIDLGR && ` · ${c.TEN_CIDLGR}`}
-                                {c.TEN_UF_LGR && ` - ${c.TEN_UF_LGR}`}
-                              </div>
-                            </button>
-                          ))
-                        )}
+                          <div className="p-2 text-center text-xs text-muted-foreground">Nenhum encontrado</div>
+                        ) : clientes.map(c => (
+                          <button key={c.ter_codter} className="w-full text-left px-3 py-2 hover:bg-accent/30 text-sm border-b border-border last:border-0"
+                            onClick={() => { setSelectedCliente(c); setShowClienteDropdown(false); setClienteSearch(''); }}>
+                            <div className="font-medium">{c.ter_codter} — {c.ter_nomter}</div>
+                            <div className="text-xs text-muted-foreground">{c.ter_documento || ''} {c.TEN_CIDLGR ? `· ${c.TEN_CIDLGR}` : ''}</div>
+                          </button>
+                        ))}
                       </div>
                     )}
                   </div>
                 )}
-
-                <div>
-                  <label className="text-sm font-semibold text-foreground">Representante</label>
-                  <div className="bg-muted rounded-md px-3 py-2 text-sm text-muted-foreground mt-1">{representante}</div>
-                </div>
               </div>
-
-              {/* Products header */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-foreground">Produto</span>
-                <span className="text-sm font-semibold text-foreground">Total</span>
-              </div>
-
-              {/* Cart items */}
-              {cart.length === 0 ? (
-                <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
-                  Nenhum produto adicionado. Clique em "Adicionar Produto" para começar.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {cart.map(item => (
-                    <div key={item.pro_codpro} className="bg-card rounded-lg border border-border p-4 flex items-center gap-4">
-                      {/* Image */}
-                      <div className="w-16 h-16 rounded bg-muted flex-shrink-0 overflow-hidden">
-                        {item.pro_foto ? (
-                          <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
-                            onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">N/A</div>
-                        )}
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate">{item.pro_despro}</div>
-                        <div className="text-xs text-muted-foreground">Cód: {item.pro_codpro}</div>
-                        <div className="flex items-center gap-1 mt-1">
-                          <span className="text-xs text-muted-foreground">R$</span>
-                          <Input
-                            type="number"
-                            value={item.preco_unitario || ''}
-                            onChange={e => updatePrice(item.pro_codpro, parseFloat(e.target.value) || 0)}
-                            className="w-24 h-7 text-xs"
-                            placeholder="Preço unit."
-                            step="0.01"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Qty controls */}
-                      <div className="flex items-center gap-1 border border-border rounded-md">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => updateQty(item.pro_codpro, -1)}>
-                          <Minus size={12} />
-                        </Button>
-                        <span className="w-8 text-center text-sm font-medium">{item.quantidade}</span>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => updateQty(item.pro_codpro, 1)}>
-                          <Plus size={12} />
-                        </Button>
-                      </div>
-
-                      {/* Total */}
-                      <div className="text-sm font-semibold w-24 text-right">
-                        R$ {(item.quantidade * item.preco_unitario).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </div>
-
-                      {/* Remove */}
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive" onClick={() => removeFromCart(item.pro_codpro)}>
-                        <Trash2 size={14} />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Add product button */}
-              <Button variant="outline" className="w-full gap-2" onClick={() => setShowProdutoModal(true)}>
-                <Plus size={16} /> Adicionar Produto
-              </Button>
-            </div>
-
-            {/* Right: Order summary */}
-            <div className="lg:col-span-1">
-              <div className="bg-erp-navy text-primary-foreground rounded-lg p-5 space-y-4 sticky top-4">
-                <h3 className="font-bold text-lg">Resumo do Pedido</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="opacity-80">Subtotal</span>
-                    <span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="opacity-80">Itens</span>
-                    <span>{cart.reduce((s, c) => s + c.quantidade, 0)}</span>
-                  </div>
-                </div>
-                <div className="border-t border-primary-foreground/20 pt-3 flex justify-between font-bold text-lg">
-                  <span>Total</span>
-                  <span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                </div>
-                <Button
-                  className="w-full font-bold rounded-md py-3 text-base"
-                  style={{ backgroundColor: 'hsl(43, 40%, 50%)', color: 'hsl(220, 60%, 15%)' }}
-                  disabled={cart.length === 0 || !selectedCliente}
-                  onClick={() => {
-                    toast({ title: 'Pedido criado!', description: `Pedido com ${cart.length} produto(s) para ${selectedCliente?.ter_nomter}` });
-                    navigate('/pedidos');
-                  }}
-                >
-                  Finalizar Pedido
-                </Button>
+              <div className="text-xs text-muted-foreground shrink-0">
+                <span className="font-semibold">Rep:</span> {representante}
               </div>
             </div>
-          </div>
-        )}
-      </main>
 
-      {/* Product selection modal */}
-      {showProdutoModal && (
-        <div className="fixed inset-0 z-50 bg-foreground/50 flex items-center justify-center p-4" onClick={() => setShowProdutoModal(false)}>
-          <div className="bg-card rounded-lg border border-border shadow-xl w-full max-w-3xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h2 className="text-lg font-bold text-foreground">Selecionar Produto</h2>
-              <Button variant="ghost" size="sm" onClick={() => setShowProdutoModal(false)}><X size={16} /></Button>
-            </div>
-            <div className="p-4">
-              <div className="relative">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={produtoSearch}
-                  onChange={e => setProdutoSearch(e.target.value)}
-                  placeholder="Buscar por nome ou código..."
-                  className="pl-9"
-                  autoFocus
-                />
-              </div>
-            </div>
-            <div className="flex-1 overflow-y-auto px-4 pb-4">
-              {loadingCatalogo ? (
-                <Spinner />
-              ) : filteredCatalogo.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground text-sm">Nenhum produto encontrado</div>
-              ) : (
+            {/* Catalog table */}
+            <div className="overflow-x-auto">
+              {loadingCatalogo ? <div className="p-8"><Spinner /></div> : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="text-xs font-bold text-foreground">CÓD</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">FOTO</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">DESCRIÇÃO</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">GRUPO</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground text-right">SALDO</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground"></TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">Produto</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">SKU</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">Preço</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground w-32">Preço</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground text-center">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredCatalogo.slice(0, 50).map(item => {
-                      const inCart = cart.some(c => c.pro_codpro === item.pro_codpro);
+                    {filteredCatalogo.slice(0, 30).map(item => {
+                      const inCart = cart.find(c => c.pro_codpro === item.pro_codpro);
                       return (
                         <TableRow key={item.pro_codpro} className="hover:bg-accent/30">
-                          <TableCell className="text-sm">{item.pro_codpro}</TableCell>
                           <TableCell>
-                            {item.pro_foto ? (
-                              <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro}
-                                className="w-10 h-10 object-contain rounded bg-muted"
-                                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                            ) : (
-                              <div className="w-10 h-10 rounded bg-muted" />
-                            )}
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded bg-muted flex-shrink-0 overflow-hidden">
+                                {item.pro_foto ? (
+                                  <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
+                                    onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                ) : <div className="w-full h-full" />}
+                              </div>
+                              <span className="text-sm font-medium">{item.pro_despro}</span>
+                            </div>
                           </TableCell>
-                          <TableCell className="text-sm font-medium">{item.pro_despro}</TableCell>
-                          <TableCell className="text-sm">{item.NOME_GRUPO || '—'}</TableCell>
-                          <TableCell className="text-sm text-right">{parseFloat(item.SALDOS).toLocaleString('pt-BR')}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</TableCell>
+                          <TableCell className="text-sm">{fmt(0)}</TableCell>
                           <TableCell>
-                            <Button
-                              size="sm"
-                              variant={inCart ? 'secondary' : 'default'}
-                              className="gap-1"
-                              onClick={() => addToCart(item)}
-                            >
-                              <Plus size={12} /> {inCart ? 'Mais 1' : 'Adicionar'}
+                            <div className="flex items-center gap-1 border border-border rounded-md w-fit">
+                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => inCart && updateQty(item.pro_codpro, -1)} disabled={!inCart}>
+                                <Minus size={12} />
+                              </Button>
+                              <span className="w-6 text-center text-sm">{inCart?.quantidade || 0}</span>
+                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => inCart ? updateQty(item.pro_codpro, 1) : addToCart(item)}>
+                                <Plus size={12} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Button size="sm" className="gap-1 bg-erp-navy hover:bg-erp-navy/90 text-xs" onClick={() => addToCart(item)}>
+                              Adicionar
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -415,9 +255,194 @@ const CriarPedido = () => {
                 </Table>
               )}
             </div>
+
+            {/* Cart summary at bottom */}
+            <div className="px-5 py-4 border-t border-border">
+              {cart.length === 0 ? (
+                <div className="text-center text-sm text-muted-foreground bg-muted/50 rounded-md py-3">
+                  Nenhum item adicionado ao pedido
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">{cart.length} produto(s) adicionado(s) — {cart.reduce((s, c) => s + c.quantidade, 0)} unidades</span>
+                  <Button className="bg-erp-navy hover:bg-erp-navy/90 gap-2" disabled={!selectedCliente} onClick={() => setStep(1)}>
+                    Avançar para Resumo
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <div className="px-5 pb-3 text-xs text-muted-foreground">
+              Preços de dúvida? Cheque nossa central de suporte ou entre em contato →
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* ═══════════════ STEP 2: Resumo do Pedido ═══════════════ */}
+        {step === 1 && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left: items */}
+            <div className="lg:col-span-2 bg-card rounded-lg border border-border shadow-sm">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+                <h2 className="text-lg font-bold text-foreground">Resumo do Pedido</h2>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" className="text-xs" onClick={() => setStep(0)}>
+                    ← Voltar
+                  </Button>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs font-bold text-foreground">Produto</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground text-center">Qtd</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground text-right">Preço</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {cart.map(item => (
+                      <TableRow key={item.pro_codpro}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded bg-muted flex-shrink-0 overflow-hidden">
+                              {item.pro_foto ? (
+                                <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
+                                  onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                              ) : <div className="w-full h-full" />}
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium">{item.pro_despro}</div>
+                              <div className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-center gap-1 border border-border rounded-md w-fit mx-auto">
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, -1)}>
+                              <Minus size={12} />
+                            </Button>
+                            <span className="w-6 text-center text-sm">{item.quantidade}</span>
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, 1)}>
+                              <Plus size={12} />
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm text-right font-medium">
+                          {fmt(item.quantidade * item.preco_unitario)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Totals */}
+              <div className="px-5 py-4 border-t border-border space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal:</span>
+                  <span className="font-medium">{fmt(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Desconto:</span>
+                  <span className="text-destructive font-medium">- {fmt(desconto)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Frete:</span>
+                  <span className="font-medium">{fmt(frete)}</span>
+                </div>
+                <div className="border-t border-border pt-2 flex justify-between text-lg font-bold">
+                  <span>Total:</span>
+                  <span>{fmt(total)}</span>
+                </div>
+              </div>
+
+              <div className="px-5 pb-3 text-xs text-muted-foreground">
+                Prazo ou área de entrega muda conforme de suporte ou entre em contato →
+              </div>
+            </div>
+
+            {/* Right: Summary sidebar */}
+            <div className="lg:col-span-1">
+              <div className="bg-erp-navy text-primary-foreground rounded-lg p-5 space-y-4 sticky top-4">
+                <h3 className="font-bold text-base">Resumo do Pedido</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="opacity-80">Subtotal</span>
+                    <span>{fmt(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="opacity-80">Desconto</span>
+                    <span>{fmt(desconto)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="opacity-80">Frete</span>
+                    <span>{fmt(frete)}</span>
+                  </div>
+                  <div className="mt-2">
+                    <label className="text-xs opacity-70">Tem desconto?</label>
+                    <Input type="number" value={desconto || ''} onChange={e => setDesconto(parseFloat(e.target.value) || 0)}
+                      className="h-8 mt-1 text-sm bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
+                      placeholder="0,00" step="0.01" />
+                  </div>
+                </div>
+                <div className="border-t border-primary-foreground/20 pt-3 flex justify-between font-bold text-lg">
+                  <span>Total</span>
+                  <span>{fmt(total)}</span>
+                </div>
+                <Button
+                  className="w-full font-bold rounded-md py-3 text-base"
+                  style={{ backgroundColor: 'hsl(43, 40%, 50%)', color: 'hsl(220, 60%, 15%)' }}
+                  onClick={handleEnviarPedido}
+                >
+                  Enviar pedido
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════ STEP 3: Confirmação ═══════════════ */}
+        {step === 2 && (
+          <div className="flex items-center justify-center py-12">
+            <div className="bg-card rounded-lg border border-border shadow-sm p-8 text-center max-w-md w-full space-y-5">
+              <div className="flex justify-center">
+                <CheckCircle2 size={64} className="text-erp-green" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Pedido Enviado!</h2>
+                <p className="text-sm text-muted-foreground mt-1">Seu pedido foi enviado com sucesso.</p>
+              </div>
+
+              <div className="bg-muted rounded-lg p-4 text-left space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="font-semibold">Pedido nº:</span>
+                  <span className="font-mono">{pedidoNumero}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="font-semibold">Cliente:</span>
+                  <span>{selectedCliente?.ter_nomter}</span>
+                </div>
+              </div>
+
+              <div className="border-t border-border pt-4 flex justify-between items-center">
+                <span className="text-sm font-semibold">Total:</span>
+                <span className="text-xl font-bold">{fmt(total)}</span>
+              </div>
+
+              <div className="flex gap-3">
+                <Button variant="outline" className="flex-1 border-erp-navy text-erp-navy hover:bg-erp-navy/5" onClick={() => navigate('/pedidos')}>
+                  Ver pedidos
+                </Button>
+                <Button className="flex-1 bg-erp-navy hover:bg-erp-navy/90" onClick={() => { setStep(0); setCart([]); setSelectedCliente(null); setDesconto(0); setFrete(0); }}>
+                  Nova compra
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

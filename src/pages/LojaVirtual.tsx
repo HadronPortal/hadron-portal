@@ -588,7 +588,10 @@ const LojaVirtual = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <span className="text-xl font-black text-white">Fast<span style={{ color: B }}>kart.</span></span>
+              <div className="flex items-center gap-2">
+                <img src="/lovable-uploads/51f7d872-880c-4be1-99b8-35fbb58cc720.png" alt="Hádron" className="h-6 object-contain" />
+                <span className="text-xl font-black text-white">Hádron <span style={{ color: B }}>Shop</span></span>
+              </div>
               <p className="text-sm text-gray-400 mt-3">Somos uma loja online oferecendo uma variedade de produtos frescos e orgânicos com entrega rápida.</p>
             </div>
             <div>

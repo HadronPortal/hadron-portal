@@ -379,10 +379,6 @@ const CriarPedido = () => {
                   <span>{fmt(total)}</span>
                 </div>
               </div>
-
-              <div className="px-5 pb-3 text-xs text-muted-foreground">
-                Prazo ou área de entrega muda conforme de suporte ou entre em contato →
-              </div>
             </div>
 
             {/* Right: Summary sidebar */}

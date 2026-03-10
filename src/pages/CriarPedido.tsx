@@ -417,14 +417,14 @@ const CriarPedido = () => {
 
               <div className="space-y-3">
                 <Button
-                  className="w-full font-bold rounded-md py-3 text-base bg-yellow-500 hover:bg-yellow-400 text-foreground"
+                  className="w-full font-bold rounded-md py-3 text-base bg-erp-navy hover:bg-erp-navy/90 text-primary-foreground"
                   onClick={handleEnviarPedido}
                 >
                   CONTINUAR
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full font-bold rounded-md py-3 text-base border-yellow-500 text-yellow-600 hover:bg-yellow-50"
+                  className="w-full font-bold rounded-md py-3 text-base border-border text-muted-foreground hover:bg-muted"
                   onClick={() => setStep(0)}
                 >
                   VOLTAR

@@ -301,6 +301,12 @@ const LojaVirtual = () => {
 
   const filteredProducts = activeTab === 'Todos' ? allProducts : allProducts.filter((p) => p.category === activeTab);
 
+  const expandBagBriefly = useCallback(() => {
+    setBagExpanded(true);
+    if (bagTimerRef.current) clearTimeout(bagTimerRef.current);
+    bagTimerRef.current = setTimeout(() => setBagExpanded(false), 3000);
+  }, []);
+
   const addToCart = (product: Product, e: React.MouseEvent) => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     setFlyAnim({ x: rect.left, y: rect.top });
@@ -311,6 +317,7 @@ const LojaVirtual = () => {
       return [...prev, { ...product, qty: 1 }];
     });
 
+    expandBagBriefly();
     toast({ title: `${product.name} adicionado ao carrinho!` });
   };
 

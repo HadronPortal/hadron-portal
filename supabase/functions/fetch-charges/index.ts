@@ -81,7 +81,7 @@ serve(async (req) => {
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
-    const res = await fetch('https://dev.hadronweb.com.br/app/Pages/api-charges', {
+    const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/api-charges', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

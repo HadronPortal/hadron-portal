@@ -65,7 +65,7 @@ serve(async (req) => {
       pagination: { page: 1, limit: 50 },
     };
 
-    const res = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiDashboard', {
+    const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiDashboard', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

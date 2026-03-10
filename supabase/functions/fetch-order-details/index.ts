@@ -58,18 +58,17 @@ serve(async (req) => {
       });
     }
 
-    // Try different param names
-    const bodies = [
-      { id: parseInt(orderId), orc_codrep: [3] },
-      { order_id: parseInt(orderId), orc_codrep: [3] },
-      { orc_id: parseInt(orderId), orc_codrep: [3] },
-    ];
+    const { token, cookies } = await getAuth();
 
+    // Try different param names the API might expect
+    const paramNames = ['id', 'order_id', 'orc_id', 'orc_codorc'];
     let responseText = '';
-    let ok = false;
+    let success = false;
 
-    for (const body of bodies) {
-      console.log('Trying body:', JSON.stringify(body));
+    for (const paramName of paramNames) {
+      const body = { [paramName]: parseInt(orderId), orc_codrep: [3] };
+      console.log('Trying:', JSON.stringify(body));
+
       const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiOrderDetails', {
         method: 'POST',
         headers: {
@@ -81,28 +80,23 @@ serve(async (req) => {
       });
 
       responseText = await res.text();
-      console.log('Response:', responseText.substring(0, 300));
+      console.log(`Param "${paramName}" => status ${res.status}, body: ${responseText.substring(0, 300)}`);
 
-      if (res.ok && !responseText.includes('"error"')) {
-        ok = true;
-        break;
-      }
-      // Check if we got data even with "error" status
+      // Check if response has actual data (not error)
       try {
         const parsed = JSON.parse(responseText);
-        if (parsed.order || parsed.items || parsed.products) {
-          ok = true;
+        if (!parsed.status || parsed.status !== 'error') {
+          success = true;
           break;
         }
-      } catch {}
+      } catch {
+        // Not JSON, keep trying
+      }
     }
-    });
 
-    const responseText = await res.text();
-
-    if (!res.ok) {
-      cachedToken = null;
-      throw new Error(`OrderDetails fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
+    if (!success) {
+      // Return last response anyway for debugging
+      console.error('All param names failed');
     }
 
     let data;

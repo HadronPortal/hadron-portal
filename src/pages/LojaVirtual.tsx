@@ -444,7 +444,7 @@ const LojaVirtual = () => {
 
       {/* ═══ Deal Of The Day ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <Carousel title="Deal Of The Day">
+        <Carousel title="Oferta do Dia">
           {dealProducts.map(p => (
             <div key={p.id} className="flex-shrink-0 w-[320px] bg-white rounded-xl border border-gray-100 p-5 flex gap-4 hover:shadow-lg transition">
               <div className="w-24 h-24 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ backgroundColor: BL }}>

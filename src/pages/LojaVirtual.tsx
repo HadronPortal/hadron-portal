@@ -395,7 +395,7 @@ const LojaVirtual = () => {
           </div>
           <div className="lg:col-span-5 grid grid-rows-2 gap-4">
             <div className="rounded-2xl p-7 flex items-center justify-center text-center relative overflow-hidden" style={{ backgroundColor: B }}>
-              <img src={`${IMG}/home/2.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40" />
+              <img src={`${IMG}/home/2.png`} alt="" className="absolute inset-0 w-full h-full object-cover" />
               <div className="relative z-10">
                 <h3 className="text-lg font-bold text-white">Frescos & 100% Orgânicos</h3>
                 <p className="text-white/70 text-sm mt-1">feira do produtor</p>
@@ -404,14 +404,14 @@ const LojaVirtual = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-2xl relative overflow-hidden min-h-[140px]" style={{ background: '#2d3436' }}>
-                <img src={`${IMG}/home/3.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+                <img src={`${IMG}/home/3.png`} alt="" className="absolute inset-0 w-full h-full object-cover" />
                 <div className="relative z-10 p-5 text-white">
                   <h4 className="text-sm font-bold">Estilo Orgânico</h4>
                   <p className="text-xs text-white/70 mt-1">Melhores Ofertas do Fim de Semana</p>
                 </div>
               </div>
               <div className="rounded-2xl relative overflow-hidden min-h-[140px]" style={{ background: '#ff7675' }}>
-                <img src={`${IMG}/home/4.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+                <img src={`${IMG}/home/4.png`} alt="" className="absolute inset-0 w-full h-full object-cover" />
                 <div className="relative z-10 p-5 text-white">
                   <h4 className="text-sm font-bold">Alimento seguro salva vidas</h4>
                   <p className="text-xs text-white/70 mt-1">Oferta com Desconto</p>
@@ -552,7 +552,7 @@ const LojaVirtual = () => {
       {/* ═══ Full-width Banner ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         <div className="rounded-2xl p-10 relative overflow-hidden min-h-[200px] flex items-center justify-center text-center" style={{ background: `linear-gradient(135deg, ${B}, #099575)` }}>
-          <img src={`${IMG}/banner/3.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
+          <img src={`${IMG}/banner/3.png`} alt="" className="absolute inset-0 w-full h-full object-cover" />
           <div className="relative z-10 text-white">
             <h4 className="text-sm uppercase tracking-wider">Experimente Nosso Novo</h4>
             <h2 className="text-2xl md:text-3xl font-bold mt-2">100% Orgânico Melhor Qualidade Melhor Preço</h2>

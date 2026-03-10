@@ -395,7 +395,7 @@ const LojaVirtual = () => {
           </div>
           <div className="lg:col-span-5 grid grid-rows-2 gap-4">
             <div className="rounded-2xl p-7 flex items-center justify-center text-center relative overflow-hidden" style={{ backgroundColor: B }}>
-              <img src={`${IMG}/home/2.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40" />
+              <img src={`${IMG}/home/2.png`} alt="" className="absolute inset-0 w-full h-full object-cover" />
               <div className="relative z-10">
                 <h3 className="text-lg font-bold text-white">Frescos & 100% Orgânicos</h3>
                 <p className="text-white/70 text-sm mt-1">feira do produtor</p>

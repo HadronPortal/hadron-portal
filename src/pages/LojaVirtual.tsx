@@ -627,16 +627,16 @@ const LojaVirtual = () => {
                 <span className="text-lg font-bold text-white">HádronShop</span>
               </div>
               <p className="text-sm text-gray-400">
-                Sua loja online de produtos frescos e de qualidade.
+                Distribuidora de produtos de higiene, beleza e cuidados pessoais.
               </p>
             </div>
             <div>
               <h4 className="text-sm font-bold text-white mb-3">Categorias</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li className="hover:text-white cursor-pointer">Verduras</li>
-                <li className="hover:text-white cursor-pointer">Frutas</li>
-                <li className="hover:text-white cursor-pointer">Mercearia</li>
-                <li className="hover:text-white cursor-pointer">Bebidas</li>
+                <li className="hover:text-white cursor-pointer">Cabelos</li>
+                <li className="hover:text-white cursor-pointer">Higiene Bucal</li>
+                <li className="hover:text-white cursor-pointer">Corpo & Banho</li>
+                <li className="hover:text-white cursor-pointer">Desodorantes</li>
               </ul>
             </div>
             <div>

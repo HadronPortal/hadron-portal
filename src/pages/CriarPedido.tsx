@@ -327,7 +327,7 @@ const CriarPedido = () => {
                   <span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                 </div>
                 <Button
-                  className="w-full bg-erp-amber hover:bg-erp-amber/90 text-foreground font-bold"
+                  className="w-full bg-yellow-500 hover:bg-yellow-400 text-foreground font-bold"
                   disabled={cart.length === 0 || !selectedCliente}
                   onClick={() => {
                     toast({ title: 'Pedido criado!', description: `Pedido com ${cart.length} produto(s) para ${selectedCliente?.ter_nomter}` });

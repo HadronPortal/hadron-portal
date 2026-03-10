@@ -14,6 +14,7 @@ import Catalogo from "./pages/Catalogo";
 import LojaVirtual from "./pages/LojaVirtual";
 import Login from "./pages/Login";
 import PedidoDetalhe from "./pages/PedidoDetalhe";
+import CriarPedido from "./pages/CriarPedido";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/cobrancas" element={<Cobrancas />} />
           <Route path="/analitico" element={<Analitico />} />
           <Route path="/pedidos" element={<Pedidos />} />
+          <Route path="/pedidos/criar" element={<CriarPedido />} />
           <Route path="/pedidos/:id" element={<PedidoDetalhe />} />
           <Route path="/produtos" element={<Produtos />} />
           <Route path="/produtos/:id" element={<ProdutoDetalhe />} />

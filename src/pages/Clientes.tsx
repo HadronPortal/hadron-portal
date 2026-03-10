@@ -64,16 +64,12 @@ const Clientes = () => {
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  const fetchClients = async (repCodes?: number[]) => {
+  const fetchClients = async () => {
     setLoading(true);
     setError(null);
     try {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      let url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?page=${page}&limit=${rowsPerPage}`;
-      const reps = repCodes ?? selectedRep;
-      if (reps.length > 0) {
-        url += `&rep=${reps.join(',')}`;
-      }
+      const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?page=${page}&limit=1000`;
       const res = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
       if (!res.ok) throw new Error('Falha ao buscar clientes');
       const result = await res.json();
@@ -90,19 +86,22 @@ const Clientes = () => {
 
   useEffect(() => {
     fetchClients();
-  }, [page, rowsPerPage]);
+  }, [page]);
 
   const handleRepChange = (repCodes: number[]) => {
     setSelectedRep(repCodes);
-    setPage(1);
-    fetchClients(repCodes);
   };
 
+  // Filter by selected representative first
+  const repFiltered = selectedRep.length > 0
+    ? clients.filter(c => selectedRep.includes(c.COD_REP))
+    : clients;
+
   const filtered = activeTab === 'todos'
-    ? clients
+    ? repFiltered
     : activeTab === 'positivados'
-      ? clients.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
-      : clients.filter(c => {
+      ? repFiltered.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
+      : repFiltered.filter(c => {
           const d = new Date(c.ter_dta_cad);
           const sixMonthsAgo = new Date();
           sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -148,7 +147,7 @@ const Clientes = () => {
               <option value={100}>100</option>
             </select>
             <span className="text-sm text-muted-foreground">
-              {totalRecords} clientes
+              {filtered.length} clientes
             </span>
           </div>
 

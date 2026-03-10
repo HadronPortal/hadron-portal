@@ -210,7 +210,11 @@ const Clientes = () => {
                         )}
                         {show('documento') && <TableCell className="text-sm whitespace-nowrap">{formatDoc(c.ter_documento)}</TableCell>}
                         {show('local') && <TableCell className="text-sm whitespace-nowrap">{c.TEN_CIDLGR} - {c.TEN_UF_LGR}</TableCell>}
-                        {show('representante') && <TableCell className="text-sm whitespace-nowrap">{c.COD_REP}</TableCell>}
+                        {show('representante') && (
+                          <TableCell className="text-sm whitespace-nowrap">
+                            {representantes.find(r => r.rep_codrep === c.COD_REP)?.rep_nomrep || c.COD_REP}
+                          </TableCell>
+                        )}
                         {show('vendas') && (
                           <TableCell className="text-sm whitespace-nowrap">
                             {formatCurrency(c.TOTAL_VENDAS)} ({c.QUANT_VENDAS ?? 0})

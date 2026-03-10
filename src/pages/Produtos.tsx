@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import {
@@ -32,6 +33,7 @@ const tabs = [
 ] as const;
 
 const Produtos = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [search, setSearch] = useState('');
@@ -149,7 +151,7 @@ const Produtos = () => {
                         ? `${PROXY_BASE}${encodeURIComponent(`https://dev.hadronweb.com.br/user_data/DEV/products/${p.foto}`)}`
                         : '';
                       return (
-                        <TableRow key={p.codpro} className="hover:bg-accent/30">
+                        <TableRow key={p.codpro} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/produtos/${p.codpro}`)}>
                           <TableCell className="text-sm">{p.codpro}</TableCell>
                           <TableCell>
                             {imgUrl ? (

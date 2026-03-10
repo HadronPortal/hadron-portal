@@ -5,3 +5,12 @@ verify_jwt = false
 
 [functions.proxy-image]
 verify_jwt = false
+
+[functions.fetch-products]
+verify_jwt = false
+
+[functions.fetch-order-details]
+verify_jwt = false
+
+[functions.fetch-product-details]
+verify_jwt = false

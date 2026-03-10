@@ -30,6 +30,10 @@ const formatDate = (iso: string | null) => {
 };
 
 const Cobrancas = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const codter = searchParams.get('codter');
+  const clienteNome = searchParams.get('nome');
+
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [charges, setCharges] = useState<Charge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,15 +41,21 @@ const Cobrancas = () => {
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
 
+  const clearClientFilter = () => {
+    searchParams.delete('codter');
+    searchParams.delete('nome');
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
         const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const res = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/fetch-charges?page=${page}&limit=${rowsPerPage}`
-        );
+        let url = `https://${projectId}.supabase.co/functions/v1/fetch-charges?page=${page}&limit=${rowsPerPage}`;
+        if (codter) url += `&codter=${codter}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Falha ao buscar cobranças');
         const data = await res.json();
         setCharges(data.charges || []);
@@ -58,7 +68,7 @@ const Cobrancas = () => {
       }
     };
     fetchData();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, codter]);
 
   const isOverdue = (vnc: string) => {
     if (!vnc) return false;

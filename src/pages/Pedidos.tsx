@@ -161,7 +161,12 @@ const Pedidos = () => {
       )}
 
       <main className="flex-1 px-6 py-5 space-y-4">
-        <h1 className="text-2xl font-bold text-foreground">Pedidos</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">Pedidos</h1>
+          <Button className="gap-2 bg-erp-navy hover:bg-erp-navy/90" onClick={() => navigate('/pedidos/criar')}>
+            <Plus size={16} /> Criar Pedido
+          </Button>
+        </div>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

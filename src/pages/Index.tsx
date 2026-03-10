@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
+import { useRepresentantes } from '@/hooks/use-representantes';
 import KpiCards from '@/components/erp/KpiCards';
 import OrdersTable from '@/components/erp/OrdersTable';
 import ClientsTable from '@/components/erp/ClientsTable';
@@ -47,6 +48,7 @@ const Index = () => {
   const [data, setData] = useState<DashboardAPIResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { representantes } = useRepresentantes();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,7 +94,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar />
+      <FilterBar representantes={representantes} />
 
       <main className="flex-1 px-6 py-5 space-y-5">
         <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>

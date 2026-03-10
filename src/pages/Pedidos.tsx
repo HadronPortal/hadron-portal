@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
+import { useRepresentantes } from '@/hooks/use-representantes';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -63,6 +64,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 const Pedidos = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { representantes } = useRepresentantes();
   const codter = searchParams.get('codter');
   const clienteNome = searchParams.get('nome');
 
@@ -114,7 +116,7 @@ const Pedidos = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar />
+      <FilterBar representantes={representantes} />
 
       {clienteNome && (
         <div className="px-6 pt-2 text-sm text-muted-foreground">

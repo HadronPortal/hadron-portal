@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
+import { useRepresentantes } from '@/hooks/use-representantes';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -43,6 +44,7 @@ const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase
 
 const Analitico = () => {
   const [activeTab, setActiveTab] = useState<string>('todos');
+  const { representantes } = useRepresentantes();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [products, setProducts] = useState<ProductAnalytics[]>([]);
   const [periods, setPeriods] = useState<Period[]>([]);
@@ -90,7 +92,7 @@ const Analitico = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <FilterBar />
+      <FilterBar representantes={representantes} />
 
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Analítico Período</h1>

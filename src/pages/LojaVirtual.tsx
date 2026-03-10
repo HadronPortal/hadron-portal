@@ -547,7 +547,7 @@ const LojaVirtual = () => {
           <div className="relative z-10 text-white">
             <h4 className="text-sm uppercase tracking-wider">Experimente Nosso Novo</h4>
             <h2 className="text-2xl md:text-3xl font-bold mt-2">100% Orgânico Melhor Qualidade Melhor Preço</h2>
-            <p className="text-sm text-white/70 mt-2">Melhor Qualidade Alimentar Fastkart</p>
+            <p className="text-sm text-white/70 mt-2">Melhor Qualidade Alimentar Hádron Shop</p>
             <button className="mt-4 px-6 py-2.5 bg-white rounded-lg text-sm font-bold" style={{ color: B }}>Comprar Agora</button>
           </div>
         </div>

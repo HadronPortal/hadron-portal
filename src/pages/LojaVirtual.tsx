@@ -3,6 +3,21 @@ import { ShoppingCart, Heart, Eye, Search, MapPin, Phone, ChevronLeft, ChevronRi
 import { useToast } from '@/hooks/use-toast';
 import logoImg from '@/assets/icon_hadronweb.png';
 
+// Product images
+import imgHero from '@/assets/shop/hero-hygiene.jpg';
+import imgShampoo from '@/assets/shop/shampoo.png';
+import imgSabonete from '@/assets/shop/sabonete.png';
+import imgCremeDental from '@/assets/shop/creme-dental.png';
+import imgSaboneteLiquido from '@/assets/shop/sabonete-liquido.png';
+import imgPapelHigienico from '@/assets/shop/papel-higienico.png';
+import imgCondicionador from '@/assets/shop/condicionador.png';
+import imgDesodorante from '@/assets/shop/desodorante.png';
+import imgLencoUmedecido from '@/assets/shop/lenco-umedecido.png';
+import imgEscovaDental from '@/assets/shop/escova-dental.png';
+import imgEnxaguante from '@/assets/shop/enxaguante.png';
+import imgProtetorSolar from '@/assets/shop/protetor-solar.png';
+import imgCotonete from '@/assets/shop/cotonete.png';
+
 // ─── Brand Color ────────────────────────────────────────────────────────
 const BRAND = 'hsl(220, 70%, 50%)';
 const BRAND_LIGHT = 'hsl(220, 70%, 95%)';
@@ -22,41 +37,41 @@ type CartItem = Product & { qty: number };
 
 // ─── Mock Data ──────────────────────────────────────────────────────────
 const categories = [
-  { name: 'Óleos & Grãos', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/1.png' },
-  { name: 'Farinhas & Cereais', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/2.png' },
-  { name: 'Mercearia', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/3.png' },
-  { name: 'Grãos & Legumes', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/4.png' },
-  { name: 'Bebidas', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/5.png' },
-  { name: 'Frutas & Verduras', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/6.png' },
-  { name: 'Prontos p/ Consumo', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/7.png' },
-  { name: 'Misturas Instantâneas', image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/category/8.png' },
+  { name: 'Cabelos', image: imgShampoo },
+  { name: 'Higiene Bucal', image: imgCremeDental },
+  { name: 'Corpo & Banho', image: imgSaboneteLiquido },
+  { name: 'Desodorantes', image: imgDesodorante },
+  { name: 'Papel & Descartáveis', image: imgPapelHigienico },
+  { name: 'Cuidados com a Pele', image: imgProtetorSolar },
+  { name: 'Bebê & Infantil', image: imgLencoUmedecido },
+  { name: 'Acessórios', image: imgCotonete },
 ];
 
 const allProducts: Product[] = [
-  { id: 1, name: 'Pimentão', price: 12.90, oldPrice: 15.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/1.png', category: 'Verduras' },
-  { id: 2, name: 'Berinjela', price: 8.50, oldPrice: 10.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/2.png', category: 'Verduras' },
-  { id: 3, name: 'Cebola', price: 5.90, oldPrice: 7.20, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/3.png', category: 'Verduras' },
-  { id: 4, name: 'Batata', price: 6.50, oldPrice: 8.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/4.png', category: 'Verduras', badge: '-20%' },
-  { id: 5, name: 'Pimenta', price: 4.90, oldPrice: 6.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/5.png', category: 'Temperos' },
-  { id: 6, name: 'Brócolis', price: 9.90, oldPrice: 12.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/6.png', category: 'Verduras', badge: '-25%' },
-  { id: 7, name: 'Abacate', price: 7.90, oldPrice: 9.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/9.png', category: 'Frutas' },
-  { id: 8, name: 'Pepino', price: 3.90, oldPrice: 5.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/11.png', category: 'Verduras', badge: '-25%' },
-  { id: 9, name: 'Beterraba', price: 5.50, oldPrice: 7.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/12.png', category: 'Verduras' },
-  { id: 10, name: 'Morango', price: 14.90, oldPrice: 18.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/13.png', category: 'Frutas' },
-  { id: 11, name: 'Milho', price: 4.50, oldPrice: 6.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/15.png', category: 'Verduras', badge: '50%' },
-  { id: 12, name: 'Repolho', price: 3.50, oldPrice: 4.90, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/cate1/17.png', category: 'Verduras' },
+  { id: 1, name: 'Shampoo 400ml', price: 18.90, oldPrice: 24.50, image: imgShampoo, category: 'Cabelos' },
+  { id: 2, name: 'Condicionador 400ml', price: 19.90, oldPrice: 25.00, image: imgCondicionador, category: 'Cabelos' },
+  { id: 3, name: 'Sabonete Barra 90g', price: 3.50, oldPrice: 4.90, image: imgSabonete, category: 'Corpo & Banho' },
+  { id: 4, name: 'Sabonete Líquido 250ml', price: 12.90, oldPrice: 16.00, image: imgSaboneteLiquido, category: 'Corpo & Banho', badge: '-20%' },
+  { id: 5, name: 'Creme Dental 90g', price: 6.90, oldPrice: 8.50, image: imgCremeDental, category: 'Higiene Bucal' },
+  { id: 6, name: 'Desodorante Roll-on 50ml', price: 14.90, oldPrice: 19.00, image: imgDesodorante, category: 'Desodorantes', badge: '-25%' },
+  { id: 7, name: 'Papel Higiênico 12un', price: 22.90, oldPrice: 28.00, image: imgPapelHigienico, category: 'Papel & Descartáveis' },
+  { id: 8, name: 'Lenço Umedecido 100un', price: 15.90, oldPrice: 19.90, image: imgLencoUmedecido, category: 'Bebê & Infantil', badge: '-20%' },
+  { id: 9, name: 'Escova Dental', price: 8.90, oldPrice: 11.00, image: imgEscovaDental, category: 'Higiene Bucal' },
+  { id: 10, name: 'Enxaguante Bucal 500ml', price: 16.90, oldPrice: 21.00, image: imgEnxaguante, category: 'Higiene Bucal' },
+  { id: 11, name: 'Protetor Solar FPS50', price: 39.90, oldPrice: 52.00, image: imgProtetorSolar, category: 'Cuidados com a Pele', badge: '-23%' },
+  { id: 12, name: 'Cotonete 150un', price: 7.50, oldPrice: 9.90, image: imgCotonete, category: 'Acessórios' },
 ];
 
 const newProducts: Product[] = [
-  { id: 101, name: 'Tomate', price: 8.90, oldPrice: 11.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/1.png', category: 'Verduras' },
-  { id: 102, name: 'Cebola Roxa', price: 7.50, oldPrice: 9.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/2.png', category: 'Verduras' },
-  { id: 103, name: 'Cenoura', price: 5.90, oldPrice: 7.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/3.png', category: 'Verduras' },
-  { id: 104, name: 'Batata Doce', price: 6.90, oldPrice: 8.50, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/4.png', category: 'Verduras' },
-  { id: 105, name: 'Brócolis Ninja', price: 11.90, oldPrice: 14.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/5.png', category: 'Verduras' },
-  { id: 106, name: 'Cenoura Baby', price: 9.90, oldPrice: 12.00, image: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/pro1/6.png', category: 'Verduras' },
+  { id: 101, name: 'Shampoo Anticaspa', price: 22.90, oldPrice: 28.00, image: imgShampoo, category: 'Cabelos' },
+  { id: 102, name: 'Sabonete Antibacteriano', price: 5.90, oldPrice: 7.50, image: imgSabonete, category: 'Corpo & Banho' },
+  { id: 103, name: 'Creme Dental Clareador', price: 12.90, oldPrice: 16.00, image: imgCremeDental, category: 'Higiene Bucal' },
+  { id: 104, name: 'Desodorante Aerosol', price: 16.90, oldPrice: 21.00, image: imgDesodorante, category: 'Desodorantes' },
+  { id: 105, name: 'Condicionador Hidratante', price: 24.90, oldPrice: 30.00, image: imgCondicionador, category: 'Cabelos' },
+  { id: 106, name: 'Protetor Labial', price: 9.90, oldPrice: 13.00, image: imgProtetorSolar, category: 'Cuidados com a Pele' },
 ];
 
-const productTabs = ['Todos', 'Verduras', 'Frutas', 'Temperos'];
+const productTabs = ['Todos', 'Cabelos', 'Corpo & Banho', 'Higiene Bucal', 'Desodorantes'];
 
 // ─── Floating Cart Indicator ────────────────────────────────────────────
 const FlyToCart = ({ from, onDone }: { from: { x: number; y: number }; onDone: () => void }) => {

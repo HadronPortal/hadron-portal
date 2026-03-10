@@ -69,10 +69,10 @@ const formatCurrency = (v: number | null) => {
 
 const Clientes = () => {
   const navigate = useNavigate();
+  const { representantes } = useRepresentantes();
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
-  const [representantes, setRepresentantes] = useState<Representante[]>([]);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);

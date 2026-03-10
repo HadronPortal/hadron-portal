@@ -190,7 +190,7 @@ const CartSidebar = ({ open, cart, onClose, onUpdateQty, onRemove }: {
         {cart.length > 0 && (
           <div className="border-t p-5 space-y-3">
             <div className="flex justify-between font-bold"><span>Total</span><span style={{ color: B }}>${total.toFixed(2)}</span></div>
-            <button className="w-full py-3 rounded-lg text-white font-semibold text-sm" style={{ backgroundColor: B }}>Checkout</button>
+            <button className="w-full py-3 rounded-lg text-white font-semibold text-sm" style={{ backgroundColor: B }}>Finalizar Compra</button>
           </div>
         )}
       </div>

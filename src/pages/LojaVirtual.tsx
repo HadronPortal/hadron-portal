@@ -215,6 +215,79 @@ const CartSidebar = ({
   );
 };
 
+// ─── Floating Cart Bag (like FastKart) ──────────────────────────────────
+const FloatingCartBag = ({
+  cart,
+  expanded,
+  onToggle,
+  onOpenCart,
+}: {
+  cart: CartItem[];
+  expanded: boolean;
+  onToggle: () => void;
+  onOpenCart: () => void;
+}) => {
+  const cartCount = cart.reduce((s, i) => s + i.qty, 0);
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const displayItems = cart.slice(0, 3);
+  const extraCount = cart.length - 3;
+
+  return (
+    <div className="fixed bottom-6 right-6 z-[997] flex flex-col items-end gap-2">
+      {/* Expanded view */}
+      {expanded && cart.length > 0 && (
+        <div
+          className="rounded-xl p-4 shadow-2xl min-w-[180px] animate-scale-in cursor-pointer"
+          style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}
+          onClick={onOpenCart}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-white">
+              <ShoppingCart size={16} />
+              <span className="text-sm font-bold">{cartCount} {cartCount === 1 ? 'Item' : 'Itens'}</span>
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggle(); }}
+              className="text-white/80 hover:text-white"
+            >
+              <X size={14} />
+            </button>
+          </div>
+          <div className="flex items-center gap-1 mb-3">
+            {displayItems.map((item) => (
+              <div key={item.id} className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-white/30">
+                <img src={item.image} alt={item.name} className="w-7 h-7 object-contain" />
+              </div>
+            ))}
+            {extraCount > 0 && (
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-bold border-2 border-white/30">
+                +{extraCount}
+              </div>
+            )}
+          </div>
+          <div className="bg-white rounded-lg py-2 px-3 text-center">
+            <span className="text-sm font-bold text-gray-800">R$ {total.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Bag button (always visible) */}
+      <button
+        onClick={onToggle}
+        className="w-14 h-14 rounded-xl shadow-lg flex items-center justify-center transition-transform hover:scale-110 relative"
+        style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}
+      >
+        <ShoppingCart size={22} color="white" />
+        {cartCount > 0 && (
+          <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white text-[10px] font-bold flex items-center justify-center" style={{ color: 'hsl(160, 84%, 39%)' }}>
+            {cartCount}
+          </span>
+        )}
+      </button>
+    </div>
+  );
+};
+
 // ─── Main Page ──────────────────────────────────────────────────────────
 const LojaVirtual = () => {
   const [activeTab, setActiveTab] = useState('Todos');
@@ -222,6 +295,8 @@ const LojaVirtual = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [flyAnim, setFlyAnim] = useState<{ x: number; y: number } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [bagExpanded, setBagExpanded] = useState(false);
+  const bagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
 
   const filteredProducts = activeTab === 'Todos' ? allProducts : allProducts.filter((p) => p.category === activeTab);

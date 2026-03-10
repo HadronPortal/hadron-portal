@@ -48,6 +48,7 @@ const Index = () => {
   const [data, setData] = useState<DashboardAPIResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { representantes } = useRepresentantes();
 
   useEffect(() => {
     const fetchData = async () => {

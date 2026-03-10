@@ -142,13 +142,10 @@ const CriarPedido = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 px-6 py-5 space-y-6 max-w-6xl mx-auto w-full">
-        {/* Back */}
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/pedidos')}>
-            <ArrowLeft size={16} className="mr-1" /> Voltar
-          </Button>
+        {/* Title aligned with card */}
+        <div className="flex items-center justify-between max-w-3xl mx-auto w-full">
           <h1 className="text-2xl font-bold text-foreground">Criar Pedido</h1>
-          <span className="text-xs text-muted-foreground ml-auto">Rep: {representante}</span>
+          <span className="text-xs text-muted-foreground">Rep: {representante}</span>
         </div>
 
         {/* ═══════════════ STEP 1: Lista de Produtos ═══════════════ */}

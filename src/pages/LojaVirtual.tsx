@@ -303,7 +303,7 @@ const LojaVirtual = () => {
       return [...prev, { ...p, qty: 1 }];
     });
     expandBag();
-    toast({ title: `${p.name} added to cart!` });
+    toast({ title: `${p.name} adicionado ao carrinho!` });
   };
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);

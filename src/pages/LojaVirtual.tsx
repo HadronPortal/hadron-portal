@@ -502,10 +502,10 @@ const LojaVirtual = () => {
           <div className="rounded-2xl p-8 relative overflow-hidden min-h-[200px] flex items-center" style={{ background: 'linear-gradient(135deg, #fff5e6, #ffe8c8)' }}>
             <img src={`${IMG}/banner/2.png`} alt="" className="absolute right-4 bottom-0 h-[180px] object-contain hidden sm:block" />
             <div className="relative z-10">
-              <span className="text-xs uppercase tracking-wider font-bold text-orange-500">available</span>
-              <h3 className="text-lg font-bold text-gray-800 mt-1">100% Natural & Healthy Fruits</h3>
-              <p className="text-sm text-gray-500">Weekend Special</p>
-              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold bg-orange-500">Shop Now</button>
+              <span className="text-xs uppercase tracking-wider font-bold text-orange-500">disponível</span>
+              <h3 className="text-lg font-bold text-gray-800 mt-1">100% Frutas Naturais & Saudáveis</h3>
+              <p className="text-sm text-gray-500">Especial de Fim de Semana</p>
+              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold bg-orange-500">Comprar Agora</button>
             </div>
           </div>
         </div>

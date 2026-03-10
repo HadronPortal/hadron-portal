@@ -64,6 +64,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 const Pedidos = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { representantes } = useRepresentantes();
   const codter = searchParams.get('codter');
   const clienteNome = searchParams.get('nome');
 

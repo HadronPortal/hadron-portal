@@ -170,7 +170,7 @@ const CartSidebar = ({ open, cart, onClose, onUpdateQty, onRemove }: {
           <button onClick={onClose} className="w-7 h-7 rounded-full bg-white shadow flex items-center justify-center"><X size={14} /></button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {cart.length === 0 && <p className="text-center text-gray-400 text-sm mt-16">Your cart is empty</p>}
+          {cart.length === 0 && <p className="text-center text-gray-400 text-sm mt-16">Seu carrinho está vazio</p>}
           {cart.map(item => (
             <div key={item.id} className="flex gap-3 p-3 rounded-lg bg-gray-50 relative group">
               <img src={item.image} alt={item.name} className="w-14 h-14 object-contain bg-white rounded p-1" />

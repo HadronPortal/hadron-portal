@@ -155,17 +155,13 @@ const CriarPedido = () => {
         {step === 0 && (
           <div className="bg-card rounded-lg border border-border shadow-sm">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="px-5 py-4 border-b border-border">
               <h2 className="text-lg font-bold text-foreground">Itens do Produtos</h2>
-              <div className="relative w-52">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input value={produtoSearch} onChange={e => setProdutoSearch(e.target.value)} placeholder="Buscar produtos" className="pl-9 h-9 text-sm" />
-              </div>
             </div>
 
-            {/* Cliente + Rep row */}
-            <div className="px-5 py-3 border-b border-border flex items-center gap-4">
-              <div className="flex-1 relative">
+            {/* Cliente row (compact) */}
+            <div className="px-5 py-3 border-b border-border">
+              <div className="max-w-md relative">
                 <label className="text-xs font-semibold text-muted-foreground mb-1 block">Cliente *</label>
                 {selectedCliente ? (
                   <div className="flex items-center gap-2 bg-muted rounded-md px-3 py-1.5 text-sm">
@@ -196,12 +192,70 @@ const CriarPedido = () => {
                   </div>
                 )}
               </div>
-              <div className="text-xs text-muted-foreground shrink-0">
-                <span className="font-semibold">Rep:</span> {representante}
+            </div>
+
+            {/* Search products below client */}
+            <div className="px-5 py-3 border-b border-border">
+              <div className="relative max-w-md">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input value={produtoSearch} onChange={e => setProdutoSearch(e.target.value)} placeholder="Buscar produtos por nome ou código..." className="pl-9 h-9 text-sm" />
               </div>
             </div>
 
-            {/* Catalog table - only show when searching */}
+            {/* Cart items (always visible) */}
+            {cart.length > 0 && (
+              <div className="border-b border-border">
+                <div className="px-5 py-2">
+                  <span className="text-xs font-semibold text-muted-foreground">Itens adicionados ({cart.length})</span>
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs font-bold text-foreground">Produto</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">SKU</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground w-28">Qtd</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground text-center w-16"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {cart.map(item => (
+                      <TableRow key={`cart-${item.pro_codpro}`} className="bg-accent/10">
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded bg-muted flex-shrink-0 overflow-hidden">
+                              {item.pro_foto ? (
+                                <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
+                                  onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                              ) : <div className="w-full h-full" />}
+                            </div>
+                            <span className="text-sm font-medium">{item.pro_despro}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1 border border-border rounded-md w-fit">
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, -1)}>
+                              <Minus size={12} />
+                            </Button>
+                            <span className="w-6 text-center text-sm">{item.quantidade}</span>
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, 1)}>
+                              <Plus size={12} />
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive" onClick={() => removeFromCart(item.pro_codpro)}>
+                            <Trash2 size={14} />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+
+            {/* Search results */}
             <div className="overflow-x-auto">
               {!produtoSearch.trim() ? (
                 <div className="px-5 py-8 text-center text-sm text-muted-foreground">
@@ -218,7 +272,7 @@ const CriarPedido = () => {
                       <TableHead className="text-xs font-bold text-foreground">Produto</TableHead>
                       <TableHead className="text-xs font-bold text-foreground">SKU</TableHead>
                       <TableHead className="text-xs font-bold text-foreground">Preço</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground w-32">Preço</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground w-32">Qtd</TableHead>
                       <TableHead className="text-xs font-bold text-foreground text-center">Ações</TableHead>
                     </TableRow>
                   </TableHeader>

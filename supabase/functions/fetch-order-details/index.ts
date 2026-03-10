@@ -60,43 +60,21 @@ serve(async (req) => {
 
     const { token, cookies } = await getAuth();
 
-    // Try different param names the API might expect
-    const paramNames = ['id', 'order_id', 'orc_id', 'orc_codorc'];
-    let responseText = '';
-    let success = false;
+    const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiOrderDetails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Cookie': cookies,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: parseInt(orderId), orc_codrep: [3] }),
+    });
 
-    for (const paramName of paramNames) {
-      const body = { [paramName]: parseInt(orderId), orc_codrep: [3] };
-      console.log('Trying:', JSON.stringify(body));
+    const responseText = await res.text();
 
-      const res = await fetch('https://dev.hadronweb.com.br/app/Pages/apiOrderDetails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Cookie': cookies,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-
-      responseText = await res.text();
-      console.log(`Param "${paramName}" => status ${res.status}, body: ${responseText.substring(0, 300)}`);
-
-      // Check if response has actual data (not error)
-      try {
-        const parsed = JSON.parse(responseText);
-        if (!parsed.status || parsed.status !== 'error') {
-          success = true;
-          break;
-        }
-      } catch {
-        // Not JSON, keep trying
-      }
-    }
-
-    if (!success) {
-      // Return last response anyway for debugging
-      console.error('All param names failed');
+    if (!res.ok) {
+      cachedToken = null;
+      throw new Error(`OrderDetails fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
     }
 
     let data;

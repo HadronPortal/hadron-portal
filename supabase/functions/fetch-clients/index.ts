@@ -59,22 +59,15 @@ serve(async (req) => {
 
     const { token, cookies, user } = await getAuth();
 
-    // Try to extract representative code from user data
-    const repCode = (user as Record<string, unknown>)?.aus_codrep 
-      || (user as Record<string, unknown>)?.codrep 
-      || (user as Record<string, unknown>)?.cod_rep
-      || '';
-
-    console.log('Rep code found:', repCode);
+    // Use user ID as representative code
+    const repCode = String((user as Record<string, unknown>)?.id || '54');
 
     const requestBody: Record<string, unknown> = {
       pagination: { page, limit },
+      orc_codrep: [repCode],
     };
 
-    // Only add orc_codrep if we have a value
-    if (repCode) {
-      requestBody.orc_codrep = [repCode];
-    }
+    console.log('Request body:', JSON.stringify(requestBody));
 
     console.log('Request body:', JSON.stringify(requestBody));
 

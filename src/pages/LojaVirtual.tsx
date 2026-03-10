@@ -18,62 +18,62 @@ type CartItem = Product & { qty: number };
 
 // ─── Data ───────────────────────────────────────────────────────────────
 const categories = [
-  { name: 'Oils, Refined & Ghee', img: `${IMG}/category/1.png` },
-  { name: 'Rice, Flour & Grains', img: `${IMG}/category/2.png` },
-  { name: 'Food Cupboard', img: `${IMG}/category/3.png` },
-  { name: 'Dals & Pulses', img: `${IMG}/category/4.png` },
-  { name: 'Drinks & Beverages', img: `${IMG}/category/5.png` },
-  { name: 'Fresh Fruits & Vegetables', img: `${IMG}/category/6.png` },
-  { name: 'Ready to eat Meals', img: `${IMG}/category/7.png` },
-  { name: 'Instant Mixes', img: `${IMG}/category/8.png` },
+  { name: 'Óleos & Manteigas', img: `${IMG}/category/1.png` },
+  { name: 'Arroz, Farinha & Grãos', img: `${IMG}/category/2.png` },
+  { name: 'Despensa', img: `${IMG}/category/3.png` },
+  { name: 'Leguminosas', img: `${IMG}/category/4.png` },
+  { name: 'Bebidas', img: `${IMG}/category/5.png` },
+  { name: 'Frutas & Verduras', img: `${IMG}/category/6.png` },
+  { name: 'Pratos Prontos', img: `${IMG}/category/7.png` },
+  { name: 'Misturas Instantâneas', img: `${IMG}/category/8.png` },
 ];
 
 const valueBanners = [
-  { title: 'Buy more, Save more', sub: 'Fruit & Vegetables', img: `${IMG}/value/1.png`, bg: '#e8f5f1' },
-  { title: 'Save More!', sub: 'Organic Vegetable', img: `${IMG}/value/2.png`, bg: '#fff5e6' },
-  { title: 'Hot Deals!', sub: 'Fruit & Vegetables', img: `${IMG}/value/3.png`, bg: '#f0e8ff' },
+  { title: 'Compre mais, Economize mais', sub: 'Frutas & Verduras', img: `${IMG}/value/1.png`, bg: '#e8f5f1' },
+  { title: 'Economize Mais!', sub: 'Vegetais Orgânicos', img: `${IMG}/value/2.png`, bg: '#fff5e6' },
+  { title: 'Ofertas Quentes!', sub: 'Frutas & Verduras', img: `${IMG}/value/3.png`, bg: '#f0e8ff' },
 ];
 
 const dealProducts: Product[] = [
-  { id: 301, name: 'Eggplant', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/2.png`, category: 'Cooking', badge: 'Hot Deals' },
-  { id: 302, name: 'Onion', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/3.png`, category: 'Cooking', badge: 'Hot Deals' },
-  { id: 303, name: 'Bell pepper', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/1.png`, category: 'Cooking', badge: 'Hot Deals' },
+  { id: 301, name: 'Berinjela', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/2.png`, category: 'Cozinha', badge: 'Oferta' },
+  { id: 302, name: 'Cebola', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/3.png`, category: 'Cozinha', badge: 'Oferta' },
+  { id: 303, name: 'Pimentão', price: 65.00, oldPrice: 70.21, image: `${IMG}/cate1/1.png`, category: 'Cozinha', badge: 'Oferta' },
 ];
 
 const allProducts: Product[] = [
-  { id: 1, name: 'Bell pepper', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/1.png`, category: 'All' },
-  { id: 2, name: 'Potato', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/3.png`, category: 'Cooking', badge: '50%' },
-  { id: 3, name: 'Baby Chili', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/5.png`, category: 'Cooking' },
-  { id: 4, name: 'Broccoli', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/6.png`, category: 'Fruits & Vegetables', badge: '-25%' },
-  { id: 5, name: 'Peru', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/7.png`, category: 'Fruits & Vegetables' },
-  { id: 6, name: 'Avocado', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/9.png`, category: 'Fruits & Vegetables' },
-  { id: 7, name: 'Cucumber', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/11.png`, category: 'Fruits & Vegetables', badge: '-25%' },
-  { id: 8, name: 'Beetroot', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/12.png`, category: 'Cooking' },
-  { id: 9, name: 'Strawberry', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/13.png`, category: 'Fruits & Vegetables' },
-  { id: 10, name: 'Corn', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/15.png`, category: 'Cooking', badge: '50%' },
-  { id: 11, name: 'Cabbage', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/17.png`, category: 'Cooking', badge: '-25%' },
-  { id: 12, name: 'Ginger', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/18.png`, category: 'Cooking' },
+  { id: 1, name: 'Pimentão', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/1.png`, category: 'Todos' },
+  { id: 2, name: 'Batata', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/3.png`, category: 'Cozinha', badge: '50%' },
+  { id: 3, name: 'Pimenta', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/5.png`, category: 'Cozinha' },
+  { id: 4, name: 'Brócolis', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/6.png`, category: 'Frutas & Verduras', badge: '-25%' },
+  { id: 5, name: 'Peru', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/7.png`, category: 'Frutas & Verduras' },
+  { id: 6, name: 'Abacate', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/9.png`, category: 'Frutas & Verduras' },
+  { id: 7, name: 'Pepino', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/11.png`, category: 'Frutas & Verduras', badge: '-25%' },
+  { id: 8, name: 'Beterraba', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/12.png`, category: 'Cozinha' },
+  { id: 9, name: 'Morango', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/13.png`, category: 'Frutas & Verduras' },
+  { id: 10, name: 'Milho', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/15.png`, category: 'Cozinha', badge: '50%' },
+  { id: 11, name: 'Repolho', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/17.png`, category: 'Cozinha', badge: '-25%' },
+  { id: 12, name: 'Gengibre', price: 70.21, oldPrice: 65.25, image: `${IMG}/cate1/18.png`, category: 'Cozinha' },
 ];
 
 const newProducts: Product[] = [
-  { id: 101, name: 'Potato', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/4.png`, category: 'Cooking' },
-  { id: 102, name: 'Broccoli', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/5.png`, category: 'Fruits & Vegetables' },
-  { id: 103, name: 'Carrot', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/6.png`, category: 'Fruits & Vegetables' },
-  { id: 104, name: 'Tomato', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/1.png`, category: 'Fruits & Vegetables' },
-  { id: 105, name: 'Red onion', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/2.png`, category: 'Cooking' },
-  { id: 106, name: 'Carrot', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/3.png`, category: 'Fruits & Vegetables' },
+  { id: 101, name: 'Batata', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/4.png`, category: 'Cozinha' },
+  { id: 102, name: 'Brócolis', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/5.png`, category: 'Frutas & Verduras' },
+  { id: 103, name: 'Cenoura', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/6.png`, category: 'Frutas & Verduras' },
+  { id: 104, name: 'Tomate', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/1.png`, category: 'Frutas & Verduras' },
+  { id: 105, name: 'Cebola Roxa', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/2.png`, category: 'Cozinha' },
+  { id: 106, name: 'Cenoura', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/3.png`, category: 'Frutas & Verduras' },
 ];
 
 const featureProducts: Product[] = [
-  { id: 201, name: 'Bell pepper', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/10.png`, category: 'Fruits & Vegetables' },
-  { id: 202, name: 'Pea', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/11.png`, category: 'Fruits & Vegetables' },
-  { id: 203, name: 'Avocado', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/12.png`, category: 'Fruits & Vegetables' },
-  { id: 204, name: 'Garlic', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/7.png`, category: 'Cooking' },
-  { id: 205, name: 'Beetroot', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/8.png`, category: 'Cooking' },
-  { id: 206, name: 'Eggplant', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/9.png`, category: 'Cooking' },
+  { id: 201, name: 'Pimentão', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/10.png`, category: 'Frutas & Verduras' },
+  { id: 202, name: 'Ervilha', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/11.png`, category: 'Frutas & Verduras' },
+  { id: 203, name: 'Abacate', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/12.png`, category: 'Frutas & Verduras' },
+  { id: 204, name: 'Alho', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/7.png`, category: 'Cozinha' },
+  { id: 205, name: 'Beterraba', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/8.png`, category: 'Cozinha' },
+  { id: 206, name: 'Berinjela', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/9.png`, category: 'Cozinha' },
 ];
 
-const productTabs = ['All', 'Cooking', 'Fruits & Vegetables', 'Beverage', 'Dairy'];
+const productTabs = ['Todos', 'Cozinha', 'Frutas & Verduras', 'Bebidas', 'Laticínios'];
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 const Stars = () => (
@@ -165,12 +165,12 @@ const CartSidebar = ({ open, cart, onClose, onUpdateQty, onRemove }: {
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ backgroundColor: BL }}>
           <div className="flex items-center gap-2">
             <ShoppingCart size={18} style={{ color: B }} />
-            <h3 className="font-bold text-gray-800">Cart ({count})</h3>
+            <h3 className="font-bold text-gray-800">Carrinho ({count})</h3>
           </div>
           <button onClick={onClose} className="w-7 h-7 rounded-full bg-white shadow flex items-center justify-center"><X size={14} /></button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {cart.length === 0 && <p className="text-center text-gray-400 text-sm mt-16">Your cart is empty</p>}
+          {cart.length === 0 && <p className="text-center text-gray-400 text-sm mt-16">Seu carrinho está vazio</p>}
           {cart.map(item => (
             <div key={item.id} className="flex gap-3 p-3 rounded-lg bg-gray-50 relative group">
               <img src={item.image} alt={item.name} className="w-14 h-14 object-contain bg-white rounded p-1" />
@@ -190,7 +190,7 @@ const CartSidebar = ({ open, cart, onClose, onUpdateQty, onRemove }: {
         {cart.length > 0 && (
           <div className="border-t p-5 space-y-3">
             <div className="flex justify-between font-bold"><span>Total</span><span style={{ color: B }}>${total.toFixed(2)}</span></div>
-            <button className="w-full py-3 rounded-lg text-white font-semibold text-sm" style={{ backgroundColor: B }}>Checkout</button>
+            <button className="w-full py-3 rounded-lg text-white font-semibold text-sm" style={{ backgroundColor: B }}>Finalizar Compra</button>
           </div>
         )}
       </div>
@@ -210,7 +210,7 @@ const FloatingBag = ({ cart, expanded, onToggle, onOpen }: {
       {expanded && (
         <div className="rounded-xl p-4 shadow-2xl min-w-[180px] cursor-pointer mr-1" style={{ backgroundColor: B }} onClick={onOpen}>
           <div className="flex items-center justify-between mb-2 text-white">
-            <span className="text-sm font-bold">{count} Items</span>
+            <span className="text-sm font-bold">{count} Itens</span>
             <button onClick={e => { e.stopPropagation(); onToggle(); }} className="text-white/70 hover:text-white"><X size={14} /></button>
           </div>
           <div className="flex gap-1 mb-2">
@@ -236,7 +236,7 @@ const FloatingBag = ({ cart, expanded, onToggle, onOpen }: {
 // MAIN PAGE
 // ═══════════════════════════════════════════════════════════════════════
 const LojaVirtual = () => {
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeTab, setActiveTab] = useState('Todos');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [bagExpanded, setBagExpanded] = useState(false);
@@ -244,7 +244,7 @@ const LojaVirtual = () => {
   const cartIconRef = useRef<HTMLButtonElement>(null);
   const { toast } = useToast();
 
-  const filtered = activeTab === 'All' ? allProducts : allProducts.filter(p => p.category === activeTab);
+  const filtered = activeTab === 'Todos' ? allProducts : allProducts.filter(p => p.category === activeTab);
 
   const expandBag = useCallback(() => {
     setBagExpanded(true);
@@ -303,7 +303,7 @@ const LojaVirtual = () => {
       return [...prev, { ...p, qty: 1 }];
     });
     expandBag();
-    toast({ title: `${p.name} added to cart!` });
+    toast({ title: `${p.name} adicionado ao carrinho!` });
   };
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
@@ -312,8 +312,8 @@ const LojaVirtual = () => {
     <div className="min-h-screen bg-[#fafafa]">
       {/* ═══ Top Bar ═══ */}
       <div className="text-xs text-center py-2 text-white" style={{ backgroundColor: B }}>
-        Something you love is now on sale! <button className="underline font-bold ml-1">Buy Now !</button>
-        <button className="absolute right-4 top-2 text-white/80 hover:text-white">Close ✕</button>
+        Algo que você ama está em promoção! <button className="underline font-bold ml-1">Compre Agora!</button>
+        <button className="absolute right-4 top-2 text-white/80 hover:text-white">Fechar ✕</button>
       </div>
 
       {/* ═══ Header ═══ */}
@@ -326,18 +326,18 @@ const LojaVirtual = () => {
             </div>
             <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
               <MapPin size={16} style={{ color: B }} />
-              <span>Your Location</span>
+              <span>Sua Localização</span>
               <ChevronLeft size={14} className="rotate-[270deg]" />
             </div>
             <div className="flex-1 max-w-xl hidden md:flex">
               <div className="flex w-full rounded-lg overflow-hidden border-2 border-gray-200 focus-within:border-[#0da487]">
-                <input type="text" placeholder="search for product, delivered to your door..." className="flex-1 px-4 py-2.5 text-sm outline-none" />
+                <input type="text" placeholder="busque por produto, entregamos na sua porta..." className="flex-1 px-4 py-2.5 text-sm outline-none" />
                 <button className="px-5 text-white" style={{ backgroundColor: B }}><Search size={18} /></button>
               </div>
             </div>
             <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span className="hidden lg:inline">Language</span>
-              <span className="hidden lg:inline">Dollar</span>
+              <span className="hidden lg:inline">Idioma</span>
+              <span className="hidden lg:inline">Real</span>
               <button><RefreshCw size={20} /></button>
               <button><Heart size={20} /></button>
               <button ref={cartIconRef} onClick={() => setCartOpen(true)} className="relative transition-transform">
@@ -349,16 +349,16 @@ const LojaVirtual = () => {
           {/* Nav */}
           <div className="hidden md:flex items-center gap-1 pb-2 border-t pt-2">
             <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-semibold" style={{ backgroundColor: B }}>
-              <Menu size={16} /> All Categories
+              <Menu size={16} /> Todas as Categorias
             </button>
-            {['Home', 'Shop', 'Product', 'Mega Menu', 'Blog', 'Pages', 'Seller'].map(item => (
+            {['Início', 'Loja', 'Produtos', 'Mega Menu', 'Blog', 'Páginas', 'Vendedor'].map(item => (
               <button key={item} className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium">{item}</button>
             ))}
             <div className="ml-auto flex items-center gap-2">
               <Phone size={18} style={{ color: B }} />
               <span className="font-bold text-gray-700">(123) 456 7890</span>
               <button className="ml-4 flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-white rounded-lg" style={{ backgroundColor: B }}>
-                <Flame size={16} /> Hot Deals
+                <Flame size={16} /> Ofertas Quentes
               </button>
             </div>
           </div>
@@ -373,12 +373,12 @@ const LojaVirtual = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-7 rounded-2xl p-8 md:p-12 flex items-center min-h-[380px] relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #f0faf6, #e0f2eb)' }}>
             <div className="relative z-10 max-w-md">
-              <span className="text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGANIC</span>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Fresh</h1>
-              <h2 className="text-2xl text-gray-400 mt-1">Fruit & Vegetables</h2>
-              <p className="text-sm text-gray-400 mt-3">Free shipping on all your order. we deliver you enjoy</p>
+              <span className="text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGÂNICO</span>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Frescos</h1>
+              <h2 className="text-2xl text-gray-400 mt-1">Frutas & Verduras</h2>
+              <p className="text-sm text-gray-400 mt-3">Frete grátis em todos os pedidos. Nós entregamos, você aproveita</p>
               <button className="mt-6 px-7 py-3 rounded-lg text-white text-sm font-semibold flex items-center gap-2 hover:shadow-lg transition" style={{ backgroundColor: B }}>
-                Shop Now <ArrowRight size={16} />
+                Comprar Agora <ArrowRight size={16} />
               </button>
             </div>
             <img src={`${IMG}/home/1.png`} alt="" className="absolute right-0 bottom-0 h-full max-h-[350px] object-contain hidden md:block" />
@@ -387,24 +387,24 @@ const LojaVirtual = () => {
             <div className="rounded-2xl p-7 flex items-center justify-center text-center relative overflow-hidden" style={{ backgroundColor: B }}>
               <img src={`${IMG}/home/2.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40" />
               <div className="relative z-10">
-                <h3 className="text-lg font-bold text-white">Fresh & 100% Organic</h3>
-                <p className="text-white/70 text-sm mt-1">farmer's market</p>
-                <button className="mt-4 px-5 py-2 border-2 border-white text-white rounded-lg text-sm font-medium hover:bg-white/20 transition">Shop Now</button>
+                <h3 className="text-lg font-bold text-white">Frescos & 100% Orgânicos</h3>
+                <p className="text-white/70 text-sm mt-1">feira do produtor</p>
+                <button className="mt-4 px-5 py-2 border-2 border-white text-white rounded-lg text-sm font-medium hover:bg-white/20 transition">Comprar Agora</button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-2xl relative overflow-hidden min-h-[140px]" style={{ background: '#2d3436' }}>
                 <img src={`${IMG}/home/3.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
                 <div className="relative z-10 p-5 text-white">
-                  <h4 className="text-sm font-bold">Organic Lifestyle</h4>
-                  <p className="text-xs text-white/70 mt-1">Best Weekend Sales</p>
+                  <h4 className="text-sm font-bold">Estilo Orgânico</h4>
+                  <p className="text-xs text-white/70 mt-1">Melhores Ofertas do Fim de Semana</p>
                 </div>
               </div>
               <div className="rounded-2xl relative overflow-hidden min-h-[140px]" style={{ background: '#ff7675' }}>
                 <img src={`${IMG}/home/4.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
                 <div className="relative z-10 p-5 text-white">
-                  <h4 className="text-sm font-bold">Safe food saves lives</h4>
-                  <p className="text-xs text-white/70 mt-1">Discount Offer</p>
+                  <h4 className="text-sm font-bold">Alimento seguro salva vidas</h4>
+                  <p className="text-xs text-white/70 mt-1">Oferta com Desconto</p>
                 </div>
               </div>
             </div>
@@ -414,7 +414,7 @@ const LojaVirtual = () => {
 
       {/* ═══ Shop By Categories ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <Carousel title="Shop By Categories">
+        <Carousel title="Compre por Categorias">
           {categories.map(cat => (
             <div key={cat.name} className="flex-shrink-0 w-[130px] flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-white hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer group">
               <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: BL }}>
@@ -428,14 +428,14 @@ const LojaVirtual = () => {
 
       {/* ═══ Best Value ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-6">
-        <Carousel title="Best Value">
+        <Carousel title="Melhores Valores">
           {valueBanners.map((v, i) => (
             <div key={i} className="flex-shrink-0 w-[320px] rounded-xl p-5 flex items-center gap-4 cursor-pointer hover:shadow-md transition" style={{ backgroundColor: v.bg }}>
               <img src={v.img} alt="" className="w-24 h-24 object-contain" />
               <div>
                 <h4 className="text-sm font-bold text-gray-800">{v.title}</h4>
                 <p className="text-xs text-gray-500 mt-0.5">{v.sub}</p>
-                <button className="text-xs font-semibold mt-2 flex items-center gap-1" style={{ color: B }}>View Offer <ArrowRight size={12} /></button>
+                <button className="text-xs font-semibold mt-2 flex items-center gap-1" style={{ color: B }}>Ver Oferta <ArrowRight size={12} /></button>
               </div>
             </div>
           ))}
@@ -444,7 +444,7 @@ const LojaVirtual = () => {
 
       {/* ═══ Deal Of The Day ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <Carousel title="Deal Of The Day">
+        <Carousel title="Oferta do Dia">
           {dealProducts.map(p => (
             <div key={p.id} className="flex-shrink-0 w-[320px] bg-white rounded-xl border border-gray-100 p-5 flex gap-4 hover:shadow-lg transition">
               <div className="w-24 h-24 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ backgroundColor: BL }}>
@@ -457,7 +457,7 @@ const LojaVirtual = () => {
                   <span className="text-sm font-bold" style={{ color: B }}>${p.price.toFixed(2)}</span>
                   <span className="text-xs text-gray-400 line-through">${p.oldPrice.toFixed(2)}</span>
                 </div>
-                <p className="text-[10px] text-gray-400 mt-1">Sold: 30 Items</p>
+                <p className="text-[10px] text-gray-400 mt-1">Vendidos: 30 Itens</p>
                 <div className="flex gap-1.5 mt-2">
                   {['14', '23', '59', '56'].map((t, i) => (
                     <div key={i} className="w-8 h-8 rounded-md flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: B }}>{t}</div>
@@ -472,7 +472,7 @@ const LojaVirtual = () => {
       {/* ═══ Our Products (Tabbed Grid) ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <h2 className="text-xl font-bold text-gray-800">Our Products</h2>
+          <h2 className="text-xl font-bold text-gray-800">Nossos Produtos</h2>
           <div className="flex gap-1">
             {productTabs.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
@@ -494,18 +494,18 @@ const LojaVirtual = () => {
             <img src={`${IMG}/banner/1.png`} alt="" className="absolute right-4 bottom-0 h-[180px] object-contain hidden sm:block" />
             <div className="relative z-10">
               <span className="text-xs uppercase tracking-wider font-bold" style={{ color: B }}>Premium</span>
-              <h3 className="text-lg font-bold text-gray-800 mt-1">Fresh Vegetable & Daily Eating</h3>
-              <p className="text-sm text-gray-500">Get Extra 50% Off</p>
-              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: B }}>Shop Now</button>
+              <h3 className="text-lg font-bold text-gray-800 mt-1">Vegetais Frescos & Alimentação Diária</h3>
+              <p className="text-sm text-gray-500">Ganhe 50% de Desconto Extra</p>
+              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: B }}>Comprar Agora</button>
             </div>
           </div>
           <div className="rounded-2xl p-8 relative overflow-hidden min-h-[200px] flex items-center" style={{ background: 'linear-gradient(135deg, #fff5e6, #ffe8c8)' }}>
             <img src={`${IMG}/banner/2.png`} alt="" className="absolute right-4 bottom-0 h-[180px] object-contain hidden sm:block" />
             <div className="relative z-10">
-              <span className="text-xs uppercase tracking-wider font-bold text-orange-500">available</span>
-              <h3 className="text-lg font-bold text-gray-800 mt-1">100% Natural & Healthy Fruits</h3>
-              <p className="text-sm text-gray-500">Weekend Special</p>
-              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold bg-orange-500">Shop Now</button>
+              <span className="text-xs uppercase tracking-wider font-bold text-orange-500">disponível</span>
+              <h3 className="text-lg font-bold text-gray-800 mt-1">100% Frutas Naturais & Saudáveis</h3>
+              <p className="text-sm text-gray-500">Especial de Fim de Semana</p>
+              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold bg-orange-500">Comprar Agora</button>
             </div>
           </div>
         </div>
@@ -513,28 +513,28 @@ const LojaVirtual = () => {
 
       {/* ═══ NEW PRODUCTS Carousel ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <Carousel title="NEW PRODUCTS">
+        <Carousel title="NOVOS PRODUTOS">
           {newProducts.map(p => <MiniCard key={p.id} product={p} onAdd={addToCart} />)}
         </Carousel>
       </section>
 
       {/* ═══ FEATURE PRODUCT Carousel ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <Carousel title="FEATURE PRODUCT">
+        <Carousel title="PRODUTOS EM DESTAQUE">
           {featureProducts.map(p => <MiniCard key={p.id} product={p} onAdd={addToCart} />)}
         </Carousel>
       </section>
 
       {/* ═══ BEST SELLER Carousel ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <Carousel title="BEST SELLER">
+        <Carousel title="MAIS VENDIDOS">
           {newProducts.map(p => <MiniCard key={`bs-${p.id}`} product={p} onAdd={addToCart} />)}
         </Carousel>
       </section>
 
       {/* ═══ ON SELL Carousel ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <Carousel title="ON SELL">
+        <Carousel title="EM PROMOÇÃO">
           {featureProducts.map(p => <MiniCard key={`os-${p.id}`} product={p} onAdd={addToCart} />)}
         </Carousel>
       </section>
@@ -544,17 +544,17 @@ const LojaVirtual = () => {
         <div className="rounded-2xl p-10 relative overflow-hidden min-h-[200px] flex items-center justify-center text-center" style={{ background: `linear-gradient(135deg, ${B}, #099575)` }}>
           <img src={`${IMG}/banner/3.png`} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
           <div className="relative z-10 text-white">
-            <h4 className="text-sm uppercase tracking-wider">Try Our New</h4>
-            <h2 className="text-2xl md:text-3xl font-bold mt-2">100% Organic Best Quality Best Price</h2>
-            <p className="text-sm text-white/70 mt-2">Best Fastkart Food Quality</p>
-            <button className="mt-4 px-6 py-2.5 bg-white rounded-lg text-sm font-bold" style={{ color: B }}>Shop Now</button>
+            <h4 className="text-sm uppercase tracking-wider">Experimente Nosso Novo</h4>
+            <h2 className="text-2xl md:text-3xl font-bold mt-2">100% Orgânico Melhor Qualidade Melhor Preço</h2>
+            <p className="text-sm text-white/70 mt-2">Melhor Qualidade Alimentar Fastkart</p>
+            <button className="mt-4 px-6 py-2.5 bg-white rounded-lg text-sm font-bold" style={{ color: B }}>Comprar Agora</button>
           </div>
         </div>
       </section>
 
       {/* ═══ Top Products Grid ═══ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">Top Products</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-6">Produtos em Alta</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {allProducts.slice(0, 12).map(p => <ProductCard key={`tp-${p.id}`} product={p} onAdd={addToCart} />)}
         </div>
@@ -564,10 +564,10 @@ const LojaVirtual = () => {
       <section className="border-t border-b bg-white py-8 mt-6">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { icon: Truck, title: 'Free Shipping', desc: 'Free Shipping world wide' },
-            { icon: Clock, title: '24 x 7 Service', desc: 'Online Service For New Customer' },
-            { icon: RotateCcw, title: 'Festival Offer', desc: 'New Online Special Festival' },
-            { icon: Headphones, title: 'Online Payment', desc: 'Secure Payment' },
+            { icon: Truck, title: 'Frete Grátis', desc: 'Frete grátis para todo o Brasil' },
+            { icon: Clock, title: 'Atendimento 24h', desc: 'Suporte online para novos clientes' },
+            { icon: RotateCcw, title: 'Ofertas Especiais', desc: 'Novas promoções toda semana' },
+            { icon: Headphones, title: 'Pagamento Online', desc: 'Pagamento seguro' },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: BL }}>
@@ -588,22 +588,22 @@ const LojaVirtual = () => {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <span className="text-xl font-black text-white">Fast<span style={{ color: B }}>kart.</span></span>
-              <p className="text-sm text-gray-400 mt-3">We are a friendly bar serving a variety of cocktails, craft beers and pub food.</p>
+              <p className="text-sm text-gray-400 mt-3">Somos uma loja online oferecendo uma variedade de produtos frescos e orgânicos com entrega rápida.</p>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-3">Categories</h4>
+              <h4 className="text-sm font-bold text-white mb-3">Categorias</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                {['Vegetables & Fruit', 'Beverages', 'Cooking', 'Snacks & Munchies'].map(c => <li key={c} className="hover:text-white cursor-pointer">{c}</li>)}
+                {['Verduras & Frutas', 'Bebidas', 'Cozinha', 'Lanches & Petiscos'].map(c => <li key={c} className="hover:text-white cursor-pointer">{c}</li>)}
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-3">Useful Links</h4>
+              <h4 className="text-sm font-bold text-white mb-3">Links Úteis</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                {['Home', 'Shop', 'About Us', 'Blog', 'Contact Us'].map(c => <li key={c} className="hover:text-white cursor-pointer">{c}</li>)}
+                {['Início', 'Loja', 'Sobre Nós', 'Blog', 'Contato'].map(c => <li key={c} className="hover:text-white cursor-pointer">{c}</li>)}
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-3">Contact Us</h4>
+              <h4 className="text-sm font-bold text-white mb-3">Contato</h4>
               <div className="space-y-2 text-sm text-gray-400">
                 <div className="flex items-center gap-2"><MapPin size={14} style={{ color: B }} /><span>1418 Riverwood Drive, CA 96052</span></div>
                 <div className="flex items-center gap-2"><Phone size={14} style={{ color: B }} /><span>(123) 456 7890</span></div>
@@ -611,7 +611,7 @@ const LojaVirtual = () => {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-6 text-center text-xs text-gray-500">
-            ©2026 Fastkart All rights reserved
+            ©2026 Fastkart Todos os direitos reservados
           </div>
         </div>
       </footer>

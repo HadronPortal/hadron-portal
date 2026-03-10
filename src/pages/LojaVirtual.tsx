@@ -165,7 +165,7 @@ const CartSidebar = ({ open, cart, onClose, onUpdateQty, onRemove }: {
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ backgroundColor: BL }}>
           <div className="flex items-center gap-2">
             <ShoppingCart size={18} style={{ color: B }} />
-            <h3 className="font-bold text-gray-800">Cart ({count})</h3>
+            <h3 className="font-bold text-gray-800">Carrinho ({count})</h3>
           </div>
           <button onClick={onClose} className="w-7 h-7 rounded-full bg-white shadow flex items-center justify-center"><X size={14} /></button>
         </div>

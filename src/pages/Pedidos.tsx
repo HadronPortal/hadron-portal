@@ -61,6 +61,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 };
 
 const Pedidos = () => {
+  const navigate = useNavigate();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [orders, setOrders] = useState<OrderAPI[]>([]);
   const [dashboard, setDashboard] = useState<Dashboard>({ sent: 0, sent_peso: 0, approved: 0, approved_peso: 0, invoiced: 0, invoiced_peso: 0, canceled: 0, canceled_peso: 0 });

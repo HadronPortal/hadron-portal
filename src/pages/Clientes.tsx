@@ -68,6 +68,7 @@ const formatCurrency = (v: number | null) => {
 };
 
 const Clientes = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);

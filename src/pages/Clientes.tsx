@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import {
@@ -67,6 +68,7 @@ const formatCurrency = (v: number | null) => {
 };
 
 const Clientes = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
@@ -271,8 +273,20 @@ const Clientes = () => {
                         {show('acao') && (
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <button className="text-muted-foreground hover:text-foreground" title="Ver"><Eye size={16} /></button>
-                              <button className="text-muted-foreground hover:text-foreground" title="Pedidos"><CreditCard size={16} /></button>
+                              <button
+                                className="text-muted-foreground hover:text-foreground"
+                                title="Ver Pedidos"
+                                onClick={() => navigate(`/pedidos?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}
+                              >
+                                <Eye size={16} />
+                              </button>
+                              <button
+                                className="text-muted-foreground hover:text-foreground"
+                                title="Cobranças"
+                                onClick={() => navigate(`/cobrancas?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}
+                              >
+                                <CreditCard size={16} />
+                              </button>
                             </div>
                           </TableCell>
                         )}

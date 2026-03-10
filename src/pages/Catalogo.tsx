@@ -151,9 +151,7 @@ const Catalogo = () => {
             </select>
           </div>
 
-          <Button variant="outline" size="sm" className="gap-1">
-            Colunas <ChevronDown size={14} />
-          </Button>
+          <ColumnToggle columns={CATALOGO_COLUMNS} visible={visibleCols} onChange={setVisibleCols} />
         </div>
 
         {initialLoading && items.length === 0 ? (

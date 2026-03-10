@@ -54,47 +54,26 @@ serve(async (req) => {
 
     const { token, cookies } = await getAuth();
 
-    // The API requires orc_codrep - try common patterns
-    const attempts = [
-      { pagination: { page, limit }, orc_codrep: ["1"] },
-      { pagination: { page, limit }, orc_codrep: [1] },
-      { pagination: { page, limit }, orc_codrep: ["0"] },
-      { pagination: { page, limit }, orc_codrep: ["*"] },
-    ];
+    const requestBody = {
+      pagination: { page, limit },
+      orc_codrep: [3],
+    };
 
-    let responseText = '';
-    let ok = false;
+    const clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiClients', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Cookie': cookies,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
 
-    for (const body of attempts) {
-      console.log('Trying body:', JSON.stringify(body));
-      const res = await fetch('https://dev.hadronweb.com.br/DEV/app/Pages/apiClients', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Cookie': cookies,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
+    const responseText = await clientsRes.text();
 
-      responseText = await res.text();
-      console.log('Status:', res.status, 'Preview:', responseText.substring(0, 300));
-
-      if (res.ok) {
-        ok = true;
-        break;
-      }
-      
-      // If we get a different error, also break
-      if (!responseText.includes('orc_codrep')) {
-        console.log('Different error, breaking');
-        break;
-      }
-    }
-
-    if (!ok) {
+    if (!clientsRes.ok) {
       cachedToken = null;
-      throw new Error(`Clients fetch failed: ${responseText.substring(0, 500)}`);
+      throw new Error(`Clients fetch failed [${clientsRes.status}]: ${responseText.substring(0, 500)}`);
     }
 
     let clientsData;

@@ -88,7 +88,10 @@ const Produtos = () => {
   const filtered = (activeTab === 'todos'
     ? products
     : products.filter((p) => p.tipo_op_banco === activeTab)
-  ).filter((p) => (p.produto || '').toLowerCase().includes(search.toLowerCase()));
+  ).filter((p) => {
+    const q = search.toLowerCase();
+    return (p.produto || '').toLowerCase().includes(q) || String(p.codpro).includes(q);
+  });
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

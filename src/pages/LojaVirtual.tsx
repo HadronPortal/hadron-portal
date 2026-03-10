@@ -73,7 +73,7 @@ const featureProducts: Product[] = [
   { id: 206, name: 'Berinjela', price: 75.20, oldPrice: 65.21, image: `${IMG}/pro1/9.png`, category: 'Cozinha' },
 ];
 
-const productTabs = ['All', 'Cooking', 'Fruits & Vegetables', 'Beverage', 'Dairy'];
+const productTabs = ['Todos', 'Cozinha', 'Frutas & Verduras', 'Bebidas', 'Laticínios'];
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 const Stars = () => (

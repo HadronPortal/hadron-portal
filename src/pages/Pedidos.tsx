@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Header from '@/components/erp/Header';
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';

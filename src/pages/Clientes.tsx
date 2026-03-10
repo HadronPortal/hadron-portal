@@ -73,10 +73,7 @@ const Clientes = () => {
   const [representantes, setRepresentantes] = useState<Representante[]>([]);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateRange, setDateRange] = useState<{ start: Date; end: Date }>({
-    start: new Date(2026, 0, 8),
-    end: new Date(2026, 2, 9),
-  });
+  const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -120,7 +117,7 @@ const Clientes = () => {
   const handleClear = () => {
     setSelectedRep([]);
     setSearchQuery('');
-    setDateRange({ start: new Date(2026, 0, 8), end: new Date(2026, 2, 9) });
+    setDateRange(null);
   };
 
   const repFiltered = selectedRep.length > 0
@@ -140,15 +137,17 @@ const Clientes = () => {
       })
     : repFiltered;
 
-  const dateFiltered = searchFiltered.filter(c => {
-    const d = c.ULT_VENDA ? new Date(c.ULT_VENDA) : c.ter_dta_cad ? new Date(c.ter_dta_cad) : null;
-    if (!d) return false;
-    const start = new Date(dateRange.start);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(dateRange.end);
-    end.setHours(23, 59, 59, 999);
-    return d >= start && d <= end;
-  });
+  const dateFiltered = dateRange
+    ? searchFiltered.filter(c => {
+        const d = c.ULT_VENDA ? new Date(c.ULT_VENDA) : c.ter_dta_cad ? new Date(c.ter_dta_cad) : null;
+        if (!d) return false;
+        const start = new Date(dateRange.start);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(dateRange.end);
+        end.setHours(23, 59, 59, 999);
+        return d >= start && d <= end;
+      })
+    : searchFiltered;
 
   const filtered = activeTab === 'todos'
     ? dateFiltered

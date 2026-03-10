@@ -1,4 +1,4 @@
-import { Home, Users, Gauge, LayoutGrid, Grid3X3, Box, LogOut, User } from 'lucide-react';
+import { Home, Users, Gauge, LayoutGrid, Grid3X3, Box, ShoppingBag, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import logoImg from '@/assets/icon_hadronweb.png';
 
@@ -9,6 +9,7 @@ const navItems = [
   { icon: LayoutGrid, label: 'Pedidos', path: '/pedidos' },
   { icon: Grid3X3, label: 'Produtos', path: '/produtos' },
   { icon: Box, label: 'Catálogo', path: '/catalogo' },
+  { icon: ShoppingBag, label: 'Loja Virtual', path: '#' },
 ];
 
 const Header = () => {

@@ -3,6 +3,10 @@ import { ShoppingCart, Heart, Eye, Search, MapPin, Phone, ChevronLeft, ChevronRi
 import { useToast } from '@/hooks/use-toast';
 import logoImg from '@/assets/icon_hadronweb.png';
 
+// ─── Brand Color ────────────────────────────────────────────────────────
+const BRAND = 'hsl(220, 70%, 50%)';
+const BRAND_LIGHT = 'hsl(220, 70%, 95%)';
+
 // ─── Types ──────────────────────────────────────────────────────────────
 type Product = {
   id: number;
@@ -66,7 +70,7 @@ const FlyToCart = ({ from, onDone }: { from: { x: number; y: number }; onDone: (
       }}
       onAnimationEnd={onDone}
     >
-      <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}>
+      <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: BRAND }}>
         <ShoppingCart size={18} color="white" />
       </div>
     </div>
@@ -83,7 +87,7 @@ const ProductCard = ({
 }) => (
   <div className="group bg-white rounded-lg border border-gray-100 p-3 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
     {product.badge && (
-      <span className="absolute top-2 left-2 z-10 text-[11px] font-bold px-2 py-0.5 rounded" style={{ backgroundColor: 'hsl(160, 84%, 39%)', color: 'white' }}>
+      <span className="absolute top-2 left-2 z-10 text-[11px] font-bold px-2 py-0.5 rounded" style={{ backgroundColor: BRAND, color: 'white' }}>
         {product.badge}
       </span>
     )}
@@ -106,7 +110,7 @@ const ProductCard = ({
     </div>
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-bold" style={{ color: 'hsl(160, 84%, 39%)' }}>R$ {product.price.toFixed(2)}</span>
+        <span className="text-sm font-bold" style={{ color: BRAND }}>R$ {product.price.toFixed(2)}</span>
         {product.oldPrice && (
           <span className="text-xs text-gray-400 line-through">R$ {product.oldPrice.toFixed(2)}</span>
         )}
@@ -114,7 +118,7 @@ const ProductCard = ({
       <button
         onClick={(e) => onAddToCart(product, e)}
         className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
-        style={{ backgroundColor: 'hsl(160, 84%, 39%)', color: 'white' }}
+        style={{ backgroundColor: BRAND, color: 'white' }}
       >
         <ShoppingCart size={14} />
       </button>
@@ -181,7 +185,7 @@ const CartSidebar = ({
               <img src={item.image} alt={item.name} className="w-16 h-16 object-contain bg-gray-50 rounded" />
               <div className="flex-1">
                 <p className="text-sm font-medium">{item.name}</p>
-                <p className="text-xs" style={{ color: 'hsl(160, 84%, 39%)' }}>R$ {item.price.toFixed(2)}</p>
+                <p className="text-xs" style={{ color: BRAND }}>R$ {item.price.toFixed(2)}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <button onClick={() => onUpdateQty(item.id, -1)} className="w-6 h-6 border rounded flex items-center justify-center text-xs">
                     <Minus size={12} />
@@ -201,11 +205,11 @@ const CartSidebar = ({
         <div className="border-t p-4 space-y-3">
           <div className="flex justify-between font-bold">
             <span>Total</span>
-            <span style={{ color: 'hsl(160, 84%, 39%)' }}>R$ {total.toFixed(2)}</span>
+            <span style={{ color: BRAND }}>R$ {total.toFixed(2)}</span>
           </div>
           <button
             className="w-full py-3 rounded-lg text-white font-semibold text-sm transition-opacity hover:opacity-90"
-            style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}
+            style={{ backgroundColor: BRAND }}
           >
             Finalizar Pedido
           </button>
@@ -238,7 +242,7 @@ const FloatingCartBag = ({
       {expanded && cart.length > 0 && (
         <div
           className="rounded-xl p-4 shadow-2xl min-w-[180px] animate-scale-in cursor-pointer"
-          style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}
+          style={{ backgroundColor: BRAND }}
           onClick={onOpenCart}
         >
           <div className="flex items-center justify-between mb-3">
@@ -275,11 +279,11 @@ const FloatingCartBag = ({
       <button
         onClick={onToggle}
         className="w-14 h-14 rounded-xl shadow-lg flex items-center justify-center transition-transform hover:scale-110 relative"
-        style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}
+        style={{ backgroundColor: BRAND }}
       >
         <ShoppingCart size={22} color="white" />
         {cartCount > 0 && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white text-[10px] font-bold flex items-center justify-center" style={{ color: 'hsl(160, 84%, 39%)' }}>
+          <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white text-[10px] font-bold flex items-center justify-center" style={{ color: BRAND }}>
             {cartCount}
           </span>
         )}
@@ -339,7 +343,7 @@ const LojaVirtual = () => {
       {flyAnim && <FlyToCart from={flyAnim} onDone={() => setFlyAnim(null)} />}
 
       {/* ── Top Bar ── */}
-      <div className="text-xs text-center py-2 px-4" style={{ backgroundColor: 'hsl(160, 84%, 39%)', color: 'white' }}>
+      <div className="text-xs text-center py-2 px-4" style={{ backgroundColor: BRAND, color: 'white' }}>
         Frete grátis em compras acima de R$ 150,00! 🚚
       </div>
 
@@ -349,7 +353,7 @@ const LojaVirtual = () => {
           <div className="flex items-center gap-2">
             <img src={logoImg} alt="Hádron" className="w-10 h-10 object-contain" />
             <span className="text-lg font-bold text-gray-800">
-              Hádron<span style={{ color: 'hsl(160, 84%, 39%)' }}>Shop</span>
+              Hádron<span style={{ color: BRAND }}>Shop</span>
             </span>
           </div>
 
@@ -362,7 +366,7 @@ const LojaVirtual = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 px-4 py-2.5 text-sm outline-none"
               />
-              <button className="px-4 text-white" style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}>
+              <button className="px-4 text-white" style={{ backgroundColor: BRAND }}>
                 <Search size={18} />
               </button>
             </div>
@@ -384,7 +388,7 @@ const LojaVirtual = () => {
               {cartCount > 0 && (
                 <span
                   className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center animate-scale-in"
-                  style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}
+                  style={{ backgroundColor: BRAND }}
                 >
                   {cartCount}
                 </span>
@@ -411,10 +415,10 @@ const LojaVirtual = () => {
           {/* Main Banner */}
           <div
             className="lg:col-span-7 rounded-xl p-8 md:p-12 flex items-center min-h-[320px] relative overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, hsl(160, 30%, 96%), hsl(160, 40%, 90%))' }}
+            style={{ background: 'linear-gradient(135deg, hsl(220, 30%, 96%), hsl(220, 40%, 90%))' }}
           >
             <div className="relative z-10 max-w-md">
-              <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'hsl(160, 84%, 39%)' }}>
+              <span className="text-xs font-bold uppercase tracking-widest" style={{ color: BRAND }}>
                 ORGÂNICO
               </span>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mt-2 leading-tight">
@@ -426,7 +430,7 @@ const LojaVirtual = () => {
               </p>
               <button
                 className="mt-5 px-6 py-2.5 rounded-lg text-white text-sm font-semibold transition-transform hover:scale-105"
-                style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}
+                style={{ backgroundColor: BRAND }}
               >
                 Comprar Agora
               </button>
@@ -442,7 +446,7 @@ const LojaVirtual = () => {
           <div className="lg:col-span-5 grid grid-rows-2 gap-4">
             <div
               className="rounded-xl p-6 flex items-center justify-center text-center relative overflow-hidden"
-              style={{ background: 'linear-gradient(135deg, hsl(170, 50%, 45%), hsl(160, 84%, 39%))' }}
+              style={{ background: `linear-gradient(135deg, hsl(220, 60%, 45%), ${BRAND})` }}
             >
               <div className="relative z-10">
                 <h3 className="text-lg font-bold text-white">Frescos & 100% Orgânicos</h3>
@@ -472,7 +476,7 @@ const LojaVirtual = () => {
           {categories.map((cat) => (
             <div
               key={cat.name}
-              className="flex-shrink-0 w-[130px] flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:shadow-md hover:border-green-200 transition-all cursor-pointer group"
+              className="flex-shrink-0 w-[130px] flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer group"
             >
               <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden">
                 <img src={cat.image} alt={cat.name} className="w-14 h-14 object-contain group-hover:scale-110 transition-transform" />
@@ -487,7 +491,7 @@ const LojaVirtual = () => {
       <section className="max-w-7xl mx-auto px-4 py-6">
         <Carousel title="Melhores Ofertas">
           {[
-            { title: 'Economize Mais!', sub: 'Vegetais Orgânicos', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/2.png', bg: 'hsl(160, 40%, 92%)' },
+            { title: 'Economize Mais!', sub: 'Vegetais Orgânicos', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/2.png', bg: 'hsl(220, 40%, 92%)' },
             { title: 'Hot Deals!', sub: 'Frutas & Verduras', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/3.png', bg: 'hsl(30, 80%, 92%)' },
             { title: 'Compre Mais, Pague Menos', sub: 'Frutas & Verduras', img: 'https://themes.pixelstrap.com/fastkart/assets/images/veg-3/value/1.png', bg: 'hsl(200, 40%, 92%)' },
           ].map((v, i) => (
@@ -500,7 +504,7 @@ const LojaVirtual = () => {
               <div>
                 <h4 className="text-sm font-bold text-gray-800">{v.title}</h4>
                 <p className="text-xs text-gray-500 mt-0.5">{v.sub}</p>
-                <button className="text-xs font-semibold mt-2 underline" style={{ color: 'hsl(160, 84%, 39%)' }}>
+                <button className="text-xs font-semibold mt-2 underline" style={{ color: BRAND }}>
                   Ver Oferta
                 </button>
               </div>
@@ -523,7 +527,7 @@ const LojaVirtual = () => {
                     ? 'text-white'
                     : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
                 }`}
-                style={activeTab === tab ? { backgroundColor: 'hsl(160, 84%, 39%)' } : {}}
+                style={activeTab === tab ? { backgroundColor: BRAND } : {}}
               >
                 {tab}
               </button>
@@ -540,12 +544,12 @@ const LojaVirtual = () => {
       {/* ── Promotional Banners ── */}
       <section className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(160, 30%, 94%), hsl(160, 50%, 88%))' }}>
+          <div className="rounded-xl p-8 relative overflow-hidden min-h-[180px] flex items-center" style={{ background: 'linear-gradient(135deg, hsl(220, 30%, 94%), hsl(220, 50%, 88%))' }}>
             <div>
-              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: 'hsl(160, 84%, 39%)' }}>Premium</span>
+              <span className="text-xs uppercase tracking-wider font-bold" style={{ color: BRAND }}>Premium</span>
               <h3 className="text-lg font-bold text-gray-800 mt-1">Vegetais Frescos & Consumo Diário</h3>
               <p className="text-sm text-gray-500">Ganhe 50% de desconto extra</p>
-              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: 'hsl(160, 84%, 39%)' }}>
+              <button className="mt-3 px-5 py-2 text-white text-sm rounded-lg font-semibold" style={{ backgroundColor: BRAND }}>
                 Comprar Agora
               </button>
             </div>
@@ -586,8 +590,8 @@ const LojaVirtual = () => {
             { icon: Headphones, title: 'Suporte 24/7', desc: 'Atendimento dedicado' },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(160, 84%, 95%)' }}>
-                <Icon size={20} style={{ color: 'hsl(160, 84%, 39%)' }} />
+              <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: BRAND_LIGHT }}>
+                <Icon size={20} style={{ color: BRAND }} />
               </div>
               <div>
                 <h4 className="text-sm font-bold text-gray-800">{title}</h4>

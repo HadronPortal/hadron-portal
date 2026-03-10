@@ -312,8 +312,8 @@ const LojaVirtual = () => {
     <div className="min-h-screen bg-[#fafafa]">
       {/* ═══ Top Bar ═══ */}
       <div className="text-xs text-center py-2 text-white" style={{ backgroundColor: B }}>
-        Something you love is now on sale! <button className="underline font-bold ml-1">Buy Now !</button>
-        <button className="absolute right-4 top-2 text-white/80 hover:text-white">Close ✕</button>
+        Algo que você ama está em promoção! <button className="underline font-bold ml-1">Compre Agora!</button>
+        <button className="absolute right-4 top-2 text-white/80 hover:text-white">Fechar ✕</button>
       </div>
 
       {/* ═══ Header ═══ */}

@@ -80,6 +80,16 @@ const Cobrancas = () => {
       <Header />
       <FilterBar />
 
+      {clienteNome && (
+        <div className="px-6 pt-2 text-sm text-muted-foreground">
+          Filtro Cliente:{' '}
+          <button onClick={clearClientFilter} className="text-primary underline font-semibold">
+            {decodeURIComponent(clienteNome)}
+          </button>
+          <button onClick={clearClientFilter} className="ml-2 text-xs text-muted-foreground hover:text-foreground">✕</button>
+        </div>
+      )}
+
       <main className="flex-1 px-6 py-5 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Cobranças</h1>
 

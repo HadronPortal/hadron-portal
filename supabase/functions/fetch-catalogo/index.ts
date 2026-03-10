@@ -52,8 +52,17 @@ serve(async (req) => {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '10');
+    const repParam = url.searchParams.get('rep');
 
     const { token, cookies } = await getAuth();
+
+    const requestBody: Record<string, unknown> = {
+      pagination: { page, limit },
+    };
+
+    if (repParam) {
+      requestBody.orc_codrep = repParam.split(',').map(Number);
+    }
 
     const catalogoRes = await fetch('https://dev.hadronweb.com.br/app/Pages/apiCatalogs', {
       method: 'POST',
@@ -62,7 +71,7 @@ serve(async (req) => {
         'Cookie': cookies,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ pagination: { page, limit } }),
+      body: JSON.stringify(requestBody),
     });
 
     const responseText = await catalogoRes.text();

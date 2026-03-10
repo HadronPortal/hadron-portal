@@ -19,8 +19,8 @@ import imgProtetorSolar from '@/assets/shop/protetor-solar.png';
 import imgCotonete from '@/assets/shop/cotonete.png';
 
 // ─── Brand Color ────────────────────────────────────────────────────────
-const BRAND = 'hsl(220, 70%, 50%)';
-const BRAND_LIGHT = 'hsl(220, 70%, 95%)';
+const BRAND = 'hsl(145, 63%, 42%)';
+const BRAND_LIGHT = 'hsl(145, 60%, 95%)';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 type Product = {

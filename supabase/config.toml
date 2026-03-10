@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.fetch-product-details]
 verify_jwt = false
+
+[functions.fetch-dashboard]
+verify_jwt = false

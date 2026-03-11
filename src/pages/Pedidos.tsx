@@ -136,10 +136,10 @@ const Pedidos = () => {
     if (!searchQuery.trim()) return orders;
     const q = searchQuery.toLowerCase();
     return orders.filter(o =>
-      (o.ter_nomter || '').toLowerCase().includes(q) ||
-      (o.ter_fanter || '').toLowerCase().includes(q) ||
-      (o.ter_documento || '').includes(q) ||
-      (o.TEN_CIDLGR || '').toLowerCase().includes(q)
+      (o.CLIENTE || '').toLowerCase().includes(q) ||
+      (o.FANTER || '').toLowerCase().includes(q) ||
+      (o.orc_documento || '').includes(q) ||
+      (o.LOCALIZACAO || '').toLowerCase().includes(q)
     );
   }, [orders, searchQuery]);
 

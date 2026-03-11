@@ -45,11 +45,11 @@ interface DashboardAPIResponse {
   evolucao_vendas: unknown[];
 }
 
-function mapStatus(status: string): 'aprovado' | 'confirmado' | 'pendente' | 'cancelado' {
-  const s = (status || '').toLowerCase();
-  if (s.includes('aprov')) return 'aprovado';
-  if (s.includes('confirm') || s.includes('fatur')) return 'confirmado';
-  if (s.includes('cancel')) return 'cancelado';
+function mapStatus(status: unknown): 'aprovado' | 'confirmado' | 'pendente' | 'cancelado' {
+  const s = String(status || '').toLowerCase();
+  if (s.includes('aprov') || s === 'ap') return 'aprovado';
+  if (s.includes('confirm') || s.includes('fatur') || s === 'fa' || s === 'pc') return 'confirmado';
+  if (s.includes('cancel') || s === 'ca') return 'cancelado';
   return 'pendente';
 }
 

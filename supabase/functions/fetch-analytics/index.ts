@@ -42,7 +42,9 @@ serve(async (req) => {
     const sortField = url.searchParams.get('sort_field') || '';
     const sortDir = url.searchParams.get('sort_dir') || 'DESC';
 
-    const token = extractUserToken(req) || await getServiceToken();
+    const userToken = extractUserToken(req);
+    const token = userToken || await getServiceToken();
+    console.log('Using token source:', userToken ? 'user' : 'service', '| date_ini:', dateIni, '| date_end:', dateEnd);
 
     const requestBody: Record<string, unknown> = {
       search,

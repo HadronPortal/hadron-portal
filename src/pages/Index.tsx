@@ -94,17 +94,15 @@ const Index = () => {
     staleTime: 0,
   });
 
-  const handleRepChange = useCallback((_repCodes: number[]) => {
-    // State is set via handleFilter which is called automatically
-  }, []);
-  const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
   const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
-    setSearchQuery(filters.search);
+    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
+    setFilterNonce((n) => n + 1);
   }, []);
   const handleClear = useCallback(() => {
     setSelectedRep([]);
-    setSearchQuery('');
+    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+    setFilterNonce((n) => n + 1);
   }, []);
 
   const orders = useMemo(() => {

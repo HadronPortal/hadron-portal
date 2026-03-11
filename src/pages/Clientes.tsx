@@ -204,7 +204,7 @@ const Clientes = () => {
               <option value={100}>100</option>
             </select>
             <span className="text-sm text-muted-foreground">
-              {filtered.length} clientes
+              {totalRecords} clientes encontrados
             </span>
           </div>
 

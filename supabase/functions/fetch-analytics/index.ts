@@ -27,51 +27,42 @@ serve(async (req) => {
     const sortField = url.searchParams.get('sort_field') || '';
     const sortDir = url.searchParams.get('sort_dir') || 'DESC';
 
-    // Build JSON body matching Hadron API contract
-    const userToken = extractUserToken(req);
-
-    const filter: Record<string, string | number> = {};
-    if (dateIni) filter.date_ini = dateIni;
-    if (dateEnd) filter.date_end = dateEnd;
-    if (repParam) filter.cod_rep = Number(repParam);
-
-    const payload: Record<string, unknown> = {
-      search: search || '',
-      filter,
-      pagination: {
-        page: Number(page),
-        limit: Number(limit),
-      },
-    };
-
-    if (sortField) {
-      payload.sort = { field: sortField, direction: sortDir };
-    }
+    // Build form-data body — the Hadron API expects form-data
+    const formData = new FormData();
 
     // Auth: prefer user token, fallback to service credentials
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    const userToken = extractUserToken(req);
     if (userToken) {
-      headers['Authorization'] = `Bearer ${userToken}`;
-      payload.aus_token = userToken;
+      formData.append('aus_token', userToken);
     } else {
       const email = Deno.env.get('HADRON_API_EMAIL');
       const password = Deno.env.get('HADRON_API_PASSWORD');
       if (!email || !password) throw new Error('Missing API credentials');
-      payload.aus_email = email;
-      payload.aus_senha = password;
+      formData.append('aus_email', email);
+      formData.append('aus_senha', password);
     }
 
-    console.log('Sending payload:', JSON.stringify(payload));
+    // Filters
+    if (search) formData.append('search', search);
+    if (repParam) formData.append('cod_rep', repParam);
+    if (dateIni) formData.append('date_ini', dateIni);
+    if (dateEnd) formData.append('date_end', dateEnd);
+    if (page) formData.append('page', page);
+    if (limit) formData.append('limit', limit);
+    if (sortField) {
+      formData.append('sort_field', sortField);
+      formData.append('sort_dir', sortDir);
+    }
+
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiAnalytics', {
       method: 'POST',
-      headers,
-      body: JSON.stringify(payload),
+      headers: {
+        ...(userToken ? { 'Authorization': `Bearer ${userToken}` } : {}),
+      },
+      body: formData,
     });
 
     const responseText = await res.text();
-    console.log('Response status:', res.status, 'Body preview:', responseText.substring(0, 300));
     if (!res.ok) throw new Error(`Analytics fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
 
     let data;

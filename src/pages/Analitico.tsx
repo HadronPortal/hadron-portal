@@ -98,6 +98,7 @@ const Analitico = () => {
     peso: acc.peso + (p.totais?.qtde || 0) * (p.peso_un || 0),
   }), { valor: 0, qtde: 0, peso: 0 });
 
+  return (
     <>
 
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />

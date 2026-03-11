@@ -39,9 +39,22 @@ const Login = () => {
         localStorage.setItem('hadron_user', JSON.stringify(data.user));
       }
 
-      toast({
-        title: 'Login realizado com sucesso!',
+      // Prefetch representantes with the fresh token
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      queryClient.prefetchQuery({
+        queryKey: ['representantes'],
+        queryFn: async () => {
+          const res = await fetch(
+            `https://${projectId}.supabase.co/functions/v1/fetch-reps?token=${encodeURIComponent(data.access_token)}`
+          );
+          if (!res.ok) return [];
+          const json = await res.json();
+          return json.data || json.representantes || [];
+        },
+        staleTime: 15 * 60 * 1000,
       });
+
+      toast({ title: 'Login realizado com sucesso!' });
 
       navigate('/');
     } catch (err) {

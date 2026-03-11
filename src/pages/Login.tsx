@@ -20,15 +20,11 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const loginRes = await fetch('https://dev.hadronweb.com.br/app/AuthUsuarios/apiLogin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ aus_email: email, aus_senha: password }),
+      const { data, error } = await supabase.functions.invoke('auth-login', {
+        body: { email, password },
       });
 
-      const data = await loginRes.json().catch(() => null);
-
-      if (!loginRes.ok || !data?.success) {
+      if (error || !data?.success) {
         toast({
           title: 'Não foi possível entrar',
           description: data?.error || 'E-mail ou senha incorretos. Verifique seus dados e tente novamente.',

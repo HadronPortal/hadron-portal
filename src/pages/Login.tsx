@@ -45,7 +45,8 @@ const Login = () => {
         queryKey: ['representantes'],
         queryFn: async () => {
           const res = await fetch(
-            `https://${projectId}.supabase.co/functions/v1/fetch-reps?token=${encodeURIComponent(data.access_token)}`
+            `https://${projectId}.supabase.co/functions/v1/fetch-reps`,
+            { headers: { 'Authorization': `Bearer ${data.access_token}` } }
           );
           if (!res.ok) return [];
           const json = await res.json();

@@ -178,17 +178,19 @@ const Produtos = () => {
                     </TableRow>
                   ) : (
                     filtered.map((p) => {
-                      const imgUrl = p.foto
-                        ? `${PROXY_BASE}${encodeURIComponent(`https://dev.hadronweb.com.br/user_data/DEV/products/${p.foto}`)}`
+                      const imgUrl = p.pro_foto
+                        ? `${PROXY_BASE}${encodeURIComponent(`https://dev.hadronweb.com.br/user_data/DEV/products/${p.pro_foto}`)}`
                         : '';
+                      const qtde = parseFloat(p.QUANT || '0');
+                      const totalVendido = parseFloat(p.TOTAL_VENDIDO || '0');
                       return (
-                        <TableRow key={p.codpro} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/produtos/${p.codpro}`)}>
-                          <TableCell className="text-sm">{p.codpro}</TableCell>
+                        <TableRow key={p.pro_codpro} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/produtos/${p.pro_codpro}`)}>
+                          <TableCell className="text-sm">{p.pro_codpro}</TableCell>
                           <TableCell>
                             {imgUrl ? (
                               <img
                                 src={imgUrl}
-                                alt={p.produto}
+                                alt={p.pro_despro}
                                 className="w-14 h-14 object-contain rounded bg-muted"
                                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                               />
@@ -196,10 +198,10 @@ const Produtos = () => {
                               <div className="w-14 h-14 rounded bg-muted" />
                             )}
                           </TableCell>
-                          <TableCell className="text-sm font-medium">{p.produto}</TableCell>
-                          <TableCell className="text-sm">{p.qtde ?? 0}</TableCell>
-                          <TableCell className="text-sm">{((p.qtde ?? 0) * (p.peso_un ?? 0)).toFixed(1)} Kg</TableCell>
-                          <TableCell className="text-sm">{formatCurrency(p.valor ?? 0)}</TableCell>
+                          <TableCell className="text-sm font-medium">{p.pro_despro}</TableCell>
+                          <TableCell className="text-sm">{qtde}</TableCell>
+                          <TableCell className="text-sm">{(qtde * (p.pro_peso_liq ?? 0)).toFixed(1)} {p.pro_unidade || 'Kg'}</TableCell>
+                          <TableCell className="text-sm">{formatCurrency(totalVendido)}</TableCell>
                         </TableRow>
                       );
                     })

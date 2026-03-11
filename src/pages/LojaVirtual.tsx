@@ -380,10 +380,10 @@ const LojaVirtual = () => {
       <FloatingBag cart={cart} expanded={bagExpanded} onToggle={() => setBagExpanded(v => !v)} onOpen={() => { setBagExpanded(false); setCartOpen(true); }} />
 
       {/* ═══ Hero ═══ */}
-      <section className="relative py-6">
+      <section className="relative py-6" style={{ backgroundImage: `url('https://themes.pixelstrap.com/fastkart/assets/images/veg-3/bg.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
-          <div className="lg:col-span-7 rounded-2xl p-6 sm:p-8 md:p-12 flex items-center min-h-[260px] sm:min-h-[380px] relative overflow-hidden" style={{ background: '#f0faf6' }}>
+          <div className="lg:col-span-7 rounded-2xl p-6 sm:p-8 md:p-12 flex items-center min-h-[260px] sm:min-h-[380px] relative overflow-hidden bg-white">
             <div className="relative z-10 max-w-md">
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGÂNICO</span>
               <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Frescos</h1>
@@ -393,7 +393,19 @@ const LojaVirtual = () => {
                 Comprar Agora <ArrowRight size={16} />
               </button>
             </div>
+            {/* Scattered fruits decoration */}
+            <img src={`${IMG}/shape/orange-2.png`} alt="" className="absolute top-4 right-[40%] w-12 sm:w-16 object-contain hidden md:block" />
+            <img src={`${IMG}/shape/orange-1.png`} alt="" className="absolute top-8 right-[25%] w-10 sm:w-14 object-contain hidden md:block" />
+            <img src={`${IMG}/shape/kiwi.png`} alt="" className="absolute top-[40%] right-[35%] w-8 sm:w-12 object-contain hidden md:block" />
+            <img src={`${IMG}/shape/leaf.png`} alt="" className="absolute top-[20%] right-[30%] w-6 object-contain hidden md:block opacity-60" />
+            <img src={`${IMG}/shape/cucumber.png`} alt="" className="absolute bottom-12 left-[30%] w-10 object-contain hidden md:block" />
+            <img src={`${IMG}/shape/blueberry.png`} alt="" className="absolute bottom-6 right-[45%] w-8 object-contain hidden md:block" />
+            {/* Main salad bowl */}
             <img src={`${IMG}/home/1.png`} alt="" className="absolute right-0 bottom-0 h-full max-h-[350px] object-contain hidden md:block" />
+            {/* 50% off badge */}
+            <div className="absolute bottom-16 right-[28%] w-16 h-16 rounded-full border-2 flex items-center justify-center hidden md:flex" style={{ borderColor: B }}>
+              <span className="text-sm font-bold" style={{ color: B }}>50<br/><span className="text-[10px]">%Off</span></span>
+            </div>
           </div>
           <div className="lg:col-span-5 grid grid-rows-2 gap-4">
             <div className="rounded-2xl p-7 flex items-center justify-center text-center relative overflow-hidden" style={{ backgroundColor: B }}>

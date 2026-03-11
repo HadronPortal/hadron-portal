@@ -44,7 +44,7 @@ serve(async (req) => {
 
     // Filters
     if (search) formData.append('search', search);
-    if (repParam) formData.append('cod_rep', repParam);
+    // Note: cod_rep is NOT sent to the API — analytics shows all products for all reps
     if (dateIni) formData.append('date_ini', dateIni);
     if (dateEnd) formData.append('date_end', dateEnd);
     if (page) formData.append('page', page);

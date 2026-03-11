@@ -149,40 +149,11 @@ const Clientes = () => {
     setFilterNonce((n) => n + 1);
   };
 
-  const repFiltered = selectedRep.length > 0
-    ? clients.filter(c => selectedRep.includes(c.COD_REP))
-    : clients;
-
-  const searchFiltered = searchQuery.trim()
-    ? repFiltered.filter(c => {
-        const q = searchQuery.toLowerCase();
-        return (
-          c.ter_nomter?.toLowerCase().includes(q) ||
-          c.ter_fanter?.toLowerCase().includes(q) ||
-          c.ter_documento?.includes(q) ||
-          c.TEN_CIDLGR?.toLowerCase().includes(q) ||
-          c.TEN_UF_LGR?.toLowerCase().includes(q)
-        );
-      })
-    : repFiltered;
-
-  const dateFiltered = dateRange
-    ? searchFiltered.filter(c => {
-        const d = c.ULT_VENDA ? new Date(c.ULT_VENDA) : c.ter_dta_cad ? new Date(c.ter_dta_cad) : null;
-        if (!d) return false;
-        const start = new Date(dateRange.start);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(dateRange.end);
-        end.setHours(23, 59, 59, 999);
-        return d >= start && d <= end;
-      })
-    : searchFiltered;
-
   const filtered = activeTab === 'todos'
-    ? dateFiltered
+    ? clients
     : activeTab === 'positivados'
-      ? dateFiltered.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
-      : dateFiltered.filter(c => {
+      ? clients.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
+      : clients.filter(c => {
           const d = new Date(c.ter_dta_cad);
           const sixMonthsAgo = new Date();
           sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { fetchWithAuth } from '@/lib/auth-refresh';
 
 export interface Representante {
   rep_codrep: number;
@@ -10,11 +11,8 @@ const fetchReps = async (): Promise<Representante[]> => {
   if (!token) return [];
 
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-  const res = await fetch(
-    `https://${projectId}.supabase.co/functions/v1/fetch-reps`,
-    {
-      headers: { 'Authorization': `Bearer ${token}` },
-    }
+  const res = await fetchWithAuth(
+    `https://${projectId}.supabase.co/functions/v1/fetch-reps`
   );
   if (!res.ok) return [];
   const data = await res.json();

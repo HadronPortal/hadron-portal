@@ -79,7 +79,9 @@ const Index = () => {
     placeholderData: (prev) => prev,
   });
 
-  const handleRepChange = useCallback((repCodes: number[]) => setSelectedRep(repCodes), []);
+  const handleRepChange = useCallback((repCodes: number[]) => {
+    // Don't set state here — let onFilter handle it to avoid race conditions
+  }, []);
   const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
   const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
     setSelectedRep(filters.repCodes);

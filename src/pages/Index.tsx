@@ -108,8 +108,8 @@ const Index = () => {
       <Header />
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
-      <main className={`flex-1 px-6 py-5 space-y-5 transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+      <main className={`flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5 transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>
 
         {isLoading ? (
           <div className="space-y-5">

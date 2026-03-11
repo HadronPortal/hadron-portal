@@ -153,17 +153,17 @@ const Index = () => {
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>
 
-        {(isLoading || isFetching) ? (
+        {(isLoading || isFetching) && (ordersLoading || ordersFetching) ? (
           <Spinner />
         ) : error ? (
           <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
-        ) : data ? (
+        ) : (
           <>
             <KpiCards
-              enviados={data.dashboard?.sent ?? 0}
-              aprovados={data.dashboard?.approved ?? 0}
-              faturados={data.dashboard?.invoiced ?? 0}
-              cancelados={data.dashboard?.canceled ?? 0}
+              enviados={ordersData?.dashboard?.sent ?? data?.dashboard?.sent ?? 0}
+              aprovados={ordersData?.dashboard?.approved ?? data?.dashboard?.approved ?? 0}
+              faturados={ordersData?.dashboard?.invoiced ?? data?.dashboard?.invoiced ?? 0}
+              cancelados={ordersData?.dashboard?.canceled ?? data?.dashboard?.canceled ?? 0}
               clientesPositivados={0}
             />
 
@@ -172,7 +172,7 @@ const Index = () => {
               <ClientsTable clients={clients} />
             </div>
           </>
-        ) : null}
+        )}
       </main>
     </>
   );

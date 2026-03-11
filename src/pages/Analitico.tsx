@@ -79,8 +79,7 @@ const Analitico = () => {
       date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
     },
-    staleTime: 5 * 60 * 1000,
-    placeholderData: (prev) => prev,
+    staleTime: 0,
   });
 
   const error = queryError ? (queryError as Error).message : null;

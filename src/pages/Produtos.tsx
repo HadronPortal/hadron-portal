@@ -67,8 +67,8 @@ const Produtos = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [page, rowsPerPage]);
+    fetchProducts(selectedRep);
+  }, [page, rowsPerPage, selectedRep]);
 
   const handleRepChange = (_repCodes: number[]) => {
     // State is set via handleFilter which is called automatically

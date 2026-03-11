@@ -161,7 +161,7 @@ const CartSidebar = ({ open, cart, onClose, onUpdateQty, onRemove }: {
   return (
     <>
       {open && <div className="fixed inset-0 bg-black/50 z-[998]" onClick={onClose} />}
-      <div className={`fixed top-0 right-0 h-full w-[340px] bg-white z-[999] shadow-2xl transition-transform duration-300 flex flex-col ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-0 h-full w-[85vw] max-w-[340px] bg-white z-[999] shadow-2xl transition-transform duration-300 flex flex-col ${open ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ backgroundColor: BL }}>
           <div className="flex items-center gap-2">
             <ShoppingCart size={18} style={{ color: B }} />

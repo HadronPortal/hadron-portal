@@ -87,7 +87,7 @@ const ProdutoDetalhe = () => {
       <Header />
       <FilterBar />
 
-      <main className="flex-1 px-6 py-5 space-y-6">
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-6">
         <Button variant="ghost" size="sm" onClick={() => navigate('/produtos')} className="gap-1.5">
           <ArrowLeft className="w-4 h-4" /> Voltar para Produtos
         </Button>

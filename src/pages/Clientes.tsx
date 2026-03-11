@@ -132,18 +132,21 @@ const Clientes = () => {
   }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce]);
 
   const handleRepChange = (_repCodes: number[]) => {
-    // State is set via handleFilter which is called automatically
+    // State is set via handleFilter
   };
-  const handleSearch = (query: string) => setSearchQuery(query);
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
-    setDateRange({ start: filters.startDate, end: filters.endDate });
+    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
+    setPage(1);
+    setFilterNonce((n) => n + 1);
   };
   const handleClear = () => {
     setSelectedRep([]);
+    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
     setSearchQuery('');
-    setDateRange(null);
+    setPage(1);
+    setFilterNonce((n) => n + 1);
   };
 
   const repFiltered = selectedRep.length > 0

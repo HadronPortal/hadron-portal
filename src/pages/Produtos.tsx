@@ -98,10 +98,10 @@ const Produtos = () => {
 
   const filtered = (activeTab === 'todos'
     ? products
-    : products.filter((p) => p.tipo_op_banco === activeTab)
+    : products.filter((p) => p.ORC_ORIORC === activeTab)
   ).filter((p) => {
     const q = search.toLowerCase();
-    return (p.produto || '').toLowerCase().includes(q) || String(p.codpro).includes(q);
+    return (p.pro_despro || '').toLowerCase().includes(q) || String(p.pro_codpro).includes(q);
   });
 
   return (

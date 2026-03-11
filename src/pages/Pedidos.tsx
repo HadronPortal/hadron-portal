@@ -103,8 +103,8 @@ const Pedidos = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
-  }, [page, rowsPerPage, codter]);
+    fetchOrders(selectedRep);
+  }, [page, rowsPerPage, codter, selectedRep]);
 
   const clearClientFilter = () => {
     searchParams.delete('codter');

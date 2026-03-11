@@ -9,13 +9,14 @@ export interface Order {
   cliente_nome: string;
   cliente_cnpj: string;
   localizacao: string;
-  status: 'aprovado' | 'confirmado' | 'pendente' | 'cancelado';
+  status: 'enviado' | 'aprovado' | 'confirmado' | 'pendente' | 'cancelado';
   valor: number;
   data_pedido: string;
   erp_code?: string;
 }
 
 const statusConfig: Record<Order['status'], { label: string; bg: string; text: string }> = {
+  enviado: { label: 'Enviado', bg: 'bg-teal-600', text: 'text-white' },
   aprovado: { label: 'Aprovado', bg: 'bg-orange-400', text: 'text-white' },
   confirmado: { label: 'Confirmado', bg: 'bg-emerald-500', text: 'text-white' },
   pendente: { label: 'Pendente', bg: 'bg-gray-400', text: 'text-white' },

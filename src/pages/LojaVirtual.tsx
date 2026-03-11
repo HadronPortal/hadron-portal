@@ -381,60 +381,17 @@ const LojaVirtual = () => {
       <FloatingBag cart={cart} expanded={bagExpanded} onToggle={() => setBagExpanded(v => !v)} onOpen={() => { setBagExpanded(false); setCartOpen(true); }} />
 
       {/* ═══ Hero ═══ */}
-      <section className="relative py-6" style={{ backgroundImage: `url('https://themes.pixelstrap.com/fastkart/assets/images/veg-3/bg.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <section className="relative py-6">
         <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
-          <div className="lg:col-span-7 rounded-2xl p-6 sm:p-8 md:p-12 flex items-center min-h-[260px] sm:min-h-[380px] relative overflow-hidden bg-white">
-            <div className="relative z-10 max-w-md">
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGÂNICO</span>
-              <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Frescos</h1>
-              <h2 className="text-2xl text-gray-400 mt-1">Frutas & Verduras</h2>
-              <p className="text-sm text-gray-400 mt-3">Frete grátis em todos os pedidos. Nós entregamos, você aproveita</p>
-              <button className="mt-6 px-7 py-3 rounded-lg text-white text-sm font-semibold flex items-center gap-2 hover:shadow-lg transition" style={{ backgroundColor: B }}>
-                Comprar Agora <ArrowRight size={16} />
-              </button>
-            </div>
-            {/* Scattered fruits decoration */}
-            <img src={`${IMG}/shape/orange-2.png`} alt="" className="absolute top-4 right-[40%] w-12 sm:w-16 object-contain hidden md:block" />
-            <img src={`${IMG}/shape/orange-1.png`} alt="" className="absolute top-8 right-[25%] w-10 sm:w-14 object-contain hidden md:block" />
-            <img src={`${IMG}/shape/kiwi.png`} alt="" className="absolute top-[40%] right-[35%] w-8 sm:w-12 object-contain hidden md:block" />
-            <img src={`${IMG}/shape/leaf.png`} alt="" className="absolute top-[20%] right-[30%] w-6 object-contain hidden md:block opacity-60" />
-            <img src={`${IMG}/shape/cucumber.png`} alt="" className="absolute bottom-12 left-[30%] w-10 object-contain hidden md:block" />
-            <img src={`${IMG}/shape/blueberry.png`} alt="" className="absolute bottom-6 right-[45%] w-8 object-contain hidden md:block" />
-            {/* Main salad bowl */}
-            <img src={`${IMG}/home/1.png`} alt="" className="absolute right-0 bottom-0 h-full max-h-[350px] object-contain hidden md:block" />
-            {/* 50% off badge */}
-            <div className="absolute bottom-16 right-[28%] w-16 h-16 rounded-full border-2 flex items-center justify-center hidden md:flex" style={{ borderColor: B }}>
-              <span className="text-sm font-bold" style={{ color: B }}>50<br/><span className="text-[10px]">%Off</span></span>
-            </div>
+          <div className="overflow-hidden rounded-2xl">
+            <img
+              src={bannerShopRef}
+              alt="Banner promocional da loja"
+              className="w-full h-auto object-cover"
+              loading="eager"
+              decoding="async"
+            />
           </div>
-          <div className="lg:col-span-5 grid grid-rows-2 gap-4">
-            <div className="rounded-2xl p-7 flex items-center justify-center text-center relative overflow-hidden" style={{ backgroundColor: B }}>
-              <img src={`${IMG}/home/2.png`} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              <div className="relative z-10">
-                <h3 className="text-lg font-bold text-white">Frescos & 100% Orgânicos</h3>
-                <p className="text-white/70 text-sm mt-1">feira do produtor</p>
-                <button className="mt-4 px-5 py-2 border-2 border-white text-white rounded-lg text-sm font-medium hover:bg-white/20 transition">Comprar Agora</button>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-2xl relative overflow-hidden min-h-[140px]" style={{ background: '#2d3436' }}>
-                <img src={`${IMG}/home/3.png`} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                <div className="relative z-10 p-5 text-white">
-                  <h4 className="text-sm font-bold">Estilo Orgânico</h4>
-                  <p className="text-xs text-white/70 mt-1">Melhores Ofertas do Fim de Semana</p>
-                </div>
-              </div>
-              <div className="rounded-2xl relative overflow-hidden min-h-[140px]" style={{ background: '#ff7675' }}>
-                <img src={`${IMG}/home/4.png`} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                <div className="relative z-10 p-5 text-white">
-                  <h4 className="text-sm font-bold">Alimento seguro salva vidas</h4>
-                  <p className="text-xs text-white/70 mt-1">Oferta com Desconto</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
         </div>
       </section>
 

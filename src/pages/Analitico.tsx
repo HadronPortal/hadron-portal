@@ -75,7 +75,7 @@ const Analitico = () => {
       date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
     },
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000,
     placeholderData: (prev) => prev,
   });
 

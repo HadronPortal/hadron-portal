@@ -37,7 +37,7 @@ interface ProductsAPIResponse {
 const formatCurrency = (v: number) =>
   'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?url=`;
+const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?file=`;
 
 const tabs = [
   { key: 'todos', label: 'Todos' },
@@ -178,9 +178,8 @@ const Produtos = () => {
                     </TableRow>
                   ) : (
                     filtered.map((p) => {
-                      const imgUrl = p.pro_foto
-                        ? `${PROXY_BASE}${encodeURIComponent(`https://dev.hadronweb.com.br/user_data/DEV/products/${p.pro_foto}`)}`
-                        : '';
+                      const fileName = p.pro_foto ? p.pro_foto.split('/').pop() || '' : '';
+                      const imgUrl = fileName ? `${PROXY_BASE}${encodeURIComponent(fileName)}` : '';
                       const qtde = parseFloat(p.QUANT || '0');
                       const totalVendido = parseFloat(p.TOTAL_VENDIDO || '0');
                       return (

@@ -1,3 +1,4 @@
+const HADRON_API = 'https://dev.hadronweb.com.br/app/authUsuarios/apiLogin';
 const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const BASE = `https://${projectId}.supabase.co/functions/v1`;
@@ -12,21 +13,17 @@ export async function refreshToken(): Promise<string | null> {
       const userStr = localStorage.getItem('hadron_user');
       const user = userStr ? JSON.parse(userStr) : null;
       const email = user?.aus_email || user?.email;
-      if (!email) {
+      const oldToken = localStorage.getItem('hadron_token') || '';
+
+      if (!email || !oldToken) {
         handleExpired();
         return null;
       }
 
-      const oldToken = localStorage.getItem('hadron_token') || '';
-
-      const res = await fetch(`${BASE}/auth-login`, {
+      const res = await fetch(HADRON_API, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': anonKey,
-          'Authorization': `Bearer ${oldToken}`,
-        },
-        body: JSON.stringify({ email, password: '__refresh__' }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ aus_email: email, aus_token: oldToken }),
       });
 
       if (!res.ok) {

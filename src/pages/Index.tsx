@@ -71,9 +71,13 @@ const Index = () => {
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const { data, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
-    queryKey: ['dashboard', repParam || 'all'],
+    queryKey: ['dashboard', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
     endpoint: 'fetch-dashboard',
-    params: repParam ? { rep: repParam } : {},
+    params: {
+      date_ini: dateIniParam,
+      date_end: dateEndParam,
+      ...(repParam ? { rep: repParam } : {}),
+    },
     staleTime: 0,
   });
 

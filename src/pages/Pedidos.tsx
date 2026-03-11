@@ -14,19 +14,19 @@ import { ChevronDown, FileText, Plus } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
 interface OrderAPI {
-  orc_codorc: number;
-  orc_codter: number;
-  ter_nomter: string;
-  ter_fanter?: string;
-  ter_documento: string;
-  TEN_CIDLGR: string;
-  TEN_UF_LGR: string;
-  orc_status: string;
-  orc_vlrorc: number;
-  orc_peso: number;
-  orc_dtaorc: string;
-  orc_erp?: string;
-  orc_codorc_web?: number;
+  orc_codorc_web: number;
+  orc_codorc_had: number;
+  CODTER: number;
+  CLIENTE: string;
+  FANTER?: string;
+  orc_documento: string;
+  LOCALIZACAO: string;
+  orc_status: number | string;
+  orc_val_tot: number;
+  OIT_PESO: string;
+  DATA_PEDIDO: string;
+  orc_id_pedido?: string;
+  REPRESENTANTE?: string;
   [key: string]: unknown;
 }
 

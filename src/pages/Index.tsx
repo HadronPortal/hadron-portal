@@ -5,7 +5,7 @@ import { useRepresentantes } from '@/hooks/use-representantes';
 import KpiCards from '@/components/erp/KpiCards';
 import OrdersTable from '@/components/erp/OrdersTable';
 import ClientsTable from '@/components/erp/ClientsTable';
-import { Skeleton } from '@/components/ui/skeleton';
+import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 
 interface DashboardAPIResponse {

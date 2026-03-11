@@ -90,11 +90,13 @@ const Analitico = () => {
   const handleSearch = (query: string) => setSearchQuery(query);
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
     setSelectedRep(filters.repCodes);
+    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
     setSearchQuery(filters.search);
     setPage(1);
   };
   const handleClear = () => {
     setSelectedRep([]);
+    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
     setSearchQuery('');
     setPage(1);
   };

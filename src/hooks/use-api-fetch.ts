@@ -9,7 +9,7 @@ interface UseApiFetchOptions<T = any> {
   endpoint: string;
   params?: Record<string, string | number | undefined>;
   enabled?: boolean;
-  staleTime?: number;
+  staleTime?: number; // default 2 min
   placeholderData?: (prev: T | undefined) => T | undefined;
 }
 

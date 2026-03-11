@@ -11,7 +11,11 @@ function extractUserToken(req: Request): string | null {
   return null;
 }
 
+let cachedToken: string | null = null;
+let tokenExpiry = 0;
+
 async function getServiceToken(): Promise<string> {
+  if (cachedToken && Date.now() < tokenExpiry) return cachedToken;
   const email = Deno.env.get('HADRON_API_EMAIL');
   const password = Deno.env.get('HADRON_API_PASSWORD');
   if (!email || !password) throw new Error('Missing API credentials');
@@ -23,7 +27,9 @@ async function getServiceToken(): Promise<string> {
   });
   const loginData = await loginRes.json();
   if (!loginData.success) throw new Error('Login failed');
-  return loginData.access_token;
+  cachedToken = loginData.access_token;
+  tokenExpiry = Date.now() + 4 * 60 * 1000;
+  return cachedToken!;
 }
 
 serve(async (req) => {
@@ -32,21 +38,16 @@ serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    // Support both header and query param for backward compatibility
-    const token = extractUserToken(req) || url.searchParams.get('token') || await getServiceToken();
+    const token = extractUserToken(req) || await getServiceToken();
 
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiListaReps', {
       method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
     });
 
     const responseText = await res.text();
     if (!res.ok) throw new Error(`Reps fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
 
-    // Return the Hádron API response as-is
     return new Response(responseText, {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
     });
@@ -54,8 +55,7 @@ serve(async (req) => {
     console.error('Error:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });

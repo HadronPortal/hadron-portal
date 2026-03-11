@@ -67,6 +67,18 @@ const Index = () => {
     placeholderData: (prev) => prev,
   });
 
+  const { data: ordersData } = useApiFetch<any>({
+    queryKey: ['orders-dashboard', repParam || 'all'],
+    endpoint: 'fetch-orders',
+    params: {
+      page: '1',
+      limit: '10',
+      ...(repParam ? { rep: repParam } : {}),
+    },
+    staleTime: 2 * 60 * 1000,
+    placeholderData: (prev) => prev,
+  });
+
   const handleRepChange = useCallback((repCodes: number[]) => setSelectedRep(repCodes), []);
   const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
   const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {

@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -49,6 +49,20 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
     onClear?.();
   }, [onClear]);
 
+  // Debounce: auto-filter on search typing
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const repCodesRaw = selectedRep === 'all' ? [] : [selectedRep];
+      const repCodes = repCodesRaw.map(Number);
+      onFilter?.({ startDate, endDate, repCodes, repCodesRaw, search });
+    }, 400);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+    // Only trigger on search changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
   return (
     <div className="bg-transparent border-b border-border px-3 sm:px-6 py-2.5">
       <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
@@ -91,7 +105,7 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
           placeholder="Nome Cliente, doc, local"
           className="w-full sm:w-56 h-9 text-sm"
           value={search}
-          onChange={(e) => { setSearch(e.target.value); onSearch?.(e.target.value); }}
+          onChange={(e) => { setSearch(e.target.value); }}
         />
 
         <div className="flex items-center gap-3 w-full sm:w-auto sm:ml-auto justify-end">

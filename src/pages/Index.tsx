@@ -109,19 +109,19 @@ const Index = () => {
   }, []);
 
   const orders = useMemo(() => {
-    const rawOrders = ordersData?.ultimos_pedidos || ordersData?.data || ordersData?.orders || [];
+    const rawOrders = ordersData?.orders || ordersData?.ultimos_pedidos || ordersData?.data || [];
     return rawOrders.map((p: any) => ({
-      id: String(p.orc_codorc || p.id),
-      codigo: String(p.orc_codorc || p.codigo),
-      cliente_nome: p.orc_nomcli || p.cliente_nome || '',
-      cliente_cnpj: p.orc_cgccli || p.cliente_cnpj || '',
-      localizacao: p.orc_cidcli
+      id: String(p.orc_codorc_web || p.orc_codorc || p.id),
+      codigo: String(p.orc_codorc_web || p.orc_codorc || p.codigo),
+      cliente_nome: p.CLIENTE || p.orc_nomcli || p.cliente_nome || '',
+      cliente_cnpj: p.orc_documento || p.orc_cgccli || p.cliente_cnpj || '',
+      localizacao: p.LOCALIZACAO || (p.orc_cidcli
         ? [p.orc_cidcli, p.orc_estcli].filter(Boolean).join(' - ')
-        : (p.localizacao || ''),
+        : (p.localizacao || '')),
       status: mapStatus(p.orc_status || p.status || ''),
-      valor: p.orc_vlrtot || p.valor || 0,
-      data_pedido: p.orc_dta || p.data_pedido || '',
-      erp_code: p.orc_coderp ? `ERP:${p.orc_coderp}` : (p.erp_code || undefined),
+      valor: p.orc_val_tot || p.orc_vlrtot || p.valor || 0,
+      data_pedido: p.DATA_PEDIDO || p.orc_dta || p.data_pedido || '',
+      erp_code: p.orc_codorc_had ? `ERP:${p.orc_codorc_had}` : (p.orc_coderp ? `ERP:${p.orc_coderp}` : (p.erp_code || undefined)),
     }));
   }, [ordersData]);
 

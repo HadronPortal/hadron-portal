@@ -72,7 +72,7 @@ const Analitico = () => {
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
+    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam, searchQuery.trim(), String(filterNonce)],
     endpoint: 'fetch-analytics',
     params: {
       page: String(page),
@@ -80,6 +80,7 @@ const Analitico = () => {
       date_ini: dateIniParam,
       date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
+      ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
     },
     staleTime: 0,
   });
@@ -92,7 +93,6 @@ const Analitico = () => {
   const handleRepChange = (_repCodes: number[]) => {
     // State is set via handleFilter which is called automatically
   };
-  const handleSearch = (query: string) => setSearchQuery(query);
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSelectedRepRaw(filters.repCodesRaw);
@@ -128,7 +128,7 @@ const Analitico = () => {
   return (
     <>
 
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+      <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Analítico Período</h1>

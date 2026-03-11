@@ -1,0 +1,81 @@
+const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+const BASE = `https://${projectId}.supabase.co/functions/v1`;
+
+let refreshPromise: Promise<string | null> | null = null;
+
+export async function refreshToken(): Promise<string | null> {
+  // Deduplicate concurrent refresh calls
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    try {
+      const userStr = localStorage.getItem('hadron_user');
+      const user = userStr ? JSON.parse(userStr) : null;
+      const email = user?.aus_email || user?.email;
+      // We can't refresh without credentials — redirect to login
+      if (!email) {
+        handleExpired();
+        return null;
+      }
+
+      const res = await fetch(`${BASE}/auth-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: '__refresh__' }),
+      });
+
+      // If refresh fails, the token is truly expired — force re-login
+      if (!res.ok) {
+        handleExpired();
+        return null;
+      }
+
+      const data = await res.json();
+      if (!data.success || !data.access_token) {
+        handleExpired();
+        return null;
+      }
+
+      localStorage.setItem('hadron_token', data.access_token);
+      if (data.user) {
+        localStorage.setItem('hadron_user', JSON.stringify(data.user));
+      }
+      return data.access_token;
+    } catch {
+      handleExpired();
+      return null;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
+function handleExpired() {
+  localStorage.removeItem('hadron_token');
+  localStorage.removeItem('hadron_user');
+  // Redirect to login if not already there
+  if (!window.location.pathname.includes('/login')) {
+    window.location.href = '/login';
+  }
+}
+
+/** Fetch with automatic 401 retry after token refresh */
+export async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
+  const token = localStorage.getItem('hadron_token');
+  const headers = new Headers(options.headers);
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+
+  const res = await fetch(url, { ...options, headers });
+
+  if (res.status === 401) {
+    const newToken = await refreshToken();
+    if (newToken) {
+      headers.set('Authorization', `Bearer ${newToken}`);
+      return fetch(url, { ...options, headers });
+    }
+  }
+
+  return res;
+}

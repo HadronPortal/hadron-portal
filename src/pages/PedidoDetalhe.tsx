@@ -168,7 +168,7 @@ const PedidoDetalhe = () => {
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 };
 

@@ -51,17 +51,17 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
   }, [onClear]);
 
   return (
-    <div className="bg-transparent border-b border-border px-6 py-2.5">
-      <div className="flex items-center gap-4 flex-wrap">
+    <div className="bg-transparent border-b border-border px-3 sm:px-6 py-2.5">
+      <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
         <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-56 h-9 text-sm justify-start font-normal">
+            <Button variant="outline" className="w-full sm:w-56 h-9 text-sm justify-start font-normal">
               {formatDateStr(startDate)} | {formatDateStr(endDate)}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
-            <div className="flex gap-0">
-              <div className="border-r border-border p-2">
+            <div className="flex flex-col sm:flex-row gap-0">
+              <div className="border-b sm:border-b-0 sm:border-r border-border p-2">
                 <p className="text-xs text-muted-foreground text-center mb-1">Data Inicial</p>
                 <Calendar mode="single" selected={startDate} onSelect={(d) => d && setStartDate(d)} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
               </div>
@@ -74,7 +74,7 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
         </Popover>
 
         <Select value={selectedRep} onValueChange={handleRepChange}>
-          <SelectTrigger className="w-56 h-9 text-sm">
+          <SelectTrigger className="w-full sm:w-56 h-9 text-sm">
             <SelectValue placeholder="REPRESENTANTES" />
           </SelectTrigger>
           <SelectContent>
@@ -90,12 +90,12 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
         <Input
           type="text"
           placeholder="Nome Cliente, doc, local"
-          className="w-56 h-9 text-sm"
+          className="w-full sm:w-56 h-9 text-sm"
           value={search}
           onChange={(e) => { setSearch(e.target.value); onSearch?.(e.target.value); }}
         />
 
-        <div className="flex items-center gap-3 ml-auto">
+        <div className="flex items-center gap-3 w-full sm:w-auto sm:ml-auto justify-end">
           <button onClick={handleClear} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Limpar
           </button>

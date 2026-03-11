@@ -88,9 +88,6 @@ const Login = () => {
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center justify-center gap-3 mb-8">
             <img src={iconHadron} alt="Hádron" className="w-14 h-14 object-contain" />
-            <span className="text-2xl font-light tracking-wide" style={{ color: 'hsl(0, 0%, 100%)' }}>
-              Hádron<span className="font-semibold">Portal</span>
-            </span>
           </div>
 
           <div className="text-center space-y-2">

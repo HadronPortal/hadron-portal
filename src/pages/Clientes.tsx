@@ -312,7 +312,7 @@ const Clientes = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

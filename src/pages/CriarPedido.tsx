@@ -487,7 +487,7 @@ const CriarPedido = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

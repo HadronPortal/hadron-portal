@@ -198,7 +198,7 @@ const ProdutoDetalhe = () => {
           </>
         ) : null}
       </main>
-    </div>
+    </>
   );
 };
 

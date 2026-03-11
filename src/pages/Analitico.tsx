@@ -267,7 +267,7 @@ const Analitico = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

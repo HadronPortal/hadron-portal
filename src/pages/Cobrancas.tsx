@@ -215,7 +215,7 @@ const Cobrancas = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

@@ -139,7 +139,7 @@ const Index = () => {
           </>
         ) : null}
       </main>
-    </div>
+    </>
   );
 };
 

@@ -282,7 +282,7 @@ const Pedidos = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

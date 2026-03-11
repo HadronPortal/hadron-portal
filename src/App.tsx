@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Spinner from "@/components/ui/spinner";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import ErpLayout from "@/components/erp/ErpLayout";
 
 // Lazy-loaded pages
 const Index = lazy(() => import("./pages/Index"));
@@ -34,7 +35,7 @@ const queryClient = new QueryClient({
 });
 
 const PageFallback = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
+  <div className="flex-1 flex items-center justify-center">
     <Spinner />
   </div>
 );
@@ -45,19 +46,24 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Suspense fallback={<PageFallback />}>
+        <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Spinner /></div>}>
           <Routes>
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/clientes" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
-            <Route path="/cobrancas" element={<ProtectedRoute><Cobrancas /></ProtectedRoute>} />
-            <Route path="/analitico" element={<ProtectedRoute><Analitico /></ProtectedRoute>} />
-            <Route path="/pedidos" element={<ProtectedRoute><Pedidos /></ProtectedRoute>} />
-            <Route path="/pedidos/criar" element={<ProtectedRoute><CriarPedido /></ProtectedRoute>} />
-            <Route path="/pedidos/:id" element={<ProtectedRoute><PedidoDetalhe /></ProtectedRoute>} />
-            <Route path="/produtos" element={<ProtectedRoute><Produtos /></ProtectedRoute>} />
-            <Route path="/produtos/:id" element={<ProtectedRoute><ProdutoDetalhe /></ProtectedRoute>} />
-            <Route path="/catalogo" element={<ProtectedRoute><Catalogo /></ProtectedRoute>} />
-            <Route path="/loja" element={<ProtectedRoute><LojaVirtual /></ProtectedRoute>} />
+            {/* ERP pages share Header via ErpLayout */}
+            <Route element={<ProtectedRoute><ErpLayout /></ProtectedRoute>}>
+              <Route path="/" element={<Suspense fallback={<PageFallback />}><Index /></Suspense>} />
+              <Route path="/clientes" element={<Suspense fallback={<PageFallback />}><Clientes /></Suspense>} />
+              <Route path="/cobrancas" element={<Suspense fallback={<PageFallback />}><Cobrancas /></Suspense>} />
+              <Route path="/analitico" element={<Suspense fallback={<PageFallback />}><Analitico /></Suspense>} />
+              <Route path="/pedidos" element={<Suspense fallback={<PageFallback />}><Pedidos /></Suspense>} />
+              <Route path="/pedidos/criar" element={<Suspense fallback={<PageFallback />}><CriarPedido /></Suspense>} />
+              <Route path="/pedidos/:id" element={<Suspense fallback={<PageFallback />}><PedidoDetalhe /></Suspense>} />
+              <Route path="/produtos" element={<Suspense fallback={<PageFallback />}><Produtos /></Suspense>} />
+              <Route path="/produtos/:id" element={<Suspense fallback={<PageFallback />}><ProdutoDetalhe /></Suspense>} />
+              <Route path="/catalogo" element={<Suspense fallback={<PageFallback />}><Catalogo /></Suspense>} />
+            </Route>
+
+            {/* Standalone pages (own layout) */}
+            <Route path="/loja" element={<ProtectedRoute><Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Spinner /></div>}><LojaVirtual /></Suspense></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

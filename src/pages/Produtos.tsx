@@ -216,7 +216,7 @@ const Produtos = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

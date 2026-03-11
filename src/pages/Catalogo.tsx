@@ -263,7 +263,7 @@ const Catalogo = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

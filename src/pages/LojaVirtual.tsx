@@ -391,8 +391,8 @@ const LojaVirtual = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
           <div className="lg:col-span-7 rounded-2xl p-6 sm:p-8 md:p-12 flex items-center min-h-[260px] sm:min-h-[380px] relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #f0faf6, #e0f2eb)' }}>
             <div className="relative z-10 max-w-md">
-              <span className="text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGÂNICO</span>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Frescos</h1>
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGÂNICO</span>
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Frescos</h1>
               <h2 className="text-2xl text-gray-400 mt-1">Frutas & Verduras</h2>
               <p className="text-sm text-gray-400 mt-3">Frete grátis em todos os pedidos. Nós entregamos, você aproveita</p>
               <button className="mt-6 px-7 py-3 rounded-lg text-white text-sm font-semibold flex items-center gap-2 hover:shadow-lg transition" style={{ backgroundColor: B }}>

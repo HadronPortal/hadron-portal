@@ -134,10 +134,10 @@ const Catalogo = () => {
       <Header />
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
-      <main className="flex-1 px-6 py-5 space-y-4">
-        <h1 className="text-2xl font-bold text-foreground">Catálogo</h1>
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Catálogo</h1>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Itens por página:</span>
             <select
@@ -212,7 +212,7 @@ const Catalogo = () => {
               </Table>
             </div>
 
-            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+            <div className="flex flex-col sm:flex-row items-center justify-between px-3 sm:px-4 py-3 border-t border-border gap-2">
               <span className="text-xs text-muted-foreground">
                 Página {page} de {totalPages} — {totalRecords} produtos
               </span>

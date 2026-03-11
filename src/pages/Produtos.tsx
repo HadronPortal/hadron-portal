@@ -98,8 +98,8 @@ const Produtos = () => {
       <Header />
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
-      <main className="flex-1 px-6 py-5 space-y-4">
-        <h1 className="text-2xl font-bold text-foreground">Produtos</h1>
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Produtos</h1>
 
         <div className="flex items-center gap-2">
           {tabs.map((tab) => (
@@ -117,7 +117,7 @@ const Produtos = () => {
           ))}
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-3">
             <select
               value={rowsPerPage}
@@ -129,15 +129,16 @@ const Produtos = () => {
               <option value={50}>50</option>
               <option value={100}>100</option>
             </select>
-            <span className="text-sm text-muted-foreground">{totalRecords} registros</span>
+            <span className="text-xs sm:text-sm text-muted-foreground">{totalRecords} registros</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-foreground">Pesquisar</span>
+            <span className="text-sm text-foreground hidden sm:inline">Pesquisar</span>
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-40 h-8 text-sm"
+              placeholder="Pesquisar..."
+              className="w-32 sm:w-40 h-8 text-sm"
             />
           </div>
         </div>

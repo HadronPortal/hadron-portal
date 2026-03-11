@@ -162,11 +162,11 @@ const Pedidos = () => {
         </div>
       )}
 
-      <main className="flex-1 px-6 py-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">Pedidos</h1>
-          <Button className="gap-2 bg-erp-navy hover:bg-erp-navy/90" onClick={() => navigate('/pedidos/criar')}>
-            <Plus size={16} /> Criar Pedido
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Pedidos</h1>
+          <Button className="gap-2 bg-erp-navy hover:bg-erp-navy/90 text-xs sm:text-sm" onClick={() => navigate('/pedidos/criar')}>
+            <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido
           </Button>
         </div>
 
@@ -184,7 +184,7 @@ const Pedidos = () => {
           ))}
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-3">
             <select
               value={rowsPerPage}
@@ -196,7 +196,7 @@ const Pedidos = () => {
               <option value={50}>50</option>
               <option value={100}>100</option>
             </select>
-            <span className="text-sm text-muted-foreground">{totalRecords} registros</span>
+            <span className="text-xs sm:text-sm text-muted-foreground">{totalRecords} registros</span>
           </div>
           <Button variant="outline" size="sm" className="gap-1">
             Colunas <ChevronDown size={14} />

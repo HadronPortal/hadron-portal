@@ -161,7 +161,7 @@ const CartSidebar = ({ open, cart, onClose, onUpdateQty, onRemove }: {
   return (
     <>
       {open && <div className="fixed inset-0 bg-black/50 z-[998]" onClick={onClose} />}
-      <div className={`fixed top-0 right-0 h-full w-[340px] bg-white z-[999] shadow-2xl transition-transform duration-300 flex flex-col ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-0 h-full w-[85vw] max-w-[340px] bg-white z-[999] shadow-2xl transition-transform duration-300 flex flex-col ${open ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ backgroundColor: BL }}>
           <div className="flex items-center gap-2">
             <ShoppingCart size={18} style={{ color: B }} />
@@ -388,11 +388,11 @@ const LojaVirtual = () => {
       {/* ═══ Hero ═══ */}
       <section className="relative py-6">
         <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div className="lg:col-span-7 rounded-2xl p-8 md:p-12 flex items-center min-h-[380px] relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #f0faf6, #e0f2eb)' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
+          <div className="lg:col-span-7 rounded-2xl p-6 sm:p-8 md:p-12 flex items-center min-h-[260px] sm:min-h-[380px] relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #f0faf6, #e0f2eb)' }}>
             <div className="relative z-10 max-w-md">
-              <span className="text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGÂNICO</span>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Frescos</h1>
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGÂNICO</span>
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Frescos</h1>
               <h2 className="text-2xl text-gray-400 mt-1">Frutas & Verduras</h2>
               <p className="text-sm text-gray-400 mt-3">Frete grátis em todos os pedidos. Nós entregamos, você aproveita</p>
               <button className="mt-6 px-7 py-3 rounded-lg text-white text-sm font-semibold flex items-center gap-2 hover:shadow-lg transition" style={{ backgroundColor: B }}>
@@ -504,7 +504,7 @@ const LojaVirtual = () => {
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
           {filtered.map(p => <ProductCard key={p.id} product={p} onAdd={addToCart} />)}
         </div>
       </section>

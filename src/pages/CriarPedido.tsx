@@ -156,20 +156,19 @@ const CriarPedido = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="flex-1 px-6 py-5 space-y-6 max-w-6xl mx-auto w-full">
-        {/* Title aligned with card */}
-        <div className="flex items-center justify-between max-w-3xl mx-auto w-full">
-          <h1 className="text-2xl font-bold text-foreground">Criar Pedido</h1>
-          <span className="text-xs text-muted-foreground">Rep: {representante}</span>
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-6 max-w-6xl mx-auto w-full">
+        <div className="flex items-center justify-between max-w-3xl mx-auto w-full gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Criar Pedido</h1>
+          <span className="text-[10px] sm:text-xs text-muted-foreground truncate">Rep: {representante}</span>
         </div>
 
         {/* ═══════════════ STEP 1: Lista de Produtos ═══════════════ */}
         {step === 0 && (
           <div className="bg-card rounded-lg border border-border shadow-sm max-w-3xl mx-auto">
             {/* Header with search */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-              <h2 className="text-lg font-bold text-foreground">Itens do Pedido</h2>
-              <div className="relative w-56">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-3 sm:px-5 py-3 sm:py-4 border-b border-border gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-foreground">Itens do Pedido</h2>
+              <div className="relative w-full sm:w-56">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input value={produtoSearch}
                   onChange={e => { setProdutoSearch(e.target.value); setShowProdutoDropdown(true); }}

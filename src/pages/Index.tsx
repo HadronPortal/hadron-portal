@@ -10,27 +10,24 @@ import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 
 interface DashboardAPIResponse {
-  cards: {
-    enviados: number;
-    aprovados: number;
-    faturados: number;
-    cancelados: number;
-    positivados: number;
+  dashboard: {
+    sent: number;
+    approved: number;
+    invoiced: number;
+    canceled: number;
   };
-  ultimos_pedidos: Array<{
-    orc_codorc: number;
-    orc_nomcli: string;
-    orc_cgccli: string;
-    orc_cidcli: string;
-    orc_estcli: string;
-    orc_status: string;
-    orc_vlrtot: number;
-    orc_peso: number;
-    orc_dta: string;
-    orc_coderp?: string;
+  orders: Array<{
+    orc_codorc_web: number;
+    orc_codorc_had: number;
+    CLIENTE: string;
+    orc_documento: string;
+    LOCALIZACAO: string;
+    orc_status: number | string;
+    orc_val_tot: number;
+    DATA_PEDIDO: string;
     [key: string]: unknown;
   }>;
-  ultimos_clientes: Array<{
+  ultimos_clientes?: Array<{
     cli_codcli: number;
     cli_nomcli: string;
     cli_cidcli: string;
@@ -38,11 +35,7 @@ interface DashboardAPIResponse {
     cli_dta_cad: string;
     [key: string]: unknown;
   }>;
-  representantes: Array<{
-    rep_codrep: number;
-    rep_nomrep: string;
-  }>;
-  evolucao_vendas: unknown[];
+  [key: string]: unknown;
 }
 
 function mapStatus(status: unknown): 'aprovado' | 'confirmado' | 'pendente' | 'cancelado' {

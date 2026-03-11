@@ -38,15 +38,17 @@ interface DashboardAPIResponse {
   [key: string]: unknown;
 }
 
-function mapStatus(status: unknown): 'aprovado' | 'confirmado' | 'pendente' | 'cancelado' {
+function mapStatus(status: unknown): 'enviado' | 'aprovado' | 'confirmado' | 'pendente' | 'cancelado' {
   const val = typeof status === 'number' ? status : Number(status);
   if (!isNaN(val)) {
+    if (val === 10) return 'pendente';
+    if (val === 20) return 'enviado';
     if (val === 30) return 'aprovado';
     if (val === 40 || val === 50) return 'confirmado';
     if (val === 90) return 'cancelado';
-    if (val === 10 || val === 20) return 'pendente';
   }
   const s = String(status || '').toLowerCase();
+  if (s === 'en' || s.includes('enviad')) return 'enviado';
   if (s.includes('aprov') || s === 'ap') return 'aprovado';
   if (s.includes('confirm') || s.includes('fatur') || s === 'fa' || s === 'pc') return 'confirmado';
   if (s.includes('cancel') || s === 'ca') return 'cancelado';

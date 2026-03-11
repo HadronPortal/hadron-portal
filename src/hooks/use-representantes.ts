@@ -11,7 +11,10 @@ const fetchReps = async (): Promise<Representante[]> => {
 
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
   const res = await fetch(
-    `https://${projectId}.supabase.co/functions/v1/fetch-reps?token=${encodeURIComponent(token)}`
+    `https://${projectId}.supabase.co/functions/v1/fetch-reps`,
+    {
+      headers: { 'Authorization': `Bearer ${token}` },
+    }
   );
   if (!res.ok) return [];
   const data = await res.json();

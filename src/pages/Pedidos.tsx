@@ -61,6 +61,12 @@ const formatDoc = (doc: string) => {
 };
 
 const statusMap: Record<string, { label: string; color: string }> = {
+  '10': { label: 'Digitação', color: 'bg-yellow-500' },
+  '20': { label: 'Enviado', color: 'bg-teal-600' },
+  '30': { label: 'Aprovado', color: 'bg-orange-500' },
+  '40': { label: 'Faturado', color: 'bg-cyan-500' },
+  '50': { label: 'Faturado', color: 'bg-cyan-500' },
+  '90': { label: 'Cancelado', color: 'bg-red-500' },
   'EN': { label: 'Enviado', color: 'bg-teal-600' },
   'AP': { label: 'Aprovado', color: 'bg-orange-500' },
   'FA': { label: 'Faturado', color: 'bg-cyan-500' },

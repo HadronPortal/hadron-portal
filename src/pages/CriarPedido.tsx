@@ -154,8 +154,7 @@ const CriarPedido = () => {
 
   /* ─── render ─── */
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <>
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-6 max-w-6xl mx-auto w-full">
         <div className="flex items-center justify-between max-w-3xl mx-auto w-full gap-2">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">Criar Pedido</h1>

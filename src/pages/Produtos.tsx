@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
+import { keepPreviousData } from '@tanstack/react-query';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
+import { useApiFetch } from '@/hooks/use-api-fetch';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -22,6 +25,11 @@ interface ProductAPI {
   [key: string]: unknown;
 }
 
+interface ProductsAPIResponse {
+  products: ProductAPI[];
+  total_records: number;
+}
+
 const formatCurrency = (v: number) =>
   'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -39,50 +47,49 @@ const Produtos = () => {
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [search, setSearch] = useState('');
-  const [products, setProducts] = useState<ProductAPI[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [totalRecords, setTotalRecords] = useState(0);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [dateIni, setDateIni] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
+  const [filterNonce, setFilterNonce] = useState(0);
 
-  const fetchProducts = async (repCodes: number[] = selectedRep) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      let url = `https://${projectId}.supabase.co/functions/v1/fetch-products?page=${page}&limit=${rowsPerPage}`;
-      if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Falha ao buscar produtos');
-      const data = await res.json();
-      setProducts(data.products || []);
-      setTotalRecords(data.total_records || 0);
-    } catch (err) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
 
-  useEffect(() => {
-    fetchProducts(selectedRep);
-  }, [page, rowsPerPage, selectedRep]);
+  const { data, isLoading, isFetching } = useApiFetch<ProductsAPIResponse>({
+    queryKey: ['products', repParam, dateIni, dateEnd, String(page), String(rowsPerPage), String(filterNonce)],
+    endpoint: 'fetch-products',
+    params: {
+      page: String(page),
+      limit: String(rowsPerPage),
+      ...(repParam ? { rep: repParam } : {}),
+      ...(dateIni ? { date_ini: dateIni } : {}),
+      ...(dateEnd ? { date_end: dateEnd } : {}),
+    },
+    staleTime: 0,
+    placeholderData: keepPreviousData,
+  });
 
-  const handleRepChange = (_repCodes: number[]) => {
-    // State is set via handleFilter which is called automatically
-  };
+  const products = data?.products || [];
+  const totalRecords = data?.total_records || 0;
+  const loading = isLoading || isFetching;
+
+  const handleRepChange = () => {};
   const handleSearch = (query: string) => setSearch(query);
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSearch(filters.search);
+    setDateIni(format(filters.startDate, 'yyyy-MM-dd'));
+    setDateEnd(format(filters.endDate, 'yyyy-MM-dd'));
     setPage(1);
+    setFilterNonce((n) => n + 1);
   };
   const handleClear = () => {
     setSelectedRep([]);
     setSearch('');
+    setDateIni('');
+    setDateEnd('');
     setPage(1);
+    setFilterNonce((n) => n + 1);
   };
 
   const filtered = (activeTab === 'todos'
@@ -95,7 +102,6 @@ const Produtos = () => {
 
   return (
     <>
-
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
@@ -145,8 +151,6 @@ const Produtos = () => {
 
         {loading ? (
           <Spinner />
-        ) : error ? (
-          <div className="text-center py-12 text-destructive text-sm">{error}</div>
         ) : (
           <div className="bg-card rounded-lg border border-border overflow-hidden">
             <div className="overflow-x-auto">

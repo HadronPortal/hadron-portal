@@ -121,18 +121,11 @@ const Index = () => {
     <>
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
-      <main className={`flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5 transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>
 
-        {isLoading ? (
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-20 rounded-lg" />
-              ))}
-            </div>
-            <Skeleton className="h-64 rounded-lg" />
-          </div>
+        {(isLoading || isFetching) ? (
+          <Spinner />
         ) : error ? (
           <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
         ) : data ? (
@@ -146,7 +139,7 @@ const Index = () => {
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-4 sm:gap-5 items-start">
-              <OrdersTable orders={orders} />
+              {(ordersLoading || ordersFetching) ? <Spinner /> : <OrdersTable orders={orders} />}
               <ClientsTable clients={clients} />
             </div>
           </>

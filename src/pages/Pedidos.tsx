@@ -14,19 +14,19 @@ import { ChevronDown, FileText, Plus } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
 interface OrderAPI {
-  orc_codorc: number;
-  orc_codter: number;
-  ter_nomter: string;
-  ter_fanter?: string;
-  ter_documento: string;
-  TEN_CIDLGR: string;
-  TEN_UF_LGR: string;
-  orc_status: string;
-  orc_vlrorc: number;
-  orc_peso: number;
-  orc_dtaorc: string;
-  orc_erp?: string;
-  orc_codorc_web?: number;
+  orc_codorc_web: number;
+  orc_codorc_had: number;
+  CODTER: number;
+  CLIENTE: string;
+  FANTER?: string;
+  orc_documento: string;
+  LOCALIZACAO: string;
+  orc_status: number | string;
+  orc_val_tot: number;
+  OIT_PESO: string;
+  DATA_PEDIDO: string;
+  orc_id_pedido?: string;
+  REPRESENTANTE?: string;
   [key: string]: unknown;
 }
 
@@ -61,6 +61,12 @@ const formatDoc = (doc: string) => {
 };
 
 const statusMap: Record<string, { label: string; color: string }> = {
+  '10': { label: 'Digitação', color: 'bg-yellow-500' },
+  '20': { label: 'Enviado', color: 'bg-teal-600' },
+  '30': { label: 'Aprovado', color: 'bg-orange-500' },
+  '40': { label: 'Faturado', color: 'bg-cyan-500' },
+  '50': { label: 'Faturado', color: 'bg-cyan-500' },
+  '90': { label: 'Cancelado', color: 'bg-red-500' },
   'EN': { label: 'Enviado', color: 'bg-teal-600' },
   'AP': { label: 'Aprovado', color: 'bg-orange-500' },
   'FA': { label: 'Faturado', color: 'bg-cyan-500' },
@@ -130,10 +136,10 @@ const Pedidos = () => {
     if (!searchQuery.trim()) return orders;
     const q = searchQuery.toLowerCase();
     return orders.filter(o =>
-      (o.ter_nomter || '').toLowerCase().includes(q) ||
-      (o.ter_fanter || '').toLowerCase().includes(q) ||
-      (o.ter_documento || '').includes(q) ||
-      (o.TEN_CIDLGR || '').toLowerCase().includes(q)
+      (o.CLIENTE || '').toLowerCase().includes(q) ||
+      (o.FANTER || '').toLowerCase().includes(q) ||
+      (o.orc_documento || '').includes(q) ||
+      (o.LOCALIZACAO || '').toLowerCase().includes(q)
     );
   }, [orders, searchQuery]);
 
@@ -234,32 +240,32 @@ const Pedidos = () => {
                       </TableRow>
                     ) : (
                       filteredOrders.map((o, idx) => {
-                        const code = o.orc_codorc || '';
-                        const st = statusMap[o.orc_status] || { label: o.orc_status || '—', color: 'bg-muted' };
+                        const code = o.orc_codorc_web || '';
+                        const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status || '—'), color: 'bg-muted' };
                         return (
-                          <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web || code}`)}>
+                          <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
                             <TableCell className="text-sm font-semibold underline">{code}</TableCell>
                             <TableCell className="text-sm">
-                              <div>{o.orc_codter || ''} - {o.ter_nomter || ''}</div>
-                              {o.ter_fanter && (
-                                <div className="text-xs text-muted-foreground">{o.ter_fanter}</div>
+                              <div>{o.CODTER || ''} - {o.CLIENTE || ''}</div>
+                              {o.FANTER && (
+                                <div className="text-xs text-muted-foreground">{o.FANTER}</div>
                               )}
                             </TableCell>
-                            <TableCell className="text-sm whitespace-nowrap">{formatDoc(o.ter_documento || '')}</TableCell>
+                            <TableCell className="text-sm whitespace-nowrap">{formatDoc(o.orc_documento || '')}</TableCell>
                             <TableCell className="text-sm whitespace-nowrap">
-                              {o.TEN_CIDLGR && o.TEN_UF_LGR ? `${o.TEN_CIDLGR} - ${o.TEN_UF_LGR}` : '—'}
+                              {o.LOCALIZACAO || '—'}
                             </TableCell>
                             <TableCell className="text-sm">
                               <span className={`${st.color} text-white text-xs px-2 py-1 rounded`}>
                                 {st.label}
                               </span>
-                              {o.orc_erp && (
-                                <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_erp}</div>
+                              {o.orc_codorc_had > 0 && (
+                                <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_codorc_had}</div>
                               )}
                             </TableCell>
-                            <TableCell className="text-sm whitespace-nowrap">{formatCurrency(o.orc_vlrorc || 0)}</TableCell>
-                            <TableCell className="text-sm whitespace-nowrap">{o.orc_peso || 0}</TableCell>
-                            <TableCell className="text-sm whitespace-nowrap">{formatDate(o.orc_dtaorc || '')}</TableCell>
+                            <TableCell className="text-sm whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
+                            <TableCell className="text-sm whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
+                            <TableCell className="text-sm whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
                           </TableRow>
                         );
                       })

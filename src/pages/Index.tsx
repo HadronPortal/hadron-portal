@@ -64,7 +64,6 @@ const Index = () => {
     endpoint: 'fetch-dashboard',
     params: repParam ? { rep: repParam } : {},
     staleTime: 0,
-    placeholderData: (prev) => prev,
   });
 
   const { data: ordersData } = useApiFetch<any>({

@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { format } from 'date-fns';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
+import { useApiFetch } from '@/hooks/use-api-fetch';
 
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -24,18 +26,23 @@ interface OrderAPI {
   orc_peso: number;
   orc_dtaorc: string;
   orc_erp?: string;
+  orc_codorc_web?: number;
   [key: string]: unknown;
 }
 
-interface Dashboard {
-  sent: number;
-  sent_peso: number;
-  approved: number;
-  approved_peso: number;
-  invoiced: number;
-  invoiced_peso: number;
-  canceled: number;
-  canceled_peso: number;
+interface OrdersAPIResponse {
+  orders: OrderAPI[];
+  dashboard: {
+    sent: number;
+    sent_peso: number;
+    approved: number;
+    approved_peso: number;
+    invoiced: number;
+    invoiced_peso: number;
+    canceled: number;
+    canceled_peso: number;
+  };
+  total_records: number;
 }
 
 const formatCurrency = (v: number) =>
@@ -62,6 +69,10 @@ const statusMap: Record<string, { label: string; color: string }> = {
   'PE': { label: 'Pendente', color: 'bg-yellow-500' },
 };
 
+const DEFAULT_START_DATE = new Date(2026, 0, 8);
+const DEFAULT_END_DATE = new Date(2026, 2, 9);
+const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
+
 const Pedidos = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -70,75 +81,67 @@ const Pedidos = () => {
   const clienteNome = searchParams.get('nome');
 
   const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [orders, setOrders] = useState<OrderAPI[]>([]);
-  const [dashboard, setDashboard] = useState<Dashboard>({ sent: 0, sent_peso: 0, approved: 0, approved_peso: 0, invoiced: 0, invoiced_peso: 0, canceled: 0, canceled_peso: 0 });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [totalRecords, setTotalRecords] = useState(0);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterNonce, setFilterNonce] = useState(0);
 
-  const fetchOrders = async (repCodes: number[] = selectedRep) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      let url = `https://${projectId}.supabase.co/functions/v1/fetch-orders?page=${page}&limit=${rowsPerPage}`;
-      if (codter) url += `&codter=${codter}`;
-      if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Falha ao buscar pedidos');
-      const data = await res.json();
+  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
+  const dateIniParam = toApiDate(selectedPeriod.startDate);
+  const dateEndParam = toApiDate(selectedPeriod.endDate);
 
-      setOrders(data.orders || []);
-      setDashboard(data.dashboard || dashboard);
-      setTotalRecords(data.total_records || 0);
-    } catch (err) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, isLoading, isFetching, error } = useApiFetch<OrdersAPIResponse>({
+    queryKey: ['orders', repParam || 'all', dateIniParam, dateEndParam, String(page), String(rowsPerPage), codter || '', String(filterNonce)],
+    endpoint: 'fetch-orders',
+    params: {
+      page: String(page),
+      limit: String(rowsPerPage),
+      date_ini: dateIniParam,
+      date_end: dateEndParam,
+      ...(repParam ? { rep: repParam } : {}),
+      ...(codter ? { codter } : {}),
+    },
+    staleTime: 0,
+  });
 
-  useEffect(() => {
-    fetchOrders(selectedRep);
-  }, [page, rowsPerPage, codter, selectedRep]);
+  const orders = data?.orders || [];
+  const dashboard = data?.dashboard || { sent: 0, sent_peso: 0, approved: 0, approved_peso: 0, invoiced: 0, invoiced_peso: 0, canceled: 0, canceled_peso: 0 };
+  const totalRecords = data?.total_records || 0;
+
+  const handleRepChange = useCallback((_repCodes: number[]) => {}, []);
+  const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
+  const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
+    setSelectedRep(filters.repCodes);
+    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
+    setSearchQuery(filters.search);
+    setPage(1);
+    setFilterNonce((n) => n + 1);
+  }, []);
+  const handleClear = useCallback(() => {
+    setSelectedRep([]);
+    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+    setSearchQuery('');
+    setPage(1);
+    setFilterNonce((n) => n + 1);
+  }, []);
+
+  const filteredOrders = useMemo(() => {
+    if (!searchQuery.trim()) return orders;
+    const q = searchQuery.toLowerCase();
+    return orders.filter(o =>
+      (o.ter_nomter || '').toLowerCase().includes(q) ||
+      (o.ter_fanter || '').toLowerCase().includes(q) ||
+      (o.ter_documento || '').includes(q) ||
+      (o.TEN_CIDLGR || '').toLowerCase().includes(q)
+    );
+  }, [orders, searchQuery]);
 
   const clearClientFilter = () => {
     searchParams.delete('codter');
     searchParams.delete('nome');
     setSearchParams(searchParams);
   };
-
-  const handleRepChange = (_repCodes: number[]) => {
-    // State is set via handleFilter which is called automatically
-  };
-  const handleSearch = (query: string) => setSearchQuery(query);
-  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
-    setSelectedRep(filters.repCodes);
-    setSearchQuery(filters.search);
-    setPage(1);
-  };
-  const handleClear = () => {
-    setSelectedRep([]);
-    setSearchQuery('');
-    setPage(1);
-  };
-
-  // Apply search filter on loaded orders
-  const filteredOrders = searchQuery.trim()
-    ? orders.filter(o => {
-        const q = searchQuery.toLowerCase();
-        return (
-          (o.ter_nomter || '').toLowerCase().includes(q) ||
-          (o.ter_fanter || '').toLowerCase().includes(q) ||
-          (o.ter_documento || '').includes(q) ||
-          (o.TEN_CIDLGR || '').toLowerCase().includes(q)
-        );
-      })
-    : orders;
 
   const kpiCards = [
     { label: 'Enviados', valor: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, color: 'bg-teal-600' },
@@ -149,7 +152,6 @@ const Pedidos = () => {
 
   return (
     <>
-
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       {clienteNome && (
@@ -170,116 +172,117 @@ const Pedidos = () => {
           </Button>
         </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpiCards.map((kpi) => (
-            <div key={kpi.label} className={`${kpi.color} text-white rounded-lg p-4 relative`}>
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-sm">{kpi.label}</span>
-                <FileText size={18} className="opacity-70" />
-              </div>
-              <div className="text-lg font-bold mt-1">{kpi.valor}</div>
-              <div className="text-xs opacity-80">{kpi.peso}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-3">
-            <select
-              value={rowsPerPage}
-              onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-              className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-            <span className="text-xs sm:text-sm text-muted-foreground">{totalRecords} registros</span>
-          </div>
-          <Button variant="outline" size="sm" className="gap-1">
-            Colunas <ChevronDown size={14} />
-          </Button>
-        </div>
-
-        {loading ? (
+        {(isLoading || isFetching) ? (
           <Spinner />
         ) : error ? (
-          <div className="text-center py-12 text-destructive text-sm">{error}</div>
+          <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
         ) : (
-          <div className="bg-card rounded-lg border border-border overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs font-bold text-foreground">CÓDIGO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">CLIENTE</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">DOCUMENTO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">LOCALIZAÇÃO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">STATUS</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">PESO(KG)</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">DATA</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredOrders.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
-                        Nenhum pedido encontrado
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredOrders.map((o: any, idx: number) => {
-                      const code = o.orc_codorc || o.codigo || '';
-                      const st = statusMap[o.orc_status] || { label: o.orc_status || '—', color: 'bg-muted' };
-                      return (
-                        <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web || code}`)}>
-                          <TableCell className="text-sm font-semibold underline">{code}</TableCell>
-                          <TableCell className="text-sm">
-                            <div>{o.orc_codter || ''} - {o.ter_nomter || o.cliente || ''}</div>
-                            {(o.ter_fanter || o.subtexto) && (
-                              <div className="text-xs text-muted-foreground">{o.ter_fanter || o.subtexto}</div>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-sm whitespace-nowrap">{formatDoc(o.ter_documento || o.documento || '')}</TableCell>
-                          <TableCell className="text-sm whitespace-nowrap">
-                            {o.TEN_CIDLGR && o.TEN_UF_LGR ? `${o.TEN_CIDLGR} - ${o.TEN_UF_LGR}` : o.localizacao || '—'}
-                          </TableCell>
-                          <TableCell className="text-sm">
-                            <span className={`${st.color} text-white text-xs px-2 py-1 rounded`}>
-                              {st.label}
-                            </span>
-                            {o.orc_erp && (
-                              <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_erp}</div>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-sm whitespace-nowrap">{formatCurrency(o.orc_vlrorc || 0)}</TableCell>
-                          <TableCell className="text-sm whitespace-nowrap">{o.orc_peso || 0}</TableCell>
-                          <TableCell className="text-sm whitespace-nowrap">{formatDate(o.orc_dtaorc || '')}</TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {kpiCards.map((kpi) => (
+                <div key={kpi.label} className={`${kpi.color} text-white rounded-lg p-4 relative`}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-sm">{kpi.label}</span>
+                    <FileText size={18} className="opacity-70" />
+                  </div>
+                  <div className="text-lg font-bold mt-1">{kpi.valor}</div>
+                  <div className="text-xs opacity-80">{kpi.peso}</div>
+                </div>
+              ))}
             </div>
-          </div>
-        )}
 
-        {totalRecords > rowsPerPage && (
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-              Anterior
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Página {page} de {Math.ceil(totalRecords / rowsPerPage)}
-            </span>
-            <Button variant="outline" size="sm" disabled={page >= Math.ceil(totalRecords / rowsPerPage)} onClick={() => setPage(p => p + 1)}>
-              Próxima
-            </Button>
-          </div>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-3">
+                <select
+                  value={rowsPerPage}
+                  onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
+                  className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <span className="text-xs sm:text-sm text-muted-foreground">{totalRecords} registros</span>
+              </div>
+              <Button variant="outline" size="sm" className="gap-1">
+                Colunas <ChevronDown size={14} />
+              </Button>
+            </div>
+
+            <div className="bg-card rounded-lg border border-border overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs font-bold text-foreground">CÓDIGO</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">CLIENTE</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">DOCUMENTO</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">LOCALIZAÇÃO</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">STATUS</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">PESO(KG)</TableHead>
+                      <TableHead className="text-xs font-bold text-foreground">DATA</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredOrders.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
+                          Nenhum pedido encontrado
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredOrders.map((o, idx) => {
+                        const code = o.orc_codorc || '';
+                        const st = statusMap[o.orc_status] || { label: o.orc_status || '—', color: 'bg-muted' };
+                        return (
+                          <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web || code}`)}>
+                            <TableCell className="text-sm font-semibold underline">{code}</TableCell>
+                            <TableCell className="text-sm">
+                              <div>{o.orc_codter || ''} - {o.ter_nomter || ''}</div>
+                              {o.ter_fanter && (
+                                <div className="text-xs text-muted-foreground">{o.ter_fanter}</div>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm whitespace-nowrap">{formatDoc(o.ter_documento || '')}</TableCell>
+                            <TableCell className="text-sm whitespace-nowrap">
+                              {o.TEN_CIDLGR && o.TEN_UF_LGR ? `${o.TEN_CIDLGR} - ${o.TEN_UF_LGR}` : '—'}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              <span className={`${st.color} text-white text-xs px-2 py-1 rounded`}>
+                                {st.label}
+                              </span>
+                              {o.orc_erp && (
+                                <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_erp}</div>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm whitespace-nowrap">{formatCurrency(o.orc_vlrorc || 0)}</TableCell>
+                            <TableCell className="text-sm whitespace-nowrap">{o.orc_peso || 0}</TableCell>
+                            <TableCell className="text-sm whitespace-nowrap">{formatDate(o.orc_dtaorc || '')}</TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            {totalRecords > rowsPerPage && (
+              <div className="flex items-center justify-center gap-2 pt-2">
+                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+                  Anterior
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Página {page} de {Math.ceil(totalRecords / rowsPerPage)}
+                </span>
+                <Button variant="outline" size="sm" disabled={page >= Math.ceil(totalRecords / rowsPerPage)} onClick={() => setPage(p => p + 1)}>
+                  Próxima
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </main>
     </>

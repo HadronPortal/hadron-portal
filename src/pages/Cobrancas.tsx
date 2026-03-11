@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import Header from '@/components/erp/Header';
+
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import {
@@ -108,8 +108,8 @@ const Cobrancas = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <>
+
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       {clienteNome && (
@@ -215,7 +215,7 @@ const Cobrancas = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

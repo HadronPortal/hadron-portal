@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Header from '@/components/erp/Header';
+
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -64,19 +64,11 @@ const PedidoDetalhe = () => {
     fetchData();
   }, [id]);
 
-  if (loading) return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <Spinner />
-    </div>
-  );
+  if (loading) return <Spinner />;
 
   if (error || !order) return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <div className="flex-1 flex items-center justify-center text-destructive">
-        {error || 'Pedido não encontrado'}
-      </div>
+    <div className="flex-1 flex items-center justify-center text-destructive">
+      {error || 'Pedido não encontrado'}
     </div>
   );
 
@@ -85,8 +77,7 @@ const PedidoDetalhe = () => {
   const totalPeso = items.reduce((s: number, i: any) => s + ((i.oit_qtdoit || 0) * (i.oit_peso_liq || 0)), 0);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <>
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -177,7 +168,7 @@ const PedidoDetalhe = () => {
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 };
 

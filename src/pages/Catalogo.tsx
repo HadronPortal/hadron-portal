@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import Header from '@/components/erp/Header';
+
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import {
@@ -130,8 +130,8 @@ const Catalogo = () => {
     `https://${projectId}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <>
+
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
@@ -263,7 +263,7 @@ const Catalogo = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

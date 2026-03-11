@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/erp/Header';
+
 import FilterBar from '@/components/erp/FilterBar';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -169,8 +169,8 @@ const Clientes = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <>
+
       <FilterBar representantes={representantes} clientCountByRep={clientCountByRep} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
@@ -312,7 +312,7 @@ const Clientes = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Header from '@/components/erp/Header';
+
 import FilterBar from '@/components/erp/FilterBar';
 import { Button } from '@/components/ui/button';
 import Spinner from '@/components/ui/spinner';
@@ -83,8 +83,7 @@ const ProdutoDetalhe = () => {
   const estoques = data?.estoques || [];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <>
       <FilterBar />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-6">
@@ -199,7 +198,7 @@ const ProdutoDetalhe = () => {
           </>
         ) : null}
       </main>
-    </div>
+    </>
   );
 };
 

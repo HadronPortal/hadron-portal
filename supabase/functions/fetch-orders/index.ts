@@ -15,14 +15,19 @@ async function getServiceToken(): Promise<string> {
   const email = Deno.env.get('HADRON_API_EMAIL');
   const password = Deno.env.get('HADRON_API_PASSWORD');
   if (!email || !password) throw new Error('Missing API credentials');
-  const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
+
+  const loginRes = await fetch('https://dev.hadronweb.com.br/DEV/app/AuthUsuarios/apiLogin', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ aus_email: email, aus_senha: password }),
     redirect: 'manual',
   });
+
   const loginData = await loginRes.json();
-  if (!loginData.success) throw new Error('Login failed');
+  if (!loginData?.success || !loginData?.access_token) {
+    throw new Error('Login failed');
+  }
+
   return loginData.access_token;
 }
 
@@ -33,8 +38,8 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const limit = parseInt(url.searchParams.get('limit') || '50');
+    const page = Number(url.searchParams.get('page') || '1');
+    const limit = Number(url.searchParams.get('limit') || '50');
     const search = url.searchParams.get('search') || '';
     const codter = url.searchParams.get('codter') || '';
     const repParam = url.searchParams.get('rep') || '';
@@ -57,6 +62,8 @@ serve(async (req) => {
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
+    console.log('Requesting apiOrders with body:', JSON.stringify(requestBody));
+
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiOrders', {
       method: 'POST',
       headers: {
@@ -67,10 +74,18 @@ serve(async (req) => {
     });
 
     const responseText = await res.text();
-    if (!res.ok) throw new Error(`Orders fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
+    console.log('apiOrders response status:', res.status, 'length:', responseText.length);
+
+    if (!res.ok) {
+      throw new Error(`Orders fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
+    }
 
     let data;
-    try { data = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`); }
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`);
+    }
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },

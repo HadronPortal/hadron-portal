@@ -5,7 +5,7 @@ import { useRepresentantes } from '@/hooks/use-representantes';
 import KpiCards from '@/components/erp/KpiCards';
 import OrdersTable from '@/components/erp/OrdersTable';
 import ClientsTable from '@/components/erp/ClientsTable';
-import { Skeleton } from '@/components/ui/skeleton';
+import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 
 interface DashboardAPIResponse {
@@ -64,10 +64,9 @@ const Index = () => {
     endpoint: 'fetch-dashboard',
     params: repParam ? { rep: repParam } : {},
     staleTime: 0,
-    placeholderData: (prev) => prev,
   });
 
-  const { data: ordersData } = useApiFetch<any>({
+  const { data: ordersData, isLoading: ordersLoading, isFetching: ordersFetching } = useApiFetch<any>({
     queryKey: ['orders-dashboard', repParam || 'all'],
     endpoint: 'fetch-orders',
     params: {
@@ -76,14 +75,13 @@ const Index = () => {
       ...(repParam ? { rep: repParam } : {}),
     },
     staleTime: 0,
-    placeholderData: (prev) => prev,
   });
 
   const handleRepChange = useCallback((_repCodes: number[]) => {
     // State is set via handleFilter which is called automatically
   }, []);
   const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
-  const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+  const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
   }, []);
@@ -123,18 +121,11 @@ const Index = () => {
     <>
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
-      <main className={`flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5 transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>
 
-        {isLoading ? (
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-20 rounded-lg" />
-              ))}
-            </div>
-            <Skeleton className="h-64 rounded-lg" />
-          </div>
+        {(isLoading || isFetching) ? (
+          <Spinner />
         ) : error ? (
           <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
         ) : data ? (
@@ -148,7 +139,7 @@ const Index = () => {
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-4 sm:gap-5 items-start">
-              <OrdersTable orders={orders} />
+              {(ordersLoading || ordersFetching) ? <Spinner /> : <OrdersTable orders={orders} />}
               <ClientsTable clients={clients} />
             </div>
           </>

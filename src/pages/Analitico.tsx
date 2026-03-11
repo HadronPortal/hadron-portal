@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { format } from 'date-fns';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -41,6 +42,11 @@ const formatCurrency = (v: number) =>
 const formatWeight = (v: number) =>
   v.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' Kg';
 
+const DEFAULT_START_DATE = new Date(2026, 0, 8);
+const DEFAULT_END_DATE = new Date(2026, 2, 9);
+
+const toApiDate = (date: Date) => format(date, 'dd/MM/yyyy');
+
 const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?url=`;
 
 const Analitico = () => {
@@ -48,17 +54,25 @@ const Analitico = () => {
   const { representantes } = useRepresentantes();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
+    startDate: DEFAULT_START_DATE,
+    endDate: DEFAULT_END_DATE,
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
+  const dateIniParam = toApiDate(selectedPeriod.startDate);
+  const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const { data, isLoading: loading, error: queryError } = useApiFetch<any>({
-    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all'],
+    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam],
     endpoint: 'fetch-analytics',
     params: {
       page: String(page),
       limit: String(rowsPerPage),
+      date_ini: dateIniParam,
+      date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
     },
     staleTime: 0,
@@ -76,11 +90,13 @@ const Analitico = () => {
   const handleSearch = (query: string) => setSearchQuery(query);
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
     setSelectedRep(filters.repCodes);
+    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
     setSearchQuery(filters.search);
     setPage(1);
   };
   const handleClear = () => {
     setSelectedRep([]);
+    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
     setSearchQuery('');
     setPage(1);
   };

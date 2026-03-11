@@ -88,7 +88,7 @@ const PedidoDetalhe = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
-      <main className="flex-1 px-6 py-5 space-y-5">
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => navigate('/pedidos')}>
             <ArrowLeft size={18} />

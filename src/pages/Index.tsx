@@ -82,11 +82,13 @@ const Index = () => {
   });
 
   const { data: ordersData, isLoading: ordersLoading, isFetching: ordersFetching } = useApiFetch<any>({
-    queryKey: ['orders-dashboard', repParam || 'all'],
+    queryKey: ['orders-dashboard', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
     endpoint: 'fetch-orders',
     params: {
       page: '1',
       limit: '10',
+      date_ini: dateIniParam,
+      date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
     },
     staleTime: 0,

@@ -104,8 +104,17 @@ const Clientes = () => {
     setError(null);
     try {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?page=${page}&limit=1000`;
-      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(rowsPerPage),
+        date_ini: dateIniParam,
+        date_end: dateEndParam,
+      });
+      if (repParam) params.set('rep', repParam);
+      if (searchQuery.trim()) params.set('search', searchQuery.trim());
+
+      const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params.toString()}`;
+      const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
       if (!res.ok) throw new Error('Falha ao buscar clientes');
       const result = await res.json();
       setClients(result.clients || []);
@@ -120,7 +129,7 @@ const Clientes = () => {
 
   useEffect(() => {
     fetchClients();
-  }, [page]);
+  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce]);
 
   const handleRepChange = (_repCodes: number[]) => {
     // State is set via handleFilter which is called automatically

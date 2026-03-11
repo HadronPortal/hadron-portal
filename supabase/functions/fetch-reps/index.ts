@@ -46,12 +46,8 @@ serve(async (req) => {
     const responseText = await res.text();
     if (!res.ok) throw new Error(`Reps fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
 
-    let data;
-    try { data = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`); }
-
-    const reps = data.data || data.representantes || [];
-
-    return new Response(JSON.stringify({ ...data, total_count: reps.length }), {
+    // Return the Hádron API response as-is
+    return new Response(responseText, {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
     });
   } catch (error) {

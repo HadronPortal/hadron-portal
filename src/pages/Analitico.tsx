@@ -45,7 +45,7 @@ const formatWeight = (v: number) =>
 const DEFAULT_START_DATE = new Date(2026, 0, 8);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);
 
-const toApiDate = (date: Date) => format(date, 'dd/MM/yyyy');
+const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
 const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?url=`;
 

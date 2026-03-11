@@ -11,6 +11,26 @@ function extractUserToken(req: Request): string | null {
   return null;
 }
 
+async function getServiceToken(): Promise<string> {
+  const email = Deno.env.get('HADRON_API_EMAIL');
+  const password = Deno.env.get('HADRON_API_PASSWORD');
+  if (!email || !password) throw new Error('Missing API credentials');
+
+  const loginRes = await fetch('https://dev.hadronweb.com.br/DEV/app/AuthUsuarios/apiLogin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ aus_email: email, aus_senha: password }),
+    redirect: 'manual',
+  });
+
+  const loginData = await loginRes.json();
+  if (!loginData?.success || !loginData?.access_token) {
+    throw new Error('Login failed');
+  }
+
+  return loginData.access_token;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -18,8 +38,8 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const page = url.searchParams.get('page') || '1';
-    const limit = url.searchParams.get('limit') || '50';
+    const page = Number(url.searchParams.get('page') || '1');
+    const limit = Number(url.searchParams.get('limit') || '50');
     const search = url.searchParams.get('search') || '';
     const repParam = url.searchParams.get('rep') || '';
     const dateIni = url.searchParams.get('date_ini') || '';
@@ -27,39 +47,26 @@ serve(async (req) => {
     const sortField = url.searchParams.get('sort_field') || '';
     const sortDir = url.searchParams.get('sort_dir') || 'DESC';
 
-    // Build form-data body — the Hadron API expects form-data
-    const formData = new FormData();
+    const token = extractUserToken(req) || await getServiceToken();
 
-    // Auth: prefer user token, fallback to service credentials
-    const userToken = extractUserToken(req);
-    if (userToken) {
-      formData.append('aus_token', userToken);
-    } else {
-      const email = Deno.env.get('HADRON_API_EMAIL');
-      const password = Deno.env.get('HADRON_API_PASSWORD');
-      if (!email || !password) throw new Error('Missing API credentials');
-      formData.append('aus_email', email);
-      formData.append('aus_senha', password);
-    }
-
-    // Filters
-    if (search) formData.append('search', search);
-    if (repParam) formData.append('cod_rep', repParam);
-    if (dateIni) formData.append('date_ini', dateIni);
-    if (dateEnd) formData.append('date_end', dateEnd);
-    if (page) formData.append('page', page);
-    if (limit) formData.append('limit', limit);
-    if (sortField) {
-      formData.append('sort_field', sortField);
-      formData.append('sort_dir', sortDir);
-    }
+    const requestBody: Record<string, unknown> = {
+      search,
+      filter: {
+        cod_rep: repParam || '',
+        date_ini: dateIni,
+        date_end: dateEnd,
+      },
+      pagination: { page, limit },
+      sort: sortField ? { field: sortField, direction: sortDir } : undefined,
+    };
 
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiAnalytics', {
       method: 'POST',
       headers: {
-        ...(userToken ? { 'Authorization': `Bearer ${userToken}` } : {}),
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-      body: formData,
+      body: JSON.stringify(requestBody),
     });
 
     const responseText = await res.text();

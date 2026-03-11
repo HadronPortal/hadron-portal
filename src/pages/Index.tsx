@@ -53,12 +53,22 @@ function mapStatus(status: string): 'aprovado' | 'confirmado' | 'pendente' | 'ca
   return 'pendente';
 }
 
+const DEFAULT_START_DATE = new Date(2026, 0, 8);
+const DEFAULT_END_DATE = new Date(2026, 2, 9);
+const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
+
 const Index = () => {
   const { representantes } = useRepresentantes();
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
+    startDate: DEFAULT_START_DATE,
+    endDate: DEFAULT_END_DATE,
+  });
+  const [filterNonce, setFilterNonce] = useState(0);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
+  const dateIniParam = toApiDate(selectedPeriod.startDate);
+  const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const { data, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
     queryKey: ['dashboard', repParam || 'all'],

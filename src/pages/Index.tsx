@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { format } from 'date-fns';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -52,42 +53,59 @@ function mapStatus(status: string): 'aprovado' | 'confirmado' | 'pendente' | 'ca
   return 'pendente';
 }
 
+const DEFAULT_START_DATE = new Date(2026, 0, 8);
+const DEFAULT_END_DATE = new Date(2026, 2, 9);
+const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
+
 const Index = () => {
   const { representantes } = useRepresentantes();
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
+    startDate: DEFAULT_START_DATE,
+    endDate: DEFAULT_END_DATE,
+  });
+  const [filterNonce, setFilterNonce] = useState(0);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
+  const dateIniParam = toApiDate(selectedPeriod.startDate);
+  const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const { data, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
-    queryKey: ['dashboard', repParam || 'all'],
+    queryKey: ['dashboard', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
     endpoint: 'fetch-dashboard',
-    params: repParam ? { rep: repParam } : {},
+    params: {
+      date_ini: dateIniParam,
+      date_end: dateEndParam,
+      ...(repParam ? { rep: repParam } : {}),
+    },
     staleTime: 0,
   });
 
   const { data: ordersData, isLoading: ordersLoading, isFetching: ordersFetching } = useApiFetch<any>({
-    queryKey: ['orders-dashboard', repParam || 'all'],
+    queryKey: ['orders-dashboard', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
     endpoint: 'fetch-orders',
     params: {
       page: '1',
       limit: '10',
+      date_ini: dateIniParam,
+      date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
     },
     staleTime: 0,
   });
 
   const handleRepChange = useCallback((_repCodes: number[]) => {
-    // State is set via handleFilter which is called automatically
+    // State is set via handleFilter
   }, []);
-  const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
   const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
-    setSearchQuery(filters.search);
+    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
+    setFilterNonce((n) => n + 1);
   }, []);
   const handleClear = useCallback(() => {
     setSelectedRep([]);
-    setSearchQuery('');
+    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+    setFilterNonce((n) => n + 1);
   }, []);
 
   const orders = useMemo(() => {
@@ -119,7 +137,7 @@ const Index = () => {
 
   return (
     <>
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+      <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>

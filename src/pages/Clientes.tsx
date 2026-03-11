@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 
 import FilterBar from '@/components/erp/FilterBar';
 import {
@@ -10,6 +11,7 @@ import { Eye, CreditCard } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
+import { fetchWithAuth } from '@/lib/auth-refresh';
 
 const COLUMNS: ColumnDef[] = [
   { key: 'cod', label: 'COD' },
@@ -67,6 +69,10 @@ const formatCurrency = (v: number | null) => {
   return 'R$' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
+const DEFAULT_START_DATE = new Date(2026, 0, 8);
+const DEFAULT_END_DATE = new Date(2026, 2, 9);
+const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
+
 const Clientes = () => {
   const navigate = useNavigate();
   const { representantes } = useRepresentantes();
@@ -74,8 +80,11 @@ const Clientes = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
+    startDate: DEFAULT_START_DATE,
+    endDate: DEFAULT_END_DATE,
+  });
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -83,15 +92,29 @@ const Clientes = () => {
   const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>(
     Object.fromEntries(COLUMNS.map(c => [c.key, true]))
   );
+  const [filterNonce, setFilterNonce] = useState(0);
   const show = (key: string) => visibleCols[key] !== false;
+
+  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
+  const dateIniParam = toApiDate(selectedPeriod.startDate);
+  const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const fetchClients = async () => {
     setLoading(true);
     setError(null);
     try {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?page=${page}&limit=1000`;
-      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(rowsPerPage),
+        date_ini: dateIniParam,
+        date_end: dateEndParam,
+      });
+      if (repParam) params.set('rep', repParam);
+      if (searchQuery.trim()) params.set('search', searchQuery.trim());
+
+      const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params.toString()}`;
+      const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
       if (!res.ok) throw new Error('Falha ao buscar clientes');
       const result = await res.json();
       setClients(result.clients || []);
@@ -106,57 +129,31 @@ const Clientes = () => {
 
   useEffect(() => {
     fetchClients();
-  }, [page]);
+  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce]);
 
   const handleRepChange = (_repCodes: number[]) => {
-    // State is set via handleFilter which is called automatically
+    // State is set via handleFilter
   };
-  const handleSearch = (query: string) => setSearchQuery(query);
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
-    setDateRange({ start: filters.startDate, end: filters.endDate });
+    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
+    setPage(1);
+    setFilterNonce((n) => n + 1);
   };
   const handleClear = () => {
     setSelectedRep([]);
+    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
     setSearchQuery('');
-    setDateRange(null);
+    setPage(1);
+    setFilterNonce((n) => n + 1);
   };
 
-  const repFiltered = selectedRep.length > 0
-    ? clients.filter(c => selectedRep.includes(c.COD_REP))
-    : clients;
-
-  const searchFiltered = searchQuery.trim()
-    ? repFiltered.filter(c => {
-        const q = searchQuery.toLowerCase();
-        return (
-          c.ter_nomter?.toLowerCase().includes(q) ||
-          c.ter_fanter?.toLowerCase().includes(q) ||
-          c.ter_documento?.includes(q) ||
-          c.TEN_CIDLGR?.toLowerCase().includes(q) ||
-          c.TEN_UF_LGR?.toLowerCase().includes(q)
-        );
-      })
-    : repFiltered;
-
-  const dateFiltered = dateRange
-    ? searchFiltered.filter(c => {
-        const d = c.ULT_VENDA ? new Date(c.ULT_VENDA) : c.ter_dta_cad ? new Date(c.ter_dta_cad) : null;
-        if (!d) return false;
-        const start = new Date(dateRange.start);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(dateRange.end);
-        end.setHours(23, 59, 59, 999);
-        return d >= start && d <= end;
-      })
-    : searchFiltered;
-
   const filtered = activeTab === 'todos'
-    ? dateFiltered
+    ? clients
     : activeTab === 'positivados'
-      ? dateFiltered.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
-      : dateFiltered.filter(c => {
+      ? clients.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
+      : clients.filter(c => {
           const d = new Date(c.ter_dta_cad);
           const sixMonthsAgo = new Date();
           sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -173,7 +170,7 @@ const Clientes = () => {
   return (
     <>
 
-      <FilterBar representantes={representantes} clientCountByRep={clientCountByRep} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+      <FilterBar representantes={representantes} clientCountByRep={clientCountByRep} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Clientes</h1>

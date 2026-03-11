@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 function extractUserToken(req: Request): string | null {
@@ -15,7 +15,7 @@ async function getServiceToken(): Promise<string> {
   const email = Deno.env.get('HADRON_API_EMAIL');
   const password = Deno.env.get('HADRON_API_PASSWORD');
   if (!email || !password) throw new Error('Missing API credentials');
-  const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
+  const loginRes = await fetch('https://dev.hadronweb.com.br/DEV/app/AuthUsuarios/apiLogin', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ aus_email: email, aus_senha: password }),
@@ -40,11 +40,15 @@ serve(async (req) => {
 
     const token = extractUserToken(req) || await getServiceToken();
 
-    const requestBody: Record<string, unknown> = {
+    const requestBody = {
       search,
-      filter: { cod_rep: repParam },
+      filter: {
+        cod_rep: repParam,
+      },
       pagination: { page, limit },
     };
+
+    console.log('Sending to apiCatalogs:', JSON.stringify(requestBody));
 
     const catalogoRes = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiCatalogs', {
       method: 'POST',
@@ -56,6 +60,8 @@ serve(async (req) => {
     });
 
     const responseText = await catalogoRes.text();
+    console.log('apiCatalogs response status:', catalogoRes.status, 'body preview:', responseText.substring(0, 300));
+
     if (!catalogoRes.ok) throw new Error(`Catalogo fetch failed [${catalogoRes.status}]: ${responseText.substring(0, 500)}`);
 
     let catalogoData;

@@ -63,7 +63,7 @@ const Index = () => {
     queryKey: ['dashboard', repParam || 'all'],
     endpoint: 'fetch-dashboard',
     params: repParam ? { rep: repParam } : {},
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0,
     placeholderData: (prev) => prev,
   });
 
@@ -75,7 +75,7 @@ const Index = () => {
       limit: '10',
       ...(repParam ? { rep: repParam } : {}),
     },
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0,
     placeholderData: (prev) => prev,
   });
 

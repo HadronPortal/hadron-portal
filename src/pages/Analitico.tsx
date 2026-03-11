@@ -61,7 +61,7 @@ const Analitico = () => {
       limit: String(rowsPerPage),
       ...(repParam ? { rep: repParam } : {}),
     },
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0,
     placeholderData: (prev) => prev,
   });
 

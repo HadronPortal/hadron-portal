@@ -87,7 +87,7 @@ const Login = () => {
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center justify-center gap-3 mb-8">
-            <img src={iconHadron} alt="Hádron" className="w-14 h-14 object-contain" />
+            <img src={logoHadronGo} alt="Hádron GO" className="h-10 object-contain" />
           </div>
 
           <div className="text-center space-y-2">

@@ -148,8 +148,8 @@ const Pedidos = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <>
+
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       {clienteNome && (

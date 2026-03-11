@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { fetchWithAuth } from '@/lib/auth-refresh';
 
 const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 const BASE = `https://${projectId}.supabase.co/functions/v1`;
@@ -27,12 +28,7 @@ export function useApiFetch<T = any>({
       Object.entries(params).forEach(([k, v]) => {
         if (v !== undefined && v !== '') url.searchParams.set(k, String(v));
       });
-      const headers: Record<string, string> = {};
-      const token = localStorage.getItem('hadron_token');
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      const res = await fetch(url.toString(), { signal, headers });
+      const res = await fetchWithAuth(url.toString(), { signal });
       if (!res.ok) throw new Error(`Erro ${res.status}`);
       return res.json();
     },

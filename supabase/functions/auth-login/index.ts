@@ -20,10 +20,22 @@ serve(async (req) => {
       });
     }
 
+    // If password is __refresh__, try refreshing with the existing token from header
+    const authHeader = req.headers.get('authorization') || '';
+    const existingToken = authHeader.replace(/^Bearer\s+/i, '');
+
+    let loginBody: Record<string, string>;
+    if (password === '__refresh__' && existingToken) {
+      // Try token-based refresh via Hádron API
+      loginBody = { aus_email: email, aus_token: existingToken };
+    } else {
+      loginBody = { aus_email: email, aus_senha: password };
+    }
+
     const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ aus_email: email, aus_senha: password }),
+      body: JSON.stringify(loginBody),
       redirect: 'manual',
     });
 

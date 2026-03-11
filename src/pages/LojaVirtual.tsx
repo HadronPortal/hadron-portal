@@ -389,7 +389,7 @@ const LojaVirtual = () => {
       <section className="relative py-6">
         <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
-          <div className="lg:col-span-7 rounded-2xl p-8 md:p-12 flex items-center min-h-[380px] relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #f0faf6, #e0f2eb)' }}>
+          <div className="lg:col-span-7 rounded-2xl p-6 sm:p-8 md:p-12 flex items-center min-h-[260px] sm:min-h-[380px] relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #f0faf6, #e0f2eb)' }}>
             <div className="relative z-10 max-w-md">
               <span className="text-xs font-bold uppercase tracking-[3px]" style={{ color: B }}>ORGÂNICO</span>
               <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mt-2">100% Frescos</h1>

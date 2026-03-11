@@ -112,7 +112,9 @@ const Pedidos = () => {
     setSearchParams(searchParams);
   };
 
-  const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
+  const handleRepChange = (_repCodes: number[]) => {
+    // State is set via handleFilter which is called automatically
+  };
   const handleSearch = (query: string) => setSearchQuery(query);
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
     setSelectedRep(filters.repCodes);

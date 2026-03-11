@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { format } from 'date-fns';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
+import { useApiFetch } from '@/hooks/use-api-fetch';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -22,6 +24,11 @@ interface Charge {
   rec_dta_vnc: string;
 }
 
+interface ChargesAPIResponse {
+  charges: Charge[];
+  total_records: number;
+}
+
 const formatCurrency = (v: number) =>
   'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -37,13 +44,32 @@ const Cobrancas = () => {
   const clienteNome = searchParams.get('nome');
 
   const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [charges, setCharges] = useState<Charge[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [totalRecords, setTotalRecords] = useState(0);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [dateIni, setDateIni] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
+  const [filterNonce, setFilterNonce] = useState(0);
+
+  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
+
+  const { data, isLoading, isFetching } = useApiFetch<ChargesAPIResponse>({
+    queryKey: ['charges', repParam, dateIni, dateEnd, String(page), String(rowsPerPage), codter || '', String(filterNonce)],
+    endpoint: 'fetch-charges',
+    params: {
+      page: String(page),
+      limit: String(rowsPerPage),
+      ...(codter ? { codter } : {}),
+      ...(repParam ? { rep: repParam } : {}),
+      ...(dateIni ? { date_ini: dateIni } : {}),
+      ...(dateEnd ? { date_end: dateEnd } : {}),
+    },
+    staleTime: 0,
+  });
+
+  const charges = data?.charges || [];
+  const totalRecords = data?.total_records || 0;
+  const loading = isLoading || isFetching;
 
   const clearClientFilter = () => {
     searchParams.delete('codter');
@@ -51,44 +77,23 @@ const Cobrancas = () => {
     setSearchParams(searchParams);
   };
 
-  const fetchCharges = async (repCodes: number[] = selectedRep) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      let url = `https://${projectId}.supabase.co/functions/v1/fetch-charges?page=${page}&limit=${rowsPerPage}`;
-      if (codter) url += `&codter=${codter}`;
-      if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Falha ao buscar cobranças');
-      const data = await res.json();
-      setCharges(data.charges || []);
-      setTotalRecords(data.total_records || 0);
-    } catch (err) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCharges(selectedRep);
-  }, [page, rowsPerPage, codter, selectedRep]);
-
-  const handleRepChange = (_repCodes: number[]) => {
-    // State is set via handleFilter which is called automatically
-  };
+  const handleRepChange = () => {};
   const handleSearch = (query: string) => setSearchQuery(query);
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
+    setDateIni(format(filters.startDate, 'yyyy-MM-dd'));
+    setDateEnd(format(filters.endDate, 'yyyy-MM-dd'));
     setPage(1);
+    setFilterNonce((n) => n + 1);
   };
   const handleClear = () => {
     setSelectedRep([]);
     setSearchQuery('');
+    setDateIni('');
+    setDateEnd('');
     setPage(1);
+    setFilterNonce((n) => n + 1);
   };
 
   const filteredCharges = searchQuery.trim()
@@ -109,7 +114,6 @@ const Cobrancas = () => {
 
   return (
     <>
-
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       {clienteNome && (
@@ -147,8 +151,6 @@ const Cobrancas = () => {
 
         {loading ? (
           <Spinner />
-        ) : error ? (
-          <div className="text-center py-12 text-destructive text-sm">{error}</div>
         ) : (
           <div className="bg-card rounded-lg border border-border overflow-hidden">
             <div className="overflow-x-auto">

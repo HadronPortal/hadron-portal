@@ -51,18 +51,9 @@ serve(async (req) => {
       });
     }
 
-    if (!loginData.success) {
-      return new Response(JSON.stringify({ success: false, error: 'E-mail ou senha incorretos. Verifique seus dados e tente novamente.' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    return new Response(JSON.stringify({
-      success: true,
-      access_token: loginData.access_token,
-      user: loginData.user || null,
-    }), {
+    // Return the full Hádron API response as-is
+    return new Response(responseText, {
+      status: loginRes.status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

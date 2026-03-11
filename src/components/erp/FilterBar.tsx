@@ -33,10 +33,7 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
 
   const handleRepChange = useCallback((value: string) => {
     setSelectedRep(value);
-    const repCodes = value === 'all' ? [] : [Number(value)];
-    onRepChange?.(repCodes);
-    onFilter?.({ startDate, endDate, repCodes, search });
-  }, [onRepChange, onFilter, startDate, endDate, search]);
+  }, []);
 
   const handleFilter = useCallback(() => {
     const repCodes = selectedRep === 'all' ? [] : [Number(selectedRep)];

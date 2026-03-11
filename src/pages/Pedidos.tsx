@@ -103,8 +103,8 @@ const Pedidos = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
-  }, [page, rowsPerPage, codter]);
+    fetchOrders(selectedRep);
+  }, [page, rowsPerPage, codter, selectedRep]);
 
   const clearClientFilter = () => {
     searchParams.delete('codter');
@@ -120,13 +120,11 @@ const Pedidos = () => {
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
     setPage(1);
-    fetchOrders(filters.repCodes);
   };
   const handleClear = () => {
     setSelectedRep([]);
     setSearchQuery('');
     setPage(1);
-    fetchOrders([]);
   };
 
   // Apply search filter on loaded orders

@@ -67,8 +67,8 @@ const Produtos = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [page, rowsPerPage]);
+    fetchProducts(selectedRep);
+  }, [page, rowsPerPage, selectedRep]);
 
   const handleRepChange = (_repCodes: number[]) => {
     // State is set via handleFilter which is called automatically
@@ -78,13 +78,11 @@ const Produtos = () => {
     setSelectedRep(filters.repCodes);
     setSearch(filters.search);
     setPage(1);
-    fetchProducts(filters.repCodes);
   };
   const handleClear = () => {
     setSelectedRep([]);
     setSearch('');
     setPage(1);
-    fetchProducts([]);
   };
 
   const filtered = (activeTab === 'todos'

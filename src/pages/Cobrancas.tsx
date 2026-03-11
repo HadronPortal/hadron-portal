@@ -73,8 +73,8 @@ const Cobrancas = () => {
   };
 
   useEffect(() => {
-    fetchCharges();
-  }, [page, rowsPerPage, codter]);
+    fetchCharges(selectedRep);
+  }, [page, rowsPerPage, codter, selectedRep]);
 
   const handleRepChange = (_repCodes: number[]) => {
     // State is set via handleFilter which is called automatically
@@ -84,13 +84,11 @@ const Cobrancas = () => {
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
     setPage(1);
-    fetchCharges(filters.repCodes);
   };
   const handleClear = () => {
     setSelectedRep([]);
     setSearchQuery('');
     setPage(1);
-    fetchCharges([]);
   };
 
   const filteredCharges = searchQuery.trim()

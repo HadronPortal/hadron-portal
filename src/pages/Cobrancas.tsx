@@ -84,13 +84,11 @@ const Cobrancas = () => {
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
     setPage(1);
-    fetchCharges(filters.repCodes);
   };
   const handleClear = () => {
     setSelectedRep([]);
     setSearchQuery('');
     setPage(1);
-    fetchCharges([]);
   };
 
   const filteredCharges = searchQuery.trim()

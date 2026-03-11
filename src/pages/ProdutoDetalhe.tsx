@@ -83,8 +83,7 @@ const ProdutoDetalhe = () => {
   const estoques = data?.estoques || [];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <>
       <FilterBar />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-6">

@@ -32,7 +32,7 @@ serve(async (req) => {
       loginBody = { aus_email: email, aus_senha: password };
     }
 
-    const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
+    const loginRes = await fetch('https://dev.hadronweb.com.br/app/AuthUsuarios/apiLogin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginBody),

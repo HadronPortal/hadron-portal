@@ -1,4 +1,3 @@
-const HADRON_API = 'https://dev.hadronweb.com.br/app/AuthUsuarios/apiLogin';
 const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const BASE = `https://${projectId}.supabase.co/functions/v1`;
@@ -20,10 +19,15 @@ export async function refreshToken(): Promise<string | null> {
         return null;
       }
 
-      const res = await fetch(HADRON_API, {
+      // Use edge function as proxy to avoid CORS
+      const res = await fetch(`${BASE}/auth-login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ aus_email: email, aus_token: oldToken }),
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': anonKey,
+          'Authorization': `Bearer ${oldToken}`,
+        },
+        body: JSON.stringify({ email, password: '__refresh__' }),
       });
 
       if (!res.ok) {

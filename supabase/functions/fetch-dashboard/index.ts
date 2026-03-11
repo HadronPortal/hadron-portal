@@ -11,7 +11,11 @@ function extractUserToken(req: Request): string | null {
   return null;
 }
 
+let cachedToken: string | null = null;
+let tokenExpiry = 0;
+
 async function getServiceToken(): Promise<string> {
+  if (cachedToken && Date.now() < tokenExpiry) return cachedToken;
   const email = Deno.env.get('HADRON_API_EMAIL');
   const password = Deno.env.get('HADRON_API_PASSWORD');
   if (!email || !password) throw new Error('Missing API credentials');
@@ -23,7 +27,9 @@ async function getServiceToken(): Promise<string> {
   });
   const loginData = await loginRes.json();
   if (!loginData.success) throw new Error('Login failed');
-  return loginData.access_token;
+  cachedToken = loginData.access_token;
+  tokenExpiry = Date.now() + 4 * 60 * 1000;
+  return cachedToken!;
 }
 
 serve(async (req) => {
@@ -41,20 +47,13 @@ serve(async (req) => {
 
     const requestBody: Record<string, unknown> = {
       search: '',
-      filter: {
-        cod_rep: repParam,
-        date_ini: dateIni,
-        date_end: dateEnd,
-      },
+      filter: { cod_rep: repParam, date_ini: dateIni, date_end: dateEnd },
       pagination: { page: 1, limit: 50 },
     };
 
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiDashboard', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),
     });
 
@@ -62,7 +61,7 @@ serve(async (req) => {
     if (!res.ok) throw new Error(`Dashboard fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
 
     let data;
-    try { data = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`); }
+    try { data = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON`); }
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },
@@ -71,8 +70,7 @@ serve(async (req) => {
     console.error('Error:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });

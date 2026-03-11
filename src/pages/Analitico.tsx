@@ -93,7 +93,6 @@ const Analitico = () => {
   const handleRepChange = (_repCodes: number[]) => {
     // State is set via handleFilter which is called automatically
   };
-  const handleSearch = (_query: string) => {
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSelectedRepRaw(filters.repCodesRaw);

@@ -64,19 +64,11 @@ const PedidoDetalhe = () => {
     fetchData();
   }, [id]);
 
-  if (loading) return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <Spinner />
-    </div>
-  );
+  if (loading) return <Spinner />;
 
   if (error || !order) return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <div className="flex-1 flex items-center justify-center text-destructive">
-        {error || 'Pedido não encontrado'}
-      </div>
+    <div className="flex-1 flex items-center justify-center text-destructive">
+      {error || 'Pedido não encontrado'}
     </div>
   );
 

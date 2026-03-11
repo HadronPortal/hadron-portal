@@ -72,19 +72,9 @@ const Index = () => {
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
-  const { data, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
-    queryKey: ['dashboard', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
-    endpoint: 'fetch-dashboard',
-    params: {
-      date_ini: dateIniParam,
-      date_end: dateEndParam,
-      ...(repParam ? { rep: repParam } : {}),
-    },
-    staleTime: 0,
-  });
-
-  const { data: ordersData, isLoading: ordersLoading, isFetching: ordersFetching } = useApiFetch<any>({
-    queryKey: ['orders-dashboard', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
+  // Single API call – fetch-orders returns both KPIs and order list
+  const { data: ordersData, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
+    queryKey: ['dashboard-orders', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
     endpoint: 'fetch-orders',
     params: {
       page: '1',
@@ -93,12 +83,22 @@ const Index = () => {
       date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
     },
-    staleTime: 0,
+    staleTime: 2 * 60 * 1000, // 2 min cache
   });
 
-  const handleRepChange = useCallback((_repCodes: number[]) => {
-    // State is set via handleFilter
-  }, []);
+  // Dashboard data (clients) – only if needed
+  const { data: dashData } = useApiFetch<DashboardAPIResponse>({
+    queryKey: ['dashboard-clients', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
+    endpoint: 'fetch-dashboard',
+    params: {
+      date_ini: dateIniParam,
+      date_end: dateEndParam,
+      ...(repParam ? { rep: repParam } : {}),
+    },
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const handleRepChange = useCallback((_repCodes: number[]) => {}, []);
   const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
@@ -111,8 +111,8 @@ const Index = () => {
   }, []);
 
   const orders = useMemo(() => {
-    const rawOrders = ordersData?.orders || ordersData?.ultimos_pedidos || ordersData?.data || [];
-    return rawOrders.map((p: any) => {
+    const rawOrders = ordersData?.orders || ordersData?.data || [];
+    return (rawOrders as any[]).map((p: any) => {
       let dataPedido = p.DATA_PEDIDO || p.orc_dta || p.data_pedido || '';
       if (dataPedido) {
         try {
@@ -139,13 +139,13 @@ const Index = () => {
   }, [ordersData]);
 
   const clients = useMemo(() =>
-    (data?.ultimos_clientes || []).map((c) => ({
+    (dashData?.ultimos_clientes || []).map((c) => ({
       id: String(c.cli_codcli),
       nome: c.cli_nomcli || '',
       localizacao: [c.cli_cidcli, c.cli_estcli].filter(Boolean).join(' - '),
       data_cadastro: c.cli_dta_cad || '',
     })),
-    [data?.ultimos_clientes]
+    [dashData?.ultimos_clientes]
   );
 
   return (
@@ -155,22 +155,22 @@ const Index = () => {
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>
 
-        {(isLoading || isFetching) && (ordersLoading || ordersFetching) ? (
+        {(isLoading || isFetching) ? (
           <Spinner />
         ) : error ? (
           <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
         ) : (
           <>
             <KpiCards
-              enviados={ordersData?.dashboard?.sent ?? data?.dashboard?.sent ?? 0}
-              aprovados={ordersData?.dashboard?.approved ?? data?.dashboard?.approved ?? 0}
-              faturados={ordersData?.dashboard?.invoiced ?? data?.dashboard?.invoiced ?? 0}
-              cancelados={ordersData?.dashboard?.canceled ?? data?.dashboard?.canceled ?? 0}
+              enviados={ordersData?.dashboard?.sent ?? 0}
+              aprovados={ordersData?.dashboard?.approved ?? 0}
+              faturados={ordersData?.dashboard?.invoiced ?? 0}
+              cancelados={ordersData?.dashboard?.canceled ?? 0}
               clientesPositivados={0}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-4 sm:gap-5 items-start">
-              {(ordersLoading || ordersFetching) ? <Spinner /> : <OrdersTable orders={orders} />}
+              <OrdersTable orders={orders} />
               <ClientsTable clients={clients} />
             </div>
           </>

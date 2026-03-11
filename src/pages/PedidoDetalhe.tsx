@@ -77,8 +77,7 @@ const PedidoDetalhe = () => {
   const totalPeso = items.reduce((s: number, i: any) => s + ((i.oit_qtdoit || 0) * (i.oit_peso_liq || 0)), 0);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <>
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">

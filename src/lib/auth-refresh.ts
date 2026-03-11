@@ -1,4 +1,4 @@
-const HADRON_API = 'https://dev.hadronweb.com.br/app/authUsuarios/apiLogin';
+const HADRON_API = 'https://dev.hadronweb.com.br/app/AuthUsuarios/apiLogin';
 const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const BASE = `https://${projectId}.supabase.co/functions/v1`;

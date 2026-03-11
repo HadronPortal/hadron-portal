@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import { useApiFetch } from '@/hooks/use-api-fetch';
 
 interface Period {
   chave: string;
@@ -46,39 +47,28 @@ const Analitico = () => {
   const [activeTab, setActiveTab] = useState<string>('todos');
   const { representantes } = useRepresentantes();
   const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [products, setProducts] = useState<ProductAnalytics[]>([]);
-  const [periods, setPeriods] = useState<Period[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [totalRecords, setTotalRecords] = useState(0);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
 
-  const fetchAnalytics = async (repCodes: number[] = selectedRep) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      let url = `https://${projectId}.supabase.co/functions/v1/fetch-analytics?page=${page}&limit=${rowsPerPage}`;
-      if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Falha ao buscar analítico');
-      const data = await res.json();
-      setProducts(data.products || []);
-      setPeriods((data.periods || []).filter((p: Period) => p.chave !== 'TOTAL'));
-      setTotalRecords(data.total_records || 0);
-    } catch (err) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, [page, rowsPerPage]);
+  const { data, isLoading: loading, error: queryError } = useApiFetch<any>({
+    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all'],
+    endpoint: 'fetch-analytics',
+    params: {
+      page: String(page),
+      limit: String(rowsPerPage),
+      ...(repParam ? { rep: repParam } : {}),
+    },
+    staleTime: 2 * 60 * 1000,
+    placeholderData: (prev) => prev,
+  });
+
+  const error = queryError ? (queryError as Error).message : null;
+  const products: ProductAnalytics[] = data?.products || [];
+  const periods: Period[] = (data?.periods || []).filter((p: Period) => p.chave !== 'TOTAL');
+  const totalRecords: number = data?.total_records || 0;
 
   const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
   const handleSearch = (query: string) => setSearchQuery(query);
@@ -86,13 +76,11 @@ const Analitico = () => {
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
     setPage(1);
-    fetchAnalytics(filters.repCodes);
   };
   const handleClear = () => {
     setSelectedRep([]);
     setSearchQuery('');
     setPage(1);
-    fetchAnalytics([]);
   };
 
   const tabFiltered = activeTab === 'todos'
@@ -103,8 +91,7 @@ const Analitico = () => {
     ? tabFiltered.filter(p => (p.produto || '').toLowerCase().includes(searchQuery.toLowerCase()))
     : tabFiltered;
 
-  // Calculate totals from periods data
-  const totalPeriod = periods.length > 0 ? periods : [];
+  const totalPeriod = periods;
   const grandTotal = products.reduce((acc, p) => ({
     valor: acc.valor + (p.totais?.valor || 0),
     qtde: acc.qtde + (p.totais?.qtde || 0),

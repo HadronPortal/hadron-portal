@@ -30,7 +30,7 @@ const Header = () => {
       {/* Main header */}
       <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center gap-2 sm:gap-3 cursor-pointer min-w-0" onClick={() => navigate('/')}>
-          <img alt="Hádron" className="w-10 h-10 sm:w-[60px] sm:h-[60px] object-contain -mt-1 sm:-mt-2 flex-shrink-0" src={logoImg} />
+          <img alt="Hádron" className="h-10 sm:h-14 object-contain flex-shrink-0" src={logoImg} />
         </div>
 
         <div className="flex items-center gap-3 sm:gap-6">

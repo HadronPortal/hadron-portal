@@ -58,14 +58,16 @@ const Analitico = () => {
   const { representantes } = useRepresentantes();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
     startDate: DEFAULT_START_DATE,
     endDate: DEFAULT_END_DATE,
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
+  const [filterNonce, setFilterNonce] = useState(0);
 
-  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
+  const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 

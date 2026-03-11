@@ -20,7 +20,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
+      const loginRes = await fetch('https://dev.hadronweb.com.br/app/AuthUsuarios/apiLogin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ aus_email: email, aus_senha: password }),

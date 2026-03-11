@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 
 import FilterBar from '@/components/erp/FilterBar';
 import {
@@ -10,6 +11,7 @@ import { Eye, CreditCard } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
+import { fetchWithAuth } from '@/lib/auth-refresh';
 
 const COLUMNS: ColumnDef[] = [
   { key: 'cod', label: 'COD' },

@@ -67,6 +67,18 @@ const Index = () => {
     placeholderData: (prev) => prev,
   });
 
+  const { data: ordersData } = useApiFetch<any>({
+    queryKey: ['orders-dashboard', repParam || 'all'],
+    endpoint: 'fetch-orders',
+    params: {
+      page: '1',
+      limit: '10',
+      ...(repParam ? { rep: repParam } : {}),
+    },
+    staleTime: 2 * 60 * 1000,
+    placeholderData: (prev) => prev,
+  });
+
   const handleRepChange = useCallback((repCodes: number[]) => setSelectedRep(repCodes), []);
   const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
   const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
@@ -78,20 +90,22 @@ const Index = () => {
     setSearchQuery('');
   }, []);
 
-  const orders = useMemo(() =>
-    (data?.ultimos_pedidos || []).map((p) => ({
-      id: String(p.orc_codorc),
-      codigo: String(p.orc_codorc),
-      cliente_nome: p.orc_nomcli || '',
-      cliente_cnpj: p.orc_cgccli || '',
-      localizacao: [p.orc_cidcli, p.orc_estcli].filter(Boolean).join(' - '),
-      status: mapStatus(p.orc_status),
-      valor: p.orc_vlrtot || 0,
-      data_pedido: p.orc_dta || '',
-      erp_code: p.orc_coderp ? `ERP:${p.orc_coderp}` : undefined,
-    })),
-    [data?.ultimos_pedidos]
-  );
+  const orders = useMemo(() => {
+    const rawOrders = ordersData?.ultimos_pedidos || ordersData?.data || ordersData?.orders || [];
+    return rawOrders.map((p: any) => ({
+      id: String(p.orc_codorc || p.id),
+      codigo: String(p.orc_codorc || p.codigo),
+      cliente_nome: p.orc_nomcli || p.cliente_nome || '',
+      cliente_cnpj: p.orc_cgccli || p.cliente_cnpj || '',
+      localizacao: p.orc_cidcli
+        ? [p.orc_cidcli, p.orc_estcli].filter(Boolean).join(' - ')
+        : (p.localizacao || ''),
+      status: mapStatus(p.orc_status || p.status || ''),
+      valor: p.orc_vlrtot || p.valor || 0,
+      data_pedido: p.orc_dta || p.data_pedido || '',
+      erp_code: p.orc_coderp ? `ERP:${p.orc_coderp}` : (p.erp_code || undefined),
+    }));
+  }, [ordersData]);
 
   const clients = useMemo(() =>
     (data?.ultimos_clientes || []).map((c) => ({

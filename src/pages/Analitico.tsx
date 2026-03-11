@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import { useApiFetch } from '@/hooks/use-api-fetch';
 
 interface Period {
   chave: string;

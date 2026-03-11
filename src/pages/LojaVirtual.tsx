@@ -6,6 +6,7 @@ import {
   ArrowRight, Eye, Flame, RefreshCw, Clock, User,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import bannerShopRef from '@/assets/shop/banner-shop-ref.png';
 
 // ─── Brand ──────────────────────────────────────────────────────────────
 const B = '#0da487';

@@ -69,6 +69,10 @@ const formatCurrency = (v: number | null) => {
   return 'R$' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
+const DEFAULT_START_DATE = new Date(2026, 0, 8);
+const DEFAULT_END_DATE = new Date(2026, 2, 9);
+const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
+
 const Clientes = () => {
   const navigate = useNavigate();
   const { representantes } = useRepresentantes();
@@ -76,8 +80,11 @@ const Clientes = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
+    startDate: DEFAULT_START_DATE,
+    endDate: DEFAULT_END_DATE,
+  });
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -85,7 +92,12 @@ const Clientes = () => {
   const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>(
     Object.fromEntries(COLUMNS.map(c => [c.key, true]))
   );
+  const [filterNonce, setFilterNonce] = useState(0);
   const show = (key: string) => visibleCols[key] !== false;
+
+  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
+  const dateIniParam = toApiDate(selectedPeriod.startDate);
+  const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const fetchClients = async () => {
     setLoading(true);

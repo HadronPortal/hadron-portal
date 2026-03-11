@@ -170,7 +170,7 @@ const Clientes = () => {
   return (
     <>
 
-      <FilterBar representantes={representantes} clientCountByRep={clientCountByRep} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+      <FilterBar representantes={representantes} clientCountByRep={clientCountByRep} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Clientes</h1>

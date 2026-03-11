@@ -94,6 +94,9 @@ const Index = () => {
     staleTime: 0,
   });
 
+  const handleRepChange = useCallback((_repCodes: number[]) => {
+    // State is set via handleFilter
+  }, []);
   const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Header from '@/components/erp/Header';
+
 import FilterBar from '@/components/erp/FilterBar';
 import { Button } from '@/components/ui/button';
 import Spinner from '@/components/ui/spinner';

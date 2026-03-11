@@ -189,8 +189,8 @@ const Analitico = () => {
                     </TableRow>
                   ) : (
                     filtered.map((produto) => {
-                      const imgUrl = produto.foto
-                        ? `${PROXY_BASE}${encodeURIComponent(`https://dev.hadronweb.com.br/user_data/DEV/products/${produto.foto}`)}`
+                      const imgUrl = produto.foto ? getImageUrl(produto.foto) : '';
+                      return (
                         : '';
                       return (
                         <TableRow key={produto.codpro} className="hover:bg-accent/30">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +12,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -37,9 +39,22 @@ const Login = () => {
         localStorage.setItem('hadron_user', JSON.stringify(data.user));
       }
 
-      toast({
-        title: 'Login realizado com sucesso!',
+      // Prefetch representantes with the fresh token
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      queryClient.prefetchQuery({
+        queryKey: ['representantes'],
+        queryFn: async () => {
+          const res = await fetch(
+            `https://${projectId}.supabase.co/functions/v1/fetch-reps?token=${encodeURIComponent(data.access_token)}`
+          );
+          if (!res.ok) return [];
+          const json = await res.json();
+          return json.data || json.representantes || [];
+        },
+        staleTime: 15 * 60 * 1000,
       });
+
+      toast({ title: 'Login realizado com sucesso!' });
 
       navigate('/');
     } catch (err) {

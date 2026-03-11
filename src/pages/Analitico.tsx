@@ -72,7 +72,7 @@ const Analitico = () => {
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam],
+    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
     endpoint: 'fetch-analytics',
     params: {
       page: String(page),

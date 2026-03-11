@@ -47,8 +47,11 @@ const DEFAULT_END_DATE = new Date(2026, 2, 9);
 
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
-const getImageUrl = (filename: string) =>
-  `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
+const getImageUrl = (foto: string) => {
+  // Extract just the filename if it's a full path/URL
+  const filename = foto.includes('/') ? foto.split('/').pop()! : foto;
+  return `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
+};
 
 const Analitico = () => {
   const [activeTab, setActiveTab] = useState<string>('todos');
@@ -76,8 +79,7 @@ const Analitico = () => {
       date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
     },
-    staleTime: 5 * 60 * 1000,
-    placeholderData: (prev) => prev,
+    staleTime: 0,
   });
 
   const error = queryError ? (queryError as Error).message : null;

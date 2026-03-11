@@ -5,41 +5,25 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-let cachedToken: string | null = null;
-let cachedCookies = '';
-let tokenExpiry = 0;
+function extractUserToken(req: Request): string | null {
+  const auth = req.headers.get('authorization') || '';
+  if (auth.startsWith('Bearer ')) return auth.slice(7);
+  return null;
+}
 
-async function getAuth(): Promise<{ token: string; cookies: string }> {
-  if (cachedToken && Date.now() < tokenExpiry) {
-    return { token: cachedToken, cookies: cachedCookies };
-  }
-
+async function getServiceToken(): Promise<string> {
   const email = Deno.env.get('HADRON_API_EMAIL');
   const password = Deno.env.get('HADRON_API_PASSWORD');
   if (!email || !password) throw new Error('Missing API credentials');
-
   const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ aus_email: email, aus_senha: password }),
     redirect: 'manual',
   });
-
-  const cookies: string[] = [];
-  for (const [key, value] of loginRes.headers.entries()) {
-    if (key.toLowerCase() === 'set-cookie') {
-      cookies.push(value.split(';')[0]);
-    }
-  }
-
   const loginData = await loginRes.json();
-  if (!loginData.success) throw new Error(`Login failed: ${JSON.stringify(loginData)}`);
-
-  cachedToken = loginData.access_token;
-  cachedCookies = cookies.join('; ');
-  tokenExpiry = Date.now() + 25 * 60 * 1000;
-
-  return { token: cachedToken!, cookies: cachedCookies };
+  if (!loginData.success) throw new Error('Login failed');
+  return loginData.access_token;
 }
 
 serve(async (req) => {
@@ -53,7 +37,7 @@ serve(async (req) => {
     const dateIni = url.searchParams.get('date_ini') || '';
     const dateEnd = url.searchParams.get('date_end') || '';
 
-    const { token, cookies } = await getAuth();
+    const token = extractUserToken(req) || await getServiceToken();
 
     const requestBody: Record<string, unknown> = {
       search: '',
@@ -69,25 +53,16 @@ serve(async (req) => {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Cookie': cookies,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestBody),
     });
 
     const responseText = await res.text();
-
-    if (!res.ok) {
-      cachedToken = null;
-      throw new Error(`Dashboard fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
-    }
+    if (!res.ok) throw new Error(`Dashboard fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
 
     let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch {
-      throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`);
-    }
+    try { data = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`); }
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },

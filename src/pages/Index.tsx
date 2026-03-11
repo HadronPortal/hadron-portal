@@ -110,19 +110,30 @@ const Index = () => {
 
   const orders = useMemo(() => {
     const rawOrders = ordersData?.orders || ordersData?.ultimos_pedidos || ordersData?.data || [];
-    return rawOrders.map((p: any) => ({
-      id: String(p.orc_codorc_web || p.orc_codorc || p.id),
-      codigo: String(p.orc_codorc_web || p.orc_codorc || p.codigo),
-      cliente_nome: p.CLIENTE || p.orc_nomcli || p.cliente_nome || '',
-      cliente_cnpj: p.orc_documento || p.orc_cgccli || p.cliente_cnpj || '',
-      localizacao: p.LOCALIZACAO || (p.orc_cidcli
-        ? [p.orc_cidcli, p.orc_estcli].filter(Boolean).join(' - ')
-        : (p.localizacao || '')),
-      status: mapStatus(p.orc_status || p.status || ''),
-      valor: p.orc_val_tot || p.orc_vlrtot || p.valor || 0,
-      data_pedido: p.DATA_PEDIDO || p.orc_dta || p.data_pedido || '',
-      erp_code: p.orc_codorc_had ? `ERP:${p.orc_codorc_had}` : (p.orc_coderp ? `ERP:${p.orc_coderp}` : (p.erp_code || undefined)),
-    }));
+    return rawOrders.map((p: any) => {
+      let dataPedido = p.DATA_PEDIDO || p.orc_dta || p.data_pedido || '';
+      if (dataPedido) {
+        try {
+          const d = new Date(dataPedido);
+          if (!isNaN(d.getTime())) {
+            dataPedido = d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          }
+        } catch {}
+      }
+      return {
+        id: String(p.orc_codorc_web || p.orc_codorc || p.id),
+        codigo: String(p.orc_codorc_web || p.orc_codorc || p.codigo),
+        cliente_nome: p.CLIENTE || p.orc_nomcli || p.cliente_nome || '',
+        cliente_cnpj: p.orc_documento || p.orc_cgccli || p.cliente_cnpj || '',
+        localizacao: p.LOCALIZACAO || (p.orc_cidcli
+          ? [p.orc_cidcli, p.orc_estcli].filter(Boolean).join(' - ')
+          : (p.localizacao || '')),
+        status: mapStatus(p.orc_status || p.status || ''),
+        valor: p.orc_val_tot || p.orc_vlrtot || p.valor || 0,
+        data_pedido: dataPedido,
+        erp_code: p.orc_codorc_had ? `ERP:${p.orc_codorc_had}` : (p.orc_coderp ? `ERP:${p.orc_coderp}` : (p.erp_code || undefined)),
+      };
+    });
   }, [ordersData]);
 
   const clients = useMemo(() =>

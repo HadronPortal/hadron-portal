@@ -27,7 +27,12 @@ export function useApiFetch<T = any>({
       Object.entries(params).forEach(([k, v]) => {
         if (v !== undefined && v !== '') url.searchParams.set(k, String(v));
       });
-      const res = await fetch(url.toString(), { signal });
+      const headers: Record<string, string> = {};
+      const token = localStorage.getItem('hadron_token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const res = await fetch(url.toString(), { signal, headers });
       if (!res.ok) throw new Error(`Erro ${res.status}`);
       return res.json();
     },

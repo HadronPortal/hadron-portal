@@ -63,6 +63,7 @@ serve(async (req) => {
       payload.aus_senha = password;
     }
 
+    console.log('Sending payload:', JSON.stringify(payload));
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiAnalytics', {
       method: 'POST',
       headers,
@@ -70,6 +71,7 @@ serve(async (req) => {
     });
 
     const responseText = await res.text();
+    console.log('Response status:', res.status, 'Body preview:', responseText.substring(0, 300));
     if (!res.ok) throw new Error(`Analytics fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
 
     let data;

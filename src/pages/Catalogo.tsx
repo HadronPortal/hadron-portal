@@ -134,8 +134,8 @@ const Catalogo = () => {
       <Header />
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
-      <main className="flex-1 px-6 py-5 space-y-4">
-        <h1 className="text-2xl font-bold text-foreground">Catálogo</h1>
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Catálogo</h1>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

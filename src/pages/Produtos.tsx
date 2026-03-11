@@ -14,14 +14,18 @@ import { Button } from '@/components/ui/button';
 import Spinner from '@/components/ui/spinner';
 
 interface ProductAPI {
-  codpro: number;
-  produto: string;
-  foto: string;
-  qtde: number;
-  peso_un: number;
-  valor: number;
-  tipo_op_banco?: string;
-  gtin?: string;
+  pro_codpro: number;
+  pro_despro: string;
+  pro_foto: string;
+  pro_peso_liq: number;
+  pro_unidade: string;
+  pro_gtin: string;
+  pro_codint: string;
+  QUANT: string;
+  TOTAL_VENDIDO: string;
+  MEDIA: string;
+  QUANT_VENDA: string;
+  ORC_ORIORC?: string;
   [key: string]: unknown;
 }
 

@@ -161,7 +161,7 @@ const Analitico = () => {
           </Button>
         </div>
 
-        {loading ? (
+        {(isLoading || isFetching) ? (
           <Spinner />
         ) : error ? (
           <div className="text-center py-12 text-destructive text-sm">{error}</div>

@@ -66,7 +66,7 @@ const Analitico = () => {
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
-  const { data, isLoading: loading, error: queryError } = useApiFetch<any>({
+  const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
     queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam],
     endpoint: 'fetch-analytics',
     params: {
@@ -161,7 +161,7 @@ const Analitico = () => {
           </Button>
         </div>
 
-        {loading ? (
+        {(isLoading || isFetching) ? (
           <Spinner />
         ) : error ? (
           <div className="text-center py-12 text-destructive text-sm">{error}</div>

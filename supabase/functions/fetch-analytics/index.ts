@@ -44,20 +44,32 @@ serve(async (req) => {
 
     const userToken = extractUserToken(req);
     const token = userToken || await getServiceToken();
-    console.log('Using token source:', userToken ? 'user' : 'service', '| date_ini:', dateIni, '| date_end:', dateEnd);
+
+    const filter: Record<string, string> = {};
+    if (repParam) filter.cod_rep = repParam;
+    if (dateIni) filter.date_ini = dateIni;
+    if (dateEnd) filter.date_end = dateEnd;
 
     const requestBody: Record<string, unknown> = {
-      search,
-      filter: {
-        cod_rep: repParam,
-        date_ini: dateIni,
-        date_end: dateEnd,
-      },
+      ...(search ? { search } : {}),
+      ...(Object.keys(filter).length ? { filter } : {}),
       pagination: { page, limit },
-      sort: sortField ? { field: sortField, direction: sortDir } : undefined,
+      ...(sortField ? { sort: { field: sortField, direction: sortDir } } : {}),
     };
 
-    const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiAnalytics', {
+    const analyticsUrl = new URL('https://dev.hadronweb.com.br/DEV/app/pages/apiAnalytics');
+    analyticsUrl.searchParams.set('page', String(page));
+    analyticsUrl.searchParams.set('limit', String(limit));
+    if (search) analyticsUrl.searchParams.set('search', search);
+    if (repParam) analyticsUrl.searchParams.set('rep', repParam);
+    if (dateIni) analyticsUrl.searchParams.set('date_ini', dateIni);
+    if (dateEnd) analyticsUrl.searchParams.set('date_end', dateEnd);
+    if (sortField) {
+      analyticsUrl.searchParams.set('sort_field', sortField);
+      analyticsUrl.searchParams.set('sort_dir', sortDir);
+    }
+
+    const res = await fetch(analyticsUrl.toString(), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

@@ -58,6 +58,7 @@ const Catalogo = () => {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       let url = `https://${projectId}.supabase.co/functions/v1/fetch-catalogo?page=${p}&limit=${l}`;
       if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
+      if (searchQuery.trim()) url += `&search=${encodeURIComponent(searchQuery.trim())}`;
       const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, signal });
 
       if (!res.ok) throw new Error(`Erro ${res.status}`);

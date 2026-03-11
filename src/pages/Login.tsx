@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import iconHadron from '@/assets/icon_hadronweb.png';
+import logoHadronGo from '@/assets/logo_hadron_go.png';
 
 const Login = () => {
   const [email, setEmail] = useState('');

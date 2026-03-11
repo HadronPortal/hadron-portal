@@ -57,6 +57,8 @@ serve(async (req) => {
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
+    console.log('Sending to apiProducts:', JSON.stringify(requestBody));
+
     const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiProducts', {
       method: 'POST',
       headers: {
@@ -67,6 +69,7 @@ serve(async (req) => {
     });
 
     const responseText = await res.text();
+    console.log('apiProducts response status:', res.status, 'body preview:', responseText.substring(0, 500));
     if (!res.ok) throw new Error(`Products fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
 
     let data;

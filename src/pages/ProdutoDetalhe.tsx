@@ -99,7 +99,7 @@ const ProdutoDetalhe = () => {
         ) : info ? (
           <>
             {/* Header */}
-            <div className="flex gap-6 items-start">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
               {info.pro_foto ? (
                 <img
                   src={`${PROXY_BASE}${encodeURIComponent(info.pro_foto)}`}

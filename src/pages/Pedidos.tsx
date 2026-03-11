@@ -184,7 +184,7 @@ const Pedidos = () => {
           ))}
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-3">
             <select
               value={rowsPerPage}
@@ -196,7 +196,7 @@ const Pedidos = () => {
               <option value={50}>50</option>
               <option value={100}>100</option>
             </select>
-            <span className="text-sm text-muted-foreground">{totalRecords} registros</span>
+            <span className="text-xs sm:text-sm text-muted-foreground">{totalRecords} registros</span>
           </div>
           <Button variant="outline" size="sm" className="gap-1">
             Colunas <ChevronDown size={14} />

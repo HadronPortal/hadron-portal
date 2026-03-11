@@ -89,16 +89,16 @@ const PedidoDetalhe = () => {
       <Header />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <Button variant="ghost" size="sm" onClick={() => navigate('/pedidos')}>
             <ArrowLeft size={18} />
           </Button>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-lg sm:text-2xl font-bold text-foreground">
             Pedido #{order.orc_codorc_web}
           </h1>
           <span className={`${st.color} text-white text-xs px-2 py-1 rounded`}>{st.label}</span>
           {order.orc_codorc_had > 0 && (
-            <span className="text-sm text-muted-foreground">ERP: {order.orc_codorc_had}</span>
+            <span className="text-xs sm:text-sm text-muted-foreground">ERP: {order.orc_codorc_had}</span>
           )}
         </div>
 

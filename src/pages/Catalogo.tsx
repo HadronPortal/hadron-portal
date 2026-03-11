@@ -212,7 +212,7 @@ const Catalogo = () => {
               </Table>
             </div>
 
-            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+            <div className="flex flex-col sm:flex-row items-center justify-between px-3 sm:px-4 py-3 border-t border-border gap-2">
               <span className="text-xs text-muted-foreground">
                 Página {page} de {totalPages} — {totalRecords} produtos
               </span>

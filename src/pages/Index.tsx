@@ -132,7 +132,7 @@ const Index = () => {
               clientesPositivados={data.cards.positivados}
             />
 
-            <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-5 items-start">
+            <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-4 sm:gap-5 items-start">
               <OrdersTable orders={orders} />
               <ClientsTable clients={clients} />
             </div>

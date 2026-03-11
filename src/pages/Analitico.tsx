@@ -191,8 +191,6 @@ const Analitico = () => {
                     filtered.map((produto) => {
                       const imgUrl = produto.foto ? getImageUrl(produto.foto) : '';
                       return (
-                        : '';
-                      return (
                         <TableRow key={produto.codpro} className="hover:bg-accent/30">
                           <TableCell className="text-sm">
                             <div className="flex items-center gap-3">

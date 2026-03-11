@@ -74,7 +74,7 @@ const Produtos = () => {
     // State is set via handleFilter which is called automatically
   };
   const handleSearch = (query: string) => setSearch(query);
-  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSearch(filters.search);
     setPage(1);

@@ -93,17 +93,21 @@ const Analitico = () => {
     // State is set via handleFilter which is called automatically
   };
   const handleSearch = (query: string) => setSearchQuery(query);
-  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
+    setSelectedRepRaw(filters.repCodesRaw);
     setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
     setSearchQuery(filters.search);
     setPage(1);
+    setFilterNonce((n) => n + 1);
   };
   const handleClear = () => {
     setSelectedRep([]);
+    setSelectedRepRaw([]);
     setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
     setSearchQuery('');
     setPage(1);
+    setFilterNonce((n) => n + 1);
   };
 
   const tabFiltered = activeTab === 'todos'

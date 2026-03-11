@@ -47,7 +47,8 @@ const DEFAULT_END_DATE = new Date(2026, 2, 9);
 
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
-const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?url=`;
+const getImageUrl = (filename: string) =>
+  `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
 
 const Analitico = () => {
   const [activeTab, setActiveTab] = useState<string>('todos');
@@ -188,9 +189,7 @@ const Analitico = () => {
                     </TableRow>
                   ) : (
                     filtered.map((produto) => {
-                      const imgUrl = produto.foto
-                        ? `${PROXY_BASE}${encodeURIComponent(`https://dev.hadronweb.com.br/user_data/DEV/products/${produto.foto}`)}`
-                        : '';
+                      const imgUrl = produto.foto ? getImageUrl(produto.foto) : '';
                       return (
                         <TableRow key={produto.codpro} className="hover:bg-accent/30">
                           <TableCell className="text-sm">

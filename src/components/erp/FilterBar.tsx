@@ -35,7 +35,6 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
     setSelectedRep(value);
     const repCodes = value === 'all' ? [] : [Number(value)];
     onRepChange?.(repCodes);
-    // Auto-filter when rep changes (including back to "all")
     onFilter?.({ startDate, endDate, repCodes, search });
   }, [onRepChange, onFilter, startDate, endDate, search]);
 

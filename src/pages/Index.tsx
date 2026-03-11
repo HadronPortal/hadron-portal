@@ -66,7 +66,7 @@ const Index = () => {
     staleTime: 0,
   });
 
-  const { data: ordersData } = useApiFetch<any>({
+  const { data: ordersData, isLoading: ordersLoading, isFetching: ordersFetching } = useApiFetch<any>({
     queryKey: ['orders-dashboard', repParam || 'all'],
     endpoint: 'fetch-orders',
     params: {
@@ -75,7 +75,6 @@ const Index = () => {
       ...(repParam ? { rep: repParam } : {}),
     },
     staleTime: 0,
-    placeholderData: (prev) => prev,
   });
 
   const handleRepChange = useCallback((_repCodes: number[]) => {

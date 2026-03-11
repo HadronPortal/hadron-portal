@@ -149,11 +149,11 @@ const Index = () => {
         ) : data ? (
           <>
             <KpiCards
-              enviados={data.cards.enviados}
-              aprovados={data.cards.aprovados}
-              faturados={data.cards.faturados}
-              cancelados={data.cards.cancelados}
-              clientesPositivados={data.cards.positivados}
+              enviados={data.dashboard?.sent ?? 0}
+              aprovados={data.dashboard?.approved ?? 0}
+              faturados={data.dashboard?.invoiced ?? 0}
+              cancelados={data.dashboard?.canceled ?? 0}
+              clientesPositivados={0}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-4 sm:gap-5 items-start">

@@ -70,7 +70,34 @@ const Analitico = () => {
   const periods: Period[] = (data?.periods || []).filter((p: Period) => p.chave !== 'TOTAL');
   const totalRecords: number = data?.total_records || 0;
 
-  return (
+  const handleRepChange = (repCodes: number[]) => setSelectedRep(repCodes);
+  const handleSearch = (query: string) => setSearchQuery(query);
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+    setSelectedRep(filters.repCodes);
+    setSearchQuery(filters.search);
+    setPage(1);
+  };
+  const handleClear = () => {
+    setSelectedRep([]);
+    setSearchQuery('');
+    setPage(1);
+  };
+
+  const tabFiltered = activeTab === 'todos'
+    ? products
+    : products.filter((p) => p.tipo_op_banco === activeTab);
+
+  const filtered = searchQuery.trim()
+    ? tabFiltered.filter(p => (p.produto || '').toLowerCase().includes(searchQuery.toLowerCase()))
+    : tabFiltered;
+
+  const totalPeriod = periods;
+  const grandTotal = products.reduce((acc, p) => ({
+    valor: acc.valor + (p.totais?.valor || 0),
+    qtde: acc.qtde + (p.totais?.qtde || 0),
+    peso: acc.peso + (p.totais?.qtde || 0) * (p.peso_un || 0),
+  }), { valor: 0, qtde: 0, peso: 0 });
+
     <>
 
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import iconHadron from '@/assets/icon_hadronweb.png';
+import logoHadronGo from '@/assets/logo_hadron_go.png';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -74,7 +74,7 @@ const Login = () => {
       {/* Left side - Logo */}
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center relative">
         <div className="flex items-center gap-4">
-          <img src={iconHadron} alt="Hádron" className="w-20 h-20 object-contain" />
+          <img src={logoHadronGo} alt="Hádron GO" className="h-14 object-contain" />
         </div>
         <div
           className="absolute right-0 top-1/4 bottom-1/4 w-px"
@@ -87,7 +87,7 @@ const Login = () => {
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center justify-center gap-3 mb-8">
-            <img src={iconHadron} alt="Hádron" className="w-14 h-14 object-contain" />
+            <img src={logoHadronGo} alt="Hádron GO" className="h-10 object-contain" />
           </div>
 
           <div className="text-center space-y-2">

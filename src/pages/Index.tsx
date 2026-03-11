@@ -10,27 +10,24 @@ import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 
 interface DashboardAPIResponse {
-  cards: {
-    enviados: number;
-    aprovados: number;
-    faturados: number;
-    cancelados: number;
-    positivados: number;
+  dashboard: {
+    sent: number;
+    approved: number;
+    invoiced: number;
+    canceled: number;
   };
-  ultimos_pedidos: Array<{
-    orc_codorc: number;
-    orc_nomcli: string;
-    orc_cgccli: string;
-    orc_cidcli: string;
-    orc_estcli: string;
-    orc_status: string;
-    orc_vlrtot: number;
-    orc_peso: number;
-    orc_dta: string;
-    orc_coderp?: string;
+  orders: Array<{
+    orc_codorc_web: number;
+    orc_codorc_had: number;
+    CLIENTE: string;
+    orc_documento: string;
+    LOCALIZACAO: string;
+    orc_status: number | string;
+    orc_val_tot: number;
+    DATA_PEDIDO: string;
     [key: string]: unknown;
   }>;
-  ultimos_clientes: Array<{
+  ultimos_clientes?: Array<{
     cli_codcli: number;
     cli_nomcli: string;
     cli_cidcli: string;
@@ -38,14 +35,17 @@ interface DashboardAPIResponse {
     cli_dta_cad: string;
     [key: string]: unknown;
   }>;
-  representantes: Array<{
-    rep_codrep: number;
-    rep_nomrep: string;
-  }>;
-  evolucao_vendas: unknown[];
+  [key: string]: unknown;
 }
 
 function mapStatus(status: unknown): 'aprovado' | 'confirmado' | 'pendente' | 'cancelado' {
+  const val = typeof status === 'number' ? status : Number(status);
+  if (!isNaN(val)) {
+    if (val === 30) return 'aprovado';
+    if (val === 40 || val === 50) return 'confirmado';
+    if (val === 90) return 'cancelado';
+    if (val === 10 || val === 20) return 'pendente';
+  }
   const s = String(status || '').toLowerCase();
   if (s.includes('aprov') || s === 'ap') return 'aprovado';
   if (s.includes('confirm') || s.includes('fatur') || s === 'fa' || s === 'pc') return 'confirmado';
@@ -109,19 +109,19 @@ const Index = () => {
   }, []);
 
   const orders = useMemo(() => {
-    const rawOrders = ordersData?.ultimos_pedidos || ordersData?.data || ordersData?.orders || [];
+    const rawOrders = ordersData?.orders || ordersData?.ultimos_pedidos || ordersData?.data || [];
     return rawOrders.map((p: any) => ({
-      id: String(p.orc_codorc || p.id),
-      codigo: String(p.orc_codorc || p.codigo),
-      cliente_nome: p.orc_nomcli || p.cliente_nome || '',
-      cliente_cnpj: p.orc_cgccli || p.cliente_cnpj || '',
-      localizacao: p.orc_cidcli
+      id: String(p.orc_codorc_web || p.orc_codorc || p.id),
+      codigo: String(p.orc_codorc_web || p.orc_codorc || p.codigo),
+      cliente_nome: p.CLIENTE || p.orc_nomcli || p.cliente_nome || '',
+      cliente_cnpj: p.orc_documento || p.orc_cgccli || p.cliente_cnpj || '',
+      localizacao: p.LOCALIZACAO || (p.orc_cidcli
         ? [p.orc_cidcli, p.orc_estcli].filter(Boolean).join(' - ')
-        : (p.localizacao || ''),
+        : (p.localizacao || '')),
       status: mapStatus(p.orc_status || p.status || ''),
-      valor: p.orc_vlrtot || p.valor || 0,
-      data_pedido: p.orc_dta || p.data_pedido || '',
-      erp_code: p.orc_coderp ? `ERP:${p.orc_coderp}` : (p.erp_code || undefined),
+      valor: p.orc_val_tot || p.orc_vlrtot || p.valor || 0,
+      data_pedido: p.DATA_PEDIDO || p.orc_dta || p.data_pedido || '',
+      erp_code: p.orc_codorc_had ? `ERP:${p.orc_codorc_had}` : (p.orc_coderp ? `ERP:${p.orc_coderp}` : (p.erp_code || undefined)),
     }));
   }, [ordersData]);
 
@@ -149,11 +149,11 @@ const Index = () => {
         ) : data ? (
           <>
             <KpiCards
-              enviados={data.cards.enviados}
-              aprovados={data.cards.aprovados}
-              faturados={data.cards.faturados}
-              cancelados={data.cards.cancelados}
-              clientesPositivados={data.cards.positivados}
+              enviados={data.dashboard?.sent ?? 0}
+              aprovados={data.dashboard?.approved ?? 0}
+              faturados={data.dashboard?.invoiced ?? 0}
+              cancelados={data.dashboard?.canceled ?? 0}
+              clientesPositivados={0}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-4 sm:gap-5 items-start">

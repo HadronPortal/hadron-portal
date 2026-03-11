@@ -58,19 +58,21 @@ const Analitico = () => {
   const { representantes } = useRepresentantes();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
     startDate: DEFAULT_START_DATE,
     endDate: DEFAULT_END_DATE,
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
+  const [filterNonce, setFilterNonce] = useState(0);
 
-  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
+  const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam],
+    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
     endpoint: 'fetch-analytics',
     params: {
       page: String(page),
@@ -91,17 +93,21 @@ const Analitico = () => {
     // State is set via handleFilter which is called automatically
   };
   const handleSearch = (query: string) => setSearchQuery(query);
-  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
+  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
+    setSelectedRepRaw(filters.repCodesRaw);
     setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
     setSearchQuery(filters.search);
     setPage(1);
+    setFilterNonce((n) => n + 1);
   };
   const handleClear = () => {
     setSelectedRep([]);
+    setSelectedRepRaw([]);
     setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
     setSearchQuery('');
     setPage(1);
+    setFilterNonce((n) => n + 1);
   };
 
   const tabFiltered = activeTab === 'todos'

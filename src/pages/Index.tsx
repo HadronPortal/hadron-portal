@@ -178,6 +178,8 @@ const Index = () => {
             </Button>
           </div>
         </div>
+        {/* Extra height so gradient extends behind KPI cards */}
+        <div className="h-20 sm:h-24" />
       </div>
 
       {/* Collapsible filter bar */}
@@ -185,7 +187,7 @@ const Index = () => {
         <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
       )}
 
-      <main className="flex-1 px-4 sm:px-8 py-6 space-y-6">
+      <main className="flex-1 px-4 sm:px-8 pb-6 space-y-6 -mt-20 sm:-mt-24 relative z-10">
         {(isLoading || isFetching) ? (
           <Spinner />
         ) : error ? (

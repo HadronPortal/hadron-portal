@@ -100,8 +100,10 @@ const Perfil = () => {
   };
 
   const handleSaveProfile = () => {
-    const updatedUser = {
-      ...userData,
+    const normalizedCurrentEmail = String(userEmail || '').trim().toLowerCase();
+    const normalizedTargetEmail = String(formEmail || userEmail || '').trim().toLowerCase();
+
+    const profileOverrides = {
       nome: `${formFirstName} ${formLastName}`.trim(),
       empresa: formCompany,
       telefone: formPhone,
@@ -111,10 +113,33 @@ const Perfil = () => {
       comm_email: commEmail,
       comm_phone: commPhone,
     };
+
+    const updatedUser = {
+      ...userData,
+      ...profileOverrides,
+    };
+
     localStorage.setItem('hadron_user', JSON.stringify(updatedUser));
+
+    try {
+      const rawOverrides = localStorage.getItem(PROFILE_OVERRIDES_KEY);
+      const overridesByEmail = rawOverrides ? JSON.parse(rawOverrides) : {};
+
+      if (normalizedCurrentEmail && normalizedCurrentEmail !== normalizedTargetEmail) {
+        delete overridesByEmail[normalizedCurrentEmail];
+      }
+
+      if (normalizedTargetEmail) {
+        overridesByEmail[normalizedTargetEmail] = profileOverrides;
+      }
+
+      localStorage.setItem(PROFILE_OVERRIDES_KEY, JSON.stringify(overridesByEmail));
+    } catch {
+      // ignore localStorage parse issues
+    }
+
     toast({ title: 'Perfil salvo!', description: 'Suas alterações foram salvas com sucesso.' });
     setActiveTab('Visão Geral');
-    // Force re-render with updated data
     window.dispatchEvent(new Event('storage'));
   };
 

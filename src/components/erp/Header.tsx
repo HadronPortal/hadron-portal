@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useRepresentantes } from '@/hooks/use-representantes';
+
 import logoImg from '@/assets/logo_hadron_go.png';
 import avatarImg from '@/assets/avatar-user.png';
 
@@ -19,7 +19,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { representantes } = useRepresentantes();
+  
 
   // Close menu on outside click
   useEffect(() => {
@@ -47,13 +47,8 @@ const Header = () => {
     return null;
   })();
   
-  // Try multiple possible field names for the rep code
-  const userRepCode = userData?.aus_codrep ?? userData?.rep_codrep ?? userData?.codrep ?? userData?.cod_rep ?? userData?.user?.aus_codrep;
-  const repMatch = representantes.find(r => r.rep_codrep === Number(userRepCode));
-  
-  // For the name: prefer rep name from API, then user fields
-  const userName = repMatch?.rep_nomrep || userData?.aus_nome || userData?.name || userData?.user?.aus_nome || 'Usuário';
-  const userEmail = userData?.aus_email || userData?.email || '';
+  const userName = userData?.nome || userData?.aus_nome || userData?.name || 'Usuário';
+  const userEmail = userData?.email || userData?.aus_email || '';
   const userCompany = userData?.aus_empresa || userData?.company || '';
 
   return (

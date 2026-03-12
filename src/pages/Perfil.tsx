@@ -115,7 +115,7 @@ const Perfil = () => {
             {/* Avatar */}
             <div className="relative flex-shrink-0">
               <div className="h-[100px] w-[100px] sm:h-[120px] sm:w-[120px] rounded-xl overflow-hidden">
-                <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+                <img src={currentAvatar} alt={userName} className="h-full w-full object-cover" />
               </div>
               <div className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-[hsl(var(--erp-green))] ring-2 ring-card" />
             </div>

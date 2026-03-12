@@ -100,14 +100,43 @@ const Index = () => {
   const totalInvoiced = ordersData?.dashboard?.invoiced ?? 0;
   const totalEarnings = totalSent + totalApproved + totalInvoiced;
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const navItems = [
+    { label: 'Home', path: '/' },
+    { label: 'Clientes', path: '/clientes' },
+    { label: 'Analítico', path: '/analitico' },
+    { label: 'Pedidos', path: '/pedidos' },
+    { label: 'Catálogo', path: '/catalogo' },
+  ];
+
   return (
     <>
       {/* Hero banner */}
       <div className="relative overflow-hidden bg-[hsl(220,60%,15%)]">
         <div className="absolute inset-x-0 top-0 h-[70px] bg-black" />
         <div className="h-[70px]" />
-        <div className="relative px-4 sm:px-8 py-6 sm:py-8">
+        <div className="relative px-4 sm:px-8 py-6 sm:py-8 flex items-center justify-between">
           <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map(({ label, path }) => {
+              const isActive = location.pathname === path;
+              return (
+                <button
+                  key={label}
+                  onClick={() => navigate(path)}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary-foreground/15 text-primary-foreground'
+                      : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
         </div>
         <div className="h-20 sm:h-24" />
       </div>

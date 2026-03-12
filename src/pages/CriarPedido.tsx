@@ -1,14 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Spinner from '@/components/ui/spinner';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
-import { Plus, Minus, Search, ArrowLeft, X, Trash2, CheckCircle2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Plus, Minus, Search, X, Trash2, CheckCircle2, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 /* ─── types ─── */
@@ -55,7 +52,6 @@ const CriarPedido = () => {
   const [catalogo, setCatalogo] = useState<CatalogoItem[]>([]);
   const [produtoSearch, setProdutoSearch] = useState('');
   const [loadingCatalogo, setLoadingCatalogo] = useState(false);
-  const [showProdutoDropdown, setShowProdutoDropdown] = useState(false);
 
   /* carrinho */
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -101,13 +97,14 @@ const CriarPedido = () => {
   useEffect(() => { fetchCatalogo(); }, [fetchCatalogo]);
 
   /* ─── cart ops ─── */
-  const addToCart = (item: CatalogoItem) => {
-    setCart(prev => {
-      const existing = prev.find(c => c.pro_codpro === item.pro_codpro);
-      if (existing) return prev.map(c => c.pro_codpro === item.pro_codpro ? { ...c, quantidade: c.quantidade + 1 } : c);
-      return [...prev, { ...item, quantidade: 1, preco_unitario: 0 }];
-    });
-    toast({ title: 'Produto adicionado', description: item.pro_despro });
+  const toggleProduct = (item: CatalogoItem) => {
+    const existing = cart.find(c => c.pro_codpro === item.pro_codpro);
+    if (existing) {
+      setCart(prev => prev.filter(c => c.pro_codpro !== item.pro_codpro));
+    } else {
+      setCart(prev => [...prev, { ...item, quantidade: 1, preco_unitario: 0 }]);
+      toast({ title: 'Produto adicionado', description: item.pro_despro });
+    }
   };
 
   const updateQty = (codpro: number, delta: number) => {
@@ -139,7 +136,6 @@ const CriarPedido = () => {
     setEnviando(true);
     try {
       const num = Math.floor(100000 + Math.random() * 900000).toString();
-      // Apenas simula o envio sem salvar no banco
       await new Promise(resolve => setTimeout(resolve, 500));
       setPedidoNumero(num);
       setStep(2);
@@ -155,221 +151,256 @@ const CriarPedido = () => {
   /* ─── render ─── */
   return (
     <>
-      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-6 max-w-6xl mx-auto w-full">
-        <div className="flex items-center justify-between max-w-3xl mx-auto w-full gap-2">
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Criar Pedido</h1>
-          <span className="text-[10px] sm:text-xs text-muted-foreground truncate">Rep: {representante}</span>
+      {/* Metronic-style page header with gradient */}
+      <div className="bg-gradient-to-r from-[hsl(var(--erp-navy))] to-[hsl(var(--erp-blue))] px-4 sm:px-8 py-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-white">Criar Pedido</h1>
+        <div className="flex items-center gap-2 text-xs text-white/70 mt-1">
+          <button onClick={() => navigate('/')} className="hover:text-white transition-colors">Home</button>
+          <ChevronRight size={12} />
+          <button onClick={() => navigate('/pedidos')} className="hover:text-white transition-colors">Pedidos</button>
+          <ChevronRight size={12} />
+          <span className="text-white/90">Criar Pedido</span>
         </div>
+      </div>
 
-        {/* ═══════════════ STEP 1: Lista de Produtos ═══════════════ */}
+      <main className="flex-1 px-3 sm:px-6 lg:px-8 py-5 sm:py-6">
+
+        {/* ═══════════════ STEP 0: Two-column layout ═══════════════ */}
         {step === 0 && (
-          <div className="bg-card rounded-lg border border-border shadow-sm max-w-3xl mx-auto">
-            {/* Header with search */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-3 sm:px-5 py-3 sm:py-4 border-b border-border gap-2">
-              <h2 className="text-base sm:text-lg font-bold text-foreground">Itens do Pedido</h2>
-              <div className="relative w-full sm:w-56">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input value={produtoSearch}
-                  onChange={e => { setProdutoSearch(e.target.value); setShowProdutoDropdown(true); }}
-                  onDoubleClick={() => setShowProdutoDropdown(true)}
-                  onBlur={() => setTimeout(() => setShowProdutoDropdown(false), 200)}
-                  placeholder="Buscar produtos" className="pl-9 h-9 text-sm" />
-                {showProdutoDropdown && (
-                  <div className="absolute z-50 top-full mt-1 w-80 right-0 bg-card border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                    {loadingCatalogo ? (
-                      <div className="p-3 text-center text-xs text-muted-foreground">Buscando...</div>
-                    ) : filteredCatalogo.length === 0 ? (
-                      <div className="p-3 text-center text-xs text-muted-foreground">Nenhum produto encontrado</div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-7xl mx-auto">
+
+            {/* LEFT CARD: Order Details */}
+            <div className="lg:col-span-4 space-y-5">
+              <div className="bg-card rounded-xl border border-border shadow-sm">
+                <div className="px-5 py-4 border-b border-border">
+                  <h2 className="text-base font-bold text-foreground">Detalhes do Pedido</h2>
+                </div>
+                <div className="p-5 space-y-5">
+                  {/* Representante */}
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Representante</label>
+                    <div className="text-sm text-foreground bg-muted rounded-lg px-3 py-2.5">{representante}</div>
+                  </div>
+
+                  {/* Cliente */}
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">
+                      Cliente <span className="text-destructive">*</span>
+                    </label>
+                    {selectedCliente ? (
+                      <div className="flex items-center gap-2 bg-muted rounded-lg px-3 py-2.5 text-sm">
+                        <span className="font-medium flex-1 truncate">{selectedCliente.ter_codter} — {selectedCliente.ter_nomter}</span>
+                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0 shrink-0" onClick={() => { setSelectedCliente(null); setClienteSearch(''); }}>
+                          <X size={12} />
+                        </Button>
+                      </div>
                     ) : (
-                      filteredCatalogo.slice(0, 20).map(item => {
-                        const inCart = cart.some(c => c.pro_codpro === item.pro_codpro);
-                        return (
-                          <button
-                            key={item.pro_codpro}
-                            className="w-full text-left px-3 py-2.5 hover:bg-accent/30 transition-colors border-b border-border last:border-0 flex items-center gap-3"
-                            onClick={() => { addToCart(item); setProdutoSearch(''); setShowProdutoDropdown(false); }}
-                          >
-                            <div className="w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
+                      <div className="relative">
+                        <Input value={clienteSearch}
+                          onChange={e => { setClienteSearch(e.target.value); setShowClienteDropdown(true); }}
+                          onDoubleClick={() => { fetchClientes(''); setShowClienteDropdown(true); }}
+                          onFocus={() => { if (clienteSearch.length >= 2) setShowClienteDropdown(true); }}
+                          onBlur={() => setTimeout(() => setShowClienteDropdown(false), 200)}
+                          placeholder="Buscar cliente..." className="h-10 text-sm rounded-lg" />
+                        {showClienteDropdown && (
+                          <div className="absolute z-50 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                            {loadingClientes ? (
+                              <div className="p-3 text-center text-xs text-muted-foreground">Buscando...</div>
+                            ) : clientes.length === 0 ? (
+                              <div className="p-3 text-center text-xs text-muted-foreground">Nenhum encontrado</div>
+                            ) : clientes.map(c => (
+                              <button key={c.ter_codter} className="w-full text-left px-3 py-2.5 hover:bg-accent/50 text-sm border-b border-border last:border-0 transition-colors"
+                                onClick={() => { setSelectedCliente(c); setShowClienteDropdown(false); setClienteSearch(''); }}>
+                                <div className="font-medium">{c.ter_codter} — {c.ter_nomter}</div>
+                                <div className="text-xs text-muted-foreground">{c.ter_documento || ''} {c.TEN_CIDLGR ? `· ${c.TEN_CIDLGR}` : ''}</div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <p className="text-[11px] text-muted-foreground mt-1.5">Selecione o cliente do pedido.</p>
+                  </div>
+
+                  {/* Desconto */}
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Desconto</label>
+                    <Input type="number" value={desconto || ''} onChange={e => setDesconto(parseFloat(e.target.value) || 0)}
+                      className="h-10 text-sm rounded-lg" placeholder="0,00" step="0.01" />
+                    <p className="text-[11px] text-muted-foreground mt-1.5">Insira o valor do desconto, se houver.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Summary card */}
+              {cart.length > 0 && (
+                <div className="bg-card rounded-xl border border-border shadow-sm p-5 space-y-3">
+                  <h3 className="font-bold text-sm text-foreground">Resumo</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Produtos ({cart.length}):</span>
+                      <span>{fmt(subtotal)}</span>
+                    </div>
+                    {desconto > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Desconto:</span>
+                        <span className="text-destructive">- {fmt(desconto)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Frete:</span>
+                      <span className="text-[hsl(var(--erp-green))] font-semibold">{frete > 0 ? fmt(frete) : 'Grátis'}</span>
+                    </div>
+                  </div>
+                  <div className="border-t border-border pt-3 flex justify-between font-bold text-base">
+                    <span>Total:</span>
+                    <span className="text-[hsl(var(--erp-green))]">{fmt(total)}</span>
+                  </div>
+                  <Button
+                    className="w-full mt-2 font-bold bg-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/90 text-white rounded-lg h-11"
+                    disabled={!selectedCliente}
+                    onClick={() => setStep(1)}
+                  >
+                    Avançar para Resumo
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT CARD: Select Products */}
+            <div className="lg:col-span-8">
+              <div className="bg-card rounded-xl border border-border shadow-sm">
+                <div className="px-5 py-4 border-b border-border">
+                  <h2 className="text-base font-bold text-foreground">Selecionar Produtos</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">Selecione os produtos para este pedido clicando na checkbox.</p>
+                </div>
+
+                {/* Search + Total Cost */}
+                <div className="px-5 py-3 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="text-sm font-bold text-foreground">
+                    Custo Total: <span className="text-[hsl(var(--erp-green))]">{fmt(subtotal)}</span>
+                  </div>
+                  <div className="relative w-full sm:w-64">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <Input value={produtoSearch}
+                      onChange={e => setProdutoSearch(e.target.value)}
+                      placeholder="Buscar produtos..." className="pl-9 h-9 text-sm rounded-lg" />
+                  </div>
+                </div>
+
+                {/* Products list */}
+                <div className="overflow-y-auto max-h-[60vh]">
+                  {/* Table header */}
+                  <div className="grid grid-cols-12 gap-2 px-5 py-2.5 border-b border-border bg-muted/30 text-xs font-bold text-muted-foreground uppercase">
+                    <div className="col-span-1"></div>
+                    <div className="col-span-7">Produto</div>
+                    <div className="col-span-2 text-center">Preço Un.</div>
+                    <div className="col-span-2 text-right">Saldo</div>
+                  </div>
+
+                  {loadingCatalogo ? (
+                    <div className="py-12 flex justify-center"><Spinner /></div>
+                  ) : filteredCatalogo.length === 0 ? (
+                    <div className="py-12 text-center text-sm text-muted-foreground">Nenhum produto encontrado</div>
+                  ) : (
+                    filteredCatalogo.map(item => {
+                      const inCart = cart.find(c => c.pro_codpro === item.pro_codpro);
+                      const saldo = parseInt(item.SALDOS) || 0;
+                      const lowStock = saldo > 0 && saldo <= 10;
+                      return (
+                        <div
+                          key={item.pro_codpro}
+                          className={`grid grid-cols-12 gap-2 px-5 py-3 border-b border-border items-center hover:bg-accent/30 transition-colors cursor-pointer ${inCart ? 'bg-accent/20' : ''}`}
+                          onClick={() => toggleProduct(item)}
+                        >
+                          <div className="col-span-1 flex items-center justify-center">
+                            <Checkbox checked={!!inCart} onCheckedChange={() => toggleProduct(item)} />
+                          </div>
+                          <div className="col-span-7 flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
                               {item.pro_foto ? (
                                 <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
                                   onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                               ) : <div className="w-full h-full" />}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium truncate">{item.pro_despro}</div>
-                              <div className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</div>
+                            <div className="min-w-0">
+                              <div className="text-sm font-medium text-foreground truncate">{item.pro_despro}</div>
+                              <div className="text-xs text-muted-foreground">SKU: {item.pro_codpro}</div>
                             </div>
-                            {inCart && <span className="text-xs text-erp-green font-medium">✓ No carrinho</span>}
-                          </button>
-                        );
-                      })
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Cliente row */}
-            <div className="px-5 py-3 border-b border-border">
-              <div className="max-w-sm relative">
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Cliente *</label>
-                {selectedCliente ? (
-                  <div className="flex items-center gap-2 bg-muted rounded-md px-3 py-1.5 text-sm">
-                    <span className="font-medium">{selectedCliente.ter_codter} — {selectedCliente.ter_nomter}</span>
-                    <Button variant="ghost" size="sm" className="h-5 w-5 p-0 ml-auto" onClick={() => { setSelectedCliente(null); setClienteSearch(''); }}>
-                      <X size={12} />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <Input value={clienteSearch}
-                      onChange={e => { setClienteSearch(e.target.value); setShowClienteDropdown(true); }}
-                      onDoubleClick={() => { fetchClientes(''); setShowClienteDropdown(true); }}
-                      onFocus={() => { if (clienteSearch.length >= 2) setShowClienteDropdown(true); }}
-                      onBlur={() => setTimeout(() => setShowClienteDropdown(false), 200)}
-                      placeholder="Buscar cliente..." className="h-8 text-sm" />
-                    {showClienteDropdown && (
-                      <div className="absolute z-50 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                        {loadingClientes ? (
-                          <div className="p-2 text-center text-xs text-muted-foreground">Buscando...</div>
-                        ) : clientes.length === 0 ? (
-                          <div className="p-2 text-center text-xs text-muted-foreground">Nenhum encontrado</div>
-                        ) : clientes.map(c => (
-                          <button key={c.ter_codter} className="w-full text-left px-3 py-2 hover:bg-accent/30 text-sm border-b border-border last:border-0"
-                            onClick={() => { setSelectedCliente(c); setShowClienteDropdown(false); setClienteSearch(''); }}>
-                            <div className="font-medium">{c.ter_codter} — {c.ter_nomter}</div>
-                            <div className="text-xs text-muted-foreground">{c.ter_documento || ''} {c.TEN_CIDLGR ? `· ${c.TEN_CIDLGR}` : ''}</div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Products table (cart items) */}
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs font-bold text-foreground">Produto</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">SKU</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">Preço</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground w-28">Qtd</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground text-center">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {cart.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground py-4 text-sm">
-                        —
-                      </TableCell>
-                    </TableRow>
-                  ) : cart.map(item => (
-                    <TableRow key={`cart-${item.pro_codpro}`}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded bg-muted flex-shrink-0 overflow-hidden">
-                            {item.pro_foto ? (
-                              <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
-                                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                            ) : <div className="w-full h-full" />}
                           </div>
-                          <span className="text-sm font-medium">{item.pro_despro}</span>
+                          <div className="col-span-2 text-center">
+                            {inCart ? (
+                              <Input
+                                type="number"
+                                value={inCart.preco_unitario || ''}
+                                onChange={e => { e.stopPropagation(); updatePrice(item.pro_codpro, parseFloat(e.target.value) || 0); }}
+                                onClick={e => e.stopPropagation()}
+                                className="w-20 h-7 text-xs mx-auto rounded"
+                                placeholder="0,00"
+                                step="0.01"
+                              />
+                            ) : (
+                              <span className="text-sm text-muted-foreground">—</span>
+                            )}
+                          </div>
+                          <div className="col-span-2 text-right">
+                            {lowStock ? (
+                              <div className="flex items-center justify-end gap-1.5">
+                                <span className="text-[10px] font-semibold bg-destructive/10 text-destructive px-1.5 py-0.5 rounded">Low stock</span>
+                                <span className="text-sm text-destructive font-semibold">{saldo}</span>
+                              </div>
+                            ) : (
+                              <span className="text-sm text-foreground">{saldo || '—'}</span>
+                            )}
+                          </div>
                         </div>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</TableCell>
-                      <TableCell className="text-sm">
-                        <Input type="number" value={item.preco_unitario || ''} onChange={e => updatePrice(item.pro_codpro, parseFloat(e.target.value) || 0)}
-                          className="w-20 h-7 text-xs" placeholder="0,00" step="0.01" />
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 border border-border rounded-md w-fit">
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, -1)}>
-                            <Minus size={12} />
-                          </Button>
-                          <span className="w-6 text-center text-sm">{item.quantidade}</span>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, 1)}>
-                            <Plus size={12} />
-                          </Button>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive" onClick={() => removeFromCart(item.pro_codpro)}>
-                          <Trash2 size={14} />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            <div className="px-5 py-3 border-t border-border flex items-center justify-end">
-              {cart.length > 0 && (
-                <Button className="bg-erp-navy hover:bg-erp-navy/90 gap-2" disabled={!selectedCliente} onClick={() => setStep(1)}>
-                  Avançar para Resumo
-                </Button>
-              )}
+                      );
+                    })
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* ═══════════════ STEP 2: Resumo do Pedido ═══════════════ */}
+        {/* ═══════════════ STEP 1: Resumo do Pedido ═══════════════ */}
         {step === 1 && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {/* Left: items */}
-            <div className="lg:col-span-2 bg-card rounded-lg border border-border shadow-sm">
+            <div className="lg:col-span-2 bg-card rounded-xl border border-border shadow-sm">
               <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-                <h2 className="text-lg font-bold text-foreground">Resumo do Pedido</h2>
+                <h2 className="text-base font-bold text-foreground">Itens do Pedido</h2>
+                <span className="text-xs text-muted-foreground">{cart.length} itens</span>
               </div>
 
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs font-bold text-foreground">Produto</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground text-center">Qtd</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground text-right">Preço</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {cart.map(item => (
-                      <TableRow key={item.pro_codpro}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded bg-muted flex-shrink-0 overflow-hidden">
-                              {item.pro_foto ? (
-                                <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
-                                  onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                              ) : <div className="w-full h-full" />}
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium">{item.pro_despro}</div>
-                              <div className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center justify-center gap-1 border border-border rounded-md w-fit mx-auto">
-                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, -1)}>
-                              <Minus size={12} />
-                            </Button>
-                            <span className="w-6 text-center text-sm">{item.quantidade}</span>
-                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, 1)}>
-                              <Plus size={12} />
-                            </Button>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-right font-medium">
-                          {fmt(item.quantidade * item.preco_unitario)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <div className="divide-y divide-border">
+                {cart.map(item => (
+                  <div key={item.pro_codpro} className="flex items-center gap-4 px-5 py-3">
+                    <div className="w-12 h-12 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
+                      {item.pro_foto ? (
+                        <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
+                          onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      ) : <div className="w-full h-full" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">{item.pro_despro}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{item.pro_codpro}</div>
+                    </div>
+                    <div className="flex items-center gap-1 border border-border rounded-lg">
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, -1)}>
+                        <Minus size={12} />
+                      </Button>
+                      <span className="w-6 text-center text-sm">{item.quantidade}</span>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => updateQty(item.pro_codpro, 1)}>
+                        <Plus size={12} />
+                      </Button>
+                    </div>
+                    <div className="text-sm font-medium w-24 text-right">{fmt(item.quantidade * item.preco_unitario)}</div>
+                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive shrink-0" onClick={() => removeFromCart(item.pro_codpro)}>
+                      <Trash2 size={14} />
+                    </Button>
+                  </div>
+                ))}
               </div>
 
               {/* Totals */}
@@ -378,29 +409,31 @@ const CriarPedido = () => {
                   <span className="text-muted-foreground">Subtotal:</span>
                   <span className="font-medium">{fmt(subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Desconto:</span>
-                  <span className="text-destructive font-medium">- {fmt(desconto)}</span>
-                </div>
+                {desconto > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Desconto:</span>
+                    <span className="text-destructive font-medium">- {fmt(desconto)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Frete:</span>
-                  <span className="font-medium">{fmt(frete)}</span>
+                  <span className="font-medium">{frete > 0 ? fmt(frete) : 'Grátis'}</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span>{fmt(total)}</span>
+                  <span className="text-[hsl(var(--erp-green))]">{fmt(total)}</span>
                 </div>
               </div>
             </div>
 
             {/* Right: Summary sidebar */}
             <div className="lg:col-span-1 space-y-4">
-              <div className="bg-card rounded-lg border border-border shadow-sm p-5 space-y-4">
-                <h3 className="font-bold text-base text-foreground">Resumo do pedido</h3>
+              <div className="bg-card rounded-xl border border-border shadow-sm p-5 space-y-4">
+                <h3 className="font-bold text-base text-foreground">Resumo do Pedido</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Valor dos produtos ({cart.length}):</span>
-                    <span className="text-foreground">{fmt(subtotal)}</span>
+                    <span>{fmt(subtotal)}</span>
                   </div>
                   {desconto > 0 && (
                     <div className="flex justify-between">
@@ -410,34 +443,35 @@ const CriarPedido = () => {
                   )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Frete:</span>
-                    <span className="text-erp-green font-bold">{frete > 0 ? fmt(frete) : 'Grátis'}</span>
-                  </div>
-                  <div className="mt-2">
-                    <label className="text-xs text-muted-foreground">Tem desconto?</label>
-                    <Input type="number" value={desconto || ''} onChange={e => setDesconto(parseFloat(e.target.value) || 0)}
-                      className="h-8 mt-1 text-sm"
-                      placeholder="0,00" step="0.01" />
+                    <span className="text-[hsl(var(--erp-green))] font-bold">{frete > 0 ? fmt(frete) : 'Grátis'}</span>
                   </div>
                 </div>
-                <div className="border-t border-border pt-3">
-                  <div className="flex justify-between font-bold text-lg text-foreground">
-                    <span>Total:</span>
-                    <span className="text-erp-green">{fmt(total)}</span>
-                  </div>
+                <div className="border-t border-border pt-3 flex justify-between font-bold text-lg">
+                  <span>Total:</span>
+                  <span className="text-[hsl(var(--erp-green))]">{fmt(total)}</span>
                 </div>
               </div>
 
+              {selectedCliente && (
+                <div className="bg-card rounded-xl border border-border shadow-sm p-5 space-y-2">
+                  <h3 className="font-bold text-sm text-foreground">Cliente</h3>
+                  <div className="text-sm">{selectedCliente.ter_codter} — {selectedCliente.ter_nomter}</div>
+                  {selectedCliente.ter_documento && <div className="text-xs text-muted-foreground">{selectedCliente.ter_documento}</div>}
+                  {selectedCliente.TEN_CIDLGR && <div className="text-xs text-muted-foreground">{selectedCliente.TEN_CIDLGR} {selectedCliente.TEN_UF_LGR ? `- ${selectedCliente.TEN_UF_LGR}` : ''}</div>}
+                </div>
+              )}
+
               <div className="space-y-3">
                 <Button
-                  className="w-full font-bold rounded-md py-3 text-base bg-erp-navy hover:bg-erp-navy/90 text-primary-foreground"
+                  className="w-full font-bold rounded-lg h-11 text-base bg-[hsl(var(--erp-amber))] hover:bg-[hsl(var(--erp-amber))]/90 text-foreground"
                   onClick={handleEnviarPedido}
                   disabled={enviando}
                 >
-                  {enviando ? 'Enviando...' : 'CONTINUAR'}
+                  {enviando ? 'Enviando...' : 'Enviar Pedido'}
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full font-bold rounded-md py-3 text-base border-border text-muted-foreground hover:bg-muted"
+                  className="w-full font-bold rounded-lg h-11 text-base"
                   onClick={() => setStep(0)}
                 >
                   VOLTAR
@@ -447,12 +481,12 @@ const CriarPedido = () => {
           </div>
         )}
 
-        {/* ═══════════════ STEP 3: Confirmação ═══════════════ */}
+        {/* ═══════════════ STEP 2: Confirmação ═══════════════ */}
         {step === 2 && (
           <div className="flex items-center justify-center py-12">
-            <div className="bg-card rounded-lg border border-border shadow-sm p-8 text-center max-w-md w-full space-y-5">
+            <div className="bg-card rounded-xl border border-border shadow-sm p-8 text-center max-w-md w-full space-y-5">
               <div className="flex justify-center">
-                <CheckCircle2 size={64} className="text-erp-green" />
+                <CheckCircle2 size={64} className="text-[hsl(var(--erp-green))]" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-foreground">Pedido Enviado!</h2>
@@ -476,10 +510,10 @@ const CriarPedido = () => {
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline" className="flex-1 border-erp-navy text-erp-navy hover:bg-erp-navy/5" onClick={() => navigate('/pedidos')}>
+                <Button variant="outline" className="flex-1 border-[hsl(var(--erp-navy))] text-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/5 rounded-lg" onClick={() => navigate('/pedidos')}>
                   Ver pedidos
                 </Button>
-                <Button className="flex-1 bg-erp-navy hover:bg-erp-navy/90" onClick={() => { setStep(0); setCart([]); setSelectedCliente(null); setDesconto(0); setFrete(0); }}>
+                <Button className="flex-1 bg-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/90 rounded-lg" onClick={() => { setStep(0); setCart([]); setSelectedCliente(null); setDesconto(0); setFrete(0); }}>
                   Nova compra
                 </Button>
               </div>

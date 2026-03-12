@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Home, Users, Gauge, ClipboardList, LayoutGrid, Box, ShoppingBag, LogOut, User, DollarSign, Menu, X } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import logoImg from '@/assets/icon_hadronweb.png';
+import logoImg from '@/assets/logo_hadron_go.png';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },

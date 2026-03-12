@@ -53,7 +53,7 @@ const Header = () => {
         {/* Left: Logo + Nav */}
         <div className="flex items-center gap-8 min-w-0">
           <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={() => navigate('/')}>
-            <img alt="Hádron" className="h-9 object-contain" src={logoImg} />
+            <img alt="Hádron" className="h-14 object-contain" src={logoImg} />
           </div>
 
           <nav className="hidden lg:flex items-center gap-1">

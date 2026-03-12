@@ -170,7 +170,7 @@ const CriarPedido = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-7xl mx-auto">
 
             {/* LEFT CARD: Order Details — Metronic style */}
-            <div className="lg:col-span-4 space-y-5">
+            <div className="lg:col-span-3 space-y-5">
               <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden border-l-4 border-l-[hsl(var(--erp-blue))]">
                 <div className="p-6 pb-0">
                   <h2 className="text-lg font-bold text-foreground">Detalhes do Pedido</h2>
@@ -188,7 +188,7 @@ const CriarPedido = () => {
                       Cliente <span className="text-destructive">*</span>
                     </label>
                     {selectedCliente ? (
-                      <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2.5 text-sm bg-background">
+                      <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2.5 text-sm bg-transparent">
                         <span className="font-medium flex-1 truncate">{selectedCliente.ter_codter} — {selectedCliente.ter_nomter}</span>
                         <Button variant="ghost" size="sm" className="h-5 w-5 p-0 shrink-0" onClick={() => { setSelectedCliente(null); setClienteSearch(''); }}>
                           <X size={12} />
@@ -227,7 +227,7 @@ const CriarPedido = () => {
                     <label className="text-sm font-medium text-foreground mb-1.5 block">
                       Representante <span className="text-destructive">*</span>
                     </label>
-                    <div className="border border-border rounded-lg px-3 py-2.5 text-sm bg-background text-foreground">{representante}</div>
+                    <div className="border border-border rounded-lg px-3 py-2.5 text-sm bg-transparent text-foreground">{representante}</div>
                     <p className="text-xs text-muted-foreground mt-1.5">Representante responsável pelo pedido.</p>
                   </div>
 
@@ -279,7 +279,7 @@ const CriarPedido = () => {
             </div>
 
             {/* RIGHT CARD: Select Products */}
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-9">
               <div className="bg-card rounded-xl border border-border shadow-sm">
                 <div className="px-5 py-4 border-b border-border">
                   <h2 className="text-base font-bold text-foreground">Selecionar Produtos</h2>

@@ -65,10 +65,10 @@ const Header = () => {
           </button>
 
           <div className="relative flex items-center gap-3" ref={menuRef}>
-            <div className="hidden sm:flex flex-col items-end text-right">
+            <div className="hidden sm:flex items-center gap-2 text-right">
               <span className="text-sm font-medium leading-tight truncate max-w-[180px]">{userName}</span>
-              <span className="text-[11px] text-primary-foreground/60 leading-tight truncate max-w-[180px] flex items-center gap-1 justify-end">
-                <Building2 size={11} />
+              <span className="text-[11px] text-primary-foreground/60 leading-tight truncate max-w-[180px] flex items-center gap-1">
+                <Building2 size={12} />
                 {userCompany}
               </span>
             </div>

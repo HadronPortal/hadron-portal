@@ -302,7 +302,7 @@ const CriarPedido = () => {
                 {/* Products list */}
                 <div className="overflow-y-auto max-h-[60vh]">
                   {/* Table header */}
-                  <div className="grid grid-cols-12 gap-2 px-5 py-2.5 border-b border-border bg-muted/30 text-xs font-bold text-muted-foreground uppercase">
+                  <div className="grid grid-cols-12 gap-2 px-5 py-2.5 border-b border-border/40 text-xs font-bold text-muted-foreground uppercase">
                     <div className="col-span-1"></div>
                     <div className="col-span-7">Produto</div>
                     <div className="col-span-2 text-center">Preço Un.</div>
@@ -321,11 +321,11 @@ const CriarPedido = () => {
                       return (
                         <div
                           key={item.pro_codpro}
-                          className={`grid grid-cols-12 gap-2 px-5 py-3 border-b border-border items-center hover:bg-accent/30 transition-colors cursor-pointer ${inCart ? 'bg-accent/20' : ''}`}
+                          className={`grid grid-cols-12 gap-2 px-5 py-4 border-b border-border/30 items-center hover:bg-accent/30 transition-colors cursor-pointer ${inCart ? 'bg-accent/20' : ''}`}
                           onClick={() => toggleProduct(item)}
                         >
                           <div className="col-span-1 flex items-center justify-center">
-                            <Checkbox checked={!!inCart} onClick={e => e.stopPropagation()} onCheckedChange={() => toggleProduct(item)} />
+                            <Checkbox checked={!!inCart} onClick={e => e.stopPropagation()} onCheckedChange={() => toggleProduct(item)} className="h-3.5 w-3.5 border-muted-foreground/40 data-[state=checked]:bg-primary/80" />
                           </div>
                           <div className="col-span-7 flex items-center gap-3">
                             <div className="w-10 h-10 rounded-lg bg-muted flex-shrink-0 overflow-hidden">

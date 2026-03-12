@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings } from 'lucide-react';
+import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import logoImg from '@/assets/logo_hadron_go.png';
@@ -49,7 +49,7 @@ const Header = () => {
   
   const userName = userData?.nome || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.email || userData?.aus_email || '';
-  const userCompany = userData?.aus_empresa || userData?.company || '';
+  const userCompany = userData?.aus_empresa || userData?.company || 'Procion Tecnologia';
 
   return (
     <header className="text-primary-foreground">
@@ -66,8 +66,11 @@ const Header = () => {
 
           <div className="relative flex items-center gap-3" ref={menuRef}>
             <div className="hidden sm:flex flex-col items-end text-right">
-              <span className="text-sm font-medium leading-tight truncate max-w-[160px]">{userName}</span>
-              <span className="text-[11px] text-primary-foreground/60 leading-tight truncate max-w-[160px]">{userCompany}</span>
+              <span className="text-sm font-medium leading-tight truncate max-w-[180px]">{userName}</span>
+              <span className="text-[11px] text-primary-foreground/60 leading-tight truncate max-w-[180px] flex items-center gap-1 justify-end">
+                <Building2 size={11} />
+                {userCompany}
+              </span>
             </div>
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}

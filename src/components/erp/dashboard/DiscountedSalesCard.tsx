@@ -1,16 +1,7 @@
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer } from 'recharts';
 
 const discountData = [
-  { date: 'Jan 04', value: 352 },
-  { date: 'Jan 07', value: 358 },
-  { date: 'Jan 10', value: 354 },
-  { date: 'Jan 13', value: 363 },
-  { date: 'Jan 16', value: 356 },
-  { date: 'Jan 19', value: 359 },
-  { date: 'Jan 22', value: 361 },
-  { date: 'Jan 25', value: 355 },
-  { date: 'Jan 28', value: 360 },
-  { date: 'Fev 01', value: 357 },
+  { v: 40 }, { v: 55 }, { v: 48 }, { v: 65 }, { v: 50 }, { v: 60 }, { v: 45 }, { v: 58 },
 ];
 
 const DiscountedSalesCard = () => {
@@ -21,7 +12,7 @@ const DiscountedSalesCard = () => {
           <h3 className="text-base font-semibold text-foreground">Vendas com Desconto</h3>
           <p className="text-xs text-muted-foreground">Todos os canais</p>
         </div>
-        <button className="p-1.5 rounded-md hover:bg-accent text-muted-foreground">
+        <button className="w-8 h-8 rounded-lg bg-accent/60 flex items-center justify-center text-muted-foreground hover:bg-accent">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
             <circle cx="3" cy="8" r="1.5" /><circle cx="8" cy="8" r="1.5" /><circle cx="13" cy="8" r="1.5" />
           </svg>
@@ -39,33 +30,14 @@ const DiscountedSalesCard = () => {
         </p>
       </div>
 
-      <div className="flex-1 min-h-[160px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={discountData}>
-            <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false} />
-            <XAxis
-              dataKey="date"
-              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-              axisLine={false}
-              tickLine={false}
-              tickFormatter={(v) => `R$${v}`}
-              width={50}
-              domain={['dataMin - 5', 'dataMax + 5']}
-            />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="hsl(var(--primary))"
-              strokeWidth={2.5}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="flex-1 flex items-end min-h-[120px]">
+        <div className="w-full h-24">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={discountData} barGap={6} barCategoryGap="20%">
+              <Bar dataKey="v" fill="hsl(var(--erp-green))" radius={[4, 4, 0, 0]} barSize={18} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

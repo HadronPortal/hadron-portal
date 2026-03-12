@@ -46,7 +46,9 @@ const Header = () => {
     } catch {}
     return null;
   })();
-  const userName = userData?.aus_nome || userData?.name || 'Usuário';
+  const userRepCode = userData?.aus_codrep || userData?.rep_codrep;
+  const repMatch = representantes.find(r => r.rep_codrep === Number(userRepCode));
+  const userName = repMatch?.rep_nomrep || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.aus_email || userData?.email || '';
   const userCompany = userData?.aus_empresa || userData?.company || '';
 

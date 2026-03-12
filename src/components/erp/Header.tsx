@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logoImg from '@/assets/logo_hadron_go.png';
+import avatarImg from '@/assets/avatar-user.png';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
@@ -85,9 +86,9 @@ const Header = () => {
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="h-10 w-10 rounded-full bg-primary/60 flex items-center justify-center text-sm font-bold text-primary-foreground ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"
+              className="h-10 w-10 rounded-full overflow-hidden ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"
             >
-              {userName.charAt(0).toUpperCase()}
+              <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
             </button>
 
             {/* Dropdown menu */}
@@ -95,8 +96,8 @@ const Header = () => {
               <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
                 {/* User info */}
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
-                  <div className="h-11 w-11 rounded-full bg-primary/20 flex items-center justify-center text-base font-bold text-primary flex-shrink-0">
-                    {userName.charAt(0).toUpperCase()}
+                  <div className="h-11 w-11 rounded-full overflow-hidden flex-shrink-0">
+                    <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-foreground truncate">{userName}</p>

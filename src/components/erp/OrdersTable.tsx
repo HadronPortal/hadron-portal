@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search } from 'lucide-react';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';

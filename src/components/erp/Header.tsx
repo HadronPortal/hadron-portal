@@ -23,16 +23,19 @@ const Header = () => {
   const companyRef = useRef<HTMLDivElement>(null);
   
 
-  // Close menu on outside click
+  // Close menus on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
       }
+      if (companyRef.current && !companyRef.current.contains(e.target as Node)) {
+        setCompanyMenuOpen(false);
+      }
     };
-    if (userMenuOpen) document.addEventListener('mousedown', handleClick);
+    if (userMenuOpen || companyMenuOpen) document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [userMenuOpen]);
+  }, [userMenuOpen, companyMenuOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem('hadron_token');

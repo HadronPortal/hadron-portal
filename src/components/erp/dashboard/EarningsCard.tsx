@@ -93,15 +93,6 @@ const EarningsCard = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Center label */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ transform: 'rotateX(12deg) translateY(-2px)' }}>
-            <div className="text-center">
-              <p className="text-[10px] text-muted-foreground leading-none">Total</p>
-              <p className="text-xs font-bold text-foreground leading-tight mt-0.5">
-                {(total / 1000).toFixed(0)}k
-              </p>
-            </div>
-          </div>
         </div>
 
         <div className="space-y-3 text-sm flex-1">

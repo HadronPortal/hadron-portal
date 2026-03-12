@@ -18,15 +18,15 @@ const Header = () => {
 
   return (
     <header className="text-primary-foreground">
-      {/* Main header - transparent, sits on top of hero */}
-      <div className="flex items-center justify-between px-4 sm:px-8 h-16">
+      {/* Main header - transparent */}
+      <div className="flex items-center justify-between px-6 sm:px-10 h-[70px]">
         {/* Left: Logo + Nav */}
-        <div className="flex items-center gap-6 min-w-0">
+        <div className="flex items-center gap-8 min-w-0">
           <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={() => navigate('/')}>
-            <img alt="Hádron" className="h-8 object-contain" src={logoImg} />
+            <img alt="Hádron" className="h-9 object-contain" src={logoImg} />
           </div>
 
-          {/* Desktop nav - text only, no icons */}
+          {/* Desktop nav - text only */}
           <nav className="hidden lg:flex items-center gap-1">
             {navItems.map(({ label, path }) => {
               const isActive = location.pathname === path;
@@ -34,7 +34,7 @@ const Header = () => {
                 <button
                   key={label}
                   onClick={() => navigate(path)}
-                  className={`px-3.5 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-primary-foreground/15 text-primary-foreground'
                       : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/5'

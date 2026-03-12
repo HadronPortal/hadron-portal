@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { format } from 'date-fns';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import OrdersTable from '@/components/erp/OrdersTable';
@@ -12,64 +11,67 @@ import NewCustomersCard from '@/components/erp/dashboard/NewCustomersCard';
 import ProductDeliveryCard from '@/components/erp/dashboard/ProductDeliveryCard';
 
 interface DashboardAPIResponse {
-  dashboard: {
-    sent: number;
-    approved: number;
-    invoiced: number;
-    canceled: number;
+  cards: {
+    total_pedidos: number;
+    enviados: number;
+    aprovados: number;
+    faturados: number;
+    cancelados: number;
+    positivados: number;
   };
-  orders: Array<{
-    orc_codorc_web: number;
-    orc_codorc_had: number;
-    CLIENTE: string;
-    orc_documento: string;
-    LOCALIZACAO: string;
-    orc_status: number | string;
-    orc_val_tot: number;
-    DATA_PEDIDO: string;
-    [key: string]: unknown;
+  ultimos_pedidos: Array<{
+    codigo: number;
+    cliente_nome: string;
+    documento: string;
+    localizacao: string;
+    status: number;
+    valor: number;
+    data: string;
   }>;
-  [key: string]: unknown;
+  ultimos_clientes: Array<{
+    codigo: number;
+    nome: string;
+    localizacao: string;
+    data: string;
+  }>;
+  evolucao_vendas: Array<{
+    dia: string;
+    total: number;
+  }>;
+  top_produtos: Array<{
+    codigo: number;
+    descricao: string;
+    quantidade: string;
+    valor_total: string;
+  }>;
 }
 
 function mapStatus(status: unknown): 'enviado' | 'aprovado' | 'confirmado' | 'pendente' | 'cancelado' {
   const val = typeof status === 'number' ? status : Number(status);
   if (!isNaN(val)) {
-    if (val === 10) return 'pendente';
+    if (val === 10 || val === 0) return 'pendente';
     if (val === 20) return 'enviado';
     if (val === 30) return 'aprovado';
     if (val === 40 || val === 50) return 'confirmado';
     if (val === 90) return 'cancelado';
   }
-  const s = String(status || '').toLowerCase();
-  if (s === 'en' || s.includes('enviad')) return 'enviado';
-  if (s.includes('aprov') || s === 'ap') return 'aprovado';
-  if (s.includes('confirm') || s.includes('fatur') || s === 'fa' || s === 'pc') return 'confirmado';
-  if (s.includes('cancel') || s === 'ca') return 'cancelado';
   return 'pendente';
 }
 
-const DEFAULT_START_DATE = new Date(2026, 0, 8);
-const DEFAULT_END_DATE = new Date(2026, 2, 9);
-const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
-
 const Index = () => {
-  const { data: ordersData, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
-    queryKey: ['dashboard-orders'],
-    endpoint: 'fetch-orders',
-    params: {
-      page: '1',
-      limit: '10',
-      date_ini: toApiDate(DEFAULT_START_DATE),
-      date_end: toApiDate(DEFAULT_END_DATE),
-    },
+  const { data: dashData, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
+    queryKey: ['dashboard'],
+    endpoint: 'fetch-dashboard',
+    params: {},
     staleTime: 2 * 60 * 1000,
   });
 
+  const cards = dashData?.cards;
+
   const orders = useMemo(() => {
-    const rawOrders = ordersData?.orders || (ordersData as any)?.data || [];
-    return (rawOrders as any[]).map((p: any) => {
-      let dataPedido = p.DATA_PEDIDO || p.orc_dta || p.data_pedido || '';
+    const raw = dashData?.ultimos_pedidos || [];
+    return raw.map((p) => {
+      let dataPedido = p.data || '';
       if (dataPedido) {
         try {
           const d = new Date(dataPedido);
@@ -79,26 +81,42 @@ const Index = () => {
         } catch {}
       }
       return {
-        id: String(p.orc_codorc_web || p.orc_codorc || p.id),
-        codigo: String(p.orc_codorc_web || p.orc_codorc || p.codigo),
-        cliente_nome: p.CLIENTE || p.orc_nomcli || p.cliente_nome || '',
-        cliente_cnpj: p.orc_documento || p.orc_cgccli || p.cliente_cnpj || '',
-        localizacao: p.LOCALIZACAO || (p.orc_cidcli
-          ? [p.orc_cidcli, p.orc_estcli].filter(Boolean).join(' - ')
-          : (p.localizacao || '')),
-        status: mapStatus(p.orc_status || p.status || ''),
-        valor: p.orc_val_tot || p.orc_vlrtot || p.valor || 0,
+        id: String(p.codigo),
+        codigo: String(p.codigo),
+        cliente_nome: p.cliente_nome || '',
+        cliente_cnpj: p.documento || '',
+        localizacao: p.localizacao || '',
+        status: mapStatus(p.status),
+        valor: p.valor || 0,
         data_pedido: dataPedido,
-        erp_code: p.orc_codorc_had ? `ERP:${p.orc_codorc_had}` : (p.orc_coderp ? `ERP:${p.orc_coderp}` : (p.erp_code || undefined)),
       };
     });
-  }, [ordersData]);
+  }, [dashData]);
 
-  // Compute KPI values from API
-  const totalSent = ordersData?.dashboard?.sent ?? 0;
-  const totalApproved = ordersData?.dashboard?.approved ?? 0;
-  const totalInvoiced = ordersData?.dashboard?.invoiced ?? 0;
-  const totalEarnings = totalSent + totalApproved + totalInvoiced;
+  const evolucaoVendas = useMemo(() => {
+    return (dashData?.evolucao_vendas || []).map((e) => ({
+      date: e.dia,
+      value: e.total,
+    }));
+  }, [dashData]);
+
+  const topProdutos = useMemo(() => {
+    return (dashData?.top_produtos || []).map((p) => ({
+      codigo: p.codigo,
+      descricao: p.descricao,
+      quantidade: parseFloat(p.quantidade),
+      valorTotal: parseFloat(p.valor_total),
+    }));
+  }, [dashData]);
+
+  const ultimosClientes = useMemo(() => {
+    return (dashData?.ultimos_clientes || []).map((c) => ({
+      codigo: c.codigo,
+      nome: c.nome,
+      localizacao: c.localizacao,
+      data: c.data,
+    }));
+  }, [dashData]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -148,21 +166,32 @@ const Index = () => {
           <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
         ) : (
           <>
-            {/* Row 1: Status (EarningsCard) + NewCustomers | Venda Mês (SalesChart) */}
+            {/* Row 1 */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
               <div className="flex flex-col gap-5">
-                <EarningsCard />
-                <NewCustomersCard />
+                <EarningsCard
+                  enviados={cards?.enviados ?? 0}
+                  aprovados={cards?.aprovados ?? 0}
+                  faturados={cards?.faturados ?? 0}
+                  cancelados={cards?.cancelados ?? 0}
+                />
+                <NewCustomersCard
+                  clientes={ultimosClientes}
+                  positivados={cards?.positivados ?? 0}
+                />
               </div>
               <div className="lg:col-span-2">
-                <SalesChartCard totalValue={totalInvoiced} />
+                <SalesChartCard
+                  totalValue={cards?.total_pedidos ?? 0}
+                  salesData={evolucaoVendas}
+                />
               </div>
             </div>
 
-            {/* Row 2: Últimos Pedidos | Top Produtos */}
+            {/* Row 2 */}
             <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-5 items-start">
               <OrdersTable orders={orders} />
-              <ProductDeliveryCard />
+              <ProductDeliveryCard produtos={topProdutos} />
             </div>
           </>
         )}

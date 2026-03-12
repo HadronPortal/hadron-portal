@@ -1,31 +1,38 @@
 import { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
-const data = [
-  { name: 'Enviado', value: 7660, color: '#06b6d4', dark: '#0891b2' },
-  { name: 'Aprovado', value: 2820, color: '#f59e0b', dark: '#d97706' },
-  { name: 'Faturado', value: 45257, color: '#10b981', dark: '#059669' },
-  { name: 'Cancelado', value: 1230, color: '#ef4444', dark: '#dc2626' },
-];
+interface Props {
+  enviados: number;
+  aprovados: number;
+  faturados: number;
+  cancelados: number;
+}
 
-const total = data.reduce((s, d) => s + d.value, 0);
-
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload, total }: any) => {
   if (!active || !payload?.length) return null;
   const d = payload[0];
-  const pct = ((d.value / total) * 100).toFixed(1);
+  const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : '0';
   return (
     <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-xl text-sm">
       <p className="font-semibold text-foreground">{d.name}</p>
       <p className="text-muted-foreground">
-        R$ {d.value.toLocaleString('pt-BR')} ({pct}%)
+        R$ {d.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} ({pct}%)
       </p>
     </div>
   );
 };
 
-const EarningsCard = () => {
+const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  const data = [
+    { name: 'Enviado', value: enviados, color: '#06b6d4', dark: '#0891b2' },
+    { name: 'Aprovado', value: aprovados, color: '#f59e0b', dark: '#d97706' },
+    { name: 'Faturado', value: faturados, color: '#10b981', dark: '#059669' },
+    { name: 'Cancelado', value: cancelados, color: '#ef4444', dark: '#dc2626' },
+  ];
+
+  const total = data.reduce((s, d) => s + d.value, 0);
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">
@@ -41,7 +48,6 @@ const EarningsCard = () => {
 
       <div className="flex items-center gap-5 flex-1">
         <div className="w-32 h-32 flex-shrink-0 relative" style={{ perspective: '600px' }}>
-          {/* 3D shadow layer */}
           <div
             className="absolute inset-0 opacity-30 blur-[2px]"
             style={{ transform: 'translateY(6px) scale(0.95)' }}
@@ -57,7 +63,6 @@ const EarningsCard = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Main donut */}
           <div
             className="absolute inset-0 animate-scale-in"
             style={{ transformStyle: 'preserve-3d', transform: 'rotateX(12deg)' }}
@@ -88,16 +93,15 @@ const EarningsCard = () => {
                     />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip total={total} />} />
               </PieChart>
             </ResponsiveContainer>
           </div>
-
         </div>
 
         <div className="space-y-2.5 text-sm flex-1">
           {data.map((item, i) => {
-            const pct = ((item.value / total) * 100).toFixed(1);
+            const pct = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0';
             return (
               <div
                 key={item.name}
@@ -118,7 +122,7 @@ const EarningsCard = () => {
                 </span>
                 <div className="flex flex-col ml-auto items-end">
                   <span className="font-semibold text-foreground tabular-nums">
-                    R${item.value.toLocaleString('pt-BR')}
+                    R${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                   <span className="text-[10px] text-muted-foreground">{pct}%</span>
                 </div>

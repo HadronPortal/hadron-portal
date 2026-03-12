@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Home, Users, Gauge, ClipboardList, LayoutGrid, Box, ShoppingBag, LogOut, DollarSign, Menu, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logoImg from '@/assets/logo_hadron_go.png';
 
@@ -15,10 +15,39 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    if (userMenuOpen) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [userMenuOpen]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('hadron_token');
+    localStorage.removeItem('hadron_user');
+    navigate('/login');
+  };
+
+  // Get user info from localStorage
+  const userData = (() => {
+    try {
+      const raw = localStorage.getItem('hadron_user');
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return null;
+  })();
+  const userName = userData?.aus_nome || userData?.name || 'Usuário';
+  const userEmail = userData?.aus_email || userData?.email || '';
 
   return (
     <header className="text-primary-foreground">
-      {/* Main header - transparent */}
       <div className="flex items-center justify-between px-6 sm:px-10 h-[70px]">
         {/* Left: Logo + Nav */}
         <div className="flex items-center gap-8 min-w-0">
@@ -26,7 +55,6 @@ const Header = () => {
             <img alt="Hádron" className="h-9 object-contain" src={logoImg} />
           </div>
 
-          {/* Desktop nav - text only */}
           <nav className="hidden lg:flex items-center gap-1">
             {navItems.map(({ label, path }) => {
               const isActive = location.pathname === path;
@@ -47,28 +75,65 @@ const Header = () => {
           </nav>
         </div>
 
-        {/* Right: User avatar only */}
+        {/* Right */}
         <div className="flex items-center gap-3">
-          {/* Mobile hamburger */}
           <button className="lg:hidden p-1.5" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-primary/60 flex items-center justify-center text-sm font-bold text-primary-foreground ring-2 ring-primary-foreground/20 cursor-pointer">
-              S
-            </div>
+          {/* User avatar with dropdown */}
+          <div className="relative" ref={menuRef}>
             <button
-              onClick={() => {
-                localStorage.removeItem('hadron_token');
-                localStorage.removeItem('hadron_user');
-                navigate('/login');
-              }}
-              title="Sair"
-              className="p-2 rounded-md hover:bg-primary-foreground/10 transition-colors"
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              className="h-10 w-10 rounded-full bg-primary/60 flex items-center justify-center text-sm font-bold text-primary-foreground ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"
             >
-              <LogOut size={16} className="text-primary-foreground/60" />
+              {userName.charAt(0).toUpperCase()}
             </button>
+
+            {/* Dropdown menu */}
+            {userMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                {/* User info */}
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
+                  <div className="h-11 w-11 rounded-full bg-primary/20 flex items-center justify-center text-base font-bold text-primary flex-shrink-0">
+                    {userName.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{userName}</p>
+                    <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+                  </div>
+                </div>
+
+                {/* Menu items */}
+                <div className="py-2">
+                  <button
+                    onClick={() => { setUserMenuOpen(false); }}
+                    className="flex items-center gap-3 w-full px-5 py-2.5 text-sm text-foreground hover:bg-accent transition-colors text-left"
+                  >
+                    <User size={16} className="text-muted-foreground" />
+                    Meu Perfil
+                  </button>
+                  <button
+                    onClick={() => { setUserMenuOpen(false); }}
+                    className="flex items-center gap-3 w-full px-5 py-2.5 text-sm text-foreground hover:bg-accent transition-colors text-left"
+                  >
+                    <Settings size={16} className="text-muted-foreground" />
+                    Configurações
+                  </button>
+                </div>
+
+                {/* Separator + Sign out */}
+                <div className="border-t border-border py-2">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 w-full px-5 py-2.5 text-sm text-destructive hover:bg-accent transition-colors text-left"
+                  >
+                    <LogOut size={16} />
+                    Sair
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

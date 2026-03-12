@@ -58,13 +58,27 @@ const Header = () => {
     navigate('/login');
   };
 
-  const userData = (() => {
+  const readStoredUser = () => {
     try {
       const raw = localStorage.getItem('hadron_user');
       if (raw) return JSON.parse(raw);
     } catch {}
     return null;
-  })();
+  };
+
+  const [userData, setUserData] = useState<any>(() => readStoredUser());
+
+  useEffect(() => {
+    const syncUser = () => setUserData(readStoredUser());
+
+    window.addEventListener('storage', syncUser);
+    window.addEventListener('hadron-user-updated', syncUser as EventListener);
+
+    return () => {
+      window.removeEventListener('storage', syncUser);
+      window.removeEventListener('hadron-user-updated', syncUser as EventListener);
+    };
+  }, []);
 
   const userName = userData?.nome || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.email || userData?.aus_email || '';

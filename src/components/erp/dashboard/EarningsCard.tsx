@@ -35,19 +35,19 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
   const total = data.reduce((s, d) => s + d.value, 0);
 
   return (
-    <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">
-      <div className="mb-4">
+    <div className="bg-card border border-border rounded-xl p-4 sm:p-6 flex flex-col h-full overflow-hidden">
+      <div className="mb-3 sm:mb-4">
         <div className="flex items-baseline gap-1">
           <span className="text-xs text-muted-foreground">R$</span>
-          <span className="text-3xl font-bold text-foreground">
+          <span className="text-2xl sm:text-3xl font-bold text-foreground">
             {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </span>
         </div>
         <p className="text-sm text-muted-foreground mt-1">Total</p>
       </div>
 
-      <div className="flex items-center gap-5 flex-1">
-        <div className="w-32 h-32 flex-shrink-0 relative" style={{ perspective: '600px' }}>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 flex-1 min-w-0">
+        <div className="w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0 self-center sm:self-auto relative" style={{ perspective: '600px' }}>
           <div
             className="absolute inset-0 opacity-30 blur-[2px]"
             style={{ transform: 'translateY(6px) scale(0.95)' }}
@@ -99,19 +99,19 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
           </div>
         </div>
 
-        <div className="space-y-2.5 text-sm flex-1">
+        <div className="space-y-2.5 text-sm flex-1 w-full min-w-0">
           {data.map((item, i) => {
             const pct = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0';
             return (
               <div
                 key={item.name}
-                className="flex items-center gap-2 transition-all duration-200 cursor-default"
+                className="flex items-center justify-between gap-1.5 sm:gap-2 transition-all duration-200 cursor-default"
                 style={{ opacity: activeIndex === null || activeIndex === i ? 1 : 0.4 }}
                 onMouseEnter={() => setActiveIndex(i)}
                 onMouseLeave={() => setActiveIndex(null)}
               >
                 <span
-                  className="w-24 text-center py-1 rounded-full text-xs font-medium border"
+                  className="w-[88px] sm:w-24 text-center py-1 rounded-full text-[11px] sm:text-xs font-medium border shrink-0"
                   style={{
                     backgroundColor: item.color + '18',
                     color: item.color,
@@ -120,7 +120,7 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
                 >
                   {item.name}
                 </span>
-                <div className="flex flex-col ml-auto items-end min-w-0">
+                <div className="flex flex-col items-end min-w-0">
                   <span className="font-semibold text-foreground tabular-nums whitespace-nowrap text-xs sm:text-sm">
                     R${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>

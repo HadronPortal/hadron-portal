@@ -227,7 +227,7 @@ const CriarPedido = () => {
                     <label className="text-sm font-medium text-foreground mb-1.5 block">
                       Representante <span className="text-destructive">*</span>
                     </label>
-                    <div className="border border-border rounded-lg px-3 py-2.5 text-sm bg-background text-foreground">{representante}</div>
+                    <div className="border border-border rounded-lg px-3 py-2.5 text-sm bg-transparent text-foreground">{representante}</div>
                     <p className="text-xs text-muted-foreground mt-1.5">Representante responsável pelo pedido.</p>
                   </div>
 

@@ -1,10 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-import { useRepresentantes } from '@/hooks/use-representantes';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Package, Boxes, Search } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
+
+const navItems = [
+  { label: 'Home', path: '/' },
+  { label: 'Clientes', path: '/clientes' },
+  { label: 'Analítico', path: '/analitico' },
+  { label: 'Pedidos', path: '/pedidos' },
+  { label: 'Catálogo', path: '/catalogo' },
+];
 
 interface CatalogoItem {
   pro_codpro: number;

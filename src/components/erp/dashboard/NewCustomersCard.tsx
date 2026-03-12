@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import avatarImg from '@/assets/avatar-user.png';
 
 interface Cliente {
   codigo: number;
@@ -22,7 +21,7 @@ const COLORS = [
 const NewCustomersCard = ({ clientes, positivados }: Props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const visibleClients = clientes.slice(0, 4);
-  const remaining = Math.max(positivados - visibleClients.length, 0);
+  const remaining = positivados - visibleClients.length;
 
   return (
     <>
@@ -57,14 +56,13 @@ const NewCustomersCard = ({ clientes, positivados }: Props) => {
         </div>
       </div>
 
-      {/* Modal de clientes */}
+      {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in" onClick={() => setModalOpen(false)}>
           <div
             className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="relative px-6 pt-6 pb-4 text-center border-b border-border">
               <button
                 onClick={() => setModalOpen(false)}
@@ -74,21 +72,17 @@ const NewCustomersCard = ({ clientes, positivados }: Props) => {
               </button>
               <h2 className="text-lg font-bold text-foreground">Clientes Positivados</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                {positivados} clientes no período
+                {positivados} clientes no período · {clientes.length} listados
               </p>
             </div>
 
-            {/* List */}
             <div className="flex-1 overflow-y-auto px-6 py-4 divide-y divide-border">
-              {clientes.map((client, i) => {
-                const formattedDate = client.data
-                  ? new Date(client.data).toLocaleDateString('pt-BR')
-                  : '';
-                return (
+              {clientes.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">Nenhum cliente encontrado</p>
+              ) : (
+                clientes.map((client, i) => (
                   <div key={client.codigo} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground ${COLORS[i % COLORS.length]} flex-shrink-0`}
-                    >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground ${COLORS[i % COLORS.length]} flex-shrink-0`}>
                       {client.nome.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -96,14 +90,12 @@ const NewCustomersCard = ({ clientes, positivados }: Props) => {
                       <p className="text-xs text-muted-foreground truncate">{client.localizacao}</p>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-xs text-muted-foreground">{formattedDate}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {client.data ? new Date(client.data).toLocaleDateString('pt-BR') : ''}
+                      </p>
                     </div>
                   </div>
-                );
-              })}
-
-              {clientes.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">Nenhum cliente encontrado</p>
+                ))
               )}
             </div>
           </div>

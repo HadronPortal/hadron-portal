@@ -165,7 +165,7 @@ const Perfil = () => {
                   <span className="text-sm font-medium text-foreground flex items-center gap-2">
                     {resolveValue(field)}
                     {field.verified && (
-                      <Badge variant="default" className="text-[10px] px-1.5 py-0 h-5 bg-emerald-500 hover:bg-emerald-500 text-white">
+                      <Badge variant="default" className="text-[10px] px-1.5 py-0 h-5 bg-[hsl(var(--erp-green))] hover:bg-[hsl(var(--erp-green))] text-primary-foreground">
                         Verificado
                       </Badge>
                     )}

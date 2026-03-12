@@ -61,6 +61,7 @@ const App = () => (
               <Route path="/produtos" element={<Suspense fallback={<PageFallback />}><Produtos /></Suspense>} />
               <Route path="/produtos/:id" element={<Suspense fallback={<PageFallback />}><ProdutoDetalhe /></Suspense>} />
               <Route path="/catalogo" element={<Suspense fallback={<PageFallback />}><Catalogo /></Suspense>} />
+              <Route path="/perfil" element={<Suspense fallback={<PageFallback />}><Perfil /></Suspense>} />
             </Route>
 
             {/* Standalone pages (own layout) */}

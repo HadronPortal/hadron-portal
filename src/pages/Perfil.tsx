@@ -111,7 +111,7 @@ const Perfil = () => {
                 </div>
                 <div className="h-8 w-px bg-border" />
                 <div className="flex items-center gap-2">
-                  <ArrowUpRight size={16} className="text-emerald-500" />
+                  <ArrowUpRight size={16} className="text-[hsl(var(--erp-green))]" />
                   <div>
                     <p className="text-lg font-bold text-foreground">%78</p>
                     <p className="text-xs text-muted-foreground">Positivação</p>

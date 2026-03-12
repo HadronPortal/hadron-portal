@@ -48,7 +48,13 @@ const SalesChartCard = ({ totalValue }: Props) => {
 
       <div className="flex-1 min-h-[180px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={salesData}>
+          <AreaChart data={salesData}>
+            <defs>
+              <linearGradient id="salesGreen" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="hsl(var(--erp-green))" stopOpacity={0.15} />
+                <stop offset="100%" stopColor="hsl(var(--erp-green))" stopOpacity={0.01} />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false} />
             <XAxis
               dataKey="date"
@@ -63,14 +69,19 @@ const SalesChartCard = ({ totalValue }: Props) => {
               tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}K`}
               width={55}
             />
-            <Line
-              type="monotone"
+            <Tooltip
+              contentStyle={{ borderRadius: 8, fontSize: 12, border: '1px solid hsl(var(--border))' }}
+              formatter={(v: number) => [`R$${(v / 1000).toFixed(0)}K`, 'Vendas']}
+            />
+            <Area
+              type="step"
               dataKey="value"
               stroke="hsl(var(--erp-green))"
               strokeWidth={2.5}
+              fill="url(#salesGreen)"
               dot={false}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>

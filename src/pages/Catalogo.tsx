@@ -176,7 +176,7 @@ const Catalogo = () => {
                 ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'
                 : 'space-y-2.5'
             }`}>
-              {filteredItems.map((item) => {
+              {items.map((item) => {
                 const saldoNum = parseFloat(item.SALDOS);
                 const inStock = !isNaN(saldoNum) && saldoNum > 0;
 

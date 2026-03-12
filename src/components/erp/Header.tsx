@@ -66,8 +66,11 @@ const Header = () => {
 
           <div className="relative flex items-center gap-3" ref={menuRef}>
             <div className="hidden sm:flex flex-col items-end text-right">
-              <span className="text-sm font-medium leading-tight truncate max-w-[160px]">{userName}</span>
-              <span className="text-[11px] text-primary-foreground/60 leading-tight truncate max-w-[160px]">{userCompany}</span>
+              <span className="text-sm font-medium leading-tight truncate max-w-[180px]">{userName}</span>
+              <span className="text-[11px] text-primary-foreground/60 leading-tight truncate max-w-[180px] flex items-center gap-1 justify-end">
+                <Building2 size={11} />
+                {userCompany}
+              </span>
             </div>
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}

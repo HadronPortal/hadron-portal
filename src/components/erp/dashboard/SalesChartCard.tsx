@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const allSalesData = [
@@ -36,8 +36,8 @@ const allSalesData = [
 ];
 
 const VISIBLE_COUNT = 14;
-const EDGE_ZONE = 60; // px from edge to trigger scroll
-const SCROLL_INTERVAL = 250; // ms between advances
+const EDGE_ZONE = 60;
+const SCROLL_INTERVAL = 250;
 
 interface Props {
   totalValue: number;
@@ -49,10 +49,26 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     <div className="bg-foreground text-background px-3 py-2 rounded-lg shadow-lg text-sm pointer-events-none">
       <p className="font-semibold mb-0.5">{label}</p>
       <p className="flex items-center gap-1.5">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
+        <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
         R$ {payload[0].value.toLocaleString('pt-BR')}
       </p>
     </div>
+  );
+};
+
+const CustomBar = (props: any) => {
+  const { x, y, width, height } = props;
+  const radius = Math.min(width / 2, 8);
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      rx={radius}
+      ry={radius}
+      fill="url(#barBlueFill)"
+    />
   );
 };
 
@@ -137,7 +153,6 @@ const SalesChartCard = ({ totalValue }: Props) => {
         onMouseMove={handleMouseMove}
         onMouseLeave={stopScrolling}
       >
-        {/* Edge hover indicators */}
         {canGoLeft && (
           <div className="absolute left-0 top-0 bottom-0 w-10 z-10 flex items-center justify-center pointer-events-none bg-gradient-to-r from-card/80 to-transparent">
             <ChevronLeft className="w-4 h-4 text-muted-foreground animate-pulse" />
@@ -150,12 +165,11 @@ const SalesChartCard = ({ totalValue }: Props) => {
         )}
 
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={visibleData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
+          <BarChart data={visibleData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }} barCategoryGap="30%">
             <defs>
-              <linearGradient id="salesGreenFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#34d399" stopOpacity={0.2} />
-                <stop offset="50%" stopColor="#34d399" stopOpacity={0.06} />
-                <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
+              <linearGradient id="barBlueFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
+                <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.8} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false} />
@@ -172,8 +186,8 @@ const SalesChartCard = ({ totalValue }: Props) => {
               tickLine={false}
               tickFormatter={(v) => `R$${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}K`}
               width={55}
-              domain={[10000, 25000]}
-              ticks={[10000, 13500, 17000, 20500, 24000]}
+              domain={[0, 25000]}
+              ticks={[0, 5000, 10000, 15000, 20000, 25000]}
             />
             <ReferenceLine
               y={20500}
@@ -183,19 +197,15 @@ const SalesChartCard = ({ totalValue }: Props) => {
             />
             <Tooltip
               content={<CustomTooltip />}
-              cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeDasharray: '4 4', strokeOpacity: 0.5 }}
+              cursor={{ fill: 'hsl(var(--muted-foreground))', fillOpacity: 0.05 }}
             />
-            <Area
-              type="monotone"
+            <Bar
               dataKey="value"
-              stroke="#34d399"
-              strokeWidth={2.5}
-              fill="url(#salesGreenFill)"
-              dot={false}
-              activeDot={{ r: 5, fill: '#34d399', stroke: 'hsl(var(--card))', strokeWidth: 3 }}
+              shape={<CustomBar />}
               isAnimationActive={false}
+              activeBar={{ fillOpacity: 0.9 }}
             />
-          </AreaChart>
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </div>

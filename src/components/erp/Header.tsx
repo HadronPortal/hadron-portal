@@ -20,8 +20,8 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="bg-[hsl(var(--erp-header))] text-primary-foreground">
-      {/* Main header */}
+    <header className="text-primary-foreground">
+      {/* Main header - transparent, sits on top of hero */}
       <div className="flex items-center justify-between px-4 sm:px-8 h-16">
         {/* Left: Logo + Nav */}
         <div className="flex items-center gap-6 min-w-0">
@@ -29,42 +29,36 @@ const Header = () => {
             <img alt="Hádron" className="h-8 object-contain" src={logoImg} />
           </div>
 
-          {/* Desktop nav with text labels */}
+          {/* Desktop nav - text only, no icons */}
           <nav className="hidden lg:flex items-center gap-1">
-            {navItems.map(({ icon: Icon, label, path }) => {
+            {navItems.map(({ label, path }) => {
               const isActive = location.pathname === path;
               return (
                 <button
                   key={label}
                   onClick={() => navigate(path)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-[13px] font-medium transition-colors ${
+                  className={`px-3.5 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
                     isActive
                       ? 'bg-primary-foreground/15 text-primary-foreground'
-                      : 'text-primary-foreground/60 hover:text-primary-foreground/90 hover:bg-primary-foreground/5'
+                      : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/5'
                   }`}
                 >
-                  <Icon size={16} />
-                  <span>{label}</span>
+                  {label}
                 </button>
               );
             })}
           </nav>
         </div>
 
-        {/* Right: User avatar + logout */}
+        {/* Right: User avatar only */}
         <div className="flex items-center gap-3">
           {/* Mobile hamburger */}
           <button className="lg:hidden p-1.5" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
-          {/* User avatar */}
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex flex-col items-end text-right">
-              <span className="text-xs font-medium text-primary-foreground/90 truncate max-w-[160px]">3-SUPERVISOR</span>
-              <span className="text-[10px] text-primary-foreground/50">REGIAO 1</span>
-            </div>
-            <div className="h-9 w-9 rounded-full bg-primary/60 flex items-center justify-center text-sm font-bold text-primary-foreground ring-2 ring-primary-foreground/20">
+            <div className="h-9 w-9 rounded-full bg-primary/60 flex items-center justify-center text-sm font-bold text-primary-foreground ring-2 ring-primary-foreground/20 cursor-pointer">
               S
             </div>
             <button
@@ -84,7 +78,7 @@ const Header = () => {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <nav className="lg:hidden border-t border-primary-foreground/10 px-3 py-2 grid grid-cols-4 gap-1">
+        <nav className="lg:hidden border-t border-primary-foreground/10 px-3 py-2 grid grid-cols-4 gap-1 bg-[hsl(var(--erp-header))]">
           {navItems.map(({ icon: Icon, label, path }) => (
             <button
               key={label}

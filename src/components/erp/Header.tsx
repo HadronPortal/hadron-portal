@@ -199,7 +199,7 @@ const Header = () => {
         {/* Drawer header */}
         <div className="flex items-center justify-between px-5 h-[70px] border-b border-border flex-shrink-0">
           <div className="flex items-center cursor-pointer -ml-2" onClick={() => { navigate('/'); setDrawerOpen(false); }}>
-            <img alt="Hádron" className="h-40 object-contain" src={logoImg} />
+            <img alt="Hádron" className="h-10 object-contain" src={logoMobileImg} />
           </div>
           <button
             onClick={() => setDrawerOpen(false)}

@@ -68,7 +68,6 @@ const Index = () => {
     endDate: DEFAULT_END_DATE,
   });
   const [filterNonce, setFilterNonce] = useState(0);
-  const [showFilters, setShowFilters] = useState(false);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);

@@ -243,51 +243,51 @@ const CriarPedido = () => {
                 </div>
               </div>
 
-              {/* Summary card */}
+              {/* Advance button */}
               {cart.length > 0 && (
-                <div className="bg-card rounded-xl border border-border shadow-sm p-5 space-y-3">
-                  <h3 className="font-bold text-sm text-foreground">Resumo</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Produtos ({cart.length}):</span>
-                      <span>{fmt(subtotal)}</span>
-                    </div>
-                    {desconto > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Desconto:</span>
-                        <span className="text-destructive">- {fmt(desconto)}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Frete:</span>
-                      <span className="text-[hsl(var(--erp-green))] font-semibold">{frete > 0 ? fmt(frete) : 'Grátis'}</span>
-                    </div>
-                  </div>
-                  <div className="border-t border-border pt-3 flex justify-between font-bold text-base">
-                    <span>Total:</span>
-                    <span className="text-[hsl(var(--erp-green))]">{fmt(total)}</span>
-                  </div>
-                  <Button
-                    className="w-full mt-2 font-bold bg-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/90 text-white rounded-lg h-11"
-                    disabled={!selectedCliente}
-                    onClick={() => setStep(1)}
-                  >
-                    Avançar para Resumo
-                  </Button>
-                </div>
+                <Button
+                  className="w-full font-bold bg-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/90 text-white rounded-lg h-11"
+                  disabled={!selectedCliente}
+                  onClick={() => setStep(1)}
+                >
+                  Avançar para Resumo
+                </Button>
               )}
             </div>
 
             {/* RIGHT CARD: Select Products */}
             <div className="lg:col-span-9">
               <div className="bg-card rounded-xl border border-border shadow-sm">
-                <div className="px-5 py-4 border-b border-border">
+                <div className="px-5 py-4">
                   <h2 className="text-base font-bold text-foreground">Selecionar Produtos</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">Selecione os produtos para este pedido clicando na checkbox.</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Adicione produtos a este pedido</p>
                 </div>
 
-                {/* Search + Total Cost */}
-                <div className="px-5 py-3 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                {/* Selected products cards (Metronic style) */}
+                {cart.length > 0 && (
+                  <div className="px-5 pb-4 flex flex-wrap gap-3">
+                    {cart.map(item => (
+                      <div key={item.pro_codpro} className="flex items-center gap-3 border border-border rounded-lg px-3 py-2.5">
+                        <div className="w-10 h-10 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
+                          {item.pro_foto ? (
+                            <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
+                              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          ) : <div className="w-full h-full" />}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-foreground">{item.pro_despro}</div>
+                          <div className="text-xs text-muted-foreground">Preço: {fmt(item.preco_unitario)} · SKU: {item.pro_codpro}</div>
+                        </div>
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 shrink-0 ml-2" onClick={() => removeFromCart(item.pro_codpro)}>
+                          <X size={14} />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Total Cost */}
+                <div className="px-5 py-3 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="text-sm font-bold text-foreground">
                     Custo Total: <span className="text-[hsl(var(--erp-green))]">{fmt(subtotal)}</span>
                   </div>

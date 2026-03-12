@@ -38,45 +38,10 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
 
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden">
-      {/* Header */}
-      <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-semibold text-foreground">Últimos Pedidos</h2>
-          <p className="text-xs text-muted-foreground">Média de {orders.length > 0 ? orders.length : 57} pedidos por dia</p>
-        </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span>Categoria</span>
-            <Select defaultValue="all">
-              <SelectTrigger className="h-7 text-xs border-0 bg-transparent shadow-none px-1 w-auto gap-1">
-                <SelectValue placeholder="Mostrar tudo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Mostrar tudo</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span>Status</span>
-            <Select defaultValue="all">
-              <SelectTrigger className="h-7 text-xs border-0 bg-transparent shadow-none px-1 w-auto gap-1">
-                <SelectValue placeholder="Mostrar tudo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Mostrar tudo</SelectItem>
-                <SelectItem value="enviado">Enviado</SelectItem>
-                <SelectItem value="aprovado">Aprovado</SelectItem>
-                <SelectItem value="confirmado">Confirmado</SelectItem>
-                <SelectItem value="pendente">Pendente</SelectItem>
-                <SelectItem value="cancelado">Rejeitado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="relative">
-            <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Procurar" className="h-7 text-xs pl-7 w-32 rounded-lg" />
-          </div>
-        </div>
+      <div className="px-6 py-5">
+        <h2 className="text-base font-semibold text-foreground">Últimos Pedidos</h2>
+        <p className="text-xs text-muted-foreground">Média de {orders.length > 0 ? orders.length : 57} pedidos por dia</p>
+      </div>
       </div>
 
       {/* Table */}

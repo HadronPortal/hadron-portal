@@ -93,6 +93,23 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
     fetchData();
   }, [open, productId]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const body = document.body;
+    const html = document.documentElement;
+    const previousBodyOverflow = body.style.overflow;
+    const previousHtmlOverflow = html.style.overflow;
+
+    body.style.overflow = 'hidden';
+    html.style.overflow = 'hidden';
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      html.style.overflow = previousHtmlOverflow;
+    };
+  }, [open]);
+
   const info = data?.info;
   const precos = data?.precos;
   const saldoAtual = info?.pro_sdo_atu ?? 0;

@@ -169,26 +169,26 @@ const CriarPedido = () => {
         {step === 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-7xl mx-auto">
 
-            {/* LEFT CARD: Order Details */}
+            {/* LEFT CARD: Order Details — Metronic style */}
             <div className="lg:col-span-4 space-y-5">
-              <div className="bg-card rounded-xl border border-border shadow-sm">
-                <div className="px-5 py-4 border-b border-border">
-                  <h2 className="text-base font-bold text-foreground">Detalhes do Pedido</h2>
+              <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden border-l-4 border-l-[hsl(var(--erp-blue))]">
+                <div className="p-6 pb-0">
+                  <h2 className="text-lg font-bold text-foreground">Detalhes do Pedido</h2>
                 </div>
-                <div className="p-5 space-y-5">
-                  {/* Representante */}
+                <div className="p-6 space-y-6">
+                  {/* Order ID */}
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Representante</label>
-                    <div className="text-sm text-foreground bg-muted rounded-lg px-3 py-2.5">{representante}</div>
+                    <span className="text-xs text-muted-foreground">Nº Pedido</span>
+                    <div className="text-xl font-bold text-foreground mt-0.5">#{Math.floor(10000 + Math.random() * 90000)}</div>
                   </div>
 
                   {/* Cliente */}
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">
+                    <label className="text-sm font-medium text-foreground mb-1.5 block">
                       Cliente <span className="text-destructive">*</span>
                     </label>
                     {selectedCliente ? (
-                      <div className="flex items-center gap-2 bg-muted rounded-lg px-3 py-2.5 text-sm">
+                      <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2.5 text-sm bg-background">
                         <span className="font-medium flex-1 truncate">{selectedCliente.ter_codter} — {selectedCliente.ter_nomter}</span>
                         <Button variant="ghost" size="sm" className="h-5 w-5 p-0 shrink-0" onClick={() => { setSelectedCliente(null); setClienteSearch(''); }}>
                           <X size={12} />
@@ -201,7 +201,7 @@ const CriarPedido = () => {
                           onDoubleClick={() => { fetchClientes(''); setShowClienteDropdown(true); }}
                           onFocus={() => { if (clienteSearch.length >= 2) setShowClienteDropdown(true); }}
                           onBlur={() => setTimeout(() => setShowClienteDropdown(false), 200)}
-                          placeholder="Buscar cliente..." className="h-10 text-sm rounded-lg" />
+                          placeholder="Selecione um cliente" className="h-10 text-sm rounded-lg" />
                         {showClienteDropdown && (
                           <div className="absolute z-50 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                             {loadingClientes ? (
@@ -219,15 +219,26 @@ const CriarPedido = () => {
                         )}
                       </div>
                     )}
-                    <p className="text-[11px] text-muted-foreground mt-1.5">Selecione o cliente do pedido.</p>
+                    <p className="text-xs text-muted-foreground mt-1.5">Selecione o cliente do pedido.</p>
+                  </div>
+
+                  {/* Representante */}
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-1.5 block">
+                      Representante <span className="text-destructive">*</span>
+                    </label>
+                    <div className="border border-border rounded-lg px-3 py-2.5 text-sm bg-background text-foreground">{representante}</div>
+                    <p className="text-xs text-muted-foreground mt-1.5">Representante responsável pelo pedido.</p>
                   </div>
 
                   {/* Desconto */}
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Desconto</label>
+                    <label className="text-sm font-medium text-foreground mb-1.5 block">
+                      Desconto
+                    </label>
                     <Input type="number" value={desconto || ''} onChange={e => setDesconto(parseFloat(e.target.value) || 0)}
                       className="h-10 text-sm rounded-lg" placeholder="0,00" step="0.01" />
-                    <p className="text-[11px] text-muted-foreground mt-1.5">Insira o valor do desconto, se houver.</p>
+                    <p className="text-xs text-muted-foreground mt-1.5">Insira o valor do desconto, se houver.</p>
                   </div>
                 </div>
               </div>

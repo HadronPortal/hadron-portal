@@ -56,7 +56,7 @@ const Header = () => {
       {/* Top row: Logo + Avatar */}
       <div className="flex items-center justify-between px-6 sm:px-10 h-[70px]">
         <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={() => navigate('/')}>
-          <img alt="Hádron" className="h-40 object-contain" src={logoImg} />
+          <img alt="Hádron" className="h-52 object-contain" src={logoImg} />
         </div>
 
         <div className="flex items-center gap-3">

@@ -137,8 +137,8 @@ const Index = () => {
       <div className="relative overflow-hidden bg-black">
         <div className="absolute inset-x-0 top-0 h-[70px] bg-[hsl(220,60%,15%)]" />
         <div className="h-[70px]" />
-        <div className="relative px-4 sm:px-8 py-6 sm:py-8 flex items-center justify-between">
-          <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
+        <div className="relative px-4 sm:px-8 py-4 sm:py-8 flex items-center justify-between">
+          <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
           <nav className="hidden lg:flex items-center gap-1">
             {navItems.map(({ label, path }) => {
               const isActive = location.pathname === path;
@@ -158,10 +158,10 @@ const Index = () => {
             })}
           </nav>
         </div>
-        <div className="h-20 sm:h-24" />
+        <div className="h-16 sm:h-24" />
       </div>
 
-      <main className="flex-1 px-4 sm:px-8 pb-6 space-y-5 -mt-20 sm:-mt-24 relative z-10">
+      <main className="flex-1 px-3 sm:px-8 pb-6 space-y-4 sm:space-y-5 -mt-16 sm:-mt-24 relative z-10">
         {(isLoading || isFetching) ? (
           <Spinner />
         ) : error ? (
@@ -169,8 +169,8 @@ const Index = () => {
         ) : (
           <>
             {/* Row 1 */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-              <div className="flex flex-col gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+              <div className="flex flex-col gap-4 sm:gap-5">
                 <EarningsCard
                   enviados={cards?.enviados ?? 0}
                   aprovados={cards?.aprovados ?? 0}
@@ -191,8 +191,10 @@ const Index = () => {
             </div>
 
             {/* Row 2 */}
-            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-5 items-start">
-              <OrdersTable orders={orders} />
+            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-4 sm:gap-5 items-start">
+              <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
+                <OrdersTable orders={orders} />
+              </div>
               <ProductDeliveryCard produtos={topProdutos} />
             </div>
           </>

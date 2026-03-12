@@ -107,7 +107,7 @@ const EarningsCard = () => {
                 onMouseLeave={() => setActiveIndex(null)}
               >
                 <span
-                  className="px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                  className="w-24 text-center py-1 rounded-full text-xs font-medium border"
                   style={{
                     backgroundColor: item.color + '18',
                     color: item.color,
@@ -116,9 +116,12 @@ const EarningsCard = () => {
                 >
                   {item.name}
                 </span>
-                <span className="font-semibold text-foreground tabular-nums text-right ml-auto">
-                  R${item.value.toLocaleString('pt-BR')}
-                </span>
+                <div className="flex flex-col ml-auto items-end">
+                  <span className="font-semibold text-foreground tabular-nums">
+                    R${item.value.toLocaleString('pt-BR')}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{pct}%</span>
+                </div>
               </div>
             );
           })}

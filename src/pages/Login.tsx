@@ -83,12 +83,13 @@ const Login = () => {
       </div>
 
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-8">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-8 relative">
+        {/* Mobile logo - positioned in upper area */}
+        <div className="absolute top-[15vh] left-0 right-0 flex lg:hidden items-center justify-center">
+          <img src={logoHadronGo} alt="Hádron GO" className="h-14 object-contain" />
+        </div>
+
         <div className="w-full max-w-sm space-y-8">
-          {/* Mobile logo */}
-          <div className="flex lg:hidden items-center justify-center gap-3 mb-8 -mt-32">
-            <img src={logoHadronGo} alt="Hádron GO" className="h-14 object-contain" />
-          </div>
 
           <div className="hidden lg:block text-center space-y-2">
             <h1 className="text-3xl font-light tracking-wide" style={{ color: 'hsl(0, 0%, 100%)' }}>

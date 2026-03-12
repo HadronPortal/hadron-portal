@@ -1,12 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search } from 'lucide-react';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 
 export interface Order {
   id: string;
@@ -39,45 +34,9 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
 
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden">
-      {/* Header */}
-      <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-semibold text-foreground">Últimos Pedidos</h2>
-          <p className="text-xs text-muted-foreground">Média de {orders.length > 0 ? orders.length : 57} pedidos por dia</p>
-        </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span>Categoria</span>
-            <Select defaultValue="all">
-              <SelectTrigger className="h-7 text-xs border-0 bg-transparent shadow-none px-1 w-auto gap-1">
-                <SelectValue placeholder="Mostrar tudo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Mostrar tudo</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span>Status</span>
-            <Select defaultValue="all">
-              <SelectTrigger className="h-7 text-xs border-0 bg-transparent shadow-none px-1 w-auto gap-1">
-                <SelectValue placeholder="Mostrar tudo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Mostrar tudo</SelectItem>
-                <SelectItem value="enviado">Enviado</SelectItem>
-                <SelectItem value="aprovado">Aprovado</SelectItem>
-                <SelectItem value="confirmado">Confirmado</SelectItem>
-                <SelectItem value="pendente">Pendente</SelectItem>
-                <SelectItem value="cancelado">Rejeitado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="relative">
-            <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Procurar" className="h-7 text-xs pl-7 w-32 rounded-lg" />
-          </div>
-        </div>
+      <div className="px-6 py-5">
+        <h2 className="text-base font-semibold text-foreground">Últimos Pedidos</h2>
+        <p className="text-xs text-muted-foreground">Média de {orders.length > 0 ? orders.length : 57} pedidos por dia</p>
       </div>
 
       {/* Table */}
@@ -91,7 +50,7 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
               <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total</TableHead>
               <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Lucro</TableHead>
               <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Status</TableHead>
-              <TableHead className="w-10" />
+              
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -133,11 +92,6 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
                       >
                         {status.label}
                       </span>
-                    </TableCell>
-                    <TableCell>
-                      <button className="w-6 h-6 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-accent">
-                        <Plus size={14} />
-                      </button>
                     </TableCell>
                   </TableRow>
                 );

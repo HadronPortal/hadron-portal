@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Package, Star, ShoppingCart, X } from 'lucide-react';
+import { Package, ShoppingCart } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
 const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?file=`;
@@ -55,6 +55,13 @@ interface CatalogoDetalheProps {
   productFoto?: string;
 }
 
+const DetailRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div className="flex items-start py-2.5">
+    <span className="text-sm text-muted-foreground w-[120px] flex-shrink-0">{label}</span>
+    <div className="text-sm font-medium text-foreground">{children}</div>
+  </div>
+);
+
 const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFoto }: CatalogoDetalheProps) => {
   const [data, setData] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(false);
@@ -65,7 +72,6 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
       setData(null);
       return;
     }
-
     const fetchData = async () => {
       setLoading(true);
       setError(null);
@@ -84,7 +90,6 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
         setLoading(false);
       }
     };
-
     fetchData();
   }, [open, productId]);
 
@@ -98,11 +103,9 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
       <SheetContent className="w-full sm:max-w-[480px] p-0 flex flex-col overflow-hidden">
         {/* Header */}
         <SheetHeader className="px-5 pt-5 pb-3 border-b border-border flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <SheetTitle className="text-lg font-semibold text-foreground">
-              Detalhes do Produto
-            </SheetTitle>
-          </div>
+          <SheetTitle className="text-lg font-bold text-foreground">
+            Detalhes do Produto
+          </SheetTitle>
         </SheetHeader>
 
         {/* Scrollable content */}
@@ -116,160 +119,121 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
           ) : (
             <div className="p-5 space-y-5">
               {/* Product Image */}
-              <div className="relative bg-muted rounded-xl overflow-hidden flex items-center justify-center aspect-square">
-                {(info?.pro_foto || productFoto) ? (
-                  <img
-                    src={`${PROXY_BASE}${encodeURIComponent(info?.pro_foto || productFoto || '')}`}
-                    alt={info?.pro_despro || productName}
-                    className="w-full h-full object-contain p-6"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                      (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                    }}
-                  />
-                ) : null}
-                {(!info?.pro_foto && !productFoto) && (
-                  <Package className="w-16 h-16 text-muted-foreground" />
-                )}
+              <div className="relative rounded-xl border border-border overflow-hidden bg-card">
+                <div className="flex items-center justify-center aspect-[4/3] p-6">
+                  {(info?.pro_foto || productFoto) ? (
+                    <img
+                      src={`${PROXY_BASE}${encodeURIComponent(info?.pro_foto || productFoto || '')}`}
+                      alt={info?.pro_despro || productName}
+                      className="max-w-full max-h-full object-contain"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  ) : (
+                    <Package className="w-16 h-16 text-muted-foreground" />
+                  )}
+                </div>
+                {/* Brand badge bottom-right */}
                 {info?.pro_marca && (
-                  <div className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-border">
-                    <span className="text-xs font-semibold text-foreground">{info.pro_marca}</span>
+                  <div className="absolute bottom-3 right-3 bg-card border border-border rounded-lg px-3 py-1.5">
+                    <span className="text-xs font-bold text-foreground">{info.pro_marca}</span>
                   </div>
                 )}
               </div>
 
               {/* Product Name */}
-              <div>
-                <h2 className="text-xl font-bold text-foreground leading-tight">
-                  {info?.pro_despro || productName}
-                </h2>
-                {info && (
-                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                    Código: {info.pro_codpro}
-                    {info.pro_codint && ` · Cód. Interno: ${info.pro_codint}`}
-                    {info.pro_unidade && ` · Unidade: ${info.pro_unidade}`}
-                  </p>
-                )}
-              </div>
+              <h2 className="text-lg font-bold text-foreground leading-snug">
+                {info?.pro_despro || productName}
+              </h2>
 
-              {/* Details Table */}
+              {/* Description */}
               {info && (
-                <div className="space-y-0 divide-y divide-border">
-                  {/* Disponibilidade */}
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-sm text-muted-foreground">Disponibilidade</span>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold ${
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Código: {info.pro_codpro}
+                  {info.pro_codint && ` · Cód. Interno: ${info.pro_codint}`}
+                  {info.pro_unidade && ` · Unidade: ${info.pro_unidade}`}
+                  {info.pro_unid_emb > 0 && ` · Embalagem: ${info.pro_unid_emb} un`}
+                </p>
+              )}
+
+              {/* Details table */}
+              {info && (
+                <div className="divide-y divide-border">
+                  <DetailRow label="Disponibilidade">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                       isInStock
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-red-500 text-white'
                     }`}>
                       {isInStock ? 'Em Estoque' : 'Sem Estoque'}
                     </span>
-                  </div>
+                  </DetailRow>
 
-                  {/* Saldo */}
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-sm text-muted-foreground">Saldo Atual</span>
-                    <span className="text-sm font-medium text-foreground">{saldoAtual.toLocaleString('pt-BR')}</span>
-                  </div>
+                  <DetailRow label="SKU">
+                    <span className="font-mono">{info.pro_codpro}</span>
+                  </DetailRow>
 
-                  {/* SKU / Código */}
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-sm text-muted-foreground">Código</span>
-                    <span className="text-sm font-mono font-medium text-foreground">{info.pro_codpro}</span>
-                  </div>
-
-                  {/* Grupo */}
                   {info.tprc_grp?.grp_nomgrp && (
-                    <div className="flex items-center justify-between py-3">
-                      <span className="text-sm text-muted-foreground">Grupo</span>
-                      <span className="text-sm font-medium text-foreground">{info.tprc_grp.grp_nomgrp}</span>
-                    </div>
+                    <DetailRow label="Grupo">
+                      {info.tprc_grp.grp_nomgrp}
+                    </DetailRow>
                   )}
 
-                  {/* NCM */}
-                  {info.pro_codncm > 0 && (
-                    <div className="flex items-center justify-between py-3">
-                      <span className="text-sm text-muted-foreground">NCM</span>
-                      <span className="text-sm font-mono font-medium text-foreground">{info.pro_codncm}</span>
-                    </div>
+                  <DetailRow label="Saldo Atual">
+                    {saldoAtual.toLocaleString('pt-BR')}
+                  </DetailRow>
+
+                  {(info.pro_peso_liq > 0 || info.pro_peso_bru > 0) && (
+                    <DetailRow label="Peso">
+                      {info.pro_peso_liq > 0 ? `${info.pro_peso_liq} ${info.pro_unidade}` : `${info.pro_peso_bru} ${info.pro_unidade}`}
+                    </DetailRow>
                   )}
 
-                  {/* GTIN */}
-                  {info.pro_gtin && (
-                    <div className="flex items-center justify-between py-3">
-                      <span className="text-sm text-muted-foreground">GTIN</span>
-                      <span className="text-sm font-mono font-medium text-foreground">{info.pro_gtin}</span>
-                    </div>
-                  )}
-
-                  {/* Status */}
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-sm text-muted-foreground">Status</span>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold ${
-                      info.pro_fl_ativo
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                    }`}>
-                      {info.pro_fl_ativo ? 'Ativo' : 'Inativo'}
-                    </span>
-                  </div>
-
-                  {/* Peso */}
-                  {(info.pro_peso_bru > 0 || info.pro_peso_liq > 0) && (
-                    <div className="flex items-center justify-between py-3">
-                      <span className="text-sm text-muted-foreground">Peso</span>
-                      <span className="text-sm font-medium text-foreground">
-                        {info.pro_peso_liq > 0 ? `${info.pro_peso_liq} ${info.pro_unidade}` : `${info.pro_peso_bru} ${info.pro_unidade}`}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Dimensões */}
                   {(info.pro_dph_altura > 0 || info.pro_dph_largura > 0 || info.pro_dph_comprim > 0) && (
-                    <div className="flex items-center justify-between py-3">
-                      <span className="text-sm text-muted-foreground">Dimensões</span>
-                      <span className="text-sm font-medium text-foreground">
-                        {info.pro_dph_altura}×{info.pro_dph_largura}×{info.pro_dph_comprim} cm
-                      </span>
-                    </div>
+                    <DetailRow label="Dimensões">
+                      {info.pro_dph_altura}×{info.pro_dph_largura}×{info.pro_dph_comprim} cm
+                    </DetailRow>
+                  )}
+
+                  {info.pro_codncm > 0 && (
+                    <DetailRow label="NCM">
+                      <span className="font-mono">{info.pro_codncm}</span>
+                    </DetailRow>
+                  )}
+
+                  {info.pro_gtin && (
+                    <DetailRow label="GTIN">
+                      <span className="font-mono">{info.pro_gtin}</span>
+                    </DetailRow>
                   )}
                 </div>
               )}
 
               {/* Prices */}
               {precos && (
-                <div className="bg-muted/50 rounded-xl p-4 space-y-2.5">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tabela de Preços</span>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Tabela 1</span>
-                      <span className="text-lg font-bold text-foreground">{formatCurrency(precos.ppr_prcpro1)}</span>
-                    </div>
-                    {precos.ppr_prcpro2 > 0 && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Tabela 2</span>
-                        <span className="text-sm font-semibold text-foreground">{formatCurrency(precos.ppr_prcpro2)}</span>
-                      </div>
-                    )}
-                    {precos.ppr_prcpro3 > 0 && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Tabela 3</span>
-                        <span className="text-sm font-semibold text-foreground">{formatCurrency(precos.ppr_prcpro3)}</span>
-                      </div>
-                    )}
-                    {precos.ppr_prc_min > 0 && (
-                      <div className="flex items-center justify-between border-t border-border pt-2">
-                        <span className="text-sm text-muted-foreground">Preço Mínimo</span>
-                        <span className="text-sm font-semibold text-foreground">{formatCurrency(precos.ppr_prc_min)}</span>
-                      </div>
-                    )}
-                  </div>
+                <div className="flex items-baseline justify-end gap-2 pt-2">
+                  {precos.ppr_prcpro2 > 0 && precos.ppr_prcpro2 !== precos.ppr_prcpro1 && (
+                    <span className="text-sm text-muted-foreground line-through">
+                      {formatCurrency(precos.ppr_prcpro2)}
+                    </span>
+                  )}
+                  <span className="text-xl font-bold text-foreground">
+                    {formatCurrency(precos.ppr_prcpro1)}
+                  </span>
                 </div>
               )}
             </div>
           )}
         </div>
+
+        {/* Sticky bottom button */}
+        {!loading && !error && (
+          <div className="flex-shrink-0 p-5 border-t border-border">
+            <Button className="w-full h-11 text-sm font-semibold gap-2">
+              <ShoppingCart className="w-4 h-4" />
+              Adicionar ao Carrinho
+            </Button>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

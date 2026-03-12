@@ -187,7 +187,11 @@ const Catalogo = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredItems.map((item) => (
-                    <TableRow key={item.pro_codpro} className="hover:bg-accent/30">
+                    <TableRow
+                      key={item.pro_codpro}
+                      className="hover:bg-accent/30 cursor-pointer"
+                      onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
+                    >
                       {visibleCols.cod !== false && <TableCell className="text-sm">{item.pro_codpro}</TableCell>}
                       {visibleCols.foto !== false && (
                         <TableCell>

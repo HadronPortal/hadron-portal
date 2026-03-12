@@ -96,8 +96,8 @@ const Header = () => {
               <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
                 {/* User info */}
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
-                  <div className="h-11 w-11 rounded-full bg-primary/20 flex items-center justify-center text-base font-bold text-primary flex-shrink-0">
-                    {userName.charAt(0).toUpperCase()}
+                  <div className="h-11 w-11 rounded-full overflow-hidden flex-shrink-0">
+                    <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-foreground truncate">{userName}</p>

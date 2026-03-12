@@ -385,7 +385,7 @@ const Perfil = () => {
             {/* Actions */}
             <div className="flex items-center justify-end gap-3 p-6 sm:px-8 border-t border-border">
               <Button variant="outline" onClick={() => setActiveTab('Visão Geral')}>Descartar</Button>
-              <Button>Salvar Alterações</Button>
+              <Button onClick={handleSaveProfile}>Salvar Alterações</Button>
             </div>
           </div>
 

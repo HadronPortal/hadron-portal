@@ -1,7 +1,7 @@
 import { BarChart, Bar, ResponsiveContainer } from 'recharts';
 
 const barData = [
-  { v: 30 }, { v: 55 }, { v: 40 }, { v: 70 }, { v: 50 }, { v: 65 }, { v: 45 },
+  { v: 35 }, { v: 55 }, { v: 45 }, { v: 50 }, { v: 70 }, { v: 55 }, { v: 60 }, { v: 50 },
 ];
 
 interface Props {
@@ -27,8 +27,8 @@ const DailySalesCard = ({ value }: Props) => {
       <div className="flex-1 flex items-end">
         <div className="w-full h-20">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={barData} barGap={4}>
-              <Bar dataKey="v" fill="hsl(var(--primary))" radius={[3, 3, 0, 0]} opacity={0.7} />
+            <BarChart data={barData} barGap={6} barCategoryGap="20%">
+              <Bar dataKey="v" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={18} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -113,13 +113,8 @@ const Index = () => {
       <div className="relative overflow-hidden bg-[hsl(220,60%,15%)]">
         <div className="absolute inset-x-0 top-0 h-[70px] bg-black" />
         <div className="h-[70px]" />
-        <div className="relative px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
-          </div>
+        <div className="relative px-4 sm:px-8 py-6 sm:py-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
         </div>
         <div className="h-20 sm:h-24" />
       </div>

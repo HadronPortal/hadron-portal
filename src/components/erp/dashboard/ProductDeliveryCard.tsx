@@ -1,15 +1,46 @@
 import { Package } from 'lucide-react';
+import { useState } from 'react';
 
 interface Produto {
   codigo: number;
   descricao: string;
   quantidade: number;
   valorTotal: number;
+  foto?: string;
 }
 
 interface Props {
   produtos: Produto[];
 }
+
+const getProxyUrl = (foto: string) => {
+  if (!foto) return '';
+  const filename = foto.split('/').pop() || foto;
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID || 'okertqaojhjafezdwnaa';
+  return `https://${projectId}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
+};
+
+const ProductImage = ({ foto, descricao }: { foto: string; descricao: string }) => {
+  const [error, setError] = useState(false);
+  const url = getProxyUrl(foto);
+
+  if (!url || error) {
+    return (
+      <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+        <Package size={18} className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={url}
+      alt={descricao}
+      onError={() => setError(true)}
+      className="w-10 h-10 rounded-full object-cover bg-accent flex-shrink-0"
+    />
+  );
+};
 
 const ProductDeliveryCard = ({ produtos }: Props) => {
   return (
@@ -25,9 +56,7 @@ const ProductDeliveryCard = ({ produtos }: Props) => {
         ) : (
           produtos.map((item) => (
             <div key={item.codigo} className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/30">
-              <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-lg flex-shrink-0">
-                <Package size={18} className="text-muted-foreground" />
-              </div>
+              <ProductImage foto={item.foto || ''} descricao={item.descricao} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-foreground truncate">{item.descricao}</span>

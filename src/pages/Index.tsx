@@ -43,6 +43,7 @@ interface DashboardAPIResponse {
     descricao: string;
     quantidade: string;
     valor_total: string;
+    foto?: string;
   }>;
 }
 
@@ -106,6 +107,7 @@ const Index = () => {
       descricao: p.descricao,
       quantidade: parseFloat(p.quantidade),
       valorTotal: parseFloat(p.valor_total),
+      foto: p.foto || '',
     }));
   }, [dashData]);
 

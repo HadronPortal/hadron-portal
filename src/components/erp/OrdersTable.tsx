@@ -2,12 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-
-export interface Order {
   id: string;
   codigo: string;
   cliente_nome: string;

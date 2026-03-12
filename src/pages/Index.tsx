@@ -2,18 +2,13 @@ import { useMemo } from 'react';
 import { format } from 'date-fns';
 
 import OrdersTable from '@/components/erp/OrdersTable';
-import OrdersTable from '@/components/erp/OrdersTable';
 import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 
 import EarningsCard from '@/components/erp/dashboard/EarningsCard';
-import DailySalesCard from '@/components/erp/dashboard/DailySalesCard';
 import SalesChartCard from '@/components/erp/dashboard/SalesChartCard';
-import OrdersMonthCard from '@/components/erp/dashboard/OrdersMonthCard';
 import NewCustomersCard from '@/components/erp/dashboard/NewCustomersCard';
-import DiscountedSalesCard from '@/components/erp/dashboard/DiscountedSalesCard';
 import ProductDeliveryCard from '@/components/erp/dashboard/ProductDeliveryCard';
-import StockReportCard from '@/components/erp/dashboard/StockReportCard';
 
 interface DashboardAPIResponse {
   dashboard: {

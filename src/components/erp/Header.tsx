@@ -8,10 +8,7 @@ const navItems = [
   { icon: Users, label: 'Clientes', path: '/clientes' },
   { icon: Gauge, label: 'Analítico', path: '/analitico' },
   { icon: ClipboardList, label: 'Pedidos', path: '/pedidos' },
-  { icon: LayoutGrid, label: 'Produtos', path: '/produtos' },
   { icon: Box, label: 'Catálogo', path: '/catalogo' },
-  { icon: DollarSign, label: 'Cobranças', path: '/cobrancas' },
-  { icon: ShoppingBag, label: 'Loja Virtual', path: '/loja' },
 ];
 
 const Header = () => {

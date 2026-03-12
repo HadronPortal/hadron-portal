@@ -212,7 +212,7 @@ const Header = () => {
         {/* User info */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
           <div className="h-10 w-10 rounded-md overflow-hidden flex-shrink-0">
-            <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+            <img src={userAvatar} alt={userName} className="h-full w-full object-cover" />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground truncate">{userName}</p>

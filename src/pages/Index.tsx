@@ -161,7 +161,7 @@ const Index = () => {
         <div className="h-16 sm:h-24" />
       </div>
 
-      <main className="flex-1 px-4 sm:px-10 lg:px-20 xl:px-32 pb-6 space-y-4 sm:space-y-5 -mt-16 sm:-mt-24 relative z-10 max-w-[1500px] mx-auto w-full">
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-4 sm:space-y-5 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
         {(isLoading || isFetching) ? (
           <Spinner />
         ) : error ? (

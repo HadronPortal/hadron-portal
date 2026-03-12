@@ -100,7 +100,7 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-[480px] p-0 flex flex-col overflow-hidden">
+      <SheetContent className="w-full sm:max-w-[480px] p-0 flex flex-col bg-card overflow-y-auto">
         {/* Header */}
         <SheetHeader className="px-5 pt-5 pb-3 border-b border-border flex-shrink-0">
           <SheetTitle className="text-lg font-bold text-foreground">

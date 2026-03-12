@@ -74,7 +74,7 @@ const Login = () => {
       {/* Left side - Logo */}
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center relative">
         <div className="flex items-center gap-4">
-          <img src={logoHadronGo} alt="Hádron GO" className="h-20 object-contain" />
+          <img src={logoHadronGo} alt="Hádron GO" className="h-32 object-contain" />
         </div>
         <div
           className="absolute right-0 top-1/4 bottom-1/4 w-px"

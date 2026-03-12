@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2 } from 'lucide-react';
+import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2, ChevronDown } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import logoImg from '@/assets/logo_hadron_go.png';
@@ -18,19 +18,24 @@ const Header = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [companyMenuOpen, setCompanyMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const companyRef = useRef<HTMLDivElement>(null);
   
 
-  // Close menu on outside click
+  // Close menus on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
       }
+      if (companyRef.current && !companyRef.current.contains(e.target as Node)) {
+        setCompanyMenuOpen(false);
+      }
     };
-    if (userMenuOpen) document.addEventListener('mousedown', handleClick);
+    if (userMenuOpen || companyMenuOpen) document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [userMenuOpen]);
+  }, [userMenuOpen, companyMenuOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem('hadron_token');
@@ -49,7 +54,12 @@ const Header = () => {
   
   const userName = userData?.nome || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.email || userData?.aus_email || '';
-  const userCompany = userData?.aus_empresa || userData?.company || 'Procion Tecnologia';
+  
+  const companies = [
+    { id: 1, name: 'Procion Tecnologia' },
+    { id: 2, name: 'Aliança Artes' },
+  ];
+  const [selectedCompany, setSelectedCompany] = useState(companies[0]);
 
   return (
     <header className="text-primary-foreground">
@@ -65,11 +75,35 @@ const Header = () => {
           </button>
 
           <div className="relative flex items-center gap-3" ref={menuRef}>
-            <div className="hidden sm:flex items-center gap-4">
-              <span className="text-[11px] text-primary-foreground/60 leading-tight truncate max-w-[180px] flex items-center gap-1">
-                <Building2 size={12} />
-                {userCompany}
-              </span>
+            <div className="hidden sm:flex items-center gap-5">
+              <div className="relative" ref={companyRef}>
+                <button
+                  onClick={() => setCompanyMenuOpen(!companyMenuOpen)}
+                  className="flex items-center gap-1.5 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                >
+                  <Building2 size={16} />
+                  <span className="text-sm leading-tight truncate max-w-[200px]">{selectedCompany.name}</span>
+                  <ChevronDown size={14} className={`transition-transform ${companyMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {companyMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                    <div className="py-1">
+                      {companies.map((c) => (
+                        <button
+                          key={c.id}
+                          onClick={() => { setSelectedCompany(c); setCompanyMenuOpen(false); }}
+                          className={`flex items-center gap-2 w-full px-4 py-2.5 text-sm text-left transition-colors ${
+                            selectedCompany.id === c.id ? 'bg-accent text-foreground font-medium' : 'text-foreground hover:bg-accent'
+                          }`}
+                        >
+                          <Building2 size={14} className="text-muted-foreground" />
+                          {c.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
               <span className="text-sm font-medium leading-tight truncate max-w-[180px]">{userName}</span>
             </div>
             <button

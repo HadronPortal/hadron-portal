@@ -21,6 +21,19 @@ interface Props {
   totalValue: number;
 }
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-foreground text-background px-3 py-2 rounded-lg shadow-lg text-sm">
+      <p className="font-semibold mb-0.5">{label}</p>
+      <p className="flex items-center gap-1.5">
+        <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
+        R$ {payload[0].value.toLocaleString('pt-BR')}
+      </p>
+    </div>
+  );
+};
+
 const SalesChartCard = ({ totalValue }: Props) => {
   const displayTotal = totalValue > 0 ? totalValue : 14094;
 
@@ -33,13 +46,13 @@ const SalesChartCard = ({ totalValue }: Props) => {
 
       <div className="mb-4">
         <div className="flex items-baseline gap-0.5">
-          <span className="text-sm text-muted-foreground align-super">$</span>
+          <span className="text-sm text-muted-foreground align-super">R$</span>
           <span className="text-4xl font-bold text-foreground">
             {displayTotal.toLocaleString('pt-BR')}
           </span>
         </div>
         <p className="text-xs text-muted-foreground mt-1">
-          Mais US$ 48.346 para atingir a meta
+          Mais R$ 48.346 para atingir a meta
         </p>
       </div>
 
@@ -48,8 +61,9 @@ const SalesChartCard = ({ totalValue }: Props) => {
           <AreaChart data={salesData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="salesGreenFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#50cd89" stopOpacity={0.12} />
-                <stop offset="100%" stopColor="#50cd89" stopOpacity={0.01} />
+                <stop offset="0%" stopColor="#34d399" stopOpacity={0.2} />
+                <stop offset="50%" stopColor="#34d399" stopOpacity={0.06} />
+                <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false} />
@@ -64,8 +78,8 @@ const SalesChartCard = ({ totalValue }: Props) => {
               tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(v) => `$${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}K`}
-              width={50}
+              tickFormatter={(v) => `R$${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}K`}
+              width={55}
               domain={[10000, 24000]}
               ticks={[10000, 13500, 17000, 20500, 24000]}
             />
@@ -73,33 +87,17 @@ const SalesChartCard = ({ totalValue }: Props) => {
               y={20500}
               stroke="hsl(var(--muted-foreground))"
               strokeDasharray="6 4"
-              strokeOpacity={0.5}
+              strokeOpacity={0.4}
             />
-            <Tooltip
-              contentStyle={{
-                borderRadius: 8,
-                fontSize: 13,
-                border: '1px solid hsl(var(--border))',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                padding: '8px 12px',
-              }}
-              labelStyle={{ fontWeight: 600, marginBottom: 4 }}
-              formatter={(v: number) => [
-                <span key="v" className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#50cd89] inline-block" />
-                  <span className="font-semibold">${(v / 1000).toFixed(0)}K</span>
-                </span>,
-                'Sales',
-              ]}
-            />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeDasharray: '4 4', strokeOpacity: 0.5 }} />
             <Area
-              type="step"
+              type="monotone"
               dataKey="value"
-              stroke="#50cd89"
+              stroke="#34d399"
               strokeWidth={2.5}
               fill="url(#salesGreenFill)"
               dot={false}
-              activeDot={{ r: 5, fill: '#50cd89', stroke: '#fff', strokeWidth: 2 }}
+              activeDot={{ r: 5, fill: '#34d399', stroke: 'hsl(var(--card))', strokeWidth: 3 }}
             />
           </AreaChart>
         </ResponsiveContainer>

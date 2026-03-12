@@ -1,6 +1,7 @@
+import { useState, useRef, useCallback } from 'react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
 
-const salesData = [
+const allSalesData = [
   { date: 'Abr 04', value: 17000 },
   { date: 'Abr 05', value: 19500 },
   { date: 'Abr 06', value: 19500 },
@@ -15,7 +16,22 @@ const salesData = [
   { date: 'Abr 15', value: 18500 },
   { date: 'Abr 16', value: 18500 },
   { date: 'Abr 17', value: 21500 },
+  { date: 'Abr 18', value: 22000 },
+  { date: 'Abr 19', value: 19000 },
+  { date: 'Abr 20', value: 20500 },
+  { date: 'Abr 21', value: 23000 },
+  { date: 'Abr 22', value: 21000 },
+  { date: 'Abr 23', value: 19500 },
+  { date: 'Abr 24', value: 22500 },
+  { date: 'Abr 25', value: 24000 },
+  { date: 'Abr 26', value: 20000 },
+  { date: 'Abr 27', value: 18500 },
+  { date: 'Abr 28', value: 21500 },
+  { date: 'Abr 29', value: 23500 },
+  { date: 'Abr 30', value: 22000 },
 ];
+
+const VISIBLE_COUNT = 14;
 
 interface Props {
   totalValue: number;
@@ -36,6 +52,42 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const SalesChartCard = ({ totalValue }: Props) => {
   const displayTotal = totalValue > 0 ? totalValue : 14094;
+  const [startIndex, setStartIndex] = useState(0);
+  const isDragging = useRef(false);
+  const lastX = useRef(0);
+
+  const visibleData = allSalesData.slice(startIndex, startIndex + VISIBLE_COUNT);
+  const maxStart = allSalesData.length - VISIBLE_COUNT;
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    isDragging.current = true;
+    lastX.current = e.clientX;
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging.current) return;
+    const diff = lastX.current - e.clientX;
+    if (Math.abs(diff) > 30) {
+      if (diff > 0) {
+        setStartIndex(prev => Math.min(prev + 1, maxStart));
+      } else {
+        setStartIndex(prev => Math.max(prev - 1, 0));
+      }
+      lastX.current = e.clientX;
+    }
+  }, [maxStart]);
+
+  const handleMouseUp = useCallback(() => {
+    isDragging.current = false;
+  }, []);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (e.deltaX > 0 || e.deltaY > 0) {
+      setStartIndex(prev => Math.min(prev + 1, maxStart));
+    } else {
+      setStartIndex(prev => Math.max(prev - 1, 0));
+    }
+  }, [maxStart]);
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">
@@ -56,9 +108,26 @@ const SalesChartCard = ({ totalValue }: Props) => {
         </p>
       </div>
 
-      <div className="flex-1 min-h-[200px]">
+      {/* Scroll indicator */}
+      <div className="flex items-center justify-between mb-2 px-1">
+        <span className="text-[10px] text-muted-foreground">
+          {startIndex > 0 ? '← arraste' : ''}
+        </span>
+        <span className="text-[10px] text-muted-foreground">
+          {startIndex < maxStart ? 'arraste →' : ''}
+        </span>
+      </div>
+
+      <div
+        className="flex-1 min-h-[200px] cursor-grab active:cursor-grabbing select-none"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
+      >
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={salesData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
+          <AreaChart data={visibleData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="salesGreenFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#34d399" stopOpacity={0.2} />
@@ -98,6 +167,7 @@ const SalesChartCard = ({ totalValue }: Props) => {
               fill="url(#salesGreenFill)"
               dot={false}
               activeDot={{ r: 5, fill: '#34d399', stroke: 'hsl(var(--card))', strokeWidth: 3 }}
+              isAnimationActive={false}
             />
           </AreaChart>
         </ResponsiveContainer>

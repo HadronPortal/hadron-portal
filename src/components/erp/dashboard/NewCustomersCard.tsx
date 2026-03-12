@@ -75,7 +75,7 @@ const NewCustomersCard = ({ clientes, positivados }: Props) => {
               </button>
               <h2 className="text-xl font-bold text-foreground">Clientes Positivados</h2>
               <p className="text-sm text-muted-foreground mt-2">
-                {positivados} clientes no período · <span className="text-primary font-medium cursor-pointer hover:underline">Ver todos</span>
+                {positivados} clientes no período · <a href="/clientes" className="text-primary font-medium cursor-pointer hover:underline">Ver todos</a>
               </p>
             </div>
 

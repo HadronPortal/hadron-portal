@@ -93,18 +93,9 @@ const EarningsCard = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Center label */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ transform: 'rotateX(12deg) translateY(-2px)' }}>
-            <div className="text-center">
-              <p className="text-[10px] text-muted-foreground leading-none">Total</p>
-              <p className="text-xs font-bold text-foreground leading-tight mt-0.5">
-                {(total / 1000).toFixed(0)}k
-              </p>
-            </div>
-          </div>
         </div>
 
-        <div className="space-y-3 text-sm flex-1">
+        <div className="space-y-2.5 text-sm flex-1">
           {data.map((item, i) => {
             const pct = ((item.value / total) * 100).toFixed(1);
             return (
@@ -116,16 +107,18 @@ const EarningsCard = () => {
                 onMouseLeave={() => setActiveIndex(null)}
               >
                 <span
-                  className="w-3 h-3 rounded flex-shrink-0 shadow-sm"
-                  style={{ backgroundColor: item.color }}
-                />
-                <span className="text-muted-foreground w-20">{item.name}</span>
-                <div className="flex flex-col ml-auto items-end">
-                  <span className="font-semibold text-foreground tabular-nums text-right">
-                    R${item.value.toLocaleString('pt-BR')}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">{pct}%</span>
-                </div>
+                  className="px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                  style={{
+                    backgroundColor: item.color + '18',
+                    color: item.color,
+                    borderColor: item.color + '40',
+                  }}
+                >
+                  {item.name}
+                </span>
+                <span className="font-semibold text-foreground tabular-nums text-right ml-auto">
+                  R${item.value.toLocaleString('pt-BR')}
+                </span>
               </div>
             );
           })}

@@ -99,7 +99,7 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
   const isInStock = saldoAtual > 0;
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={onOpenChange} modal={false}>
       <SheetContent className="w-full sm:max-w-[480px] p-0 flex flex-col bg-card overflow-y-auto">
         {/* Header */}
         <SheetHeader className="px-5 pt-5 pb-3 border-b border-border flex-shrink-0">

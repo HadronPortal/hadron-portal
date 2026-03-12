@@ -19,6 +19,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { representantes } = useRepresentantes();
 
   // Close menu on outside click
   useEffect(() => {

@@ -196,6 +196,12 @@ const Index = () => {
               <OrdersTable orders={orders} />
               <DiscountedSalesCard />
             </div>
+
+            {/* Row 4: Product Delivery | Stock Report */}
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_2fr] gap-5 items-start">
+              <ProductDeliveryCard />
+              <StockReportCard />
+            </div>
           </>
         )}
       </main>

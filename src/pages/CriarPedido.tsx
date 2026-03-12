@@ -279,7 +279,7 @@ const CriarPedido = () => {
             </div>
 
             {/* RIGHT CARD: Select Products */}
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-9">
               <div className="bg-card rounded-xl border border-border shadow-sm">
                 <div className="px-5 py-4 border-b border-border">
                   <h2 className="text-base font-bold text-foreground">Selecionar Produtos</h2>

@@ -1,22 +1,14 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import { format } from 'date-fns';
-import { Button } from '@/components/ui/button';
-import heroBg from '@/assets/hero-bg.jpg';
 
-import FilterBar from '@/components/erp/FilterBar';
-import { useRepresentantes } from '@/hooks/use-representantes';
 import OrdersTable from '@/components/erp/OrdersTable';
 import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 
 import EarningsCard from '@/components/erp/dashboard/EarningsCard';
-import DailySalesCard from '@/components/erp/dashboard/DailySalesCard';
 import SalesChartCard from '@/components/erp/dashboard/SalesChartCard';
-import OrdersMonthCard from '@/components/erp/dashboard/OrdersMonthCard';
 import NewCustomersCard from '@/components/erp/dashboard/NewCustomersCard';
-import DiscountedSalesCard from '@/components/erp/dashboard/DiscountedSalesCard';
 import ProductDeliveryCard from '@/components/erp/dashboard/ProductDeliveryCard';
-import StockReportCard from '@/components/erp/dashboard/StockReportCard';
 
 interface DashboardAPIResponse {
   dashboard: {
@@ -61,42 +53,17 @@ const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
 const Index = () => {
-  const { representantes } = useRepresentantes();
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
-    startDate: DEFAULT_START_DATE,
-    endDate: DEFAULT_END_DATE,
-  });
-  const [filterNonce, setFilterNonce] = useState(0);
-
-  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
-  const dateIniParam = toApiDate(selectedPeriod.startDate);
-  const dateEndParam = toApiDate(selectedPeriod.endDate);
-
   const { data: ordersData, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
-    queryKey: ['dashboard-orders', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
+    queryKey: ['dashboard-orders'],
     endpoint: 'fetch-orders',
     params: {
       page: '1',
       limit: '10',
-      date_ini: dateIniParam,
-      date_end: dateEndParam,
-      ...(repParam ? { rep: repParam } : {}),
+      date_ini: toApiDate(DEFAULT_START_DATE),
+      date_end: toApiDate(DEFAULT_END_DATE),
     },
     staleTime: 2 * 60 * 1000,
   });
-
-  const handleRepChange = useCallback((_repCodes: number[]) => {}, []);
-  const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
-    setSelectedRep(filters.repCodes);
-    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
-    setFilterNonce((n) => n + 1);
-  }, []);
-  const handleClear = useCallback(() => {
-    setSelectedRep([]);
-    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-    setFilterNonce((n) => n + 1);
-  }, []);
 
   const orders = useMemo(() => {
     const rawOrders = ordersData?.orders || (ordersData as any)?.data || [];
@@ -138,13 +105,8 @@ const Index = () => {
       <div className="relative overflow-hidden bg-[hsl(220,60%,15%)]">
         <div className="absolute inset-x-0 top-0 h-[70px] bg-black" />
         <div className="h-[70px]" />
-        <div className="relative px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
-          </div>
+        <div className="relative px-4 sm:px-8 py-6 sm:py-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
         </div>
         <div className="h-20 sm:h-24" />
       </div>

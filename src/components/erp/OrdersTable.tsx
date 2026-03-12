@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+
+export interface Order {
   id: string;
   codigo: string;
   cliente_nome: string;

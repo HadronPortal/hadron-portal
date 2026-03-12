@@ -160,7 +160,7 @@ const Index = () => {
         <div className="absolute top-[-50px] right-[15%] w-72 h-72 bg-[hsl(175,60%,50%)] rounded-full blur-[140px] opacity-20" />
         <div className="absolute bottom-[-30px] left-[25%] w-56 h-56 bg-[hsl(210,70%,50%)] rounded-full blur-[110px] opacity-15" />
         {/* Spacer for overlaid transparent header */}
-        <div className="h-16" />
+        <div className="h-[70px]" />
         <div className="relative px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>

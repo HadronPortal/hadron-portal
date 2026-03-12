@@ -111,7 +111,20 @@ const Catalogo = () => {
 
   return (
     <>
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+      {/* Search bar */}
+      <div className="max-w-[1100px] mx-auto w-full px-3 sm:px-6 lg:px-12 xl:px-20 pt-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Buscar produtos..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            className="w-full h-10 pl-9 pr-16 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">⌘ K</span>
+        </div>
+      </div>
 
       <main className="flex-1 px-3 sm:px-6 lg:px-12 xl:px-20 py-4 sm:py-5 space-y-4 bg-card max-w-[1100px] mx-auto w-full">
         {/* Header with results count and per-page */}

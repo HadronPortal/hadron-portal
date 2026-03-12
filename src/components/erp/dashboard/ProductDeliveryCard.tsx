@@ -19,7 +19,7 @@ const ProductDeliveryCard = () => {
   return (
     <div className="bg-card rounded-xl border border-border p-6 flex flex-col h-full">
       <div className="mb-1">
-        <h3 className="text-base font-semibold text-foreground">Entrega de Produtos</h3>
+        <h3 className="text-base font-semibold text-foreground">Top Produtos</h3>
         <p className="text-xs text-muted-foreground">1 milhão de produtos enviados até o momento.</p>
       </div>
       <button className="text-xs font-medium text-foreground border border-border rounded-lg px-3 py-1.5 w-fit mt-3 mb-5 hover:bg-accent">

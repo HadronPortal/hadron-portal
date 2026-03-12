@@ -120,8 +120,8 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
                 >
                   {item.name}
                 </span>
-                <div className="flex flex-col ml-auto items-end">
-                  <span className="font-semibold text-foreground tabular-nums">
+                <div className="flex flex-col ml-auto items-end min-w-0">
+                  <span className="font-semibold text-foreground tabular-nums whitespace-nowrap text-xs sm:text-sm">
                     R${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                   <span className="text-[10px] text-muted-foreground">{pct}%</span>

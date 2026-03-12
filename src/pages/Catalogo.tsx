@@ -135,8 +135,9 @@ const Catalogo = () => {
         <div className="h-10 sm:h-16" />
       </div>
 
+      <div className="bg-card flex-1">
       {/* Content overlaps into the black hero */}
-      <main className="flex-1 px-3 sm:px-6 lg:px-12 xl:px-20 py-4 sm:py-5 space-y-4 max-w-[1100px] mx-auto w-full -mt-10 sm:-mt-16 relative z-10">
+      <main className="px-3 sm:px-6 lg:px-12 xl:px-20 py-4 sm:py-5 space-y-4 max-w-[1100px] mx-auto w-full -mt-10 sm:-mt-16 relative z-10">
         {/* Search bar */}
         <div className="bg-card rounded-xl border border-border shadow-sm p-3 sm:p-4">
           <div className="relative">
@@ -146,7 +147,7 @@ const Catalogo = () => {
               placeholder="Buscar produtos..."
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-              className="w-full h-10 pl-9 pr-4 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full h-10 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
         </div>
@@ -347,6 +348,7 @@ const Catalogo = () => {
           productFoto={selectedProduct?.foto}
         />
       </main>
+      </div>
     </>
   );
 };

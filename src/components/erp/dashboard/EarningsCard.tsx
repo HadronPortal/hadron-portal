@@ -35,7 +35,7 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
   const total = data.reduce((s, d) => s + d.value, 0);
 
   return (
-    <div className="bg-card border border-border rounded-xl p-4 sm:p-6 flex flex-col h-full overflow-hidden">
+    <div className="bg-card border border-border rounded-xl p-4 sm:p-6 flex flex-col h-full">
       <div className="mb-3 sm:mb-4">
         <div className="flex items-baseline gap-1">
           <span className="text-xs text-muted-foreground">R$</span>
@@ -46,17 +46,107 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
         <p className="text-sm text-muted-foreground mt-1">Total</p>
       </div>
 
-      <div className="flex items-start gap-3 sm:gap-5 flex-1 min-w-0">
-        <div className="flex-shrink-0">
-          <div className="w-[96px] h-[96px] sm:w-[128px] sm:h-[128px]">
+      {/* Mobile */}
+      <div className="flex items-start gap-2 sm:hidden min-w-0">
+        <div className="w-[88px] h-[88px] flex-shrink-0 mt-1">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                innerRadius="55%"
+                outerRadius={activeIndex !== null ? '95%' : '90%'}
+                dataKey="value"
+                strokeWidth={2}
+                stroke="rgba(255,255,255,0.3)"
+                animationBegin={0}
+                animationDuration={1000}
+                animationEasing="ease-out"
+                onMouseEnter={(_, i) => setActiveIndex(i)}
+                onMouseLeave={() => setActiveIndex(null)}
+              >
+                {data.map((entry, i) => (
+                  <Cell
+                    key={i}
+                    fill={entry.color}
+                    opacity={activeIndex === null || activeIndex === i ? 1 : 0.5}
+                    style={{
+                      transition: 'opacity 0.3s ease, filter 0.3s ease',
+                      filter: activeIndex === i ? 'brightness(1.15) drop-shadow(0 0 6px ' + entry.color + ')' : 'none',
+                      cursor: 'pointer'
+                    }}
+                  />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip total={total} />} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="space-y-2 text-sm flex-1 min-w-0">
+          {data.map((item, i) => {
+            const pct = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0';
+            return (
+              <div
+                key={item.name}
+                className="flex items-center justify-between gap-1 transition-all duration-200 cursor-default"
+                style={{ opacity: activeIndex === null || activeIndex === i ? 1 : 0.4 }}
+                onMouseEnter={() => setActiveIndex(i)}
+                onMouseLeave={() => setActiveIndex(null)}
+              >
+                <span
+                  className="w-[82px] text-center py-1 rounded-full text-[11px] font-medium border shrink-0"
+                  style={{
+                    backgroundColor: item.color + '18',
+                    color: item.color,
+                    borderColor: item.color + '40',
+                  }}
+                >
+                  {item.name}
+                </span>
+                <div className="flex flex-col items-end min-w-0">
+                  <span className="font-semibold text-foreground tabular-nums whitespace-nowrap text-[13px]">
+                    R${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{pct}%</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Desktop (mantido como estava) */}
+      <div className="hidden sm:flex items-center gap-5 flex-1">
+        <div className="w-32 h-32 flex-shrink-0 relative" style={{ perspective: '600px' }}>
+          <div
+            className="absolute inset-0 opacity-30 blur-[2px]"
+            style={{ transform: 'translateY(6px) scale(0.95)' }}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={data} cx="50%" cy="50%" innerRadius={32} outerRadius={52} dataKey="value" strokeWidth={0}>
+                  {data.map((entry, i) => (
+                    <Cell key={i} fill={entry.dark} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div
+            className="absolute inset-0 animate-scale-in"
+            style={{ transformStyle: 'preserve-3d', transform: 'rotateX(12deg)' }}
+          >
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data}
                   cx="50%"
                   cy="50%"
-                  innerRadius="55%"
-                  outerRadius={activeIndex !== null ? '95%' : '90%'}
+                  innerRadius={32}
+                  outerRadius={activeIndex !== null ? 56 : 52}
                   dataKey="value"
                   strokeWidth={2}
                   stroke="rgba(255,255,255,0.3)"
@@ -81,19 +171,19 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
           </div>
         </div>
 
-        <div className="space-y-2.5 text-sm flex-1 w-full min-w-0">
+        <div className="space-y-2.5 text-sm flex-1 min-w-0">
           {data.map((item, i) => {
             const pct = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0';
             return (
               <div
                 key={item.name}
-                className="flex items-center justify-between gap-1.5 sm:gap-2 transition-all duration-200 cursor-default"
+                className="flex items-center gap-2 transition-all duration-200 cursor-default"
                 style={{ opacity: activeIndex === null || activeIndex === i ? 1 : 0.4 }}
                 onMouseEnter={() => setActiveIndex(i)}
                 onMouseLeave={() => setActiveIndex(null)}
               >
                 <span
-                  className="w-[88px] sm:w-24 text-center py-1 rounded-full text-[11px] sm:text-xs font-medium border shrink-0"
+                  className="w-24 text-center py-1 rounded-full text-xs font-medium border"
                   style={{
                     backgroundColor: item.color + '18',
                     color: item.color,
@@ -102,8 +192,8 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
                 >
                   {item.name}
                 </span>
-                <div className="flex flex-col items-end min-w-0">
-                  <span className="font-semibold text-foreground tabular-nums whitespace-nowrap text-xs sm:text-sm">
+                <div className="flex flex-col ml-auto items-end min-w-0">
+                  <span className="font-semibold text-foreground tabular-nums whitespace-nowrap text-sm">
                     R${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                   <span className="text-[10px] text-muted-foreground">{pct}%</span>

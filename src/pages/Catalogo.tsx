@@ -114,7 +114,7 @@ const Catalogo = () => {
     <>
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
-      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
+      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 bg-card">
         {/* Header with results count and per-page */}
         <div className="flex items-center justify-between flex-wrap gap-2">
           <p className="text-sm text-muted-foreground">

@@ -188,7 +188,7 @@ const CriarPedido = () => {
                       Cliente <span className="text-destructive">*</span>
                     </label>
                     {selectedCliente ? (
-                      <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2.5 text-sm bg-background">
+                      <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2.5 text-sm bg-transparent">
                         <span className="font-medium flex-1 truncate">{selectedCliente.ter_codter} — {selectedCliente.ter_nomter}</span>
                         <Button variant="ghost" size="sm" className="h-5 w-5 p-0 shrink-0" onClick={() => { setSelectedCliente(null); setClienteSearch(''); }}>
                           <X size={12} />

@@ -158,10 +158,10 @@ const Catalogo = () => {
           </div>
         </div>
 
-        {initialLoading && items.length === 0 ? (
+        {isLoading && items.length === 0 ? (
           <Spinner />
         ) : error && items.length === 0 ? (
-          <div className="text-center py-20 text-destructive">{error}</div>
+          <div className="text-center py-20 text-destructive">{(error as Error).message}</div>
         ) : (
           <div className="relative">
             {isFetching && (

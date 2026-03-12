@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
+import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 
 const CATALOGO_COLUMNS: ColumnDef[] = [
   { key: 'cod', label: 'COD PROD' },
@@ -47,6 +48,7 @@ const Catalogo = () => {
   const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>(
     Object.fromEntries(CATALOGO_COLUMNS.map(c => [c.key, true]))
   );
+  const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
 
   const totalPages = Math.ceil(totalRecords / limit);
 
@@ -185,7 +187,11 @@ const Catalogo = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredItems.map((item) => (
-                    <TableRow key={item.pro_codpro} className="hover:bg-accent/30">
+                    <TableRow
+                      key={item.pro_codpro}
+                      className="hover:bg-accent/30 cursor-pointer"
+                      onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
+                    >
                       {visibleCols.cod !== false && <TableCell className="text-sm">{item.pro_codpro}</TableCell>}
                       {visibleCols.foto !== false && (
                         <TableCell>
@@ -265,6 +271,14 @@ const Catalogo = () => {
           </div>
           </div>
         )}
+
+        <CatalogoDetalhe
+          open={!!selectedProduct}
+          onOpenChange={(open) => { if (!open) setSelectedProduct(null); }}
+          productId={selectedProduct?.id ?? null}
+          productName={selectedProduct?.name}
+          productFoto={selectedProduct?.foto}
+        />
       </main>
     </>
   );

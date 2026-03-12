@@ -70,8 +70,8 @@ const NewCustomersCard = () => {
 
           {/* 3D Carousel Container */}
           <div
-            className="relative flex items-center justify-start h-12"
-            style={{ perspective: '600px' }}
+            className="relative flex items-center justify-center h-12"
+            style={{ perspective: '800px' }}
           >
             <AnimatePresence mode="popLayout" custom={direction}>
               {visibleClients.map((client, i) => {

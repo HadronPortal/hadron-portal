@@ -148,6 +148,7 @@ const Catalogo = () => {
           
         </div>
       </div>
+      </div>
 
       <main className="flex-1 px-3 sm:px-6 lg:px-12 xl:px-20 py-4 sm:py-5 space-y-4 bg-card max-w-[1100px] mx-auto w-full">
         {/* Header with results count and per-page */}

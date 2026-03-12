@@ -49,40 +49,17 @@ const Header = () => {
 
   return (
     <header className="text-primary-foreground">
+      {/* Top row: Logo + Avatar */}
       <div className="flex items-center justify-between px-6 sm:px-10 h-[70px]">
-        {/* Left: Logo + Nav */}
-        <div className="flex items-center gap-8 min-w-0">
-          <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={() => navigate('/')}>
-            <img alt="Hádron" className="h-28 object-contain" src={logoImg} />
-          </div>
-
-          <nav className="hidden lg:flex items-center gap-1">
-            {navItems.map(({ label, path }) => {
-              const isActive = location.pathname === path;
-              return (
-                <button
-                  key={label}
-                  onClick={() => navigate(path)}
-                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-primary-foreground/15 text-primary-foreground'
-                      : 'text-primary-foreground hover:bg-primary-foreground/10'
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </nav>
+        <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={() => navigate('/')}>
+          <img alt="Hádron" className="h-28 object-contain" src={logoImg} />
         </div>
 
-        {/* Right */}
         <div className="flex items-center gap-3">
           <button className="lg:hidden p-1.5" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
-          {/* User avatar with dropdown */}
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -91,10 +68,8 @@ const Header = () => {
               <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
             </button>
 
-            {/* Dropdown menu */}
             {userMenuOpen && (
               <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
-                {/* User info */}
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
                   <div className="h-11 w-11 rounded-md overflow-hidden flex-shrink-0">
                     <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
@@ -104,8 +79,6 @@ const Header = () => {
                     <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
                   </div>
                 </div>
-
-                {/* Menu items */}
                 <div className="py-2">
                   <button
                     onClick={() => { setUserMenuOpen(false); }}
@@ -122,8 +95,6 @@ const Header = () => {
                     Configurações
                   </button>
                 </div>
-
-                {/* Separator + Sign out */}
                 <div className="border-t border-border py-2">
                   <button
                     onClick={handleLogout}
@@ -138,8 +109,29 @@ const Header = () => {
           </div>
         </div>
       </div>
+
       {/* Divider line */}
       <div className="h-px bg-primary-foreground/10" />
+
+      {/* Nav row - sits in the blue banner area */}
+      <nav className="hidden lg:flex items-center gap-1 px-6 sm:px-10 py-2">
+        {navItems.map(({ label, path }) => {
+          const isActive = location.pathname === path;
+          return (
+            <button
+              key={label}
+              onClick={() => navigate(path)}
+              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-primary-foreground/15 text-primary-foreground'
+                  : 'text-primary-foreground hover:bg-primary-foreground/10'
+              }`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </nav>
 
       {/* Mobile menu */}
       {mobileOpen && (

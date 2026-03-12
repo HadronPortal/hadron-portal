@@ -79,7 +79,7 @@ const Header = () => {
       <header className="text-primary-foreground">
         {/* Top row: Logo + Avatar */}
         <div className="flex items-center justify-between px-4 sm:px-8 lg:px-12 xl:px-16 h-[70px] max-w-[1600px] mx-auto w-full">
-          <div className="flex items-center cursor-pointer flex-shrink-0 -ml-10 sm:-ml-14 lg:-ml-16" onClick={() => navigate('/')}>
+          <div className="flex items-center cursor-pointer flex-shrink-0 -ml-2" onClick={() => navigate('/')}>
             <img alt="Hádron" className="h-14 object-contain" src={logoImg} />
           </div>
 

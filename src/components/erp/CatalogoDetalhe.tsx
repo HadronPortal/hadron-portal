@@ -154,7 +154,7 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
 
               {/* Details table */}
               {info && (
-                <div className="divide-y divide-border">
+                <div>
                   <DetailRow label="Disponibilidade">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                       isInStock

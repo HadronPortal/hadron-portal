@@ -54,7 +54,12 @@ const Header = () => {
   
   const userName = userData?.nome || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.email || userData?.aus_email || '';
-  const userCompany = userData?.aus_empresa || userData?.company || 'Procion Tecnologia';
+  
+  const companies = [
+    { id: 1, name: 'Procion Tecnologia' },
+    { id: 2, name: 'Aliança Artes' },
+  ];
+  const [selectedCompany, setSelectedCompany] = useState(companies[0]);
 
   return (
     <header className="text-primary-foreground">

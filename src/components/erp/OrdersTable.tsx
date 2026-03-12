@@ -28,8 +28,14 @@ const statusConfig: Record<Order['status'], { label: string; bg: string; text: s
   cancelado: { label: 'Rejeitado', bg: 'bg-red-100', text: 'text-red-500' },
 };
 
-const OrdersTable = ({ orders }: { orders: Order[] }) => {
+const mockOrders: Order[] = [
+  { id: '1', codigo: '501', cliente_nome: 'DISTRIBUIDORA ALFA LTDA', cliente_cnpj: '12.345.678/0001-90', localizacao: 'SÃO PAULO - SP', status: 'aprovado', valor: 3450.00, data_pedido: '12/03/2026, 09:15' },
+  { id: '2', codigo: '502', cliente_nome: 'COMERCIAL BETA S.A.', cliente_cnpj: '98.765.432/0001-10', localizacao: 'CAMPINAS - SP', status: 'enviado', valor: 1280.50, data_pedido: '11/03/2026, 14:30' },
+];
+
+const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
   const navigate = useNavigate();
+  const orders = propOrders.length > 0 ? propOrders : mockOrders;
 
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden">

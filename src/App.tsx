@@ -21,6 +21,7 @@ const LojaVirtual = lazy(() => import("./pages/LojaVirtual"));
 const Login = lazy(() => import("./pages/Login"));
 const PedidoDetalhe = lazy(() => import("./pages/PedidoDetalhe"));
 const CriarPedido = lazy(() => import("./pages/CriarPedido"));
+const Perfil = lazy(() => import("./pages/Perfil"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -60,6 +61,7 @@ const App = () => (
               <Route path="/produtos" element={<Suspense fallback={<PageFallback />}><Produtos /></Suspense>} />
               <Route path="/produtos/:id" element={<Suspense fallback={<PageFallback />}><ProdutoDetalhe /></Suspense>} />
               <Route path="/catalogo" element={<Suspense fallback={<PageFallback />}><Catalogo /></Suspense>} />
+              <Route path="/perfil" element={<Suspense fallback={<PageFallback />}><Perfil /></Suspense>} />
             </Route>
 
             {/* Standalone pages (own layout) */}

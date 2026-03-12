@@ -145,7 +145,7 @@ const Header = () => {
                   </div>
                   <div className="py-2">
                     <button
-                      onClick={() => setUserMenuOpen(false)}
+                      onClick={() => { setUserMenuOpen(false); navigate('/perfil'); }}
                       className="flex items-center gap-3 w-full px-5 py-2.5 text-sm text-foreground hover:bg-accent transition-colors text-left"
                     >
                       <User size={16} className="text-muted-foreground" />

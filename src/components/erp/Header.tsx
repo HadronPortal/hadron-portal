@@ -46,9 +46,13 @@ const Header = () => {
     } catch {}
     return null;
   })();
-  const userRepCode = userData?.aus_codrep || userData?.rep_codrep;
+  
+  // Try multiple possible field names for the rep code
+  const userRepCode = userData?.aus_codrep ?? userData?.rep_codrep ?? userData?.codrep ?? userData?.cod_rep ?? userData?.user?.aus_codrep;
   const repMatch = representantes.find(r => r.rep_codrep === Number(userRepCode));
-  const userName = repMatch?.rep_nomrep || userData?.aus_nome || userData?.name || 'Usuário';
+  
+  // For the name: prefer rep name from API, then user fields
+  const userName = repMatch?.rep_nomrep || userData?.aus_nome || userData?.name || userData?.user?.aus_nome || 'Usuário';
   const userEmail = userData?.aus_email || userData?.email || '';
   const userCompany = userData?.aus_empresa || userData?.company || '';
 

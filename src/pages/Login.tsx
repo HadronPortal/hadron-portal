@@ -35,6 +35,8 @@ const Login = () => {
 
       // Store token and user info
       localStorage.setItem('hadron_token', data.access_token);
+      console.log('[Login] Full API response data:', JSON.stringify(data));
+      console.log('[Login] User object:', JSON.stringify(data.user));
       if (data.user) {
         localStorage.setItem('hadron_user', JSON.stringify(data.user));
       }

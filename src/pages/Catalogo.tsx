@@ -2,25 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Package, Boxes } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
-import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
-
-const CATALOGO_COLUMNS: ColumnDef[] = [
-  { key: 'cod', label: 'COD PROD' },
-  { key: 'foto', label: 'FOTO' },
-  { key: 'descricao', label: 'DESCRIÇÃO' },
-  { key: 'grupo', label: 'GRUPO' },
-  { key: 'prev_saida', label: 'PREV SAÍDA' },
-  { key: 'prev_entra', label: 'PREV ENTRA' },
-  { key: 'saldo_atual', label: 'SALDO ATUAL' },
-  { key: 'saldo_futuro', label: 'SALDO FUTURO' },
-];
 
 interface CatalogoItem {
   pro_codpro: number;
@@ -31,12 +16,10 @@ interface CatalogoItem {
   pro_codgrp: number;
 }
 
-const pageCache = new Map<string, { catalogs: CatalogoItem[]; total_records: number }>();
-
 const Catalogo = () => {
   const { representantes } = useRepresentantes();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(12);
   const [items, setItems] = useState<CatalogoItem[]>([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -45,9 +28,6 @@ const Catalogo = () => {
   const abortRef = useRef<AbortController | null>(null);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>(
-    Object.fromEntries(CATALOGO_COLUMNS.map(c => [c.key, true]))
-  );
   const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
 
   const totalPages = Math.ceil(totalRecords / limit);
@@ -56,16 +36,13 @@ const Catalogo = () => {
     try {
       setIsFetching(true);
       setError(null);
-
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       let url = `https://${projectId}.supabase.co/functions/v1/fetch-catalogo?page=${p}&limit=${l}`;
       if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
       if (searchQuery.trim()) url += `&search=${encodeURIComponent(searchQuery.trim())}`;
       const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, signal });
-
       if (!res.ok) throw new Error(`Erro ${res.status}`);
       const data = await res.json();
-
       const catalogs = (data?.catalogs || []).sort((a: CatalogoItem, b: CatalogoItem) => a.pro_codpro - b.pro_codpro);
       return { catalogs, total_records: data?.total_records || 0 };
     } catch (err: any) {
@@ -78,7 +55,6 @@ const Catalogo = () => {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
-
     const load = async () => {
       try {
         const result = await fetchCatalogo(page, limit, selectedRep, controller.signal);
@@ -98,14 +74,11 @@ const Catalogo = () => {
         }
       }
     };
-
     load();
     return () => controller.abort();
   }, [page, limit, selectedRep, searchQuery]);
 
-  const handleRepChange = (_repCodes: number[]) => {
-    // State is set via handleFilter which is called automatically
-  };
+  const handleRepChange = (_repCodes: number[]) => {};
   const handleSearch = (query: string) => setSearchQuery(query);
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
     setSelectedRep(filters.repCodes);
@@ -134,29 +107,35 @@ const Catalogo = () => {
   const getImageUrl = (filename: string) =>
     `https://${projectId}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
 
+  const startItem = (page - 1) * limit + 1;
+  const endItem = Math.min(page * limit, totalRecords);
+
   return (
     <>
-
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Catálogo</h1>
-
+        {/* Header with results count and per-page */}
         <div className="flex items-center justify-between flex-wrap gap-2">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-primary">{startItem} - {endItem}</span> de{' '}
+            <span className="font-semibold text-primary">{totalRecords}</span> resultados
+            {searchQuery && (
+              <> para <span className="font-semibold text-primary">{searchQuery}</span></>
+            )}
+          </p>
+
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Itens por página:</span>
             <select
               value={limit}
               onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
-              className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
+              className="appearance-none border border-border rounded-lg pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
             >
-              <option value={10}>10</option>
+              <option value={12}>12</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
             </select>
           </div>
-
-          <ColumnToggle columns={CATALOGO_COLUMNS} visible={visibleCols} onChange={setVisibleCols} />
         </div>
 
         {initialLoading && items.length === 0 ? (
@@ -170,58 +149,84 @@ const Catalogo = () => {
                 <Spinner className="py-0" />
               </div>
             )}
-          <div className={`bg-card rounded-lg border border-border overflow-hidden transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {visibleCols.cod !== false && <TableHead className="text-xs font-bold text-foreground">CÓD PROD</TableHead>}
-                    {visibleCols.foto !== false && <TableHead className="text-xs font-bold text-foreground">FOTO</TableHead>}
-                    {visibleCols.descricao !== false && <TableHead className="text-xs font-bold text-foreground">DESCRIÇÃO</TableHead>}
-                    {visibleCols.grupo !== false && <TableHead className="text-xs font-bold text-foreground">GRUPO</TableHead>}
-                    {visibleCols.prev_saida !== false && <TableHead className="text-xs font-bold text-foreground text-right">PREV SAÍDA</TableHead>}
-                    {visibleCols.prev_entra !== false && <TableHead className="text-xs font-bold text-foreground text-right">PREV ENTRA</TableHead>}
-                    {visibleCols.saldo_atual !== false && <TableHead className="text-xs font-bold text-foreground text-right">SALDO ATUAL</TableHead>}
-                    {visibleCols.saldo_futuro !== false && <TableHead className="text-xs font-bold text-foreground text-right">SALDO FUTURO</TableHead>}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredItems.map((item) => (
-                    <TableRow
-                      key={item.pro_codpro}
-                      className="hover:bg-accent/30 cursor-pointer"
-                      onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
-                    >
-                      {visibleCols.cod !== false && <TableCell className="text-sm">{item.pro_codpro}</TableCell>}
-                      {visibleCols.foto !== false && (
-                        <TableCell>
-                          {item.pro_foto ? (
-                            <img
-                              src={getImageUrl(item.pro_foto)}
-                              alt={item.pro_despro}
-                              className="w-14 h-14 object-contain rounded bg-muted"
-                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                            />
-                          ) : (
-                            <div className="w-14 h-14 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">
-                              N/A
-                            </div>
-                          )}
-                        </TableCell>
+
+            {/* Product list cards */}
+            <div className={`space-y-2.5 transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
+              {filteredItems.map((item) => {
+                const saldoNum = parseFloat(item.SALDOS);
+                const inStock = !isNaN(saldoNum) && saldoNum > 0;
+
+                return (
+                  <div
+                    key={item.pro_codpro}
+                    onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
+                    className="bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer flex items-center gap-4 px-4 py-3 sm:px-5 sm:py-4 group"
+                  >
+                    {/* Image */}
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
+                      {item.pro_foto ? (
+                        <img
+                          src={getImageUrl(item.pro_foto)}
+                          alt={item.pro_despro}
+                          className="w-full h-full object-contain p-1"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      ) : (
+                        <Package className="w-7 h-7 text-muted-foreground" />
                       )}
-                      {visibleCols.descricao !== false && <TableCell className="text-sm font-medium">{item.pro_despro}</TableCell>}
-                      {visibleCols.grupo !== false && <TableCell className="text-sm">{item.NOME_GRUPO || '—'}</TableCell>}
-                      {visibleCols.prev_saida !== false && <TableCell className="text-sm text-right">—</TableCell>}
-                      {visibleCols.prev_entra !== false && <TableCell className="text-sm text-right">—</TableCell>}
-                      {visibleCols.saldo_atual !== false && <TableCell className="text-sm text-right">{formatSaldo(item.SALDOS)}</TableCell>}
-                      {visibleCols.saldo_futuro !== false && <TableCell className="text-sm text-right">—</TableCell>}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm sm:text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                        {item.pro_despro}
+                      </h3>
+                      <div className="flex items-center gap-2 sm:gap-3 mt-1.5 flex-wrap">
+                        {/* Stock badge */}
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
+                          inStock
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                            : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                        }`}>
+                          <Boxes className="w-3 h-3" />
+                          {formatSaldo(item.SALDOS)}
+                        </span>
+
+                        <span className="text-xs text-muted-foreground">
+                          <span className="hidden sm:inline">SKU: </span>
+                          <span className="font-mono font-medium text-foreground">{item.pro_codpro}</span>
+                        </span>
+
+                        {item.NOME_GRUPO && (
+                          <span className="text-xs text-muted-foreground">
+                            Grupo: <span className="font-medium text-foreground">{item.NOME_GRUPO}</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Right: View details */}
+                    <div className="flex-shrink-0 hidden sm:flex items-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto });
+                        }}
+                      >
+                        <Package className="w-3.5 h-3.5" />
+                        Ver Detalhes
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between px-3 sm:px-4 py-3 border-t border-border gap-2">
+            {/* Pagination */}
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2">
               <span className="text-xs text-muted-foreground">
                 Página {page} de {totalPages} — {totalRecords} produtos
               </span>
@@ -268,7 +273,6 @@ const Catalogo = () => {
                 </Button>
               </div>
             </div>
-          </div>
           </div>
         )}
 

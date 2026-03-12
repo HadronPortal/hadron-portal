@@ -12,7 +12,7 @@ const ErpLayout = () => {
         <>
           {/* Header overlays the hero on home page */}
           <div className="relative">
-            <div className="absolute inset-x-0 top-0 z-10">
+            <div className="absolute inset-x-0 top-0 z-30">
               <Header />
             </div>
           </div>

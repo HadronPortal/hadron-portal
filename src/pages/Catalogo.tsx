@@ -48,6 +48,7 @@ const Catalogo = () => {
   const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>(
     Object.fromEntries(CATALOGO_COLUMNS.map(c => [c.key, true]))
   );
+  const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
 
   const totalPages = Math.ceil(totalRecords / limit);
 

@@ -83,9 +83,9 @@ const Login = () => {
       </div>
 
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col lg:flex-row items-center justify-center px-8">
-        {/* Mobile logo - positioned higher */}
-        <div className="flex lg:hidden items-center justify-center mb-16 mt-[15vh]">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-8 relative">
+        {/* Mobile logo - positioned in upper area */}
+        <div className="absolute top-[15vh] left-0 right-0 flex lg:hidden items-center justify-center">
           <img src={logoHadronGo} alt="Hádron GO" className="h-14 object-contain" />
         </div>
 

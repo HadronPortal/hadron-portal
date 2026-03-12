@@ -57,7 +57,7 @@ const Header = () => {
   
   const companies = [
     { id: 1, name: 'Procion Tecnologia' },
-    { id: 2, name: 'Aliança Artes' },
+    { id: 2, name: 'Procion Sistemas' },
   ];
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
 

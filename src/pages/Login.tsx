@@ -7,6 +7,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import logoHadronGo from '@/assets/logo_hadron_go.png';
 
+const PROFILE_OVERRIDES_KEY = 'hadron_profile_overrides_by_email';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

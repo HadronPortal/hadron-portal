@@ -21,6 +21,7 @@ const profileFields = [
   { label: 'Comunicação', value: 'E-mail, Telefone' },
   { label: 'Permitir Alterações', value: 'Sim' },
 ];
+const PROFILE_OVERRIDES_KEY = 'hadron_profile_overrides_by_email';
 
 const Perfil = () => {
   const [activeTab, setActiveTab] = useState('Visão Geral');

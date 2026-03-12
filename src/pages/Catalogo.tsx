@@ -24,7 +24,8 @@ interface CatalogoItem {
 }
 
 const Catalogo = () => {
-  const { representantes } = useRepresentantes();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [items, setItems] = useState<CatalogoItem[]>([]);

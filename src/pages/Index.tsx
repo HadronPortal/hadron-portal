@@ -162,7 +162,7 @@ const Index = () => {
               <div className="grid grid-rows-subgrid lg:row-span-2 gap-5 lg:col-span-2">
                 {/* Top row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <EarningsCard totalValue={totalEarnings} />
+                  <EarningsCard />
                   <DailySalesCard value={totalApproved} />
                 </div>
                 {/* Bottom row */}

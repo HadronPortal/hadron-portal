@@ -7,13 +7,8 @@ const data = [
   { name: 'Cancelado', value: 1230, color: 'hsl(0, 84%, 60%)' },
 ];
 
-interface Props {
-  totalValue: number;
-}
-
-const EarningsCard = ({ totalValue }: Props) => {
+const EarningsCard = () => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
-  const displayValue = totalValue > 0 ? totalValue : total;
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">
@@ -21,11 +16,10 @@ const EarningsCard = ({ totalValue }: Props) => {
         <div className="flex items-baseline gap-1">
           <span className="text-xs text-muted-foreground">R$</span>
           <span className="text-3xl font-bold text-foreground">
-            {displayValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </span>
-          <span className="text-xs font-semibold text-emerald-500 ml-2">▲2.2%</span>
         </div>
-        <p className="text-sm text-muted-foreground mt-1">Faturamento Esperado</p>
+        <p className="text-sm text-muted-foreground mt-1">Total</p>
       </div>
 
       <div className="flex items-center gap-6 flex-1">

@@ -1,11 +1,36 @@
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { name: 'Enviado', value: 7660, color: 'hsl(173, 58%, 39%)' },
-  { name: 'Aprovado', value: 2820, color: 'hsl(25, 95%, 53%)' },
-  { name: 'Faturado', value: 45257, color: 'hsl(152, 69%, 31%)' },
-  { name: 'Cancelado', value: 1230, color: 'hsl(0, 84%, 60%)' },
+  { name: 'Enviado', value: 7660, color: 'hsl(173, 58%, 39%)', shadowColor: 'hsl(173, 58%, 28%)' },
+  { name: 'Aprovado', value: 2820, color: 'hsl(25, 95%, 53%)', shadowColor: 'hsl(25, 95%, 38%)' },
+  { name: 'Faturado', value: 45257, color: 'hsl(152, 69%, 31%)', shadowColor: 'hsl(152, 69%, 20%)' },
+  { name: 'Cancelado', value: 1230, color: 'hsl(0, 84%, 60%)', shadowColor: 'hsl(0, 84%, 45%)' },
 ];
+
+const DonutLayer = ({ offset = 0, isShadow = false }: { offset?: number; isShadow?: boolean }) => (
+  <div
+    className="absolute inset-0"
+    style={{ transform: `translateY(${offset}px)`, zIndex: isShadow ? 0 : 1 }}
+  >
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={data}
+          cx="50%"
+          cy="50%"
+          innerRadius={28}
+          outerRadius={42}
+          dataKey="value"
+          strokeWidth={0}
+        >
+          {data.map((entry, i) => (
+            <Cell key={i} fill={isShadow ? entry.shadowColor : entry.color} />
+          ))}
+        </Pie>
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+);
 
 const EarningsCard = () => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
@@ -23,24 +48,13 @@ const EarningsCard = () => {
       </div>
 
       <div className="flex items-center gap-6 flex-1">
-        <div className="w-24 h-24 flex-shrink-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={28}
-                outerRadius={42}
-                dataKey="value"
-                strokeWidth={0}
-              >
-                {data.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
+        <div className="w-24 h-28 flex-shrink-0 relative">
+          {/* 3D shadow layers */}
+          <DonutLayer offset={6} isShadow />
+          <DonutLayer offset={4} isShadow />
+          <DonutLayer offset={2} isShadow />
+          {/* Main donut */}
+          <DonutLayer offset={0} />
         </div>
         <div className="space-y-2.5 text-sm flex-1">
           {data.map((item) => (

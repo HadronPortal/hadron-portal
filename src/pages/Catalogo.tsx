@@ -122,7 +122,7 @@ const Catalogo = () => {
             onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
             className="w-full h-10 pl-9 pr-16 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">⌘ K</span>
+          
         </div>
       </div>
 

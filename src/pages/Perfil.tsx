@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { MapPin, Mail, Briefcase, Phone, Globe, Shield, ArrowUpRight, ArrowDownRight, MoreHorizontal } from 'lucide-react';
+import { MapPin, Mail, Briefcase, Shield, ArrowUpRight, ArrowDownRight, MoreHorizontal, Pencil, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import avatarImg from '@/assets/avatar-user.png';
 
 const tabs = ['Visão Geral', 'Configurações', 'Segurança', 'Atividade'];
@@ -33,6 +36,19 @@ const Perfil = () => {
   const userPhone = userData?.telefone || userData?.aus_telefone || '(11) 99999-9999';
   const userCompany = userData?.empresa || 'Procion Tecnologia';
   const userRole = userData?.cargo || 'Representante';
+
+  // Form state for Settings tab
+  const nameParts = userName.split(' ');
+  const [formFirstName, setFormFirstName] = useState(nameParts[0] || '');
+  const [formLastName, setFormLastName] = useState(nameParts.slice(1).join(' ') || '');
+  const [formCompany, setFormCompany] = useState(userCompany);
+  const [formPhone, setFormPhone] = useState(userPhone);
+  const [formEmail, setFormEmail] = useState(userEmail);
+  const [formSite, setFormSite] = useState('');
+  const [commEmail, setCommEmail] = useState(true);
+  const [commPhone, setCommPhone] = useState(true);
+
+  const goToSettings = () => setActiveTab('Configurações');
 
   const resolveValue = (field: typeof profileFields[0]) => {
     if (field.value) return field.value;
@@ -85,7 +101,7 @@ const Perfil = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm">Editar Perfil</Button>
+                  <Button variant="outline" size="sm" onClick={goToSettings}>Editar Perfil</Button>
                   <Button size="icon" variant="ghost" className="h-9 w-9">
                     <MoreHorizontal size={18} />
                   </Button>
@@ -149,12 +165,12 @@ const Perfil = () => {
         </div>
       </div>
 
-      {/* Tab Content */}
+      {/* ===== Tab: Visão Geral ===== */}
       {activeTab === 'Visão Geral' && (
         <div className="bg-card border border-border rounded-xl shadow-sm">
           <div className="flex items-center justify-between p-6 sm:px-8 pb-0">
             <h2 className="text-lg font-semibold text-foreground">Detalhes do Perfil</h2>
-            <Button variant="default" size="sm">Editar Perfil</Button>
+            <Button variant="default" size="sm" onClick={goToSettings}>Editar Perfil</Button>
           </div>
 
           <div className="p-6 sm:px-8">
@@ -177,13 +193,149 @@ const Perfil = () => {
         </div>
       )}
 
+      {/* ===== Tab: Configurações (Edit Profile - Metronic style) ===== */}
       {activeTab === 'Configurações' && (
-        <div className="bg-card border border-border rounded-xl shadow-sm p-6 sm:p-8">
-          <h2 className="text-lg font-semibold text-foreground mb-2">Configurações</h2>
-          <p className="text-sm text-muted-foreground">Em breve.</p>
+        <div className="space-y-6">
+          {/* Profile Details Form */}
+          <div className="bg-card border border-border rounded-xl shadow-sm">
+            <div className="p-6 sm:px-8 border-b border-border">
+              <h2 className="text-lg font-semibold text-foreground">Detalhes do Perfil</h2>
+            </div>
+
+            <div className="p-6 sm:px-8 space-y-6">
+              {/* Avatar row */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
+                <Label className="text-sm text-muted-foreground sm:w-[200px] flex-shrink-0">Avatar</Label>
+                <div>
+                  <div className="relative inline-block">
+                    <div className="h-[100px] w-[100px] rounded-xl overflow-hidden border border-border">
+                      <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+                    </div>
+                    <button className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors">
+                      <Pencil size={12} className="text-muted-foreground" />
+                    </button>
+                    <button className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors">
+                      <X size={12} className="text-muted-foreground" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">Tipos permitidos: png, jpg, jpeg.</p>
+                </div>
+              </div>
+
+              {/* Full Name */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
+                <Label className="text-sm text-muted-foreground sm:w-[200px] flex-shrink-0">
+                  Nome Completo <span className="text-destructive">*</span>
+                </Label>
+                <div className="flex-1 flex flex-col sm:flex-row gap-3">
+                  <Input
+                    value={formFirstName}
+                    onChange={(e) => setFormFirstName(e.target.value)}
+                    placeholder="Nome"
+                    className="flex-1"
+                  />
+                  <Input
+                    value={formLastName}
+                    onChange={(e) => setFormLastName(e.target.value)}
+                    placeholder="Sobrenome"
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              {/* Company */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
+                <Label className="text-sm text-muted-foreground sm:w-[200px] flex-shrink-0">
+                  Empresa <span className="text-destructive">*</span>
+                </Label>
+                <div className="flex-1">
+                  <Input
+                    value={formCompany}
+                    onChange={(e) => setFormCompany(e.target.value)}
+                    placeholder="Empresa"
+                  />
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
+                <Label className="text-sm text-muted-foreground sm:w-[200px] flex-shrink-0">
+                  Telefone <span className="text-destructive">*</span>
+                </Label>
+                <div className="flex-1">
+                  <Input
+                    value={formPhone}
+                    onChange={(e) => setFormPhone(e.target.value)}
+                    placeholder="Telefone"
+                  />
+                </div>
+              </div>
+
+              {/* Site */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
+                <Label className="text-sm text-muted-foreground sm:w-[200px] flex-shrink-0">Site da Empresa</Label>
+                <div className="flex-1">
+                  <Input
+                    value={formSite}
+                    onChange={(e) => setFormSite(e.target.value)}
+                    placeholder="www.exemplo.com"
+                  />
+                </div>
+              </div>
+
+              {/* Communication */}
+              <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-0">
+                <Label className="text-sm text-muted-foreground sm:w-[200px] flex-shrink-0 pt-1">Comunicação</Label>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <Switch checked={commEmail} onCheckedChange={setCommEmail} />
+                    <span className="text-sm text-foreground">E-mail</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Switch checked={commPhone} onCheckedChange={setCommPhone} />
+                    <span className="text-sm text-foreground">Telefone</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-3 p-6 sm:px-8 border-t border-border">
+              <Button variant="outline" onClick={() => setActiveTab('Visão Geral')}>Descartar</Button>
+              <Button>Salvar Alterações</Button>
+            </div>
+          </div>
+
+          {/* Sign-in Method Card */}
+          <div className="bg-card border border-border rounded-xl shadow-sm">
+            <div className="p-6 sm:px-8 border-b border-border">
+              <h2 className="text-lg font-semibold text-foreground">Método de Login</h2>
+            </div>
+
+            <div className="p-6 sm:px-8 divide-y divide-border">
+              {/* Email */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 first:pt-0 gap-2">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Endereço de E-mail</p>
+                  <p className="text-sm text-muted-foreground">{userEmail || 'email@exemplo.com'}</p>
+                </div>
+                <Button variant="outline" size="sm">Alterar E-mail</Button>
+              </div>
+
+              {/* Password */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 last:pb-0 gap-2">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Senha</p>
+                  <p className="text-sm text-muted-foreground">************</p>
+                </div>
+                <Button variant="outline" size="sm">Alterar Senha</Button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
+      {/* ===== Tab: Segurança ===== */}
       {activeTab === 'Segurança' && (
         <div className="bg-card border border-border rounded-xl shadow-sm p-6 sm:p-8">
           <h2 className="text-lg font-semibold text-foreground mb-2">Segurança</h2>
@@ -191,6 +343,7 @@ const Perfil = () => {
         </div>
       )}
 
+      {/* ===== Tab: Atividade ===== */}
       {activeTab === 'Atividade' && (
         <div className="bg-card border border-border rounded-xl shadow-sm p-6 sm:p-8">
           <h2 className="text-lg font-semibold text-foreground mb-2">Atividade</h2>

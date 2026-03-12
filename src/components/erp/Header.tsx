@@ -86,7 +86,7 @@ const Header = () => {
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="h-10 w-10 rounded-full overflow-hidden ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"
+              className="h-10 w-10 rounded-md overflow-hidden ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"
             >
               <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
             </button>

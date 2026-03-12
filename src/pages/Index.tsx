@@ -137,7 +137,7 @@ const Index = () => {
       <div className="relative overflow-hidden bg-black">
         <div className="absolute inset-x-0 top-0 h-[70px] bg-[hsl(220,60%,15%)]" />
         <div className="h-[70px]" />
-        <div className="relative px-4 sm:px-10 lg:px-16 xl:px-24 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
+        <div className="relative px-4 sm:px-10 lg:px-20 xl:px-32 py-4 sm:py-8 flex items-center justify-between max-w-[1500px] mx-auto w-full">
           <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
           <nav className="hidden lg:flex items-center gap-1">
             {navItems.map(({ label, path }) => {

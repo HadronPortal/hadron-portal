@@ -127,7 +127,10 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
                       $ {lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell className="text-right">
-                      <span className={`inline-block px-3 py-1 rounded text-xs font-medium ${status.bg} ${status.text}`}>
+                      <span
+                        className="inline-block px-3 py-1 rounded-full text-xs font-medium border"
+                        style={{ backgroundColor: status.color + '18', color: status.color, borderColor: status.color + '40' }}
+                      >
                         {status.label}
                       </span>
                     </TableCell>

@@ -92,6 +92,25 @@ const Perfil = () => {
     setAvatarUrl(null);
   };
 
+  const handleSaveProfile = () => {
+    const updatedUser = {
+      ...userData,
+      nome: `${formFirstName} ${formLastName}`.trim(),
+      empresa: formCompany,
+      telefone: formPhone,
+      email: formEmail,
+      site: formSite,
+      avatar_url: avatarUrl,
+      comm_email: commEmail,
+      comm_phone: commPhone,
+    };
+    localStorage.setItem('hadron_user', JSON.stringify(updatedUser));
+    toast({ title: 'Perfil salvo!', description: 'Suas alterações foram salvas com sucesso.' });
+    setActiveTab('Visão Geral');
+    // Force re-render with updated data
+    window.dispatchEvent(new Event('storage'));
+  };
+
   const goToSettings = () => setActiveTab('Configurações');
 
   const resolveValue = (field: typeof profileFields[0]) => {

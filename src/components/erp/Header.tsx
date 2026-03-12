@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useRepresentantes } from '@/hooks/use-representantes';
+
 import logoImg from '@/assets/logo_hadron_go.png';
 import avatarImg from '@/assets/avatar-user.png';
 

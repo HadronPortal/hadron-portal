@@ -90,7 +90,7 @@ const Login = () => {
             <img src={logoHadronGo} alt="Hádron GO" className="h-14 object-contain" />
           </div>
 
-          <div className="text-center space-y-2">
+          <div className="hidden lg:block text-center space-y-2">
             <h1 className="text-3xl font-light tracking-wide" style={{ color: 'hsl(0, 0%, 100%)' }}>
               Bem-vindo
             </h1>

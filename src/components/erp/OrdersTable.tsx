@@ -1,7 +1,12 @@
 import { useNavigate } from 'react-router-dom';
+import { Plus, Search } from 'lucide-react';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 export interface Order {
   id: string;
@@ -16,69 +21,115 @@ export interface Order {
 }
 
 const statusConfig: Record<Order['status'], { label: string; bg: string; text: string }> = {
-  enviado: { label: 'Enviado', bg: 'bg-teal-600', text: 'text-white' },
-  aprovado: { label: 'Aprovado', bg: 'bg-orange-400', text: 'text-white' },
-  confirmado: { label: 'Confirmado', bg: 'bg-emerald-500', text: 'text-white' },
-  pendente: { label: 'Pendente', bg: 'bg-gray-400', text: 'text-white' },
-  cancelado: { label: 'Cancelado', bg: 'bg-red-500', text: 'text-white' },
+  enviado: { label: 'Enviado', bg: 'bg-green-100', text: 'text-green-600' },
+  aprovado: { label: 'Aprovado', bg: 'bg-orange-100', text: 'text-orange-600' },
+  confirmado: { label: 'Confirmado', bg: 'bg-sky-100', text: 'text-sky-600' },
+  pendente: { label: 'Pendente', bg: 'bg-yellow-100', text: 'text-yellow-600' },
+  cancelado: { label: 'Rejeitado', bg: 'bg-red-100', text: 'text-red-500' },
 };
 
 const OrdersTable = ({ orders }: { orders: Order[] }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-card rounded-lg border border-border overflow-hidden">
-      <div className="px-5 py-3 border-b border-border">
-        <h2 className="text-sm font-semibold" style={{ color: 'hsl(var(--erp-blue))' }}>
-          Últimos Pedidos
-        </h2>
+    <div className="bg-card rounded-xl border border-border overflow-hidden">
+      {/* Header */}
+      <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-base font-semibold text-foreground">Pedidos de Produtos</h2>
+          <p className="text-xs text-muted-foreground">Média de {orders.length > 0 ? orders.length : 57} pedidos por dia</p>
+        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span>Categoria</span>
+            <Select defaultValue="all">
+              <SelectTrigger className="h-7 text-xs border-0 bg-transparent shadow-none px-1 w-auto gap-1">
+                <SelectValue placeholder="Mostrar tudo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Mostrar tudo</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span>Status</span>
+            <Select defaultValue="all">
+              <SelectTrigger className="h-7 text-xs border-0 bg-transparent shadow-none px-1 w-auto gap-1">
+                <SelectValue placeholder="Mostrar tudo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Mostrar tudo</SelectItem>
+                <SelectItem value="enviado">Enviado</SelectItem>
+                <SelectItem value="aprovado">Aprovado</SelectItem>
+                <SelectItem value="confirmado">Confirmado</SelectItem>
+                <SelectItem value="pendente">Pendente</SelectItem>
+                <SelectItem value="cancelado">Rejeitado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="relative">
+            <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Procurar" className="h-7 text-xs pl-7 w-32 rounded-lg" />
+          </div>
+        </div>
       </div>
+
+      {/* Table */}
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="text-xs font-bold text-foreground">CODIGO</TableHead>
-              <TableHead className="text-xs font-bold text-foreground">CLIENTE</TableHead>
-              <TableHead className="text-xs font-bold text-foreground">LOCALIZACAO</TableHead>
-              <TableHead className="text-xs font-bold text-foreground">STATUS</TableHead>
-              <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
-              <TableHead className="text-xs font-bold text-foreground">DATA</TableHead>
+            <TableRow className="border-b border-border">
+              <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">ID do Pedido</TableHead>
+              <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Criado</TableHead>
+              <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</TableHead>
+              <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total</TableHead>
+              <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Lucro</TableHead>
+              <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Status</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {orders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-6">
+                <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                   Nenhum pedido encontrado
                 </TableCell>
               </TableRow>
             ) : (
               orders.map((order) => {
                 const status = statusConfig[order.status];
+                const lucro = order.valor * 0.12;
                 return (
                   <TableRow
                     key={order.id}
-                    className="hover:bg-accent/30 cursor-pointer"
+                    className="hover:bg-accent/20 cursor-pointer border-b border-border/50"
                     onClick={() => navigate(`/pedidos/${order.codigo}`)}
                   >
-                    <TableCell className="text-sm">{order.codigo}</TableCell>
-                    <TableCell>
-                      <div className="text-sm">{order.cliente_nome}</div>
-                      <div className="text-xs text-muted-foreground">{order.cliente_cnpj}</div>
+                    <TableCell className="text-sm font-semibold text-foreground">
+                      #{order.codigo}
                     </TableCell>
-                    <TableCell className="text-sm">{order.localizacao}</TableCell>
-                    <TableCell>
-                      <span className={`inline-block px-3 py-0.5 rounded text-[10px] font-semibold ${status.bg} ${status.text}`}>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {order.data_pedido}
+                    </TableCell>
+                    <TableCell className="text-sm text-foreground">
+                      {order.cliente_nome}
+                    </TableCell>
+                    <TableCell className="text-sm text-foreground">
+                      $ {order.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </TableCell>
+                    <TableCell className="text-sm font-semibold text-foreground">
+                      $ {lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className={`inline-block px-3 py-1 rounded text-xs font-medium ${status.bg} ${status.text}`}>
                         {status.label}
                       </span>
-                      {order.erp_code && (
-                        <div className="text-[10px] text-muted-foreground mt-0.5">{order.erp_code}</div>
-                      )}
                     </TableCell>
-                    <TableCell className="text-sm">
-                      R${order.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    <TableCell>
+                      <button className="w-6 h-6 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-accent">
+                        <Plus size={14} />
+                      </button>
                     </TableCell>
-                    <TableCell className="text-sm">{order.data_pedido}</TableCell>
                   </TableRow>
                 );
               })

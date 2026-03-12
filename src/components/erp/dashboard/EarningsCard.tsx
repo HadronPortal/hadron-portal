@@ -47,12 +47,12 @@ const EarningsCard = ({ totalValue }: Props) => {
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="space-y-2.5 text-sm">
+        <div className="space-y-2.5 text-sm flex-1">
           {data.map((item) => (
             <div key={item.name} className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-              <span className="text-muted-foreground">{item.name}</span>
-              <span className="font-semibold text-foreground ml-auto">
+              <span className="text-muted-foreground w-20">{item.name}</span>
+              <span className="font-semibold text-foreground tabular-nums text-right ml-auto">
                 R${item.value.toLocaleString('pt-BR')}
               </span>
             </div>

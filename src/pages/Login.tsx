@@ -33,10 +33,16 @@ const Login = () => {
         return;
       }
 
-      // Store token and user info
+      // Store token and user info (preserve local profile overrides like avatar)
       localStorage.setItem('hadron_token', data.access_token);
       if (data.user) {
-        localStorage.setItem('hadron_user', JSON.stringify(data.user));
+        try {
+          const existing = JSON.parse(localStorage.getItem('hadron_user') || '{}');
+          const merged = { ...data.user, avatar_url: existing?.avatar_url || null, site: existing?.site || '' };
+          localStorage.setItem('hadron_user', JSON.stringify(merged));
+        } catch {
+          localStorage.setItem('hadron_user', JSON.stringify(data.user));
+        }
       }
 
       // Prefetch representantes with the fresh token

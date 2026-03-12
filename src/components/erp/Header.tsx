@@ -60,7 +60,11 @@ const Header = () => {
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
-          <div className="relative" ref={menuRef}>
+          <div className="relative flex items-center gap-3" ref={menuRef}>
+            <div className="hidden sm:flex flex-col items-end text-right">
+              <span className="text-sm font-medium leading-tight truncate max-w-[160px]">{userName}</span>
+              <span className="text-[11px] text-primary-foreground/60 leading-tight truncate max-w-[160px]">{userCompany}</span>
+            </div>
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className="h-10 w-10 rounded-md overflow-hidden ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"

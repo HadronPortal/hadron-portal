@@ -12,7 +12,8 @@ interface Props {
 }
 
 const EarningsCard = ({ totalValue }: Props) => {
-  const displayValue = totalValue > 0 ? totalValue : 69700;
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const displayValue = totalValue > 0 ? totalValue : total;
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">

@@ -24,7 +24,13 @@ const profileFields = [
 
 const Perfil = () => {
   const [activeTab, setActiveTab] = useState('Visão Geral');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => {
+    try {
+      const raw = localStorage.getItem('hadron_user');
+      if (raw) { const u = JSON.parse(raw); return u?.avatar_url || null; }
+    } catch {}
+    return null;
+  });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -90,6 +96,25 @@ const Perfil = () => {
 
   const handleRemoveAvatar = () => {
     setAvatarUrl(null);
+  };
+
+  const handleSaveProfile = () => {
+    const updatedUser = {
+      ...userData,
+      nome: `${formFirstName} ${formLastName}`.trim(),
+      empresa: formCompany,
+      telefone: formPhone,
+      email: formEmail,
+      site: formSite,
+      avatar_url: avatarUrl,
+      comm_email: commEmail,
+      comm_phone: commPhone,
+    };
+    localStorage.setItem('hadron_user', JSON.stringify(updatedUser));
+    toast({ title: 'Perfil salvo!', description: 'Suas alterações foram salvas com sucesso.' });
+    setActiveTab('Visão Geral');
+    // Force re-render with updated data
+    window.dispatchEvent(new Event('storage'));
   };
 
   const goToSettings = () => setActiveTab('Configurações');
@@ -366,7 +391,7 @@ const Perfil = () => {
             {/* Actions */}
             <div className="flex items-center justify-end gap-3 p-6 sm:px-8 border-t border-border">
               <Button variant="outline" onClick={() => setActiveTab('Visão Geral')}>Descartar</Button>
-              <Button>Salvar Alterações</Button>
+              <Button onClick={handleSaveProfile}>Salvar Alterações</Button>
             </div>
           </div>
 

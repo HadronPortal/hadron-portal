@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useRepresentantes } from '@/hooks/use-representantes';
 import logoImg from '@/assets/logo_hadron_go.png';
 import avatarImg from '@/assets/avatar-user.png';
 
@@ -18,6 +19,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { representantes } = useRepresentantes();
 
   // Close menu on outside click
   useEffect(() => {
@@ -44,7 +46,9 @@ const Header = () => {
     } catch {}
     return null;
   })();
-  const userName = userData?.aus_nome || userData?.name || 'Usuário';
+  const userRepCode = userData?.aus_codrep || userData?.rep_codrep;
+  const repMatch = representantes.find(r => r.rep_codrep === Number(userRepCode));
+  const userName = repMatch?.rep_nomrep || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.aus_email || userData?.email || '';
   const userCompany = userData?.aus_empresa || userData?.company || '';
 

@@ -45,7 +45,7 @@ const Header = () => {
     return null;
   })();
   const userName = userData?.aus_nome || userData?.name || 'Usuário';
-  const userEmail = userData?.aus_email || userData?.email || '';
+  const userCompany = userData?.aus_empresa || userData?.company || '';
 
   return (
     <header className="text-primary-foreground">

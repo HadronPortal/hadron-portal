@@ -72,6 +72,8 @@ const Header = () => {
           </div>
         </div>
       </div>
+      {/* Divider line */}
+      <div className="h-px bg-primary-foreground/10" />
 
       {/* Mobile menu */}
       {mobileOpen && (

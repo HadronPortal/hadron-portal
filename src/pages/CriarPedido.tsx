@@ -302,7 +302,7 @@ const CriarPedido = () => {
                 {/* Products list */}
                 <div className="overflow-y-auto max-h-[60vh]">
                   {/* Table header */}
-                  <div className="grid grid-cols-12 gap-2 px-5 py-2.5 border-b border-border bg-muted/30 text-xs font-bold text-muted-foreground uppercase">
+                  <div className="grid grid-cols-12 gap-2 px-5 py-2.5 border-b border-border/40 text-xs font-bold text-muted-foreground uppercase">
                     <div className="col-span-1"></div>
                     <div className="col-span-7">Produto</div>
                     <div className="col-span-2 text-center">Preço Un.</div>

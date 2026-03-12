@@ -37,6 +37,7 @@ const Catalogo = () => {
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   const totalPages = Math.ceil(totalRecords / limit);
 

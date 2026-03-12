@@ -161,7 +161,6 @@ const Index = () => {
         <div className="relative px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
-            <p className="text-sm text-primary-foreground/50 mt-1">Visão geral de pedidos e clientes</p>
           </div>
           <div className="flex items-center gap-3">
             <Button

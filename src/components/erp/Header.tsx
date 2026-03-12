@@ -66,7 +66,7 @@ const Header = () => {
                   className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-primary-foreground/15 text-primary-foreground'
-                      : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/5'
+                      : 'text-primary-foreground hover:bg-primary-foreground/10'
                   }`}
                 >
                   {label}

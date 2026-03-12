@@ -151,14 +151,17 @@ const Index = () => {
 
   return (
     <>
-      {/* Hero banner */}
-      <div className="relative bg-[hsl(var(--erp-header))] overflow-hidden">
-        {/* Decorative gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--erp-header))] via-[hsl(var(--primary)/0.3)] to-[hsl(var(--erp-header))]" />
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+      {/* Hero banner - Metronic-style gradient */}
+      <div className="relative bg-gradient-to-br from-[hsl(220,60%,22%)] via-[hsl(200,55%,32%)] to-[hsl(160,50%,42%)] overflow-hidden">
+        {/* Geometric pattern */}
+        <div className="absolute inset-0 opacity-[0.06]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.8'%3E%3Cline x1='0' y1='0' x2='300' y2='300'/%3E%3Cline x1='60' y1='0' x2='300' y2='240'/%3E%3Cline x1='120' y1='0' x2='300' y2='180'/%3E%3Cline x1='0' y1='60' x2='240' y2='300'/%3E%3Cline x1='0' y1='120' x2='180' y2='300'/%3E%3Ccircle cx='50' cy='40' r='2' fill='%23ffffff'/%3E%3Ccircle cx='200' cy='70' r='1.5' fill='%23ffffff'/%3E%3Ccircle cx='120' cy='180' r='2' fill='%23ffffff'/%3E%3Ccircle cx='250' cy='220' r='1.5' fill='%23ffffff'/%3E%3Ccircle cx='80' cy='260' r='1' fill='%23ffffff'/%3E%3C/g%3E%3C/svg%3E")`,
         }} />
-        <div className="relative px-4 sm:px-8 py-8 sm:py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="absolute top-[-50px] right-[15%] w-72 h-72 bg-[hsl(175,60%,50%)] rounded-full blur-[140px] opacity-20" />
+        <div className="absolute bottom-[-30px] left-[25%] w-56 h-56 bg-[hsl(210,70%,50%)] rounded-full blur-[110px] opacity-15" />
+        {/* Spacer for overlaid transparent header */}
+        <div className="h-16" />
+        <div className="relative px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
             <p className="text-sm text-primary-foreground/50 mt-1">Visão geral de pedidos e clientes</p>

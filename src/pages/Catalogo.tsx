@@ -348,6 +348,7 @@ const Catalogo = () => {
           productFoto={selectedProduct?.foto}
         />
       </main>
+      </div>
     </>
   );
 };

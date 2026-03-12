@@ -70,8 +70,8 @@ const NewCustomersCard = () => {
 
           {/* 3D Carousel Container */}
           <div
-            className="relative flex items-center justify-start h-12"
-            style={{ perspective: '600px' }}
+            className="relative flex items-center justify-center h-12"
+            style={{ perspective: '800px' }}
           >
             <AnimatePresence mode="popLayout" custom={direction}>
               {visibleClients.map((client, i) => {
@@ -83,10 +83,10 @@ const NewCustomersCard = () => {
                         custom={direction}
                         initial={{
                           opacity: 0,
-                          rotateY: direction > 0 ? 55 : -55,
-                          translateX: direction > 0 ? 60 : -60,
-                          translateZ: -80,
-                          scale: 0.6,
+                          rotateY: direction > 0 ? 35 : -35,
+                          translateX: direction > 0 ? 40 : -40,
+                          translateZ: -50,
+                          scale: 0.7,
                         }}
                         animate={{
                           opacity: 1,
@@ -98,17 +98,16 @@ const NewCustomersCard = () => {
                         }}
                         exit={{
                           opacity: 0,
-                          rotateY: direction > 0 ? -55 : 55,
-                          translateX: direction > 0 ? -60 : 60,
-                          translateZ: -80,
-                          scale: 0.5,
+                          rotateY: direction > 0 ? -35 : 35,
+                          translateX: direction > 0 ? -40 : 40,
+                          translateZ: -50,
+                          scale: 0.6,
                         }}
                         transition={{
                           type: 'spring',
-                          stiffness: 200,
-                          damping: 22,
-                          mass: 0.8,
-                          duration: 0.7,
+                          stiffness: 140,
+                          damping: 20,
+                          mass: 1,
                         }}
                         className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground ring-2 ring-card ${client.color} overflow-hidden cursor-pointer -ml-2 first:ml-0`}
                         style={{ transformStyle: 'preserve-3d', zIndex: visibleClients.length - Math.abs(i - Math.floor(visibleClients.length / 2)) }}

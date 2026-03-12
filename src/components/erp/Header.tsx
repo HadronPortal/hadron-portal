@@ -113,29 +113,9 @@ const Header = () => {
       {/* Divider line */}
       <div className="h-px bg-primary-foreground/10" />
 
-      {/* Nav row - sits in the blue banner area */}
-      <nav className="hidden lg:flex items-center gap-1 px-6 sm:px-10 py-2">
-        {navItems.map(({ label, path }) => {
-          const isActive = location.pathname === path;
-          return (
-            <button
-              key={label}
-              onClick={() => navigate(path)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-primary-foreground/15 text-primary-foreground'
-                  : 'text-primary-foreground hover:bg-primary-foreground/10'
-              }`}
-            >
-              {label}
-            </button>
-          );
-        })}
-      </nav>
-
       {/* Mobile menu */}
       {mobileOpen && (
-        <nav className="lg:hidden border-t border-primary-foreground/10 px-3 py-2 grid grid-cols-4 gap-1 bg-[hsl(var(--erp-header))]">
+        <nav className="lg:hidden border-t border-primary-foreground/10 px-3 py-2 grid grid-cols-5 gap-1 bg-[hsl(var(--erp-header))]">
           {navItems.map(({ icon: Icon, label, path }) => (
             <button
               key={label}

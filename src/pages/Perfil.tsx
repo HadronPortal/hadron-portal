@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { MapPin, Mail, Briefcase, Shield, ArrowUpRight, ArrowDownRight, MoreHorizontal, Pencil, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import avatarImg from '@/assets/avatar-user.png';
 
 const tabs = ['Visão Geral', 'Configurações', 'Segurança', 'Atividade'];
@@ -22,6 +24,10 @@ const profileFields = [
 
 const Perfil = () => {
   const [activeTab, setActiveTab] = useState('Visão Geral');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const userData = (() => {
     try {
@@ -48,6 +54,44 @@ const Perfil = () => {
   const [commEmail, setCommEmail] = useState(true);
   const [commPhone, setCommPhone] = useState(true);
 
+  const currentAvatar = avatarUrl || avatarImg;
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Formato inválido', description: 'Use PNG, JPG ou JPEG.', variant: 'destructive' });
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast({ title: 'Arquivo muito grande', description: 'Máximo de 2MB.', variant: 'destructive' });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fileName = `avatar-${Date.now()}.${file.name.split('.').pop()}`;
+      const { error } = await supabase.storage.from('avatars').upload(fileName, file, { upsert: true });
+
+      if (error) throw error;
+
+      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      setAvatarUrl(urlData.publicUrl);
+      toast({ title: 'Foto atualizada!', description: 'Seu avatar foi alterado com sucesso.' });
+    } catch (err: any) {
+      toast({ title: 'Erro ao enviar foto', description: err?.message || 'Tente novamente.', variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarUrl(null);
+  };
+
   const goToSettings = () => setActiveTab('Configurações');
 
   const resolveValue = (field: typeof profileFields[0]) => {
@@ -71,7 +115,7 @@ const Perfil = () => {
             {/* Avatar */}
             <div className="relative flex-shrink-0">
               <div className="h-[100px] w-[100px] sm:h-[120px] sm:w-[120px] rounded-xl overflow-hidden">
-                <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+                <img src={currentAvatar} alt={userName} className="h-full w-full object-cover" />
               </div>
               <div className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-[hsl(var(--erp-green))] ring-2 ring-card" />
             </div>
@@ -207,18 +251,38 @@ const Perfil = () => {
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
                 <Label className="text-sm text-muted-foreground sm:w-[200px] flex-shrink-0">Avatar</Label>
                 <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                  />
                   <div className="relative inline-block">
                     <div className="h-[100px] w-[100px] rounded-xl overflow-hidden border border-border">
-                      <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+                      <img src={currentAvatar} alt={userName} className="h-full w-full object-cover" />
                     </div>
-                    <button className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors"
+                    >
                       <Pencil size={12} className="text-muted-foreground" />
                     </button>
-                    <button className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors">
-                      <X size={12} className="text-muted-foreground" />
-                    </button>
+                    {avatarUrl && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveAvatar}
+                        className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors"
+                      >
+                        <X size={12} className="text-muted-foreground" />
+                      </button>
+                    )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Tipos permitidos: png, jpg, jpeg.</p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {uploading ? 'Enviando...' : 'Tipos permitidos: png, jpg, jpeg. Máx 2MB.'}
+                  </p>
                 </div>
               </div>
 

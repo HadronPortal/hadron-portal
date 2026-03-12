@@ -95,7 +95,7 @@ const Perfil = () => {
               {/* Stats */}
               <div className="flex flex-wrap items-center gap-6 mt-5">
                 <div className="flex items-center gap-2">
-                  <ArrowUpRight size={16} className="text-emerald-500" />
+                  <ArrowUpRight size={16} className="text-[hsl(var(--erp-green))]" />
                   <div>
                     <p className="text-lg font-bold text-foreground">152</p>
                     <p className="text-xs text-muted-foreground">Pedidos</p>

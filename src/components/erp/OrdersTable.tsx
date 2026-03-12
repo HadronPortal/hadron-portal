@@ -42,7 +42,6 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
         <h2 className="text-base font-semibold text-foreground">Últimos Pedidos</h2>
         <p className="text-xs text-muted-foreground">Média de {orders.length > 0 ? orders.length : 57} pedidos por dia</p>
       </div>
-      </div>
 
       {/* Table */}
       <div className="overflow-x-auto">

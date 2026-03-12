@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { keepPreviousData } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Package, Boxes, Search, LayoutGrid, List } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
+import { useApiFetch } from '@/hooks/use-api-fetch';
 
 const navItems = [
   { label: 'Home', path: '/' },
@@ -23,77 +25,43 @@ interface CatalogoItem {
   pro_codgrp: number;
 }
 
+interface CatalogoAPIResponse {
+  catalogs: CatalogoItem[];
+  total_records: number;
+}
+
 const Catalogo = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
-  const [items, setItems] = useState<CatalogoItem[]>([]);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [isFetching, setIsFetching] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
+  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
+
+  const { data, isLoading, isFetching, error } = useApiFetch<CatalogoAPIResponse>({
+    queryKey: ['catalogo', String(page), String(limit), repParam, searchQuery],
+    endpoint: 'fetch-catalogo',
+    params: {
+      page: String(page),
+      limit: String(limit),
+      ...(repParam ? { rep: repParam } : {}),
+      ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+    },
+    staleTime: 2 * 60 * 1000, // 2 min cache
+    placeholderData: keepPreviousData,
+  });
+
+  const items = useMemo(() => {
+    const catalogs = data?.catalogs || [];
+    return [...catalogs].sort((a, b) => a.pro_codpro - b.pro_codpro);
+  }, [data]);
+
+  const totalRecords = data?.total_records || 0;
   const totalPages = Math.ceil(totalRecords / limit);
-
-  const fetchCatalogo = async (p: number, l: number, repCodes: number[] = selectedRep, signal?: AbortSignal) => {
-    try {
-      setIsFetching(true);
-      setError(null);
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      let url = `https://${projectId}.supabase.co/functions/v1/fetch-catalogo?page=${p}&limit=${l}`;
-      if (repCodes.length > 0) url += `&rep=${repCodes.join(',')}`;
-      if (searchQuery.trim()) url += `&search=${encodeURIComponent(searchQuery.trim())}`;
-      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, signal });
-      if (!res.ok) throw new Error(`Erro ${res.status}`);
-      const data = await res.json();
-      const catalogs = (data?.catalogs || []).sort((a: CatalogoItem, b: CatalogoItem) => a.pro_codpro - b.pro_codpro);
-      return { catalogs, total_records: data?.total_records || 0 };
-    } catch (err: any) {
-      if (err.name === 'AbortError') return null;
-      throw err;
-    }
-  };
-
-  useEffect(() => {
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-    const load = async () => {
-      try {
-        const result = await fetchCatalogo(page, limit, selectedRep, controller.signal);
-        if (result && !controller.signal.aborted) {
-          setItems(result.catalogs);
-          setTotalRecords(result.total_records);
-        }
-      } catch (err: any) {
-        if (!controller.signal.aborted) {
-          console.error('Erro ao buscar catálogo:', err);
-          setError(err.message || 'Erro ao carregar catálogo');
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setInitialLoading(false);
-          setIsFetching(false);
-        }
-      }
-    };
-    load();
-    return () => controller.abort();
-  }, [page, limit, selectedRep, searchQuery]);
-
-
-  const filteredItems = searchQuery.trim()
-    ? items.filter(i => {
-        const q = searchQuery.toLowerCase();
-        return (i.pro_despro || '').toLowerCase().includes(q) || String(i.pro_codpro).includes(q);
-      })
-    : items;
 
   const formatSaldo = (saldo: string) => {
     const num = parseFloat(saldo);
@@ -190,10 +158,10 @@ const Catalogo = () => {
           </div>
         </div>
 
-        {initialLoading && items.length === 0 ? (
+        {isLoading && items.length === 0 ? (
           <Spinner />
         ) : error && items.length === 0 ? (
-          <div className="text-center py-20 text-destructive">{error}</div>
+          <div className="text-center py-20 text-destructive">{(error as Error).message}</div>
         ) : (
           <div className="relative">
             {isFetching && (
@@ -208,7 +176,7 @@ const Catalogo = () => {
                 ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'
                 : 'space-y-2.5'
             }`}>
-              {filteredItems.map((item) => {
+              {items.map((item) => {
                 const saldoNum = parseFloat(item.SALDOS);
                 const inStock = !isNaN(saldoNum) && saldoNum > 0;
 

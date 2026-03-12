@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Package, ShoppingCart } from 'lucide-react';
+import { Package } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import { useApiFetch } from '@/hooks/use-api-fetch';
 
 const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?file=`;
 
@@ -63,35 +63,15 @@ const DetailRow = ({ label, children }: { label: string; children: React.ReactNo
 );
 
 const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFoto }: CatalogoDetalheProps) => {
-  const [data, setData] = useState<ProductDetail | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading: loading, error: queryError } = useApiFetch<ProductDetail>({
+    queryKey: ['product-detail', String(productId)],
+    endpoint: 'fetch-product-details',
+    params: { product_id: String(productId) },
+    enabled: open && !!productId,
+    staleTime: 5 * 60 * 1000, // 5 min cache - produto não muda frequentemente
+  });
 
-  useEffect(() => {
-    if (!open || !productId) {
-      setData(null);
-      return;
-    }
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const res = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/fetch-product-details?product_id=${productId}`
-        );
-        if (!res.ok) throw new Error('Falha ao buscar detalhes');
-        const json = await res.json();
-        if (json.error) throw new Error(json.error);
-        setData(json);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [open, productId]);
+  const error = queryError ? (queryError as Error).message : null;
 
   useEffect(() => {
     if (!open) return;

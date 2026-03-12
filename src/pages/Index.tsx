@@ -6,11 +6,16 @@ import heroBg from '@/assets/hero-bg.jpg';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
-import KpiCards from '@/components/erp/KpiCards';
 import OrdersTable from '@/components/erp/OrdersTable';
-import ClientsTable from '@/components/erp/ClientsTable';
 import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
+
+import EarningsCard from '@/components/erp/dashboard/EarningsCard';
+import DailySalesCard from '@/components/erp/dashboard/DailySalesCard';
+import SalesChartCard from '@/components/erp/dashboard/SalesChartCard';
+import OrdersMonthCard from '@/components/erp/dashboard/OrdersMonthCard';
+import NewCustomersCard from '@/components/erp/dashboard/NewCustomersCard';
+import DiscountedSalesCard from '@/components/erp/dashboard/DiscountedSalesCard';
 
 interface DashboardAPIResponse {
   dashboard: {
@@ -28,14 +33,6 @@ interface DashboardAPIResponse {
     orc_status: number | string;
     orc_val_tot: number;
     DATA_PEDIDO: string;
-    [key: string]: unknown;
-  }>;
-  ultimos_clientes?: Array<{
-    cli_codcli: number;
-    cli_nomcli: string;
-    cli_cidcli: string;
-    cli_estcli: string;
-    cli_dta_cad: string;
     [key: string]: unknown;
   }>;
   [key: string]: unknown;
@@ -89,17 +86,6 @@ const Index = () => {
     staleTime: 2 * 60 * 1000,
   });
 
-  const { data: dashData } = useApiFetch<DashboardAPIResponse>({
-    queryKey: ['dashboard-clients', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
-    endpoint: 'fetch-dashboard',
-    params: {
-      date_ini: dateIniParam,
-      date_end: dateEndParam,
-      ...(repParam ? { rep: repParam } : {}),
-    },
-    staleTime: 2 * 60 * 1000,
-  });
-
   const handleRepChange = useCallback((_repCodes: number[]) => {}, []);
   const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
@@ -113,7 +99,7 @@ const Index = () => {
   }, []);
 
   const orders = useMemo(() => {
-    const rawOrders = ordersData?.orders || ordersData?.data || [];
+    const rawOrders = ordersData?.orders || (ordersData as any)?.data || [];
     return (rawOrders as any[]).map((p: any) => {
       let dataPedido = p.DATA_PEDIDO || p.orc_dta || p.data_pedido || '';
       if (dataPedido) {
@@ -140,23 +126,18 @@ const Index = () => {
     });
   }, [ordersData]);
 
-  const clients = useMemo(() =>
-    (dashData?.ultimos_clientes || []).map((c) => ({
-      id: String(c.cli_codcli),
-      nome: c.cli_nomcli || '',
-      localizacao: [c.cli_cidcli, c.cli_estcli].filter(Boolean).join(' - '),
-      data_cadastro: c.cli_dta_cad || '',
-    })),
-    [dashData?.ultimos_clientes]
-  );
+  // Compute KPI values from API
+  const totalSent = ordersData?.dashboard?.sent ?? 0;
+  const totalApproved = ordersData?.dashboard?.approved ?? 0;
+  const totalInvoiced = ordersData?.dashboard?.invoiced ?? 0;
+  const totalEarnings = totalSent + totalApproved + totalInvoiced;
 
   return (
     <>
-      {/* Hero banner with background image */}
+      {/* Hero banner */}
       <div className="relative overflow-hidden">
         <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-[hsl(220,60%,18%)/0.4] to-transparent" />
-        {/* Spacer for overlaid transparent header */}
         <div className="h-[70px]" />
         <div className="relative px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -174,33 +155,44 @@ const Index = () => {
             </Button>
           </div>
         </div>
-        {/* Extra height so gradient extends behind KPI cards */}
         <div className="h-20 sm:h-24" />
       </div>
 
-      {/* Collapsible filter bar */}
       {showFilters && (
         <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
       )}
 
-      <main className="flex-1 px-4 sm:px-8 pb-6 space-y-6 -mt-20 sm:-mt-24 relative z-10">
+      <main className="flex-1 px-4 sm:px-8 pb-6 space-y-5 -mt-20 sm:-mt-24 relative z-10">
         {(isLoading || isFetching) ? (
           <Spinner />
         ) : error ? (
           <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
         ) : (
           <>
-            <KpiCards
-              enviados={ordersData?.dashboard?.sent ?? 0}
-              aprovados={ordersData?.dashboard?.approved ?? 0}
-              faturados={ordersData?.dashboard?.invoiced ?? 0}
-              cancelados={ordersData?.dashboard?.canceled ?? 0}
-              clientesPositivados={0}
-            />
+            {/* Row 1: Earnings | Daily Sales | Sales Chart (spans 2 rows) */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              <div className="grid grid-rows-subgrid lg:row-span-2 gap-5 lg:col-span-2">
+                {/* Top row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <EarningsCard totalValue={totalEarnings} />
+                  <DailySalesCard value={totalApproved} />
+                </div>
+                {/* Bottom row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <OrdersMonthCard ordersCount={orders.length} />
+                  <NewCustomersCard />
+                </div>
+              </div>
+              {/* Sales chart spans full height on the right */}
+              <div className="lg:row-span-2">
+                <SalesChartCard totalValue={totalInvoiced} />
+              </div>
+            </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-5 items-start">
+            {/* Row 3: Recent Orders | Discounted Sales */}
+            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-5 items-start">
               <OrdersTable orders={orders} />
-              <ClientsTable clients={clients} />
+              <DiscountedSalesCard />
             </div>
           </>
         )}

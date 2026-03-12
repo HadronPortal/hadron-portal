@@ -134,6 +134,7 @@ const Catalogo = () => {
       </div>
 
       {/* Search bar */}
+      <div className="bg-card">
       <div className="max-w-[1100px] mx-auto w-full px-3 sm:px-6 lg:px-12 xl:px-20 pt-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

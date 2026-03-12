@@ -1,7 +1,7 @@
 import { BarChart, Bar, ResponsiveContainer } from 'recharts';
 
 const barData = [
-  { v: 30 }, { v: 55 }, { v: 40 }, { v: 70 }, { v: 50 }, { v: 65 }, { v: 45 },
+  { v: 35 }, { v: 55 }, { v: 45 }, { v: 50 }, { v: 70 }, { v: 55 }, { v: 60 }, { v: 50 },
 ];
 
 interface Props {

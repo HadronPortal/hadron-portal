@@ -36,7 +36,7 @@ const OrdersTable = ({ orders }: { orders: Order[] }) => {
       {/* Header */}
       <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-foreground">Pedidos de Produtos</h2>
+          <h2 className="text-base font-semibold text-foreground">Últimos Pedidos</h2>
           <p className="text-xs text-muted-foreground">Média de {orders.length > 0 ? orders.length : 57} pedidos por dia</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">

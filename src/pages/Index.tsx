@@ -1,10 +1,7 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import { format } from 'date-fns';
-import { Button } from '@/components/ui/button';
-import heroBg from '@/assets/hero-bg.jpg';
 
-import FilterBar from '@/components/erp/FilterBar';
-import { useRepresentantes } from '@/hooks/use-representantes';
+import OrdersTable from '@/components/erp/OrdersTable';
 import OrdersTable from '@/components/erp/OrdersTable';
 import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';

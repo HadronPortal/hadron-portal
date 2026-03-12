@@ -1,9 +1,10 @@
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { name: 'Enviados', value: 7660, color: 'hsl(340, 80%, 55%)' },
-  { name: 'Aprovados', value: 2820, color: 'hsl(220, 70%, 50%)' },
-  { name: 'Outros', value: 45257, color: 'hsl(220, 10%, 85%)' },
+  { name: 'Enviado', value: 7660, color: 'hsl(173, 58%, 39%)' },
+  { name: 'Aprovado', value: 2820, color: 'hsl(25, 95%, 53%)' },
+  { name: 'Faturado', value: 45257, color: 'hsl(152, 69%, 31%)' },
+  { name: 'Cancelado', value: 1230, color: 'hsl(0, 84%, 60%)' },
 ];
 
 interface Props {

@@ -1,5 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
+import { Filter, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -67,12 +69,12 @@ const Index = () => {
     endDate: DEFAULT_END_DATE,
   });
   const [filterNonce, setFilterNonce] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
-  // Single API call – fetch-orders returns both KPIs and order list
   const { data: ordersData, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
     queryKey: ['dashboard-orders', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
     endpoint: 'fetch-orders',
@@ -83,10 +85,9 @@ const Index = () => {
       date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
     },
-    staleTime: 2 * 60 * 1000, // 2 min cache
+    staleTime: 2 * 60 * 1000,
   });
 
-  // Dashboard data (clients) – only if needed
   const { data: dashData } = useApiFetch<DashboardAPIResponse>({
     queryKey: ['dashboard-clients', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
     endpoint: 'fetch-dashboard',
@@ -150,11 +151,46 @@ const Index = () => {
 
   return (
     <>
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
+      {/* Hero banner */}
+      <div className="relative bg-[hsl(var(--erp-header))] overflow-hidden">
+        {/* Decorative gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--erp-header))] via-[hsl(var(--primary)/0.3)] to-[hsl(var(--erp-header))]" />
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }} />
+        <div className="relative px-4 sm:px-8 py-8 sm:py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
+            <p className="text-sm text-primary-foreground/50 mt-1">Visão geral de pedidos e clientes</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground"
+            >
+              <Filter size={14} className="mr-1.5" />
+              Filtrar
+            </Button>
+            <Button
+              size="sm"
+              className="bg-primary-foreground text-foreground hover:bg-primary-foreground/90"
+              onClick={() => window.location.href = '/pedidos/criar'}
+            >
+              <Plus size={14} className="mr-1.5" />
+              Criar Pedido
+            </Button>
+          </div>
+        </div>
+      </div>
 
-      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
-        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>
+      {/* Collapsible filter bar */}
+      {showFilters && (
+        <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
+      )}
 
+      <main className="flex-1 px-4 sm:px-8 py-6 space-y-6">
         {(isLoading || isFetching) ? (
           <Spinner />
         ) : error ? (
@@ -169,7 +205,7 @@ const Index = () => {
               clientesPositivados={0}
             />
 
-            <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-4 sm:gap-5 items-start">
+            <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-5 items-start">
               <OrdersTable orders={orders} />
               <ClientsTable clients={clients} />
             </div>

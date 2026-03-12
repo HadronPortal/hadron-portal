@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 
-import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Package, Boxes } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Package, Boxes, Search } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 

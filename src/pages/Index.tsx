@@ -107,6 +107,7 @@ const Index = () => {
       descricao: p.descricao,
       quantidade: parseFloat(p.quantidade),
       valorTotal: parseFloat(p.valor_total),
+      foto: p.foto || '',
     }));
   }, [dashData]);
 

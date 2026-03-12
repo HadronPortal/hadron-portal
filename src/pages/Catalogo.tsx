@@ -206,11 +206,11 @@ const Catalogo = () => {
                     </div>
 
                     {/* Right: View details */}
-                    <div className="flex-shrink-0 hidden sm:flex items-center">
+                    <div className="flex-shrink-0 flex items-center">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="text-xs gap-1.5"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto });

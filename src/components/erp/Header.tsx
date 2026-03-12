@@ -46,8 +46,12 @@ const Header = () => {
     } catch {}
     return null;
   })();
-  const userRepCode = userData?.aus_codrep || userData?.rep_codrep;
+  console.log('[Header] userData:', userData);
+  console.log('[Header] representantes:', representantes);
+  const userRepCode = userData?.aus_codrep || userData?.rep_codrep || userData?.codrep;
+  console.log('[Header] userRepCode:', userRepCode);
   const repMatch = representantes.find(r => r.rep_codrep === Number(userRepCode));
+  console.log('[Header] repMatch:', repMatch);
   const userName = repMatch?.rep_nomrep || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.aus_email || userData?.email || '';
   const userCompany = userData?.aus_empresa || userData?.company || '';

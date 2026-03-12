@@ -100,7 +100,7 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-[480px] p-0 flex flex-col overflow-hidden">
+      <SheetContent className="w-full sm:max-w-[480px] p-0 flex flex-col bg-card overflow-y-auto">
         {/* Header */}
         <SheetHeader className="px-5 pt-5 pb-3 border-b border-border flex-shrink-0">
           <SheetTitle className="text-lg font-bold text-foreground">
@@ -109,7 +109,7 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
         </SheetHeader>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1">
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <Spinner />
@@ -225,15 +225,6 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
           )}
         </div>
 
-        {/* Sticky bottom button */}
-        {!loading && !error && (
-          <div className="flex-shrink-0 p-5 border-t border-border">
-            <Button className="w-full h-11 text-sm font-semibold gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              Adicionar ao Carrinho
-            </Button>
-          </div>
-        )}
       </SheetContent>
     </Sheet>
   );

@@ -271,6 +271,14 @@ const Catalogo = () => {
           </div>
           </div>
         )}
+
+        <CatalogoDetalhe
+          open={!!selectedProduct}
+          onOpenChange={(open) => { if (!open) setSelectedProduct(null); }}
+          productId={selectedProduct?.id ?? null}
+          productName={selectedProduct?.name}
+          productFoto={selectedProduct?.foto}
+        />
       </main>
     </>
   );

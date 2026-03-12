@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Package, Boxes, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Package, Boxes, Search, LayoutGrid, List } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 
@@ -37,6 +37,7 @@ const Catalogo = () => {
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   const totalPages = Math.ceil(totalRecords / limit);
 
@@ -171,6 +172,22 @@ const Catalogo = () => {
               <option value={25}>25</option>
               <option value={50}>50</option>
             </select>
+
+            {/* View mode toggle */}
+            <div className="flex items-center border border-border rounded-lg overflow-hidden">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -186,11 +203,59 @@ const Catalogo = () => {
               </div>
             )}
 
-            {/* Product list cards */}
-            <div className={`space-y-2.5 transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
+            {/* Product cards */}
+            <div className={`transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'} ${
+              viewMode === 'grid'
+                ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'
+                : 'space-y-2.5'
+            }`}>
               {filteredItems.map((item) => {
                 const saldoNum = parseFloat(item.SALDOS);
                 const inStock = !isNaN(saldoNum) && saldoNum > 0;
+
+                if (viewMode === 'grid') {
+                  return (
+                    <div
+                      key={item.pro_codpro}
+                      onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
+                      className="bg-card rounded-lg border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col"
+                    >
+                      {/* Image */}
+                      <div className="aspect-square rounded-t-lg bg-muted flex items-center justify-center overflow-hidden p-4">
+                        {item.pro_foto ? (
+                          <img
+                            src={getImageUrl(item.pro_foto)}
+                            alt={item.pro_despro}
+                            className="w-full h-full object-contain"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          />
+                        ) : (
+                          <Package className="w-10 h-10 text-muted-foreground" />
+                        )}
+                      </div>
+                      {/* Info */}
+                      <div className="p-3 flex-1 flex flex-col">
+                        <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                          {item.pro_despro}
+                        </h3>
+                        <div className="mt-auto pt-3 flex items-center justify-between gap-2">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
+                            inStock
+                              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                              : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                          }`}>
+                            <Boxes className="w-3 h-3" />
+                            {formatSaldo(item.SALDOS)}
+                          </span>
+                          <Button variant="outline" size="sm" className="text-[11px] gap-1 h-7 px-2">
+                            <Package className="w-3 h-3" />
+                            Ver
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
 
                 return (
                   <div
@@ -198,62 +263,26 @@ const Catalogo = () => {
                     onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
                     className="bg-card rounded-lg border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200 cursor-pointer flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-2.5 group"
                   >
-                    {/* Image */}
                     <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden">
                       {item.pro_foto ? (
-                        <img
-                          src={getImageUrl(item.pro_foto)}
-                          alt={item.pro_despro}
-                          className="w-full h-full object-contain p-1"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
+                        <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain p-1" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                       ) : (
                         <Package className="w-7 h-7 text-muted-foreground" />
                       )}
                     </div>
-
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm sm:text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors truncate">
-                        {item.pro_despro}
-                      </h3>
+                      <h3 className="text-sm sm:text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors truncate">{item.pro_despro}</h3>
                       <div className="flex items-center gap-2 sm:gap-3 mt-1.5 flex-wrap">
-                        {/* Stock badge */}
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
-                          inStock
-                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                            : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                        }`}>
-                          <Boxes className="w-3 h-3" />
-                          {formatSaldo(item.SALDOS)}
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${inStock ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
+                          <Boxes className="w-3 h-3" />{formatSaldo(item.SALDOS)}
                         </span>
-
-                        <span className="text-xs text-muted-foreground">
-                          <span className="hidden sm:inline">SKU: </span>
-                          <span className="font-mono font-medium text-foreground">{item.pro_codpro}</span>
-                        </span>
-
-                        {item.NOME_GRUPO && (
-                          <span className="text-xs text-muted-foreground">
-                            Grupo: <span className="font-medium text-foreground">{item.NOME_GRUPO}</span>
-                          </span>
-                        )}
+                        <span className="text-xs text-muted-foreground"><span className="hidden sm:inline">SKU: </span><span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
+                        {item.NOME_GRUPO && <span className="text-xs text-muted-foreground">Grupo: <span className="font-medium text-foreground">{item.NOME_GRUPO}</span></span>}
                       </div>
                     </div>
-
-                    {/* Right: View details */}
                     <div className="flex-shrink-0 flex items-center">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs gap-1.5"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto });
-                        }}
-                      >
-                        <Package className="w-3.5 h-3.5" />
-                        Ver Detalhes
+                      <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={(e) => { e.stopPropagation(); setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto }); }}>
+                        <Package className="w-3.5 h-3.5" />Ver Detalhes
                       </Button>
                     </div>
                   </div>

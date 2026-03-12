@@ -1,10 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-import { useRepresentantes } from '@/hooks/use-representantes';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Package, Boxes, Search } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
+
+const navItems = [
+  { label: 'Home', path: '/' },
+  { label: 'Clientes', path: '/clientes' },
+  { label: 'Analítico', path: '/analitico' },
+  { label: 'Pedidos', path: '/pedidos' },
+  { label: 'Catálogo', path: '/catalogo' },
+];
 
 interface CatalogoItem {
   pro_codpro: number;
@@ -16,7 +24,8 @@ interface CatalogoItem {
 }
 
 const Catalogo = () => {
-  const { representantes } = useRepresentantes();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [items, setItems] = useState<CatalogoItem[]>([]);
@@ -77,18 +86,6 @@ const Catalogo = () => {
     return () => controller.abort();
   }, [page, limit, selectedRep, searchQuery]);
 
-  const handleRepChange = (_repCodes: number[]) => {};
-  const handleSearch = (query: string) => setSearchQuery(query);
-  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; search: string }) => {
-    setSelectedRep(filters.repCodes);
-    setSearchQuery(filters.search);
-    setPage(1);
-  };
-  const handleClear = () => {
-    setSelectedRep([]);
-    setSearchQuery('');
-    setPage(1);
-  };
 
   const filteredItems = searchQuery.trim()
     ? items.filter(i => {
@@ -111,6 +108,31 @@ const Catalogo = () => {
 
   return (
     <>
+      {/* Hero banner */}
+      <div className="relative overflow-hidden bg-black">
+        <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
+          <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Catálogo</h1>
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map(({ label, path }) => {
+              const isActive = location.pathname === path;
+              return (
+                <button
+                  key={label}
+                  onClick={() => navigate(path)}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary-foreground/15 text-primary-foreground'
+                      : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+
       {/* Search bar */}
       <div className="max-w-[1100px] mx-auto w-full px-3 sm:px-6 lg:px-12 xl:px-20 pt-4">
         <div className="relative">
@@ -120,7 +142,7 @@ const Catalogo = () => {
             placeholder="Buscar produtos..."
             value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-            className="w-full h-10 pl-9 pr-16 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full h-10 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
           
         </div>

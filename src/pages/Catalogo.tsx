@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
+import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 
 const CATALOGO_COLUMNS: ColumnDef[] = [
   { key: 'cod', label: 'COD PROD' },

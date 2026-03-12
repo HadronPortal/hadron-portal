@@ -61,42 +61,17 @@ const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
 const Index = () => {
-  const { representantes } = useRepresentantes();
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
-    startDate: DEFAULT_START_DATE,
-    endDate: DEFAULT_END_DATE,
-  });
-  const [filterNonce, setFilterNonce] = useState(0);
-
-  const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
-  const dateIniParam = toApiDate(selectedPeriod.startDate);
-  const dateEndParam = toApiDate(selectedPeriod.endDate);
-
   const { data: ordersData, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
-    queryKey: ['dashboard-orders', repParam || 'all', dateIniParam, dateEndParam, String(filterNonce)],
+    queryKey: ['dashboard-orders'],
     endpoint: 'fetch-orders',
     params: {
       page: '1',
       limit: '10',
-      date_ini: dateIniParam,
-      date_end: dateEndParam,
-      ...(repParam ? { rep: repParam } : {}),
+      date_ini: toApiDate(DEFAULT_START_DATE),
+      date_end: toApiDate(DEFAULT_END_DATE),
     },
     staleTime: 2 * 60 * 1000,
   });
-
-  const handleRepChange = useCallback((_repCodes: number[]) => {}, []);
-  const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
-    setSelectedRep(filters.repCodes);
-    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
-    setFilterNonce((n) => n + 1);
-  }, []);
-  const handleClear = useCallback(() => {
-    setSelectedRep([]);
-    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-    setFilterNonce((n) => n + 1);
-  }, []);
 
   const orders = useMemo(() => {
     const rawOrders = ordersData?.orders || (ordersData as any)?.data || [];

@@ -251,18 +251,38 @@ const Perfil = () => {
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
                 <Label className="text-sm text-muted-foreground sm:w-[200px] flex-shrink-0">Avatar</Label>
                 <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                  />
                   <div className="relative inline-block">
                     <div className="h-[100px] w-[100px] rounded-xl overflow-hidden border border-border">
-                      <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+                      <img src={currentAvatar} alt={userName} className="h-full w-full object-cover" />
                     </div>
-                    <button className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors"
+                    >
                       <Pencil size={12} className="text-muted-foreground" />
                     </button>
-                    <button className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors">
-                      <X size={12} className="text-muted-foreground" />
-                    </button>
+                    {avatarUrl && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveAvatar}
+                        className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-accent transition-colors"
+                      >
+                        <X size={12} className="text-muted-foreground" />
+                      </button>
+                    )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Tipos permitidos: png, jpg, jpeg.</p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {uploading ? 'Enviando...' : 'Tipos permitidos: png, jpg, jpeg. Máx 2MB.'}
+                  </p>
                 </div>
               </div>
 

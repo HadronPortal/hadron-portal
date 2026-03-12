@@ -63,7 +63,7 @@ const NewCustomersCard = ({ clientes, positivados }: Props) => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Blue top accent line */}
-            <div className="h-1 bg-gradient-to-r from-blue-500 via-primary to-blue-400" />
+            
 
             {/* Header */}
             <div className="relative px-8 pt-8 pb-5 text-center">

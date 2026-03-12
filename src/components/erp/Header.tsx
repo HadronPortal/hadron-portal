@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, Users, Gauge, ClipboardList, LayoutGrid, Box, ShoppingBag, LogOut, User, DollarSign, Menu, X } from 'lucide-react';
+import { Home, Users, Gauge, ClipboardList, LayoutGrid, Box, ShoppingBag, LogOut, DollarSign, Menu, X } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logoImg from '@/assets/logo_hadron_go.png';
 
@@ -21,41 +21,52 @@ const Header = () => {
 
   return (
     <header className="bg-[hsl(var(--erp-header))] text-primary-foreground">
-      {/* Top accent line */}
-      <div className="h-[3px] bg-[#262f55]" />
-      {/* Top strip */}
-      <div className="bg-[#262f55] text-right px-3 py-1.5 text-[11px] tracking-wide truncate">
-        DEV|00-PROCION TESTE DEV WEB LTDA
-      </div>
       {/* Main header */}
-      <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex items-center gap-2 sm:gap-3 cursor-pointer min-w-0" onClick={() => navigate('/')}>
-          <img alt="Hádron" className="h-10 sm:h-14 object-contain flex-shrink-0" src={logoImg} />
+      <div className="flex items-center justify-between px-4 sm:px-8 h-16">
+        {/* Left: Logo + Nav */}
+        <div className="flex items-center gap-6 min-w-0">
+          <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={() => navigate('/')}>
+            <img alt="Hádron" className="h-8 object-contain" src={logoImg} />
+          </div>
+
+          {/* Desktop nav with text labels */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map(({ icon: Icon, label, path }) => {
+              const isActive = location.pathname === path;
+              return (
+                <button
+                  key={label}
+                  onClick={() => navigate(path)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-[13px] font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary-foreground/15 text-primary-foreground'
+                      : 'text-primary-foreground/60 hover:text-primary-foreground/90 hover:bg-primary-foreground/5'
+                  }`}
+                >
+                  <Icon size={16} />
+                  <span>{label}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-6">
-          {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-3 xl:gap-4">
-            {navItems.map(({ icon: Icon, label, path }) => (
-              <button
-                key={label}
-                title={label}
-                onClick={() => navigate(path)}
-                className={`p-1.5 hover:opacity-80 transition-opacity ${location.pathname === path ? 'opacity-100' : 'opacity-70'}`}
-              >
-                <Icon size={20} />
-              </button>
-            ))}
-          </nav>
-
+        {/* Right: User avatar + logout */}
+        <div className="flex items-center gap-3">
           {/* Mobile hamburger */}
           <button className="lg:hidden p-1.5" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
-          <div className="flex items-center gap-2 sm:gap-3 border-l border-primary-foreground/20 pl-3 sm:pl-6">
-            <User size={18} className="opacity-70 hidden sm:block" />
-            <span className="text-xs sm:text-sm opacity-80 hidden md:inline truncate max-w-[200px]">3-SUPERVISOR REGIAO 1</span>
+          {/* User avatar */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex flex-col items-end text-right">
+              <span className="text-xs font-medium text-primary-foreground/90 truncate max-w-[160px]">3-SUPERVISOR</span>
+              <span className="text-[10px] text-primary-foreground/50">REGIAO 1</span>
+            </div>
+            <div className="h-9 w-9 rounded-full bg-primary/60 flex items-center justify-center text-sm font-bold text-primary-foreground ring-2 ring-primary-foreground/20">
+              S
+            </div>
             <button
               onClick={() => {
                 localStorage.removeItem('hadron_token');
@@ -63,10 +74,9 @@ const Header = () => {
                 navigate('/login');
               }}
               title="Sair"
-              className="flex items-center gap-1 px-2 py-1.5 rounded hover:bg-primary-foreground/10 transition-colors text-sm"
+              className="p-2 rounded-md hover:bg-primary-foreground/10 transition-colors"
             >
-              <LogOut size={16} />
-              <span className="hidden sm:inline">Sair</span>
+              <LogOut size={16} className="text-primary-foreground/60" />
             </button>
           </div>
         </div>

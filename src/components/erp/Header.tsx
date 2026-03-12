@@ -86,9 +86,9 @@ const Header = () => {
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="h-10 w-10 rounded-full bg-primary/60 flex items-center justify-center text-sm font-bold text-primary-foreground ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"
+              className="h-10 w-10 rounded-full overflow-hidden ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"
             >
-              {userName.charAt(0).toUpperCase()}
+              <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
             </button>
 
             {/* Dropdown menu */}

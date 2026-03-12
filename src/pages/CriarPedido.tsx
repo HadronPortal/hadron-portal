@@ -170,7 +170,7 @@ const CriarPedido = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-7xl mx-auto">
 
             {/* LEFT CARD: Order Details — Metronic style */}
-            <div className="lg:col-span-4 space-y-5">
+            <div className="lg:col-span-3 space-y-5">
               <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden border-l-4 border-l-[hsl(var(--erp-blue))]">
                 <div className="p-6 pb-0">
                   <h2 className="text-lg font-bold text-foreground">Detalhes do Pedido</h2>

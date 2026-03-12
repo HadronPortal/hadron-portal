@@ -7,6 +7,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import logoHadronGo from '@/assets/logo_hadron_go.png';
 
+const PROFILE_OVERRIDES_KEY = 'hadron_profile_overrides_by_email';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,12 +35,16 @@ const Login = () => {
         return;
       }
 
-      // Store token and user info (preserve local profile overrides like avatar)
+      // Store token and user info (preserve profile/avatar overrides across sessions)
       localStorage.setItem('hadron_token', data.access_token);
       if (data.user) {
         try {
-          const existing = JSON.parse(localStorage.getItem('hadron_user') || '{}');
-          const merged = { ...data.user, avatar_url: existing?.avatar_url || null, site: existing?.site || '' };
+          const rawOverrides = localStorage.getItem(PROFILE_OVERRIDES_KEY);
+          const overridesByEmail = rawOverrides ? JSON.parse(rawOverrides) : {};
+          const apiEmail = String(data.user?.email || data.user?.aus_email || email || '').trim().toLowerCase();
+          const savedOverrides = apiEmail ? (overridesByEmail?.[apiEmail] || {}) : {};
+
+          const merged = { ...data.user, ...savedOverrides };
           localStorage.setItem('hadron_user', JSON.stringify(merged));
         } catch {
           localStorage.setItem('hadron_user', JSON.stringify(data.user));

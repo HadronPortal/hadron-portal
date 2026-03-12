@@ -43,6 +43,7 @@ interface DashboardAPIResponse {
     descricao: string;
     quantidade: string;
     valor_total: string;
+    foto?: string;
   }>;
 }
 

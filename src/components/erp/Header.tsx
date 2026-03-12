@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings } from 'lucide-react';
+import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import logoImg from '@/assets/logo_hadron_go.png';

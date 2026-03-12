@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { Filter } from 'lucide-react';
 
 export interface Representante {
   rep_codrep: number;
@@ -28,6 +29,7 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [selectedRep, setSelectedRep] = useState<string>('all');
   const [search, setSearch] = useState('');
+  const [open, setOpen] = useState(false);
 
   const formatDateStr = (date: Date) => format(date, 'dd/MM/yyyy');
 
@@ -39,6 +41,7 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
     const repCodesRaw = selectedRep === 'all' ? [] : [selectedRep];
     const repCodes = repCodesRaw.map(Number);
     onFilter?.({ startDate, endDate, repCodes, repCodesRaw, search });
+    setOpen(false);
   }, [selectedRep, startDate, endDate, search, onFilter]);
 
   const handleClear = useCallback(() => {
@@ -59,65 +62,93 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
       onFilter?.({ startDate, endDate, repCodes, repCodesRaw, search });
     }, 400);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-    // Only trigger on search changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
   return (
-    <div className="bg-transparent border-b border-border px-3 sm:px-6 py-2.5">
-      <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full sm:w-56 h-9 text-sm justify-start font-normal">
-              {formatDateStr(startDate)} | {formatDateStr(endDate)}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <div className="flex flex-col sm:flex-row gap-0">
-              <div className="border-b sm:border-b-0 sm:border-r border-border p-2">
-                <p className="text-xs text-muted-foreground text-center mb-1">Data Inicial</p>
-                <Calendar mode="single" selected={startDate} onSelect={(d) => d && setStartDate(d)} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
-              </div>
-              <div className="p-2">
-                <p className="text-xs text-muted-foreground text-center mb-1">Data Final</p>
-                <Calendar mode="single" selected={endDate} onSelect={(d) => { if (d) { setEndDate(d); setCalendarOpen(false); } }} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-primary/90 border-primary/20 text-primary-foreground hover:bg-primary hover:text-primary-foreground gap-1.5"
+        >
+          <Filter size={14} />
+          Filtro
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-72 p-0" align="end" sideOffset={8}>
+        <div className="px-5 py-4 border-b border-border">
+          <h4 className="text-sm font-semibold text-foreground">Opções de filtro</h4>
+        </div>
 
-        <Select value={selectedRep} onValueChange={handleRepChange}>
-          <SelectTrigger className="w-full sm:w-56 h-9 text-sm">
-            <SelectValue placeholder="REPRESENTANTES" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os Representantes</SelectItem>
-            {representantes.map((rep) => (
-              <SelectItem key={rep.rep_codrep} value={String(rep.rep_codrep)}>
-                {rep.rep_codrep}-{rep.rep_nomrep} ({clientCountByRep[rep.rep_codrep] ?? 0})
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="px-5 py-4 space-y-4">
+          {/* Representante / Status */}
+          <div>
+            <label className="text-xs font-medium text-foreground mb-1.5 block">Representante:</label>
+            <Select value={selectedRep} onValueChange={handleRepChange}>
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue placeholder="Selecione a opção" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {representantes.map((rep) => (
+                  <SelectItem key={rep.rep_codrep} value={String(rep.rep_codrep)}>
+                    {rep.rep_codrep}-{rep.rep_nomrep}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <Input
-          type="text"
-          placeholder="Nome Cliente, doc, local"
-          className="w-full sm:w-56 h-9 text-sm"
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); }}
-        />
+          {/* Período */}
+          <div>
+            <label className="text-xs font-medium text-foreground mb-1.5 block">Período:</label>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full h-9 text-sm justify-start font-normal">
+                  {formatDateStr(startDate)} — {formatDateStr(endDate)}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start" side="left">
+                <div className="flex flex-col sm:flex-row gap-0">
+                  <div className="border-b sm:border-b-0 sm:border-r border-border p-2">
+                    <p className="text-xs text-muted-foreground text-center mb-1">Data Inicial</p>
+                    <Calendar mode="single" selected={startDate} onSelect={(d) => d && setStartDate(d)} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
+                  </div>
+                  <div className="p-2">
+                    <p className="text-xs text-muted-foreground text-center mb-1">Data Final</p>
+                    <Calendar mode="single" selected={endDate} onSelect={(d) => { if (d) { setEndDate(d); setCalendarOpen(false); } }} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto sm:ml-auto justify-end">
-          <button onClick={handleClear} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Limpar
-          </button>
-          <Button size="sm" className="h-8 px-5 text-xs font-semibold bg-erp-navy hover:bg-erp-navy/90" onClick={handleFilter}>
-            Filtrar
+          {/* Busca */}
+          <div>
+            <label className="text-xs font-medium text-foreground mb-1.5 block">Busca:</label>
+            <Input
+              type="text"
+              placeholder="Nome, documento, local..."
+              className="h-9 text-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="px-5 py-3 border-t border-border flex items-center justify-end gap-2">
+          <Button variant="ghost" size="sm" className="text-xs" onClick={handleClear}>
+            Reiniciar
+          </Button>
+          <Button size="sm" className="text-xs px-5" onClick={handleFilter}>
+            Aplicar
           </Button>
         </div>
-      </div>
-    </div>
+      </PopoverContent>
+    </Popover>
   );
 });
 

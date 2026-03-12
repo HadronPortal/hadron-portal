@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
-import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import heroBg from '@/assets/hero-bg.jpg';
 
@@ -69,7 +68,6 @@ const Index = () => {
     endDate: DEFAULT_END_DATE,
   });
   const [filterNonce, setFilterNonce] = useState(0);
-  const [showFilters, setShowFilters] = useState(false);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
@@ -146,23 +144,11 @@ const Index = () => {
             <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground"
-            >
-              <Filter size={14} className="mr-1.5" />
-              Filtrar
-            </Button>
+            <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
           </div>
         </div>
         <div className="h-20 sm:h-24" />
       </div>
-
-      {showFilters && (
-        <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
-      )}
 
       <main className="flex-1 px-4 sm:px-8 pb-6 space-y-5 -mt-20 sm:-mt-24 relative z-10">
         {(isLoading || isFetching) ? (

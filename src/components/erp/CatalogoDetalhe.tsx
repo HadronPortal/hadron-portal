@@ -109,7 +109,7 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
         </SheetHeader>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1">
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <Spinner />

@@ -130,7 +130,7 @@ const Header = () => {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="h-10 w-10 rounded-md overflow-hidden ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"
               >
-                <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+                <img src={userAvatar} alt={userName} className="h-full w-full object-cover" />
               </button>
 
               {userMenuOpen && (

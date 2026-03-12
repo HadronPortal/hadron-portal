@@ -135,9 +135,8 @@ const Index = () => {
   return (
     <>
       {/* Hero banner */}
-      <div className="relative overflow-hidden">
-        <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(220,60%,18%)/0.4] to-transparent" />
+      <div className="relative overflow-hidden bg-[hsl(220,60%,15%)]">
+        <div className="absolute inset-x-0 top-0 h-[70px] bg-black" />
         <div className="h-[70px]" />
         <div className="relative px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>

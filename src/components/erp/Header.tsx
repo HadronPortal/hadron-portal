@@ -18,7 +18,9 @@ const Header = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [companyMenuOpen, setCompanyMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const companyRef = useRef<HTMLDivElement>(null);
   
 
   // Close menu on outside click

@@ -16,6 +16,8 @@ import SalesChartCard from '@/components/erp/dashboard/SalesChartCard';
 import OrdersMonthCard from '@/components/erp/dashboard/OrdersMonthCard';
 import NewCustomersCard from '@/components/erp/dashboard/NewCustomersCard';
 import DiscountedSalesCard from '@/components/erp/dashboard/DiscountedSalesCard';
+import ProductDeliveryCard from '@/components/erp/dashboard/ProductDeliveryCard';
+import StockReportCard from '@/components/erp/dashboard/StockReportCard';
 
 interface DashboardAPIResponse {
   dashboard: {
@@ -193,6 +195,12 @@ const Index = () => {
             <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-5 items-start">
               <OrdersTable orders={orders} />
               <DiscountedSalesCard />
+            </div>
+
+            {/* Row 4: Product Delivery | Stock Report */}
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_2fr] gap-5 items-start">
+              <ProductDeliveryCard />
+              <StockReportCard />
             </div>
           </>
         )}

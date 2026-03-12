@@ -46,8 +46,8 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
         <p className="text-sm text-muted-foreground mt-1">Total</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 flex-1 min-w-0">
-        <div className="w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0 self-center sm:self-auto relative" style={{ perspective: '600px' }}>
+      <div className="flex items-center gap-3 sm:gap-5 flex-1 min-w-0">
+        <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 relative" style={{ perspective: '600px' }}>
           <div
             className="absolute inset-0 opacity-30 blur-[2px]"
             style={{ transform: 'translateY(6px) scale(0.95)' }}

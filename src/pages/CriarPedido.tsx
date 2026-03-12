@@ -287,15 +287,20 @@ const CriarPedido = () => {
                 )}
 
                 {/* Total Cost */}
-                <div className="px-5 py-3 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="px-5 py-3 border-t border-border flex items-center justify-between">
                   <div className="text-sm font-bold text-foreground">
                     Custo Total: <span className="text-[hsl(var(--erp-green))]">{fmt(subtotal)}</span>
                   </div>
-                  <div className="relative w-full sm:w-64">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                </div>
+
+                {/* Search bar */}
+                <div className="px-5 pb-3">
+                  <div className="relative w-full">
+                    <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
                     <Input value={produtoSearch}
                       onChange={e => setProdutoSearch(e.target.value)}
-                      placeholder="Buscar produtos..." className="pl-9 h-9 text-sm rounded-lg" />
+                      placeholder="Pesquisar Produtos"
+                      className="pl-10 h-11 text-sm rounded-lg bg-muted/40 border-transparent focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/50" />
                   </div>
                 </div>
 

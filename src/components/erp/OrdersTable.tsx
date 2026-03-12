@@ -97,11 +97,6 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
                         {status.label}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      <button className="w-6 h-6 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-accent">
-                        <Plus size={14} />
-                      </button>
-                    </TableCell>
                   </TableRow>
                 );
               })

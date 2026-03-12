@@ -28,7 +28,7 @@ const SalesChartCard = ({ totalValue }: Props) => {
     <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">
       <div className="flex items-start justify-between mb-2">
         <div>
-          <h3 className="text-base font-semibold text-foreground">Ofertas deste mês</h3>
+          <h3 className="text-base font-semibold text-foreground">Venda Mês</h3>
           <p className="text-xs text-muted-foreground">Usuários de todos os canais</p>
         </div>
         <button className="w-8 h-8 rounded-lg bg-accent/60 flex items-center justify-center text-muted-foreground hover:bg-accent">

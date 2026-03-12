@@ -156,33 +156,24 @@ const Index = () => {
           <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
         ) : (
           <>
-            {/* Row 1: Earnings | Daily Sales | Sales Chart (spans 2 rows) */}
+            {/* Row 1: Status (EarningsCard) + NewCustomers | Venda Mês (SalesChart) */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-              <div className="grid grid-rows-subgrid lg:row-span-2 gap-5 lg:col-span-2">
-                {/* Top row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <EarningsCard />
-                  <DailySalesCard value={totalApproved} />
-                </div>
-                {/* Bottom row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <OrdersMonthCard ordersCount={orders.length} />
-                  <NewCustomersCard />
-                </div>
+              <div className="flex flex-col gap-5">
+                <EarningsCard />
+                <NewCustomersCard />
               </div>
-              {/* Sales chart spans full height on the right */}
-              <div className="lg:row-span-2">
+              <div className="lg:col-span-2">
                 <SalesChartCard totalValue={totalInvoiced} />
               </div>
             </div>
 
-            {/* Row 3: Recent Orders | Discounted Sales */}
+            {/* Row 2: Recent Orders | Discounted Sales */}
             <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-5 items-start">
               <OrdersTable orders={orders} />
               <DiscountedSalesCard />
             </div>
 
-            {/* Row 4: Product Delivery | Stock Report */}
+            {/* Row 3: Product Delivery | Stock Report */}
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_2fr] gap-5 items-start">
               <ProductDeliveryCard />
               <StockReportCard />

@@ -1,7 +1,11 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const allSalesData = [
+  { date: 'Abr 01', value: 15500 },
+  { date: 'Abr 02', value: 16200 },
+  { date: 'Abr 03', value: 18000 },
   { date: 'Abr 04', value: 17000 },
   { date: 'Abr 05', value: 19500 },
   { date: 'Abr 06', value: 19500 },
@@ -32,6 +36,8 @@ const allSalesData = [
 ];
 
 const VISIBLE_COUNT = 14;
+const EDGE_ZONE = 60; // px from edge to trigger scroll
+const SCROLL_INTERVAL = 250; // ms between advances
 
 interface Props {
   totalValue: number;
@@ -40,7 +46,7 @@ interface Props {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-foreground text-background px-3 py-2 rounded-lg shadow-lg text-sm">
+    <div className="bg-foreground text-background px-3 py-2 rounded-lg shadow-lg text-sm pointer-events-none">
       <p className="font-semibold mb-0.5">{label}</p>
       <p className="flex items-center gap-1.5">
         <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
@@ -53,41 +59,58 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const SalesChartCard = ({ totalValue }: Props) => {
   const displayTotal = totalValue > 0 ? totalValue : 14094;
   const [startIndex, setStartIndex] = useState(0);
-  const isDragging = useRef(false);
-  const lastX = useRef(0);
+  const scrollDirection = useRef<'left' | 'right' | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const visibleData = allSalesData.slice(startIndex, startIndex + VISIBLE_COUNT);
   const maxStart = allSalesData.length - VISIBLE_COUNT;
+  const visibleData = allSalesData.slice(startIndex, startIndex + VISIBLE_COUNT);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    isDragging.current = true;
-    lastX.current = e.clientX;
+  const canGoLeft = startIndex > 0;
+  const canGoRight = startIndex < maxStart;
+
+  const stopScrolling = useCallback(() => {
+    scrollDirection.current = null;
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
   }, []);
+
+  const startScrolling = useCallback((dir: 'left' | 'right') => {
+    if (scrollDirection.current === dir) return;
+    stopScrolling();
+    scrollDirection.current = dir;
+
+    const advance = () => {
+      setStartIndex(prev => {
+        if (dir === 'right') return Math.min(prev + 1, maxStart);
+        return Math.max(prev - 1, 0);
+      });
+    };
+
+    advance();
+    intervalRef.current = setInterval(advance, SCROLL_INTERVAL);
+  }, [maxStart, stopScrolling]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging.current) return;
-    const diff = lastX.current - e.clientX;
-    if (Math.abs(diff) > 30) {
-      if (diff > 0) {
-        setStartIndex(prev => Math.min(prev + 1, maxStart));
-      } else {
-        setStartIndex(prev => Math.max(prev - 1, 0));
-      }
-      lastX.current = e.clientX;
-    }
-  }, [maxStart]);
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
 
-  const handleMouseUp = useCallback(() => {
-    isDragging.current = false;
-  }, []);
+    const relX = e.clientX - rect.left;
 
-  const handleWheel = useCallback((e: React.WheelEvent) => {
-    if (e.deltaX > 0 || e.deltaY > 0) {
-      setStartIndex(prev => Math.min(prev + 1, maxStart));
+    if (relX < EDGE_ZONE && canGoLeft) {
+      startScrolling('left');
+    } else if (relX > rect.width - EDGE_ZONE && canGoRight) {
+      startScrolling('right');
     } else {
-      setStartIndex(prev => Math.max(prev - 1, 0));
+      stopScrolling();
     }
-  }, [maxStart]);
+  }, [canGoLeft, canGoRight, startScrolling, stopScrolling]);
+
+  useEffect(() => {
+    return () => stopScrolling();
+  }, [stopScrolling]);
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">
@@ -108,24 +131,24 @@ const SalesChartCard = ({ totalValue }: Props) => {
         </p>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="flex items-center justify-between mb-2 px-1">
-        <span className="text-[10px] text-muted-foreground">
-          {startIndex > 0 ? '← arraste' : ''}
-        </span>
-        <span className="text-[10px] text-muted-foreground">
-          {startIndex < maxStart ? 'arraste →' : ''}
-        </span>
-      </div>
-
       <div
-        className="flex-1 min-h-[200px] cursor-grab active:cursor-grabbing select-none"
-        onMouseDown={handleMouseDown}
+        ref={containerRef}
+        className="flex-1 min-h-[200px] relative select-none"
         onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onWheel={handleWheel}
+        onMouseLeave={stopScrolling}
       >
+        {/* Edge hover indicators */}
+        {canGoLeft && (
+          <div className="absolute left-0 top-0 bottom-0 w-10 z-10 flex items-center justify-center pointer-events-none bg-gradient-to-r from-card/80 to-transparent">
+            <ChevronLeft className="w-4 h-4 text-muted-foreground animate-pulse" />
+          </div>
+        )}
+        {canGoRight && (
+          <div className="absolute right-0 top-0 bottom-0 w-10 z-10 flex items-center justify-center pointer-events-none bg-gradient-to-l from-card/80 to-transparent">
+            <ChevronRight className="w-4 h-4 text-muted-foreground animate-pulse" />
+          </div>
+        )}
+
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={visibleData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
             <defs>
@@ -149,7 +172,7 @@ const SalesChartCard = ({ totalValue }: Props) => {
               tickLine={false}
               tickFormatter={(v) => `R$${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}K`}
               width={55}
-              domain={[10000, 24000]}
+              domain={[10000, 25000]}
               ticks={[10000, 13500, 17000, 20500, 24000]}
             />
             <ReferenceLine
@@ -158,7 +181,10 @@ const SalesChartCard = ({ totalValue }: Props) => {
               strokeDasharray="6 4"
               strokeOpacity={0.4}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeDasharray: '4 4', strokeOpacity: 0.5 }} />
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeDasharray: '4 4', strokeOpacity: 0.5 }}
+            />
             <Area
               type="monotone"
               dataKey="value"

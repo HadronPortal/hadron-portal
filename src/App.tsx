@@ -21,6 +21,7 @@ const LojaVirtual = lazy(() => import("./pages/LojaVirtual"));
 const Login = lazy(() => import("./pages/Login"));
 const PedidoDetalhe = lazy(() => import("./pages/PedidoDetalhe"));
 const CriarPedido = lazy(() => import("./pages/CriarPedido"));
+const Perfil = lazy(() => import("./pages/Perfil"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({

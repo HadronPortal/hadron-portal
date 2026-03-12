@@ -46,6 +46,7 @@ const Login = () => {
 
           const merged = { ...data.user, ...savedOverrides };
           localStorage.setItem('hadron_user', JSON.stringify(merged));
+          window.dispatchEvent(new Event('hadron-user-updated'));
         } catch {
           localStorage.setItem('hadron_user', JSON.stringify(data.user));
         }

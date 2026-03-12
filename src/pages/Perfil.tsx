@@ -140,7 +140,7 @@ const Perfil = () => {
 
     toast({ title: 'Perfil salvo!', description: 'Suas alterações foram salvas com sucesso.' });
     setActiveTab('Visão Geral');
-    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('hadron-user-updated'));
   };
 
   const goToSettings = () => setActiveTab('Configurações');

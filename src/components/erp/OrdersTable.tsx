@@ -20,12 +20,12 @@ export interface Order {
   erp_code?: string;
 }
 
-const statusConfig: Record<Order['status'], { label: string; bg: string; text: string }> = {
-  enviado: { label: 'Enviado', bg: 'bg-green-100', text: 'text-green-600' },
-  aprovado: { label: 'Aprovado', bg: 'bg-orange-100', text: 'text-orange-600' },
-  confirmado: { label: 'Confirmado', bg: 'bg-sky-100', text: 'text-sky-600' },
-  pendente: { label: 'Pendente', bg: 'bg-yellow-100', text: 'text-yellow-600' },
-  cancelado: { label: 'Rejeitado', bg: 'bg-red-100', text: 'text-red-500' },
+const statusConfig: Record<Order['status'], { label: string; color: string }> = {
+  enviado: { label: 'Enviado', color: '#06b6d4' },
+  aprovado: { label: 'Aprovado', color: '#f59e0b' },
+  confirmado: { label: 'Confirmado', color: '#10b981' },
+  pendente: { label: 'Pendente', color: '#8b8b8b' },
+  cancelado: { label: 'Cancelado', color: '#ef4444' },
 };
 
 const mockOrders: Order[] = [
@@ -127,7 +127,10 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
                       $ {lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell className="text-right">
-                      <span className={`inline-block px-3 py-1 rounded text-xs font-medium ${status.bg} ${status.text}`}>
+                      <span
+                        className="inline-block px-3 py-1 rounded-full text-xs font-medium border"
+                        style={{ backgroundColor: status.color + '18', color: status.color, borderColor: status.color + '40' }}
+                      >
                         {status.label}
                       </span>
                     </TableCell>

@@ -9,10 +9,10 @@ interface Delivery {
 }
 
 const deliveries: Delivery[] = [
-  { image: '👕', name: 'Camiseta Premium', recipient: 'Carlos Silva', status: 'Entregue', statusColor: 'text-green-500' },
-  { image: '📦', name: 'Kit Escritório', recipient: 'Ana Souza', status: 'Envio', statusColor: 'text-blue-500' },
-  { image: '🎧', name: 'Fone Bluetooth', recipient: 'João Santos', status: 'Confirmado', statusColor: 'text-orange-500' },
-  { image: '⌚', name: 'Relógio Smart', recipient: 'Maria Lima', status: 'Entregue', statusColor: 'text-green-500' },
+  { image: '👕', name: 'Camiseta Premium', recipient: 'Carlos Silva', status: 'Entregue', statusColor: '#10b981' },
+  { image: '📦', name: 'Kit Escritório', recipient: 'Ana Souza', status: 'Envio', statusColor: '#06b6d4' },
+  { image: '🎧', name: 'Fone Bluetooth', recipient: 'João Santos', status: 'Confirmado', statusColor: '#f59e0b' },
+  { image: '⌚', name: 'Relógio Smart', recipient: 'Maria Lima', status: 'Entregue', statusColor: '#10b981' },
 ];
 
 const ProductDeliveryCard = () => {
@@ -41,7 +41,12 @@ const ProductDeliveryCard = () => {
               </div>
               <div className="flex items-center justify-between mt-0.5">
                 <span className="text-xs text-muted-foreground">Para: {item.recipient}</span>
-                <span className={`text-xs font-medium ${item.statusColor}`}>{item.status}</span>
+                <span
+                  className="text-xs font-medium px-2.5 py-0.5 rounded-full border"
+                  style={{ backgroundColor: item.statusColor + '18', color: item.statusColor, borderColor: item.statusColor + '40' }}
+                >
+                  {item.status}
+                </span>
               </div>
             </div>
           </div>

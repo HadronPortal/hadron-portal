@@ -49,7 +49,7 @@ const Header = () => {
   
   const userName = userData?.nome || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.email || userData?.aus_email || '';
-  const userCompany = userData?.aus_empresa || userData?.company || '';
+  const userCompany = userData?.aus_empresa || userData?.company || 'Procion Tecnologia';
 
   return (
     <header className="text-primary-foreground">

@@ -74,7 +74,7 @@ const SalesChartCard = ({ totalValue }: Props) => {
               formatter={(v: number) => [`R$${(v / 1000).toFixed(0)}K`, 'Vendas']}
             />
             <Area
-              type="step"
+              type="linear"
               dataKey="value"
               stroke="hsl(var(--erp-green))"
               strokeWidth={2.5}

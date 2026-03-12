@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import logoImg from '@/assets/logo_hadron_go.png';
 import avatarImg from '@/assets/avatar-user.png';
+import logoMobileImg from '@/assets/logo-mobile.png';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },

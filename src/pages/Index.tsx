@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
 import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import heroBg from '@/assets/hero-bg.jpg';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';

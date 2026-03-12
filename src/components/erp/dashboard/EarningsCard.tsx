@@ -1,8 +1,8 @@
 const data = [
-  { name: 'Enviado', value: 7660, color: 'hsl(173, 58%, 39%)', dark: 'hsl(173, 58%, 28%)' },
-  { name: 'Aprovado', value: 2820, color: 'hsl(25, 95%, 53%)', dark: 'hsl(25, 95%, 38%)' },
-  { name: 'Faturado', value: 45257, color: 'hsl(152, 69%, 31%)', dark: 'hsl(152, 69%, 20%)' },
-  { name: 'Cancelado', value: 1230, color: 'hsl(0, 84%, 60%)', dark: 'hsl(0, 84%, 42%)' },
+  { name: 'Enviado', value: 7660, color: '#2ab5a0', dark: '#1d8a7a', light: '#3edcbf' },
+  { name: 'Aprovado', value: 2820, color: '#e67e22', dark: '#b5621a', light: '#f0a050' },
+  { name: 'Faturado', value: 45257, color: '#27ae60', dark: '#1e8449', light: '#4ecc7a' },
+  { name: 'Cancelado', value: 1230, color: '#e74c3c', dark: '#b53a2e', light: '#f07060' },
 ];
 
 const total = data.reduce((s, d) => s + d.value, 0);
@@ -12,22 +12,35 @@ function polar(cx: number, cy: number, rx: number, ry: number, angle: number) {
   return { x: cx + rx * Math.cos(rad), y: cy + ry * Math.sin(rad) };
 }
 
-function topPath(cx: number, cy: number, rx: number, ry: number, sa: number, ea: number) {
-  const s = polar(cx, cy, rx, ry, sa);
-  const e = polar(cx, cy, rx, ry, ea);
-  const lg = ea - sa > 180 ? 1 : 0;
-  return `M${cx},${cy} L${s.x},${s.y} A${rx},${ry} 0 ${lg} 1 ${e.x},${e.y} Z`;
+function arcPath(cx: number, cy: number, rx: number, ry: number, sa: number, ea: number) {
+  const steps = Math.max(2, Math.ceil((ea - sa) / 2));
+  const pts: string[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const a = sa + (ea - sa) * (i / steps);
+    const p = polar(cx, cy, rx, ry, a);
+    pts.push(`${p.x.toFixed(2)},${p.y.toFixed(2)}`);
+  }
+  return pts;
 }
 
-function sidePath(cx: number, cy: number, rx: number, ry: number, sa: number, ea: number, d: number) {
+function topSlice(cx: number, cy: number, rx: number, ry: number, sa: number, ea: number) {
   const s = polar(cx, cy, rx, ry, sa);
   const e = polar(cx, cy, rx, ry, ea);
   const lg = ea - sa > 180 ? 1 : 0;
-  return `M${s.x},${s.y} A${rx},${ry} 0 ${lg} 1 ${e.x},${e.y} L${e.x},${e.y + d} A${rx},${ry} 0 ${lg} 0 ${s.x},${s.y + d} Z`;
+  return `M${cx},${cy} L${s.x.toFixed(2)},${s.y.toFixed(2)} A${rx},${ry} 0 ${lg} 1 ${e.x.toFixed(2)},${e.y.toFixed(2)} Z`;
+}
+
+function wallSlice(cx: number, cy: number, rx: number, ry: number, sa: number, ea: number, h: number) {
+  const topPts = arcPath(cx, cy, rx, ry, sa, ea);
+  const botPts = arcPath(cx, cy, rx, ry, ea, sa).map(p => {
+    const [x, y] = p.split(',');
+    return `${x},${(parseFloat(y) + h).toFixed(2)}`;
+  });
+  return `M${topPts[0]} ${topPts.slice(1).map(p => `L${p}`).join(' ')} ${botPts.map(p => `L${p}`).join(' ')} Z`;
 }
 
 const Pie3D = () => {
-  const cx = 60, cy = 38, rx = 48, ry = 24, depth = 12;
+  const cx = 70, cy = 42, rx = 52, ry = 26, height = 18;
   let cur = 0;
   const slices = data.map((d) => {
     const sweep = (d.value / total) * 360;
@@ -36,13 +49,37 @@ const Pie3D = () => {
     return obj;
   });
 
+  // Sort walls: render back walls first (angles 0-180 top of ellipse) then front walls
+  const backWalls = slices.filter(s => {
+    const mid = (s.sa + s.ea) / 2;
+    return mid > 90 && mid < 270;
+  });
+  const frontWalls = slices.filter(s => {
+    const mid = (s.sa + s.ea) / 2;
+    return !(mid > 90 && mid < 270);
+  });
+
   return (
-    <svg viewBox="0 0 120 78" className="w-full h-full">
-      {slices.map((s, i) => (
-        <path key={`s${i}`} d={sidePath(cx, cy, rx, ry, s.sa, s.ea, depth)} fill={s.dark} />
+    <svg viewBox="0 0 140 85" className="w-full h-full drop-shadow-lg">
+      <defs>
+        {slices.map((s, i) => (
+          <linearGradient key={`g${i}`} id={`grad${i}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={s.light} />
+            <stop offset="100%" stopColor={s.color} />
+          </linearGradient>
+        ))}
+      </defs>
+      {/* Back walls */}
+      {backWalls.map((s, i) => (
+        <path key={`bw${i}`} d={wallSlice(cx, cy, rx, ry, s.sa, s.ea, height)} fill={s.dark} />
       ))}
+      {/* Front walls */}
+      {frontWalls.map((s, i) => (
+        <path key={`fw${i}`} d={wallSlice(cx, cy, rx, ry, s.sa, s.ea, height)} fill={s.dark} />
+      ))}
+      {/* Top faces */}
       {slices.map((s, i) => (
-        <path key={`t${i}`} d={topPath(cx, cy, rx, ry, s.sa, s.ea)} fill={s.color} stroke="white" strokeWidth="0.5" />
+        <path key={`t${i}`} d={topSlice(cx, cy, rx, ry, s.sa, s.ea)} fill={`url(#grad${i})`} stroke="white" strokeWidth="0.8" />
       ))}
     </svg>
   );
@@ -59,14 +96,14 @@ const EarningsCard = () => (
       </div>
       <p className="text-sm text-muted-foreground mt-1">Total</p>
     </div>
-    <div className="flex items-center gap-6 flex-1">
-      <div className="w-28 h-20 flex-shrink-0">
+    <div className="flex items-center gap-5 flex-1">
+      <div className="w-32 h-24 flex-shrink-0">
         <Pie3D />
       </div>
       <div className="space-y-2.5 text-sm flex-1">
         {data.map((item) => (
           <div key={item.name} className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+            <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: item.color }} />
             <span className="text-muted-foreground w-20">{item.name}</span>
             <span className="font-semibold text-foreground tabular-nums text-right ml-auto">
               R${item.value.toLocaleString('pt-BR')}

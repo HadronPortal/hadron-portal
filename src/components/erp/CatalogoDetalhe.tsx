@@ -225,15 +225,6 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
           )}
         </div>
 
-        {/* Sticky bottom button */}
-        {!loading && !error && (
-          <div className="flex-shrink-0 p-5 border-t border-border">
-            <Button className="w-full h-11 text-sm font-semibold gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              Adicionar ao Carrinho
-            </Button>
-          </div>
-        )}
       </SheetContent>
     </Sheet>
   );

@@ -24,7 +24,13 @@ const profileFields = [
 
 const Perfil = () => {
   const [activeTab, setActiveTab] = useState('Visão Geral');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => {
+    try {
+      const raw = localStorage.getItem('hadron_user');
+      if (raw) { const u = JSON.parse(raw); return u?.avatar_url || null; }
+    } catch {}
+    return null;
+  });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();

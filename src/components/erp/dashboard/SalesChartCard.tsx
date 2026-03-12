@@ -26,16 +26,9 @@ const SalesChartCard = ({ totalValue }: Props) => {
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <h3 className="text-base font-semibold text-foreground">Venda Mês</h3>
-          <p className="text-xs text-muted-foreground">Usuários de todos os canais</p>
-        </div>
-        <button className="w-8 h-8 rounded-lg bg-accent/60 flex items-center justify-center text-muted-foreground hover:bg-accent">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-            <circle cx="3" cy="8" r="1.5" /><circle cx="8" cy="8" r="1.5" /><circle cx="13" cy="8" r="1.5" />
-          </svg>
-        </button>
+      <div className="mb-2">
+        <h3 className="text-base font-semibold text-foreground">Venda Mês</h3>
+        <p className="text-xs text-muted-foreground">Usuários de todos os canais</p>
       </div>
 
       <div className="mb-4">

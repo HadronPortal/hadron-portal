@@ -67,6 +67,7 @@ const Header = () => {
 
   const userName = userData?.nome || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.email || userData?.aus_email || '';
+  const userAvatar = userData?.avatar_url || avatarImg;
 
   const companies = [
     { id: 1, name: 'Procion Tecnologia' },
@@ -129,14 +130,14 @@ const Header = () => {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="h-10 w-10 rounded-md overflow-hidden ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"
               >
-                <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+                <img src={userAvatar} alt={userName} className="h-full w-full object-cover" />
               </button>
 
               {userMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
                     <div className="h-11 w-11 rounded-md overflow-hidden flex-shrink-0">
-                      <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+                      <img src={userAvatar} alt={userName} className="h-full w-full object-cover" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate">{userName}</p>
@@ -211,7 +212,7 @@ const Header = () => {
         {/* User info */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
           <div className="h-10 w-10 rounded-md overflow-hidden flex-shrink-0">
-            <img src={avatarImg} alt={userName} className="h-full w-full object-cover" />
+            <img src={userAvatar} alt={userName} className="h-full w-full object-cover" />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground truncate">{userName}</p>

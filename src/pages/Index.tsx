@@ -176,14 +176,6 @@ const Index = () => {
               <Filter size={14} className="mr-1.5" />
               Filtrar
             </Button>
-            <Button
-              size="sm"
-              className="bg-primary-foreground text-foreground hover:bg-primary-foreground/90"
-              onClick={() => window.location.href = '/pedidos/criar'}
-            >
-              <Plus size={14} className="mr-1.5" />
-              Criar Pedido
-            </Button>
           </div>
         </div>
       </div>

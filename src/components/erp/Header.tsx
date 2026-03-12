@@ -67,6 +67,7 @@ const Header = () => {
 
   const userName = userData?.nome || userData?.aus_nome || userData?.name || 'Usuário';
   const userEmail = userData?.email || userData?.aus_email || '';
+  const userAvatar = userData?.avatar_url || avatarImg;
 
   const companies = [
     { id: 1, name: 'Procion Tecnologia' },

@@ -54,7 +54,7 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
               <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total</TableHead>
               <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Lucro</TableHead>
               <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Status</TableHead>
-              <TableHead className="w-10" />
+              
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -1,116 +1,138 @@
+import { useState } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+
 const data = [
-  { name: 'Enviado', value: 7660, color: '#2ab5a0', dark: '#1a8070', light: '#45d4be' },
-  { name: 'Aprovado', value: 2820, color: '#e67e22', dark: '#a85a15', light: '#f5a623' },
-  { name: 'Faturado', value: 45257, color: '#27ae60', dark: '#1a7a40', light: '#4cd680' },
-  { name: 'Cancelado', value: 1230, color: '#e74c3c', dark: '#a5332a', light: '#f27066' },
+  { name: 'Enviado', value: 7660, color: '#06b6d4', dark: '#0891b2' },
+  { name: 'Aprovado', value: 2820, color: '#f59e0b', dark: '#d97706' },
+  { name: 'Faturado', value: 45257, color: '#10b981', dark: '#059669' },
+  { name: 'Cancelado', value: 1230, color: '#ef4444', dark: '#dc2626' },
 ];
 
 const total = data.reduce((s, d) => s + d.value, 0);
 
-function polar(cx: number, cy: number, rx: number, ry: number, deg: number) {
-  const r = ((deg - 90) * Math.PI) / 180;
-  return { x: cx + rx * Math.cos(r), y: cy + ry * Math.sin(r) };
-}
-
-function arc(cx: number, cy: number, rx: number, ry: number, sa: number, ea: number, reverse = false) {
-  const n = Math.max(2, Math.ceil(Math.abs(ea - sa) / 3));
-  const pts: { x: number; y: number }[] = [];
-  for (let i = 0; i <= n; i++) {
-    const t = reverse ? ea - (ea - sa) * (i / n) : sa + (ea - sa) * (i / n);
-    pts.push(polar(cx, cy, rx, ry, t));
-  }
-  return pts;
-}
-
-function topPath(cx: number, cy: number, rx: number, ry: number, sa: number, ea: number) {
-  const s = polar(cx, cy, rx, ry, sa);
-  const e = polar(cx, cy, rx, ry, ea);
-  const lg = ea - sa > 180 ? 1 : 0;
-  return `M${cx},${cy} L${s.x.toFixed(2)},${s.y.toFixed(2)} A${rx},${ry} 0 ${lg} 1 ${e.x.toFixed(2)},${e.y.toFixed(2)} Z`;
-}
-
-function wallPath(cx: number, cy: number, rx: number, ry: number, sa: number, ea: number, h: number) {
-  const top = arc(cx, cy, rx, ry, sa, ea);
-  const bot = arc(cx, cy, rx, ry, sa, ea, true).map(p => ({ x: p.x, y: p.y + h }));
-  const d = top.map((p, i) => (i === 0 ? `M${p.x.toFixed(2)},${p.y.toFixed(2)}` : `L${p.x.toFixed(2)},${p.y.toFixed(2)}`)).join(' ')
-    + ' ' + bot.map(p => `L${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ') + ' Z';
-  return d;
-}
-
-const Pie3D = () => {
-  const cx = 65, cy = 40, rx = 50, ry = 25, h = 16;
-  let cur = 0;
-  const slices = data.map(d => {
-    const sweep = (d.value / total) * 360;
-    const o = { ...d, sa: cur, ea: cur + sweep, mid: cur + sweep / 2 };
-    cur += sweep;
-    return o;
-  });
-
-  const back = slices.filter(s => s.mid >= 0 && s.mid < 180);
-  const front = slices.filter(s => s.mid >= 180 || s.mid < 0);
-
+const CustomTooltip = ({ active, payload }: any) => {
+  if (!active || !payload?.length) return null;
+  const d = payload[0];
+  const pct = ((d.value / total) * 100).toFixed(1);
   return (
-    <svg viewBox="0 0 130 80" className="w-full h-full drop-shadow-md">
-      <defs>
-        {slices.map((s, i) => (
-          <linearGradient key={i} id={`tg${i}`} x1="0%" y1="0%" x2="50%" y2="100%">
-            <stop offset="0%" stopColor={s.light} />
-            <stop offset="100%" stopColor={s.color} />
-          </linearGradient>
-        ))}
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="1.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
-
-      {/* Back walls */}
-      {back.map((s, i) => (
-        <path key={`bw${i}`} d={wallPath(cx, cy, rx, ry, s.sa, s.ea, h)} fill={s.dark} />
-      ))}
-      {/* Front walls */}
-      {front.map((s, i) => (
-        <path key={`fw${i}`} d={wallPath(cx, cy, rx, ry, s.sa, s.ea, h)} fill={s.dark} />
-      ))}
-      {/* Top faces */}
-      {slices.map((s, i) => (
-        <path key={`t${i}`} d={topPath(cx, cy, rx, ry, s.sa, s.ea)} fill={`url(#tg${i})`} stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" filter="url(#glow)" />
-      ))}
-      {/* Highlight arc on top */}
-      <ellipse cx={cx} cy={cy} rx={rx * 0.55} ry={ry * 0.55} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="8" />
-    </svg>
+    <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-xl text-sm">
+      <p className="font-semibold text-foreground">{d.name}</p>
+      <p className="text-muted-foreground">
+        R$ {d.value.toLocaleString('pt-BR')} ({pct}%)
+      </p>
+    </div>
   );
 };
 
-const EarningsCard = () => (
-  <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">
-    <div className="mb-4">
-      <div className="flex items-baseline gap-1">
-        <span className="text-xs text-muted-foreground">R$</span>
-        <span className="text-3xl font-bold text-foreground">
-          {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-        </span>
+const EarningsCard = () => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  return (
+    <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full">
+      <div className="mb-4">
+        <div className="flex items-baseline gap-1">
+          <span className="text-xs text-muted-foreground">R$</span>
+          <span className="text-3xl font-bold text-foreground">
+            {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          </span>
+        </div>
+        <p className="text-sm text-muted-foreground mt-1">Total</p>
       </div>
-      <p className="text-sm text-muted-foreground mt-1">Total</p>
-    </div>
-    <div className="flex items-center gap-5 flex-1">
-      <div className="w-32 h-24 flex-shrink-0">
-        <Pie3D />
-      </div>
-      <div className="space-y-2.5 text-sm flex-1">
-        {data.map((item) => (
-          <div key={item.name} className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: item.color }} />
-            <span className="text-muted-foreground w-20">{item.name}</span>
-            <span className="font-semibold text-foreground tabular-nums text-right ml-auto">
-              R${item.value.toLocaleString('pt-BR')}
-            </span>
+
+      <div className="flex items-center gap-5 flex-1">
+        <div className="w-32 h-32 flex-shrink-0 relative" style={{ perspective: '600px' }}>
+          {/* 3D shadow layer */}
+          <div
+            className="absolute inset-0 opacity-30 blur-[2px]"
+            style={{ transform: 'translateY(6px) scale(0.95)' }}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={data} cx="50%" cy="50%" innerRadius={32} outerRadius={52} dataKey="value" strokeWidth={0}>
+                  {data.map((entry, i) => (
+                    <Cell key={i} fill={entry.dark} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-        ))}
+
+          {/* Main donut */}
+          <div
+            className="absolute inset-0 animate-scale-in"
+            style={{ transformStyle: 'preserve-3d', transform: 'rotateX(12deg)' }}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={32}
+                  outerRadius={activeIndex !== null ? 56 : 52}
+                  dataKey="value"
+                  strokeWidth={2}
+                  stroke="rgba(255,255,255,0.3)"
+                  animationBegin={0}
+                  animationDuration={1000}
+                  animationEasing="ease-out"
+                  onMouseEnter={(_, i) => setActiveIndex(i)}
+                  onMouseLeave={() => setActiveIndex(null)}
+                >
+                  {data.map((entry, i) => (
+                    <Cell
+                      key={i}
+                      fill={entry.color}
+                      opacity={activeIndex === null || activeIndex === i ? 1 : 0.5}
+                      style={{ transition: 'opacity 0.3s ease, filter 0.3s ease', filter: activeIndex === i ? 'brightness(1.15) drop-shadow(0 0 6px ' + entry.color + ')' : 'none', cursor: 'pointer' }}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Center label */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ transform: 'rotateX(12deg) translateY(-2px)' }}>
+            <div className="text-center">
+              <p className="text-[10px] text-muted-foreground leading-none">Total</p>
+              <p className="text-xs font-bold text-foreground leading-tight mt-0.5">
+                {(total / 1000).toFixed(0)}k
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3 text-sm flex-1">
+          {data.map((item, i) => {
+            const pct = ((item.value / total) * 100).toFixed(1);
+            return (
+              <div
+                key={item.name}
+                className="flex items-center gap-2 transition-all duration-200 cursor-default"
+                style={{ opacity: activeIndex === null || activeIndex === i ? 1 : 0.4 }}
+                onMouseEnter={() => setActiveIndex(i)}
+                onMouseLeave={() => setActiveIndex(null)}
+              >
+                <span
+                  className="w-3 h-3 rounded flex-shrink-0 shadow-sm"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-muted-foreground w-20">{item.name}</span>
+                <div className="flex flex-col ml-auto items-end">
+                  <span className="font-semibold text-foreground tabular-nums text-right">
+                    R${item.value.toLocaleString('pt-BR')}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{pct}%</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default EarningsCard;

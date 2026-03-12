@@ -46,35 +46,17 @@ const EarningsCard = ({ enviados, aprovados, faturados, cancelados }: Props) => 
         <p className="text-sm text-muted-foreground mt-1">Total</p>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-5 flex-1 min-w-0">
-        <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 relative" style={{ perspective: '600px' }}>
-          <div
-            className="absolute inset-0 opacity-30 blur-[2px]"
-            style={{ transform: 'translateY(6px) scale(0.95)' }}
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={data} cx="50%" cy="50%" innerRadius={32} outerRadius={52} dataKey="value" strokeWidth={0}>
-                  {data.map((entry, i) => (
-                    <Cell key={i} fill={entry.dark} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div
-            className="absolute inset-0 animate-scale-in"
-            style={{ transformStyle: 'preserve-3d', transform: 'rotateX(12deg)' }}
-          >
+      <div className="flex items-start gap-3 sm:gap-5 flex-1 min-w-0">
+        <div className="flex-shrink-0">
+          <div className="w-[96px] h-[96px] sm:w-[128px] sm:h-[128px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data}
                   cx="50%"
                   cy="50%"
-                  innerRadius={32}
-                  outerRadius={activeIndex !== null ? 56 : 52}
+                  innerRadius="55%"
+                  outerRadius={activeIndex !== null ? '95%' : '90%'}
                   dataKey="value"
                   strokeWidth={2}
                   stroke="rgba(255,255,255,0.3)"

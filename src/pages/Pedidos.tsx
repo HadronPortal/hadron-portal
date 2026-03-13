@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, FileText, Plus, Search, Send, CheckCircle, XCircle } from 'lucide-react';
 import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
@@ -80,7 +81,7 @@ const DEFAULT_START_DATE = new Date(2026, 0, 8);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
-const TABLE_HEADERS = ['CÓDIGO', 'CLIENTE', 'DOCUMENTO', 'LOCALIZAÇÃO', 'STATUS', 'VALOR', 'PESO(KG)', 'DATA'];
+const TABLE_HEADERS = ['CÓDIGO', 'CLIENTE', 'DOCUMENTO', 'LOCALIZAÇÃO', 'STATUS', 'VALOR', 'PESO(KG)', 'DATA', 'AÇÕES'];
 
 const navItems = [
   { label: 'Home', path: '/' },
@@ -273,14 +274,14 @@ const Pedidos = () => {
                       <TableHeader>
                         <TableRow>
                           {TABLE_HEADERS.map(h => (
-                            <TableHead key={h} className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</TableHead>
+                            <TableHead key={h} className={`text-[11px] font-semibold text-muted-foreground uppercase tracking-wider ${h === 'AÇÕES' ? 'text-right' : ''}`}>{h}</TableHead>
                           ))}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {filteredOrders.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                            <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
                               Nenhum pedido encontrado
                             </TableCell>
                           </TableRow>
@@ -317,6 +318,28 @@ const Pedidos = () => {
                                 <TableCell className="text-sm font-medium text-foreground whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
                                 <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
                                 <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
+                                <TableCell className="text-right" onClick={e => e.stopPropagation()}>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        className="h-8 px-3 text-xs font-light bg-muted/50 border-border hover:bg-[#DBEAFE] hover:text-[#3B82F6] hover:border-[#93C5FD] focus-visible:ring-0"
+                                        style={{ fontFamily: "'Poppins', sans-serif" }}
+                                      >
+                                        Actions
+                                        <ChevronDown size={14} />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-40">
+                                      <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
+                                        Visualizar
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`, { state: { edit: true } })}>
+                                        Editar
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </TableCell>
                               </TableRow>
                             );
                           })

@@ -378,12 +378,6 @@ const Clientes = () => {
                                 <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { client: c } })}>
                                   Visualizar
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => navigate(`/pedidos?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}>
-                                  Ver Pedido
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { tab: 'config' } })}>
-                                  Alterar
-                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </td>

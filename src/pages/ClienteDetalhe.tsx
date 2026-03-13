@@ -531,14 +531,27 @@ const ClienteDetalhe = () => {
                       />
                     </div>
 
-                    {/* Nome Fantasia */}
-                    <div>
-                      <label className="text-xs font-semibold text-foreground mb-1.5 block">Nome Fantasia</label>
-                      <Input
-                        value={editFantasia}
-                        onChange={(e) => setEditFantasia(e.target.value)}
-                        className="bg-transparent"
-                      />
+                    {/* E-mail e Telefone */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">E-mail</label>
+                        <Input
+                          value={editEmail}
+                          onChange={(e) => setEditEmail(e.target.value)}
+                          className="bg-transparent"
+                          type="email"
+                          placeholder="email@exemplo.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">Telefone</label>
+                        <Input
+                          value={editTelefone}
+                          onChange={(e) => setEditTelefone(maskPhone(e.target.value))}
+                          className="bg-transparent"
+                          placeholder="(00) 00000-0000"
+                        />
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -547,8 +560,9 @@ const ClienteDetalhe = () => {
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Documento (CNPJ/CPF)</label>
                         <Input
                           value={editDocumento}
-                          onChange={(e) => setEditDocumento(e.target.value)}
+                          onChange={(e) => setEditDocumento(maskDoc(e.target.value))}
                           className="bg-transparent"
+                          placeholder="000.000.000-00"
                         />
                       </div>
 

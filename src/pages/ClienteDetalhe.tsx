@@ -85,7 +85,7 @@ const ClienteDetalhe = () => {
     const fetchClient = async () => {
       setLoading(true);
       try {
-        const params = new URLSearchParams({ page: '1', limit: '1', search: id || '' });
+        const params = new URLSearchParams({ page: '1', limit: '50', client_filter: id || '' });
         const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params}`;
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');

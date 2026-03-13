@@ -2,13 +2,19 @@ import { useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import OrdersTable from '@/components/erp/OrdersTable';
-import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 
 import EarningsCard from '@/components/erp/dashboard/EarningsCard';
 import SalesChartCard from '@/components/erp/dashboard/SalesChartCard';
 import NewCustomersCard from '@/components/erp/dashboard/NewCustomersCard';
 import ProductDeliveryCard from '@/components/erp/dashboard/ProductDeliveryCard';
+
+import SkeletonEarnings from '@/components/erp/skeletons/SkeletonEarnings';
+import SkeletonChart from '@/components/erp/skeletons/SkeletonChart';
+import SkeletonCustomers from '@/components/erp/skeletons/SkeletonCustomers';
+import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
+import SkeletonProducts from '@/components/erp/skeletons/SkeletonProducts';
+import FadeIn from '@/components/erp/skeletons/FadeIn';
 
 interface DashboardAPIResponse {
   cards: {
@@ -60,7 +66,7 @@ function mapStatus(status: unknown): 'enviado' | 'aprovado' | 'confirmado' | 'pe
 }
 
 const Index = () => {
-  const { data: dashData, isLoading, isFetching, error } = useApiFetch<DashboardAPIResponse>({
+  const { data: dashData, isLoading, error } = useApiFetch<DashboardAPIResponse>({
     queryKey: ['dashboard'],
     endpoint: 'fetch-dashboard',
     params: {},
@@ -162,12 +168,30 @@ const Index = () => {
       </div>
 
       <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-4 sm:space-y-5 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
-        {(isLoading || isFetching) ? (
-          <Spinner />
-        ) : error ? (
-          <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
-        ) : (
+        {error ? (
+          <div className="bg-card border border-border rounded-xl p-8 text-center">
+            <p className="text-destructive text-sm">{(error as Error).message}</p>
+            <p className="text-muted-foreground text-xs mt-2">Tente recarregar a página</p>
+          </div>
+        ) : isLoading ? (
           <>
+            {/* Skeleton layout matches real layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+              <div className="flex flex-col gap-4 sm:gap-5">
+                <SkeletonEarnings />
+                <SkeletonCustomers />
+              </div>
+              <div className="lg:col-span-2">
+                <SkeletonChart />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-4 sm:gap-5 items-start">
+              <SkeletonTable columns={6} rows={5} headers={['ID do Pedido', 'Criado', 'Cliente', 'Total', 'Lucro', 'Status']} />
+              <SkeletonProducts />
+            </div>
+          </>
+        ) : (
+          <FadeIn>
             {/* Row 1 */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
               <div className="flex flex-col gap-4 sm:gap-5">
@@ -191,13 +215,13 @@ const Index = () => {
             </div>
 
             {/* Row 2 */}
-            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-4 sm:gap-5 items-start">
+            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-4 sm:gap-5 items-start mt-4 sm:mt-5">
               <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
                 <OrdersTable orders={orders} />
               </div>
               <ProductDeliveryCard produtos={topProdutos} />
             </div>
-          </>
+          </FadeIn>
         )}
       </main>
     </>

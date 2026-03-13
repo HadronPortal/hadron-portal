@@ -11,7 +11,9 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, FileText, Plus } from 'lucide-react';
-import Spinner from '@/components/ui/spinner';
+import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
+import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
+import FadeIn from '@/components/erp/skeletons/FadeIn';
 
 interface OrderAPI {
   orc_codorc_web: number;
@@ -78,6 +80,8 @@ const statusMap: Record<string, { label: string; color: string }> = {
 const DEFAULT_START_DATE = new Date(2026, 0, 8);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
+
+const TABLE_HEADERS = ['CÓDIGO', 'CLIENTE', 'DOCUMENTO', 'LOCALIZAÇÃO', 'STATUS', 'VALOR', 'PESO(KG)', 'DATA'];
 
 const Pedidos = () => {
   const navigate = useNavigate();
@@ -156,6 +160,9 @@ const Pedidos = () => {
     { label: 'Cancelados', valor: formatCurrency(dashboard.canceled), peso: `${dashboard.canceled_peso} Kg`, color: 'bg-blue-700' },
   ];
 
+  const showSkeleton = isLoading;
+  const showOverlay = isFetching && !isLoading;
+
   return (
     <>
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
@@ -178,12 +185,11 @@ const Pedidos = () => {
           </Button>
         </div>
 
-        {(isLoading || isFetching) ? (
-          <Spinner />
-        ) : error ? (
-          <div className="text-center py-12 text-destructive text-sm">{(error as Error).message}</div>
+        {/* KPI Cards */}
+        {showSkeleton ? (
+          <SkeletonKpiRow count={4} />
         ) : (
-          <>
+          <FadeIn>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {kpiCards.map((kpi) => (
                 <div key={kpi.label} className={`${kpi.color} text-white rounded-lg p-4 relative`}>
@@ -196,7 +202,15 @@ const Pedidos = () => {
                 </div>
               ))}
             </div>
+          </FadeIn>
+        )}
 
+        {error ? (
+          <div className="bg-card border border-border rounded-xl p-8 text-center">
+            <p className="text-destructive text-sm">{(error as Error).message}</p>
+          </div>
+        ) : (
+          <>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-3">
                 <select
@@ -216,64 +230,66 @@ const Pedidos = () => {
               </Button>
             </div>
 
-            <div className="bg-card rounded-lg border border-border overflow-hidden">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs font-bold text-foreground">CÓDIGO</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">CLIENTE</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">DOCUMENTO</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">LOCALIZAÇÃO</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">STATUS</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">PESO(KG)</TableHead>
-                      <TableHead className="text-xs font-bold text-foreground">DATA</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredOrders.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
-                          Nenhum pedido encontrado
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      filteredOrders.map((o, idx) => {
-                        const code = o.orc_codorc_web || '';
-                        const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status || '—'), color: 'bg-muted' };
-                        return (
-                          <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
-                            <TableCell className="text-sm font-semibold underline">{code}</TableCell>
-                            <TableCell className="text-sm">
-                              <div>{o.CODTER || ''} - {o.CLIENTE || ''}</div>
-                              {o.FANTER && (
-                                <div className="text-xs text-muted-foreground">{o.FANTER}</div>
-                              )}
+            {/* Table with skeleton or data */}
+            {showSkeleton ? (
+              <SkeletonTable columns={8} rows={10} headers={TABLE_HEADERS} />
+            ) : (
+              <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
+                <div className="bg-card rounded-lg border border-border overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          {TABLE_HEADERS.map(h => (
+                            <TableHead key={h} className="text-xs font-bold text-foreground">{h}</TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredOrders.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
+                              Nenhum pedido encontrado
                             </TableCell>
-                            <TableCell className="text-sm whitespace-nowrap">{formatDoc(o.orc_documento || '')}</TableCell>
-                            <TableCell className="text-sm whitespace-nowrap">
-                              {o.LOCALIZACAO || '—'}
-                            </TableCell>
-                            <TableCell className="text-sm">
-                              <span className={`${st.color} text-white text-xs px-2 py-1 rounded`}>
-                                {st.label}
-                              </span>
-                              {o.orc_codorc_had > 0 && (
-                                <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_codorc_had}</div>
-                              )}
-                            </TableCell>
-                            <TableCell className="text-sm whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
-                            <TableCell className="text-sm whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
-                            <TableCell className="text-sm whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
                           </TableRow>
-                        );
-                      })
-                    )}
-                  </TableBody>
-                </Table>
+                        ) : (
+                          filteredOrders.map((o, idx) => {
+                            const code = o.orc_codorc_web || '';
+                            const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status || '—'), color: 'bg-muted' };
+                            return (
+                              <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
+                                <TableCell className="text-sm font-semibold underline">{code}</TableCell>
+                                <TableCell className="text-sm">
+                                  <div>{o.CODTER || ''} - {o.CLIENTE || ''}</div>
+                                  {o.FANTER && (
+                                    <div className="text-xs text-muted-foreground">{o.FANTER}</div>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-sm whitespace-nowrap">{formatDoc(o.orc_documento || '')}</TableCell>
+                                <TableCell className="text-sm whitespace-nowrap">
+                                  {o.LOCALIZACAO || '—'}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                  <span className={`${st.color} text-white text-xs px-2 py-1 rounded`}>
+                                    {st.label}
+                                  </span>
+                                  {o.orc_codorc_had > 0 && (
+                                    <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_codorc_had}</div>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-sm whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
+                                <TableCell className="text-sm whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
+                                <TableCell className="text-sm whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
+                              </TableRow>
+                            );
+                          })
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
             {totalRecords > rowsPerPage && (
               <div className="flex items-center justify-center gap-2 pt-2">

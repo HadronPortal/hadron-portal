@@ -379,7 +379,9 @@ const ClienteDetalhe = () => {
                     <Building2 size={15} className="text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-xs text-muted-foreground">Representante</p>
-                      <p className="text-sm font-medium text-foreground">Cód. {client.COD_REP}</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {representantes.find(r => r.rep_codrep === client.COD_REP)?.rep_nomrep || `Cód. ${client.COD_REP}`}
+                      </p>
                     </div>
                   </div>
 

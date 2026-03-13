@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Spinner from '@/components/ui/spinner';
 import { fetchWithAuth } from '@/lib/auth-refresh';
@@ -111,6 +113,17 @@ const ClienteDetalhe = () => {
   const [editLogradouro, setEditLogradouro] = useState('');
   const [editComplemento, setEditComplemento] = useState('');
   const [editBairro, setEditBairro] = useState('');
+
+  // New address modal state
+  const [newAddressOpen, setNewAddressOpen] = useState(false);
+  const [newAddrNome, setNewAddrNome] = useState('');
+  const [newAddrLinha1, setNewAddrLinha1] = useState('');
+  const [newAddrLinha2, setNewAddrLinha2] = useState('');
+  const [newAddrCidade, setNewAddrCidade] = useState('');
+  const [newAddrEstado, setNewAddrEstado] = useState('');
+  const [newAddrCep, setNewAddrCep] = useState('');
+  const [newAddrPais, setNewAddrPais] = useState('');
+  const [newAddrCobranca, setNewAddrCobranca] = useState(true);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -674,7 +687,12 @@ const ClienteDetalhe = () => {
                     <div className="bg-card border border-border rounded-xl shadow-sm">
                       <div className="px-6 py-5 border-b border-border flex items-center justify-between">
                         <h3 className="text-base font-semibold text-foreground">Endereços</h3>
-                        <Button size="sm" variant="outline" className="text-xs">
+                        <Button size="sm" variant="outline" className="text-xs" onClick={() => {
+                          setNewAddrNome(''); setNewAddrLinha1(''); setNewAddrLinha2('');
+                          setNewAddrCidade(''); setNewAddrEstado(''); setNewAddrCep('');
+                          setNewAddrPais(''); setNewAddrCobranca(true);
+                          setNewAddressOpen(true);
+                        }}>
                           Novo endereço
                         </Button>
                       </div>
@@ -787,6 +805,88 @@ const ClienteDetalhe = () => {
                           setEditAddressOpen(false);
                         }}>
                           Salvar
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                {/* New Address Modal */}
+                <Dialog open={newAddressOpen} onOpenChange={setNewAddressOpen}>
+                  <DialogContent className="sm:max-w-[480px]">
+                    <DialogHeader>
+                      <DialogTitle>Adicionar novo endereço</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-5 pt-2">
+                      <p className="text-sm font-medium text-foreground flex items-center gap-1">
+                        Informações de envio
+                        <ChevronDown size={14} className="text-primary" />
+                      </p>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Endereço Nome <span className="text-destructive">*</span></Label>
+                        <Input value={newAddrNome} onChange={e => setNewAddrNome(e.target.value)} className="mt-1.5 bg-transparent" />
+                      </div>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Endereço Linha 1 <span className="text-destructive">*</span></Label>
+                        <Input value={newAddrLinha1} onChange={e => setNewAddrLinha1(e.target.value)} className="mt-1.5 bg-transparent" />
+                      </div>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Linha de endereço 2</Label>
+                        <Input value={newAddrLinha2} onChange={e => setNewAddrLinha2(e.target.value)} className="mt-1.5 bg-transparent" />
+                      </div>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Cidade / Vila <span className="text-destructive">*</span></Label>
+                        <Input value={newAddrCidade} onChange={e => setNewAddrCidade(e.target.value)} className="mt-1.5 bg-transparent" />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Estado/Provincia <span className="text-destructive">*</span></Label>
+                          <Input value={newAddrEstado} onChange={e => setNewAddrEstado(e.target.value)} className="mt-1.5 bg-transparent" />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Código postal <span className="text-destructive">*</span></Label>
+                          <Input value={newAddrCep} onChange={e => setNewAddrCep(e.target.value)} className="mt-1.5 bg-transparent" placeholder="00000-000" />
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">País <span className="text-destructive">*</span></Label>
+                        <Select value={newAddrPais} onValueChange={setNewAddrPais}>
+                          <SelectTrigger className="mt-1.5 bg-transparent">
+                            <SelectValue placeholder="Selecione um país..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="BR">Brasil</SelectItem>
+                            <SelectItem value="US">Estados Unidos</SelectItem>
+                            <SelectItem value="AR">Argentina</SelectItem>
+                            <SelectItem value="PT">Portugal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-foreground">Utilizar como endereço de cobrança?</p>
+                          <p className="text-xs text-muted-foreground">Se precisar de mais informações, consulte o planejamento orçamentário.</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Switch checked={newAddrCobranca} onCheckedChange={setNewAddrCobranca} />
+                          <span className="text-xs text-muted-foreground">Sim</span>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-center gap-3 pt-3 border-t border-border">
+                        <Button variant="ghost" onClick={() => setNewAddressOpen(false)}>Descartar</Button>
+                        <Button onClick={() => {
+                          console.log('Novo endereço salvo', { newAddrNome, newAddrLinha1, newAddrLinha2, newAddrCidade, newAddrEstado, newAddrCep, newAddrPais, newAddrCobranca });
+                          setNewAddressOpen(false);
+                        }}>
+                          Enviar
                         </Button>
                       </div>
                     </div>

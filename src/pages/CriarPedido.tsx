@@ -60,6 +60,9 @@ const CriarPedido = () => {
   const [catalogo, setCatalogo] = useState<CatalogoItem[]>([]);
   const [produtoSearch, setProdutoSearch] = useState('');
   const [loadingCatalogo, setLoadingCatalogo] = useState(false);
+  const [catalogoPage, setCatalogoPage] = useState(1);
+  const [hasMoreCatalogo, setHasMoreCatalogo] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   /* carrinho */
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -92,17 +95,31 @@ const CriarPedido = () => {
   }, [clienteSearch, fetchClientes]);
 
   /* ─── fetch catalogo on mount ─── */
-  const fetchCatalogo = useCallback(async () => {
-    setLoadingCatalogo(true);
+  const fetchCatalogo = useCallback(async (page = 1, append = false) => {
+    if (page === 1) setLoadingCatalogo(true);
+    else setLoadingMore(true);
     try {
-      const res = await fetch(`${BASE}/fetch-catalogo?page=1&limit=100`);
+      const res = await fetch(`${BASE}/fetch-catalogo?page=${page}&limit=50`);
       const data = await res.json();
-      setCatalogo(data?.catalogs || []);
-    } catch { setCatalogo([]); }
-    finally { setLoadingCatalogo(false); }
+      const items: CatalogoItem[] = data?.catalogs || [];
+      if (append) {
+        setCatalogo(prev => [...prev, ...items]);
+      } else {
+        setCatalogo(items);
+      }
+      setHasMoreCatalogo(items.length >= 50);
+      setCatalogoPage(page);
+    } catch { if (!append) setCatalogo([]); }
+    finally { setLoadingCatalogo(false); setLoadingMore(false); }
   }, []);
 
-  useEffect(() => { fetchCatalogo(); }, [fetchCatalogo]);
+  useEffect(() => { fetchCatalogo(1); }, [fetchCatalogo]);
+
+  const loadMoreCatalogo = () => {
+    if (!loadingMore && hasMoreCatalogo) {
+      fetchCatalogo(catalogoPage + 1, true);
+    }
+  };
 
   /* ─── cart ops ─── */
   const toggleProduct = (item: CatalogoItem) => {
@@ -410,6 +427,14 @@ const CriarPedido = () => {
                         </div>
                       );
                     })
+                  )}
+                  {/* Load more */}
+                  {hasMoreCatalogo && !produtoSearch.trim() && (
+                    <div className="px-5 py-4 flex justify-center">
+                      <Button variant="outline" className="rounded-lg text-sm" onClick={loadMoreCatalogo} disabled={loadingMore}>
+                        {loadingMore ? 'Carregando...' : 'Carregar mais produtos'}
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>

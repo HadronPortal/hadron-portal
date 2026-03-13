@@ -155,15 +155,15 @@ const Header = () => {
                     </div>
                   )}
                 </div>
+                <button
+                  onClick={toggleTheme}
+                  className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-foreground/10 transition-colors"
+                  aria-label="Alternar tema"
+                >
+                  {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                </button>
                 <span className="text-sm font-medium leading-tight truncate max-w-[180px]">{userName}</span>
               </div>
-              <button
-                onClick={toggleTheme}
-                className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-foreground/10 transition-colors"
-                aria-label="Alternar tema"
-              >
-                {isDark ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="h-10 w-10 rounded-md overflow-hidden ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"

@@ -60,6 +60,9 @@ const CriarPedido = () => {
   const [catalogo, setCatalogo] = useState<CatalogoItem[]>([]);
   const [produtoSearch, setProdutoSearch] = useState('');
   const [loadingCatalogo, setLoadingCatalogo] = useState(false);
+  const [catalogoPage, setCatalogoPage] = useState(1);
+  const [hasMoreCatalogo, setHasMoreCatalogo] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   /* carrinho */
   const [cart, setCart] = useState<CartItem[]>([]);

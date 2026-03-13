@@ -58,7 +58,7 @@ const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 const navItems = [
   { label: 'Home', path: '/' },
   { label: 'Clientes', path: '/clientes' },
-  { label: 'Analítico', path: '/analitico' },
+  { label: 'Relatórios', path: '/analitico' },
   { label: 'Pedidos', path: '/pedidos' },
   { label: 'Catálogo', path: '/catalogo' },
 ];

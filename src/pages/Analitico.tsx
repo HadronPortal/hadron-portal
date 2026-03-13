@@ -160,7 +160,7 @@ const Analitico = () => {
         </div>
       </div>
 
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
+      
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
 

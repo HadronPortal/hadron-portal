@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeft, User, MapPin, FileText, Calendar, Hash, Phone, Mail, Building2, ChevronLeft, ChevronRight, Pencil, X } from 'lucide-react';
+import { ArrowLeft, User, MapPin, FileText, Calendar, Hash, Phone, Mail, Building2, ChevronLeft, ChevronRight, Pencil, X, ChevronDown, Trash2, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Spinner from '@/components/ui/spinner';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -104,6 +105,12 @@ const ClienteDetalhe = () => {
   const [editRep, setEditRep] = useState('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [expandedAddress, setExpandedAddress] = useState<number | null>(null);
+  const [editAddressOpen, setEditAddressOpen] = useState(false);
+  const [editAddressIdx, setEditAddressIdx] = useState<number | null>(null);
+  const [editLogradouro, setEditLogradouro] = useState('');
+  const [editComplemento, setEditComplemento] = useState('');
+  const [editBairro, setEditBairro] = useState('');
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -650,46 +657,141 @@ const ClienteDetalhe = () => {
                   </div>
                 </div>
 
-                {/* Address card */}
-                <div className="bg-card border border-border rounded-xl shadow-sm">
-                  <div className="px-6 py-5 border-b border-border flex items-center justify-between">
-                    <h3 className="text-base font-semibold text-foreground">Endereço</h3>
-                  </div>
-                  <div className="px-6 py-6 space-y-5">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-semibold text-foreground mb-1.5 block">Cidade</label>
-                        <Input
-                          value={editCidade}
-                          onChange={(e) => setEditCidade(e.target.value)}
-                          className="bg-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-semibold text-foreground mb-1.5 block">UF</label>
-                        <Input
-                          value={editUf}
-                          onChange={(e) => setEditUf(e.target.value)}
-                          className="bg-transparent"
-                          maxLength={2}
-                        />
-                      </div>
-                    </div>
+                {/* Address Book card */}
+                {(() => {
+                  const addresses = [
+                    {
+                      label: 'Principal',
+                      isDefault: true,
+                      logradouro: editCidade ? `${editCidade}` : 'Não informado',
+                      cidade: editCidade,
+                      uf: editUf,
+                      nome: editName,
+                    },
+                  ];
 
-                    <div className="flex justify-end pt-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-primary text-primary hover:bg-primary/10"
-                        onClick={() => {
-                          console.log('Salvar endereço', { editCidade, editUf });
-                        }}
-                      >
-                        Salvar
-                      </Button>
+                  return (
+                    <div className="bg-card border border-border rounded-xl shadow-sm">
+                      <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+                        <h3 className="text-base font-semibold text-foreground">Endereços</h3>
+                        <Button size="sm" variant="outline" className="text-xs border-primary text-primary hover:bg-primary/10">
+                          Novo endereço
+                        </Button>
+                      </div>
+                      <div className="divide-y divide-border">
+                        {addresses.map((addr, idx) => (
+                          <div key={idx}>
+                            {/* Row */}
+                            <div className="px-6 py-4 flex items-center gap-4">
+                              <button
+                                onClick={() => setExpandedAddress(expandedAddress === idx ? null : idx)}
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                              >
+                                <ChevronDown
+                                  size={18}
+                                  className={`transition-transform ${expandedAddress === idx ? 'rotate-0' : '-rotate-90'}`}
+                                />
+                              </button>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-semibold text-foreground">{addr.label}</span>
+                                  {addr.isDefault && (
+                                    <Badge variant="outline" className="text-[10px] border-primary/30 text-primary bg-primary/5 px-2 py-0">
+                                      Padrão
+                                    </Badge>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  {addr.cidade}{addr.uf ? ` - ${addr.uf}` : ''}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => {
+                                    setEditAddressIdx(idx);
+                                    setEditLogradouro(addr.logradouro || '');
+                                    setEditComplemento('');
+                                    setEditBairro('');
+                                    setEditAddressOpen(true);
+                                  }}
+                                  className="w-8 h-8 rounded-md flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                                >
+                                  <Pencil size={14} />
+                                </button>
+                                <button className="w-8 h-8 rounded-md flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                  <Trash2 size={14} />
+                                </button>
+                                <button className="w-8 h-8 rounded-md flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+                                  <GripVertical size={14} />
+                                </button>
+                              </div>
+                            </div>
+                            {/* Expanded details */}
+                            {expandedAddress === idx && (
+                              <div className="px-6 pb-5 pl-14">
+                                <p className="text-sm text-muted-foreground">{addr.nome}</p>
+                                <p className="text-sm text-muted-foreground">{addr.logradouro},</p>
+                                <p className="text-sm text-muted-foreground">{addr.cidade}{addr.uf ? `, ${addr.uf}` : ''}</p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
+
+                {/* Edit Address Dialog */}
+                <Dialog open={editAddressOpen} onOpenChange={setEditAddressOpen}>
+                  <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                      <DialogTitle>Atualizar Endereço</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-5 pt-2">
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">
+                          Logradouro <span className="text-destructive">*</span>
+                        </label>
+                        <Input value={editLogradouro} onChange={(e) => setEditLogradouro(e.target.value)} className="bg-transparent" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">Complemento</label>
+                        <Input value={editComplemento} onChange={(e) => setEditComplemento(e.target.value)} className="bg-transparent" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">Bairro</label>
+                        <Input value={editBairro} onChange={(e) => setEditBairro(e.target.value)} className="bg-transparent" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">
+                          Cidade <span className="text-destructive">*</span>
+                        </label>
+                        <Input value={editCidade} onChange={(e) => setEditCidade(e.target.value)} className="bg-transparent" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs font-semibold text-foreground mb-1.5 block">
+                            UF <span className="text-destructive">*</span>
+                          </label>
+                          <Input value={editUf} onChange={(e) => setEditUf(e.target.value)} className="bg-transparent" maxLength={2} />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-foreground mb-1.5 block">CEP</label>
+                          <Input className="bg-transparent" placeholder="00000-000" />
+                        </div>
+                      </div>
+                      <div className="flex justify-center gap-3 pt-3">
+                        <Button variant="ghost" onClick={() => setEditAddressOpen(false)}>Descartar</Button>
+                        <Button onClick={() => {
+                          console.log('Salvar endereço', { editLogradouro, editComplemento, editBairro, editCidade, editUf });
+                          setEditAddressOpen(false);
+                        }}>
+                          Salvar
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             )}
           </div>

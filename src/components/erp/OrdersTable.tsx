@@ -79,11 +79,11 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
                     <TableCell className="text-sm text-foreground">
                       {order.cliente_nome}
                     </TableCell>
-                    <TableCell className="text-sm text-foreground">
-                      R$ {order.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    <TableCell className="text-sm text-foreground whitespace-nowrap">
+                      {`R$ ${order.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
                     </TableCell>
-                    <TableCell className="text-sm font-semibold text-foreground">
-                      R$ {lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    <TableCell className="text-sm text-foreground whitespace-nowrap">
+                      {`R$ ${lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
                     </TableCell>
                     <TableCell className="text-right">
                       <span

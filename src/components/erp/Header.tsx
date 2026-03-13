@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2, ChevronDown } from 'lucide-react';
+import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2, ChevronDown, Moon, Sun } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import logoImg from '@/assets/logo_hadron_go.png';
@@ -20,8 +20,24 @@ const Header = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [companyMenuOpen, setCompanyMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
   const menuRef = useRef<HTMLDivElement>(null);
   const companyRef = useRef<HTMLDivElement>(null);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+  };
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') {
+      document.documentElement.classList.add('dark');
+      setIsDark(true);
+    }
+  }, []);
 
   // Lock body scroll when drawer is open
   useEffect(() => {
@@ -141,6 +157,13 @@ const Header = () => {
                 </div>
                 <span className="text-sm font-medium leading-tight truncate max-w-[180px]">{userName}</span>
               </div>
+              <button
+                onClick={toggleTheme}
+                className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-foreground/10 transition-colors"
+                aria-label="Alternar tema"
+              >
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="h-10 w-10 rounded-md overflow-hidden ring-2 ring-primary-foreground/20 cursor-pointer hover:ring-primary-foreground/40 transition-all"

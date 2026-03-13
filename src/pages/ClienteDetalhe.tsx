@@ -124,6 +124,7 @@ const ClienteDetalhe = () => {
   const [newAddrCep, setNewAddrCep] = useState('');
   const [newAddrPais, setNewAddrPais] = useState('');
   const [newAddrCobranca, setNewAddrCobranca] = useState(true);
+  const [extraAddresses, setExtraAddresses] = useState<Array<{ label: string; logradouro: string; cidade: string; uf: string; nome: string; isDefault: boolean }>>([]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -681,6 +682,7 @@ const ClienteDetalhe = () => {
                       uf: editUf,
                       nome: editName,
                     },
+                    ...extraAddresses,
                   ];
 
                   return (
@@ -883,7 +885,15 @@ const ClienteDetalhe = () => {
                       <div className="flex justify-center gap-3 pt-3 border-t border-border">
                         <Button variant="ghost" onClick={() => setNewAddressOpen(false)}>Descartar</Button>
                         <Button onClick={() => {
-                          console.log('Novo endereço salvo', { newAddrNome, newAddrLinha1, newAddrLinha2, newAddrCidade, newAddrEstado, newAddrCep, newAddrPais, newAddrCobranca });
+                          if (!newAddrNome.trim() || !newAddrLinha1.trim() || !newAddrCidade.trim()) return;
+                          setExtraAddresses(prev => [...prev, {
+                            label: newAddrNome,
+                            isDefault: false,
+                            logradouro: `${newAddrLinha1}${newAddrLinha2 ? ', ' + newAddrLinha2 : ''}`,
+                            cidade: newAddrCidade,
+                            uf: newAddrEstado,
+                            nome: newAddrNome,
+                          }]);
                           setNewAddressOpen(false);
                         }}>
                           Enviar

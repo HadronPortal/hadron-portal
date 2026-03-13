@@ -495,8 +495,8 @@ const ClienteDetalhe = () => {
                                   {st.label}
                                 </Badge>
                               </td>
-                              <td className="px-6 py-3.5 text-sm text-foreground">{formatCurrency(o.orc_vlrtot)}</td>
-                              <td className="px-6 py-3.5 text-sm text-muted-foreground">{formatDate(o.orc_datcad)}</td>
+                              <td className="px-6 py-3.5 text-sm text-foreground">{formatCurrency(o.orc_val_tot)}</td>
+                              <td className="px-6 py-3.5 text-sm text-muted-foreground">{formatDate(o.DATA_PEDIDO || o.orc_datcad)}</td>
                             </tr>
                           );
                         })}

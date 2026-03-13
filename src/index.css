@@ -60,7 +60,7 @@
   }
 
   .dark {
-    --background: 230 24% 11%;
+    --background: 230 24% 7%;
     --foreground: 220 14% 90%;
     --card: 230 24% 19%;
     --card-foreground: 220 14% 90%;
@@ -87,7 +87,7 @@
     --sidebar-accent-foreground: 220 14% 90%;
     --sidebar-border: 230 18% 26%;
     --sidebar-ring: 220 70% 55%;
-    --erp-banner: 230 24% 11%;
+    --erp-banner: 230 24% 7%;
   }
 }
 

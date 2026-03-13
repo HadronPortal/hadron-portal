@@ -280,8 +280,8 @@ const Clientes = () => {
 
           {/* Table */}
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Spinner />
+            <div className="px-2 sm:px-6 py-4">
+              <SkeletonTable columns={8} rows={10} headers={['Cliente', 'Documento', 'Local', 'Status', 'Vendas', 'Cadastro', 'Ações']} />
             </div>
           ) : error ? (
             <div className="text-center py-16 text-destructive text-sm">{error}</div>

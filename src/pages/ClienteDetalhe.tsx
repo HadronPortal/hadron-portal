@@ -23,12 +23,13 @@ interface ClienteAPI {
 }
 
 interface OrderAPI {
-  orc_codorc: number;
+  orc_codorc_web: number;
+  orc_codorc_had: number;
   orc_datcad: string;
   orc_val_tot: number;
   orc_status: number | string;
   CLIENTE: string;
-  ter_codter: number;
+  CODTER: number;
   DATA_PEDIDO: string;
   [key: string]: unknown;
 }

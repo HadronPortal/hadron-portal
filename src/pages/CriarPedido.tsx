@@ -428,6 +428,14 @@ const CriarPedido = () => {
                       );
                     })
                   )}
+                  {/* Load more */}
+                  {hasMoreCatalogo && !produtoSearch.trim() && (
+                    <div className="px-5 py-4 flex justify-center">
+                      <Button variant="outline" className="rounded-lg text-sm" onClick={loadMoreCatalogo} disabled={loadingMore}>
+                        {loadingMore ? 'Carregando...' : 'Carregar mais produtos'}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

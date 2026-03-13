@@ -220,15 +220,15 @@ const Clientes = () => {
         <div className="h-16 sm:h-24" />
       </div>
 
-      <FilterBar
-        representantes={representantes}
-        clientCountByRep={clientCountByRep}
-        onRepChange={() => {}}
-        onFilter={handleFilter}
-        onClear={handleClear}
-      />
-
       <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-6 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
+        {/* FilterBar inside the content flow */}
+        <FilterBar
+          representantes={representantes}
+          clientCountByRep={clientCountByRep}
+          onRepChange={() => {}}
+          onFilter={handleFilter}
+          onClear={handleClear}
+        />
 
         {/* Main Card */}
         <div className="bg-card border border-border rounded-xl shadow-sm">

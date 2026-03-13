@@ -146,10 +146,10 @@ const Pedidos = () => {
   };
 
   const kpiItems = [
-    { label: 'Enviados', value: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, icon: Send },
-    { label: 'Aprovados', value: formatCurrency(dashboard.approved), peso: `${dashboard.approved_peso} Kg`, icon: CheckCircle },
-    { label: 'Faturados', value: formatCurrency(dashboard.invoiced), peso: `${dashboard.invoiced_peso} Kg`, icon: FileText },
-    { label: 'Cancelados', value: formatCurrency(dashboard.canceled), peso: `${dashboard.canceled_peso} Kg`, icon: XCircle },
+    { label: 'Enviados', value: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, icon: Send, color: 'hsl(var(--erp-blue))', bg: 'hsl(var(--erp-blue) / 0.15)' },
+    { label: 'Aprovados', value: formatCurrency(dashboard.approved), peso: `${dashboard.approved_peso} Kg`, icon: CheckCircle, color: 'hsl(var(--erp-green))', bg: 'hsl(var(--erp-green) / 0.15)' },
+    { label: 'Faturados', value: formatCurrency(dashboard.invoiced), peso: `${dashboard.invoiced_peso} Kg`, icon: FileText, color: 'hsl(var(--erp-navy))', bg: 'hsl(var(--erp-navy) / 0.15)' },
+    { label: 'Cancelados', value: formatCurrency(dashboard.canceled), peso: `${dashboard.canceled_peso} Kg`, icon: XCircle, color: 'hsl(var(--destructive))', bg: 'hsl(var(--destructive) / 0.15)' },
   ];
 
   const showSkeleton = isLoading;

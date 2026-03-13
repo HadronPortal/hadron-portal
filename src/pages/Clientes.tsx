@@ -367,7 +367,8 @@ const Clientes = () => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="h-8 px-4 text-xs font-medium gap-1.5 rounded-lg border border-border text-foreground bg-muted/50 transition-all duration-150 hover:bg-primary/10 hover:text-primary hover:border-primary/40 data-[state=open]:bg-primary/10 data-[state=open]:text-primary data-[state=open]:border-primary/40 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                                  className="h-8 px-4 text-xs font-light gap-1.5 rounded-lg border border-border text-foreground bg-muted/50 transition-all duration-150 hover:bg-primary/10 hover:text-primary hover:border-primary/40 data-[state=open]:bg-primary/10 data-[state=open]:text-primary data-[state=open]:border-primary/40 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                                  style={{ fontFamily: 'Inter, sans-serif' }}
                                 >
                                   Ações
                                   <ChevronDown size={14} />

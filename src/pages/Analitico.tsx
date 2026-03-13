@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -10,6 +11,14 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
+
+const navItems = [
+  { label: 'Home', path: '/' },
+  { label: 'Clientes', path: '/clientes' },
+  { label: 'Relatórios', path: '/analitico' },
+  { label: 'Pedidos', path: '/pedidos' },
+  { label: 'Catálogo', path: '/catalogo' },
+];
 
 interface Period {
   chave: string;

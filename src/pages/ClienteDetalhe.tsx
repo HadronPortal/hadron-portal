@@ -299,6 +299,24 @@ const ClienteDetalhe = () => {
             </nav>
           </div>
         </div>
+        {/* Tabs in hero */}
+        <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 max-w-[1600px] mx-auto w-full">
+          <div className="flex items-center gap-6">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+                  activeTab === tab
+                    ? 'border-primary-foreground text-primary-foreground'
+                    : 'border-transparent text-primary-foreground/60 hover:text-primary-foreground/80'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="h-16 sm:h-24" />
       </div>
 
@@ -396,25 +414,7 @@ const ClienteDetalhe = () => {
 
           {/* Right content area */}
           <div className="flex-1 min-w-0">
-            {/* Tabs */}
-            <div className="border-b border-border mb-6">
-              <div className="flex items-center gap-6">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
-                      activeTab === tab
-                        ? 'border-primary text-primary'
-                        : 'border-transparent text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-            </div>
-
+            {/* Tab content */}
             {activeTab === 'Visão Geral' && (
               <div className="space-y-6">
                 {/* Summary cards - use orders data for accurate totals */}

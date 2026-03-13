@@ -615,8 +615,8 @@ const ClienteDetalhe = () => {
                       </label>
                       <Input
                         value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        className="bg-transparent"
+                        readOnly
+                        className="bg-transparent cursor-not-allowed opacity-70"
                       />
                     </div>
 

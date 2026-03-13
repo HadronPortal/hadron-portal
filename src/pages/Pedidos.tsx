@@ -203,15 +203,15 @@ const Pedidos = () => {
           <FadeIn>
             <div className="rounded-2xl bg-card border border-border overflow-hidden">
               <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
-                {kpiItems.map(({ label, value, peso, icon: Icon }) => (
+                {kpiItems.map(({ label, value, peso, icon: Icon, color, bg }) => (
                   <div key={label} className="flex items-center justify-between px-5 sm:px-7 py-5 sm:py-6">
                     <div className="flex flex-col gap-1">
                       <p className="text-xl sm:text-2xl font-bold text-foreground">{value}</p>
                       <p className="text-xs text-muted-foreground">{label}</p>
                       <p className="text-[10px] text-muted-foreground/60">{peso}</p>
                     </div>
-                    <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-muted/60">
-                      <Icon size={20} className="text-muted-foreground" />
+                    <div className="h-10 w-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: bg }}>
+                      <Icon size={20} style={{ color }} />
                     </div>
                   </div>
                 ))}

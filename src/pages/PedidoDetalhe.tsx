@@ -180,6 +180,13 @@ const PedidoDetalhe = () => {
           </div>
         </div>
       </main>
+
+      <CatalogoDetalhe
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        productId={selectedProductId}
+        productName={selectedProductName}
+      />
     </>
   );
 };

@@ -119,6 +119,7 @@ const ClienteDetalhe = () => {
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');
         const data = await res.json();
+        console.log('[ClienteDetalhe] orders for codter:', id, 'response:', JSON.stringify(data).substring(0, 500));
         setOrders(data.orders || []);
         setOrdersTotal(data.total_records || 0);
       } catch (err) {

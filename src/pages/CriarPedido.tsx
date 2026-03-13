@@ -472,7 +472,90 @@ const CriarPedido = () => {
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Frete:</span>
                   <span className="font-medium">{frete > 0 ? fmt(frete) : 'Grátis'}</span>
+            </div>
+
+            {/* Delivery Details */}
+            <div className="lg:col-span-2 bg-card rounded-xl border border-border shadow-sm">
+              <div className="px-5 py-4 border-b border-border">
+                <h2 className="text-base font-bold text-foreground">Detalhes de Entrega</h2>
+              </div>
+              <div className="p-5 space-y-6">
+                {/* Billing Address */}
+                <div>
+                  <h3 className="text-sm font-bold text-foreground mb-4">Endereço de Cobrança</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-medium text-primary mb-1.5 block">Endereço 1 <span className="text-destructive">*</span></label>
+                      <Input placeholder="Endereço 1" className="h-10 text-sm rounded-lg" value={billingAddr.line1} onChange={e => setBillingAddr(p => ({ ...p, line1: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-primary mb-1.5 block">Endereço 2</label>
+                      <Input placeholder="Endereço 2" className="h-10 text-sm rounded-lg" value={billingAddr.line2} onChange={e => setBillingAddr(p => ({ ...p, line2: e.target.value }))} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                    <div>
+                      <label className="text-xs font-medium text-primary mb-1.5 block">Cidade</label>
+                      <Input className="h-10 text-sm rounded-lg" value={billingAddr.city} onChange={e => setBillingAddr(p => ({ ...p, city: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-primary mb-1.5 block">CEP <span className="text-destructive">*</span></label>
+                      <Input className="h-10 text-sm rounded-lg" value={billingAddr.postcode} onChange={e => setBillingAddr(p => ({ ...p, postcode: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-primary mb-1.5 block">Estado <span className="text-destructive">*</span></label>
+                      <Input className="h-10 text-sm rounded-lg" value={billingAddr.state} onChange={e => setBillingAddr(p => ({ ...p, state: e.target.value }))} />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="text-xs font-medium text-primary mb-1.5 block">País <span className="text-destructive">*</span></label>
+                    <Input placeholder="Brasil" className="h-10 text-sm rounded-lg" value={billingAddr.country} onChange={e => setBillingAddr(p => ({ ...p, country: e.target.value }))} />
+                  </div>
                 </div>
+
+                {/* Checkbox */}
+                <div className="flex items-center gap-2.5 py-1">
+                  <Checkbox checked={sameAsBilling} onCheckedChange={(v) => setSameAsBilling(!!v)} />
+                  <label className="text-sm text-muted-foreground cursor-pointer" onClick={() => setSameAsBilling(!sameAsBilling)}>
+                    Endereço de entrega é o mesmo que o de cobrança
+                  </label>
+                </div>
+
+                {/* Shipping Address (only if different) */}
+                {!sameAsBilling && (
+                  <div>
+                    <h3 className="text-sm font-bold text-foreground mb-4">Endereço de Entrega</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-medium text-primary mb-1.5 block">Endereço 1</label>
+                        <Input placeholder="Endereço 1" className="h-10 text-sm rounded-lg" value={shippingAddr.line1} onChange={e => setShippingAddr(p => ({ ...p, line1: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-primary mb-1.5 block">Endereço 2</label>
+                        <Input placeholder="Endereço 2" className="h-10 text-sm rounded-lg" value={shippingAddr.line2} onChange={e => setShippingAddr(p => ({ ...p, line2: e.target.value }))} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                      <div>
+                        <label className="text-xs font-medium text-primary mb-1.5 block">Cidade</label>
+                        <Input className="h-10 text-sm rounded-lg" value={shippingAddr.city} onChange={e => setShippingAddr(p => ({ ...p, city: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-primary mb-1.5 block">CEP</label>
+                        <Input className="h-10 text-sm rounded-lg" value={shippingAddr.postcode} onChange={e => setShippingAddr(p => ({ ...p, postcode: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-primary mb-1.5 block">Estado</label>
+                        <Input className="h-10 text-sm rounded-lg" value={shippingAddr.state} onChange={e => setShippingAddr(p => ({ ...p, state: e.target.value }))} />
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <label className="text-xs font-medium text-primary mb-1.5 block">País</label>
+                      <Input placeholder="Brasil" className="h-10 text-sm rounded-lg" value={shippingAddr.country} onChange={e => setShippingAddr(p => ({ ...p, country: e.target.value }))} />
+                    </div>
+                  </div>
+                )}
+              </div>
                 <div className="border-t border-border pt-2 flex justify-between text-lg font-bold">
                   <span>Total:</span>
                   <span className="text-[hsl(var(--erp-green))]">{fmt(total)}</span>

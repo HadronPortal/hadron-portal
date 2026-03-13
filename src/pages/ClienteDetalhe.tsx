@@ -93,18 +93,42 @@ const ClienteDetalhe = () => {
 
   // Edit form state
   const [editName, setEditName] = useState('');
-  const [editFantasia, setEditFantasia] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editTelefone, setEditTelefone] = useState('');
   const [editDocumento, setEditDocumento] = useState('');
   const [editCidade, setEditCidade] = useState('');
   const [editUf, setEditUf] = useState('');
   const [editRep, setEditRep] = useState('');
 
+  const maskPhone = (v: string) => {
+    const d = v.replace(/\D/g, '').slice(0, 11);
+    if (d.length <= 2) return d.length ? `(${d}` : '';
+    if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+    if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  };
+
+  const maskDoc = (v: string) => {
+    const d = v.replace(/\D/g, '');
+    if (d.length <= 11) {
+      if (d.length <= 3) return d;
+      if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
+      if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+      return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+    }
+    const c = d.slice(0, 14);
+    if (c.length <= 2) return c;
+    if (c.length <= 5) return `${c.slice(0, 2)}.${c.slice(2)}`;
+    if (c.length <= 8) return `${c.slice(0, 2)}.${c.slice(2, 5)}.${c.slice(5)}`;
+    if (c.length <= 12) return `${c.slice(0, 2)}.${c.slice(2, 5)}.${c.slice(5, 8)}/${c.slice(8)}`;
+    return `${c.slice(0, 2)}.${c.slice(2, 5)}.${c.slice(5, 8)}/${c.slice(8, 12)}-${c.slice(12)}`;
+  };
+
   // Sync edit fields when client loads
   useEffect(() => {
     if (client) {
       setEditName(client.ter_nomter || '');
-      setEditFantasia(client.ter_fanter || '');
-      setEditDocumento(client.ter_documento || '');
+      setEditDocumento(maskDoc(client.ter_documento || ''));
       setEditCidade(client.TEN_CIDLGR || '');
       setEditUf(client.TEN_UF_LGR || '');
       setEditRep(String(client.COD_REP || ''));

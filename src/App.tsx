@@ -11,6 +11,7 @@ import ErpLayout from "@/components/erp/ErpLayout";
 // Lazy-loaded pages
 const Index = lazy(() => import("./pages/Index"));
 const Clientes = lazy(() => import("./pages/Clientes"));
+const ClienteDetalhe = lazy(() => import("./pages/ClienteDetalhe"));
 const Cobrancas = lazy(() => import("./pages/Cobrancas"));
 const Analitico = lazy(() => import("./pages/Analitico"));
 const Pedidos = lazy(() => import("./pages/Pedidos"));

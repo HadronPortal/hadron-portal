@@ -344,21 +344,30 @@ const ClienteDetalhe = () => {
 
             {activeTab === 'Visão Geral' && (
               <div className="space-y-6">
-                {/* Summary cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-card border border-border rounded-xl p-5">
-                    <p className="text-xs text-muted-foreground mb-1">Total em Vendas</p>
-                    <p className="text-xl font-bold text-foreground">{formatCurrency(client.TOTAL_VENDAS)}</p>
-                  </div>
-                  <div className="bg-card border border-border rounded-xl p-5">
-                    <p className="text-xs text-muted-foreground mb-1">Qtd. Pedidos</p>
-                    <p className="text-xl font-bold text-foreground">{client.QUANT_VENDAS ?? 0}</p>
-                  </div>
-                  <div className="bg-card border border-border rounded-xl p-5">
-                    <p className="text-xs text-muted-foreground mb-1">Última Venda</p>
-                    <p className="text-xl font-bold text-foreground">{formatDate(client.ULT_VENDA)}</p>
-                  </div>
-                </div>
+                {/* Summary cards - use orders data for accurate totals */}
+                {(() => {
+                  const totalVendas = orders.length > 0
+                    ? orders.reduce((acc, o) => acc + (o.orc_val_tot || 0), 0)
+                    : (client.TOTAL_VENDAS ?? 0);
+                  const qtdPedidos = ordersTotal > 0 ? ordersTotal : (client.QUANT_VENDAS ?? 0);
+                  const ultVenda = orders.length > 0 ? (orders[0].DATA_PEDIDO || orders[0].orc_datcad) : client.ULT_VENDA;
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="bg-card border border-border rounded-xl p-5">
+                        <p className="text-xs text-muted-foreground mb-1">Total em Vendas</p>
+                        <p className="text-xl font-bold text-foreground">{formatCurrency(totalVendas)}</p>
+                      </div>
+                      <div className="bg-card border border-border rounded-xl p-5">
+                        <p className="text-xs text-muted-foreground mb-1">Qtd. Pedidos</p>
+                        <p className="text-xl font-bold text-foreground">{qtdPedidos}</p>
+                      </div>
+                      <div className="bg-card border border-border rounded-xl p-5">
+                        <p className="text-xs text-muted-foreground mb-1">Última Venda</p>
+                        <p className="text-xl font-bold text-foreground">{formatDate(ultVenda)}</p>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Transaction History */}
                 <div className="bg-card border border-border rounded-xl shadow-sm">

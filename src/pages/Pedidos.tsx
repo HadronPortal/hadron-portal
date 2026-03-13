@@ -146,10 +146,10 @@ const Pedidos = () => {
   };
 
   const kpiItems = [
-    { label: 'Enviados', value: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, icon: Send },
-    { label: 'Aprovados', value: formatCurrency(dashboard.approved), peso: `${dashboard.approved_peso} Kg`, icon: CheckCircle },
-    { label: 'Faturados', value: formatCurrency(dashboard.invoiced), peso: `${dashboard.invoiced_peso} Kg`, icon: FileText },
-    { label: 'Cancelados', value: formatCurrency(dashboard.canceled), peso: `${dashboard.canceled_peso} Kg`, icon: XCircle },
+    { label: 'Enviados', value: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, icon: Send, color: 'hsl(var(--erp-blue))', bg: 'hsl(var(--erp-blue) / 0.15)' },
+    { label: 'Aprovados', value: formatCurrency(dashboard.approved), peso: `${dashboard.approved_peso} Kg`, icon: CheckCircle, color: 'hsl(var(--erp-green))', bg: 'hsl(var(--erp-green) / 0.15)' },
+    { label: 'Faturados', value: formatCurrency(dashboard.invoiced), peso: `${dashboard.invoiced_peso} Kg`, icon: FileText, color: 'hsl(var(--erp-navy))', bg: 'hsl(var(--erp-navy) / 0.15)' },
+    { label: 'Cancelados', value: formatCurrency(dashboard.canceled), peso: `${dashboard.canceled_peso} Kg`, icon: XCircle, color: 'hsl(var(--destructive))', bg: 'hsl(var(--destructive) / 0.15)' },
   ];
 
   const showSkeleton = isLoading;
@@ -203,15 +203,15 @@ const Pedidos = () => {
           <FadeIn>
             <div className="rounded-2xl bg-card border border-border overflow-hidden">
               <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
-                {kpiItems.map(({ label, value, peso, icon: Icon }) => (
+                {kpiItems.map(({ label, value, peso, icon: Icon, color, bg }) => (
                   <div key={label} className="flex items-center justify-between px-5 sm:px-7 py-5 sm:py-6">
                     <div className="flex flex-col gap-1">
                       <p className="text-xl sm:text-2xl font-bold text-foreground">{value}</p>
                       <p className="text-xs text-muted-foreground">{label}</p>
                       <p className="text-[10px] text-muted-foreground/60">{peso}</p>
                     </div>
-                    <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-muted/60">
-                      <Icon size={20} className="text-muted-foreground" />
+                    <div className="h-10 w-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: bg }}>
+                      <Icon size={20} style={{ color }} />
                     </div>
                   </div>
                 ))}

@@ -675,12 +675,7 @@ const ClienteDetalhe = () => {
                     <div className="bg-card border border-border rounded-xl shadow-sm">
                       <div className="px-6 py-5 border-b border-border flex items-center justify-between">
                         <h3 className="text-base font-semibold text-foreground">Endereços</h3>
-                        <Button size="sm" variant="outline" className="text-xs" onClick={() => {
-                          setNewAddrNome(''); setNewAddrLinha1(''); setNewAddrLinha2('');
-                          setNewAddrCidade(''); setNewAddrEstado(''); setNewAddrCep('');
-                          setNewAddrPais(''); setNewAddrCobranca(true);
-                          setNewAddressOpen(true);
-                        }}>
+                        <Button size="sm" variant="outline" className="text-xs opacity-50 cursor-not-allowed" disabled>
                           Novo endereço
                         </Button>
                       </div>

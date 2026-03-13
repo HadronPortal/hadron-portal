@@ -200,7 +200,7 @@ const CriarPedido = () => {
 
         {/* ═══════════════ STEP 0: Two-column layout ═══════════════ */}
         {step === 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
             {/* LEFT CARD: Order Details — Metronic style */}
             <div className="lg:col-span-3 space-y-5">

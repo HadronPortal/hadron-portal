@@ -367,9 +367,9 @@ const Clientes = () => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="h-8 text-xs font-medium gap-1.5 border-primary/30 text-primary bg-primary/5 hover:bg-primary/10"
+                                  className="h-8 text-xs font-medium gap-1.5 border-border text-foreground bg-card hover:bg-primary/10 hover:text-primary hover:border-primary/30 data-[state=open]:bg-primary/10 data-[state=open]:text-primary data-[state=open]:border-primary/30"
                                 >
-                                  Actions
+                                  Ações
                                   <ChevronDown size={14} />
                                 </Button>
                               </DropdownMenuTrigger>

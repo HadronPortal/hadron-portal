@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Search, Eye, ChevronLeft, ChevronRight, ChevronDown, FileText, Pencil } from 'lucide-react';
+import { Search, Eye, ChevronLeft, ChevronRight, ChevronDown, FileText } from 'lucide-react';
+import PencilDuotone from '@/components/icons/PencilDuotone';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

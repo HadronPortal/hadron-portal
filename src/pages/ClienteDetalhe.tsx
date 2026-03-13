@@ -1,0 +1,474 @@
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { format } from 'date-fns';
+import { ArrowLeft, User, MapPin, FileText, Calendar, Hash, Phone, Mail, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import Spinner from '@/components/ui/spinner';
+import { fetchWithAuth } from '@/lib/auth-refresh';
+
+interface ClienteAPI {
+  ter_codter: number;
+  ter_nomter: string;
+  ter_fanter: string;
+  ter_documento: string;
+  TEN_CIDLGR: string;
+  TEN_UF_LGR: string;
+  TOTAL_VENDAS: number | null;
+  QUANT_VENDAS: number | null;
+  ULT_VENDA: string | null;
+  ULT_CODORC: number | null;
+  ter_dta_cad: string;
+  COD_REP: number;
+}
+
+interface OrderAPI {
+  orc_codorc: number;
+  orc_datcad: string;
+  orc_vlrtot: number;
+  orc_status: string;
+  ter_nomter: string;
+  ter_codter: number;
+}
+
+const formatDoc = (doc: string) => {
+  const d = doc.replace(/\D/g, '');
+  if (d.length === 14) return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+  if (d.length === 11) return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  return doc;
+};
+
+const formatCurrency = (v: number | null) => {
+  if (v == null || v === 0) return 'R$ 0,00';
+  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
+
+const formatDate = (iso: string | null) => {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR');
+};
+
+const statusMap: Record<string, { label: string; color: string }> = {
+  FA: { label: 'Faturado', color: 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]' },
+  EN: { label: 'Em Aberto', color: 'bg-primary/10 text-primary' },
+  CA: { label: 'Cancelado', color: 'bg-destructive/10 text-destructive' },
+  PE: { label: 'Pendente', color: 'bg-[hsl(var(--erp-amber)/0.12)] text-[hsl(var(--erp-amber))]' },
+};
+
+const navItems = [
+  { label: 'Home', path: '/' },
+  { label: 'Clientes', path: '/clientes' },
+  { label: 'Analítico', path: '/analitico' },
+  { label: 'Pedidos', path: '/pedidos' },
+  { label: 'Catálogo', path: '/catalogo' },
+];
+
+const tabs = ['Visão Geral', 'Pedidos'] as const;
+
+const ClienteDetalhe = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [client, setClient] = useState<ClienteAPI | null>(null);
+  const [orders, setOrders] = useState<OrderAPI[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<string>('Visão Geral');
+  const [ordersPage, setOrdersPage] = useState(1);
+  const [ordersTotal, setOrdersTotal] = useState(0);
+  const ordersLimit = 10;
+
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+
+  // Fetch client
+  useEffect(() => {
+    const fetchClient = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({ page: '1', limit: '1', search: id || '' });
+        const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params}`;
+        const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
+        if (!res.ok) throw new Error('Falha');
+        const data = await res.json();
+        const clients = data.clients || [];
+        const found = clients.find((c: ClienteAPI) => String(c.ter_codter) === id);
+        setClient(found || clients[0] || null);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchClient();
+  }, [id, projectId]);
+
+  // Fetch orders for this client
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setOrdersLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: String(ordersPage),
+          limit: String(ordersLimit),
+          codter: id || '',
+        });
+        const url = `https://${projectId}.supabase.co/functions/v1/fetch-orders?${params}`;
+        const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
+        if (!res.ok) throw new Error('Falha');
+        const data = await res.json();
+        setOrders(data.orders || []);
+        setOrdersTotal(data.total_records || 0);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+    if (id) fetchOrders();
+  }, [id, ordersPage, projectId]);
+
+  const ordersTotalPages = Math.ceil(ordersTotal / ordersLimit);
+  const isPositivado = client ? (client.TOTAL_VENDAS ?? 0) > 0 : false;
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-32">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (!client) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center py-32 gap-4">
+        <p className="text-muted-foreground">Cliente não encontrado</p>
+        <Button variant="outline" onClick={() => navigate('/clientes')}>Voltar</Button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Hero banner */}
+      <div className="relative overflow-hidden bg-black">
+        <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 max-w-[1600px] mx-auto w-full">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Detalhes do Cliente</h1>
+              <div className="flex items-center gap-2 mt-1 text-xs text-primary-foreground/60">
+                <button onClick={() => navigate('/')} className="hover:text-primary-foreground/80 transition-colors">Home</button>
+                <span>›</span>
+                <button onClick={() => navigate('/clientes')} className="hover:text-primary-foreground/80 transition-colors">Clientes</button>
+                <span>›</span>
+                <span className="text-primary-foreground/80">Detalhes</span>
+              </div>
+            </div>
+            <nav className="hidden lg:flex items-center gap-1">
+              {navItems.map(({ label, path }) => {
+                const isActive = location.pathname === path;
+                return (
+                  <button
+                    key={label}
+                    onClick={() => navigate(path)}
+                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-primary-foreground/15 text-primary-foreground'
+                        : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+        <div className="h-16 sm:h-24" />
+      </div>
+
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-8 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left sidebar - Profile Card */}
+          <div className="w-full lg:w-[320px] flex-shrink-0">
+            <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+              {/* Avatar area */}
+              <div className="flex flex-col items-center pt-8 pb-6 px-6">
+                <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <User size={40} className="text-primary" />
+                </div>
+                <h2 className="text-lg font-bold text-foreground text-center">{client.ter_nomter}</h2>
+                {client.ter_fanter && (
+                  <p className="text-sm text-muted-foreground mt-0.5 text-center">{client.ter_fanter}</p>
+                )}
+              </div>
+
+              {/* Details section */}
+              <div className="border-t border-border px-6 py-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-foreground">Detalhes</h3>
+                  <Badge
+                    variant="outline"
+                    className={`text-[11px] font-medium border-0 px-2.5 py-0.5 ${
+                      isPositivado
+                        ? 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]'
+                        : 'bg-destructive/10 text-destructive'
+                    }`}
+                  >
+                    {isPositivado ? 'Ativo' : 'Inativo'}
+                  </Badge>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <Hash size={15} className="text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Código</p>
+                      <p className="text-sm font-medium text-foreground">{client.ter_codter}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <FileText size={15} className="text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Documento</p>
+                      <p className="text-sm font-medium text-foreground">{formatDoc(client.ter_documento)}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <MapPin size={15} className="text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Localização</p>
+                      <p className="text-sm font-medium text-foreground">{client.TEN_CIDLGR} - {client.TEN_UF_LGR}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <Building2 size={15} className="text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Representante</p>
+                      <p className="text-sm font-medium text-foreground">Cód. {client.COD_REP}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <Calendar size={15} className="text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Cadastro</p>
+                      <p className="text-sm font-medium text-foreground">{formatDate(client.ter_dta_cad)}</p>
+                    </div>
+                  </div>
+
+                  {client.ULT_CODORC && (
+                    <div className="flex items-start gap-3">
+                      <FileText size={15} className="text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Último Pedido</p>
+                        <button
+                          onClick={() => navigate(`/pedidos/${client.ULT_CODORC}`)}
+                          className="text-sm font-medium text-primary hover:underline"
+                        >
+                          #{client.ULT_CODORC}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right content area */}
+          <div className="flex-1 min-w-0">
+            {/* Tabs */}
+            <div className="border-b border-border mb-6">
+              <div className="flex items-center gap-6">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+                      activeTab === tab
+                        ? 'border-primary text-primary'
+                        : 'border-transparent text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {activeTab === 'Visão Geral' && (
+              <div className="space-y-6">
+                {/* Summary cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="bg-card border border-border rounded-xl p-5">
+                    <p className="text-xs text-muted-foreground mb-1">Total em Vendas</p>
+                    <p className="text-xl font-bold text-foreground">{formatCurrency(client.TOTAL_VENDAS)}</p>
+                  </div>
+                  <div className="bg-card border border-border rounded-xl p-5">
+                    <p className="text-xs text-muted-foreground mb-1">Qtd. Pedidos</p>
+                    <p className="text-xl font-bold text-foreground">{client.QUANT_VENDAS ?? 0}</p>
+                  </div>
+                  <div className="bg-card border border-border rounded-xl p-5">
+                    <p className="text-xs text-muted-foreground mb-1">Última Venda</p>
+                    <p className="text-xl font-bold text-foreground">{formatDate(client.ULT_VENDA)}</p>
+                  </div>
+                </div>
+
+                {/* Transaction History */}
+                <div className="bg-card border border-border rounded-xl shadow-sm">
+                  <div className="px-6 py-5 border-b border-border">
+                    <h3 className="text-base font-semibold text-foreground">Histórico de Pedidos</h3>
+                  </div>
+
+                  {ordersLoading ? (
+                    <div className="flex items-center justify-center py-16">
+                      <Spinner />
+                    </div>
+                  ) : orders.length === 0 ? (
+                    <div className="text-center py-16 text-sm text-muted-foreground">
+                      Nenhum pedido encontrado
+                    </div>
+                  ) : (
+                    <>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-border">
+                              <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Nº Pedido</th>
+                              <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                              <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Valor</th>
+                              <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Data</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {orders.map((o) => {
+                              const st = statusMap[o.orc_status] || { label: o.orc_status, color: 'bg-muted text-muted-foreground' };
+                              return (
+                                <tr key={o.orc_codorc} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
+                                  <td className="px-6 py-3.5">
+                                    <button
+                                      onClick={() => navigate(`/pedidos/${o.orc_codorc}`)}
+                                      className="text-sm font-medium text-primary hover:underline"
+                                    >
+                                      #{o.orc_codorc}
+                                    </button>
+                                  </td>
+                                  <td className="px-6 py-3.5">
+                                    <Badge variant="outline" className={`text-[11px] font-medium border-0 px-2.5 py-0.5 ${st.color}`}>
+                                      {st.label}
+                                    </Badge>
+                                  </td>
+                                  <td className="px-6 py-3.5 text-sm text-foreground">{formatCurrency(o.orc_vlrtot)}</td>
+                                  <td className="px-6 py-3.5 text-sm text-muted-foreground">{formatDate(o.orc_datcad)}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Pagination */}
+                      {ordersTotalPages > 1 && (
+                        <div className="flex items-center justify-end px-6 py-4 border-t border-border gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            disabled={ordersPage === 1}
+                            onClick={() => setOrdersPage(p => p - 1)}
+                          >
+                            <ChevronLeft size={16} />
+                          </Button>
+                          {Array.from({ length: Math.min(ordersTotalPages, 5) }, (_, i) => i + 1).map(p => (
+                            <Button
+                              key={p}
+                              variant={ordersPage === p ? 'default' : 'ghost'}
+                              size="icon"
+                              className="h-8 w-8 text-xs"
+                              onClick={() => setOrdersPage(p)}
+                            >
+                              {p}
+                            </Button>
+                          ))}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            disabled={ordersPage === ordersTotalPages}
+                            onClick={() => setOrdersPage(p => p + 1)}
+                          >
+                            <ChevronRight size={16} />
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'Pedidos' && (
+              <div className="bg-card border border-border rounded-xl shadow-sm">
+                <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-foreground">Todos os Pedidos</h3>
+                  <Button size="sm" onClick={() => navigate(`/pedidos?codter=${client.ter_codter}&nome=${encodeURIComponent(client.ter_nomter)}`)}>
+                    Ver na página de Pedidos
+                  </Button>
+                </div>
+
+                {ordersLoading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <Spinner />
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="text-center py-16 text-sm text-muted-foreground">
+                    Nenhum pedido encontrado
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Nº Pedido</th>
+                          <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Valor</th>
+                          <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orders.map((o) => {
+                          const st = statusMap[o.orc_status] || { label: o.orc_status, color: 'bg-muted text-muted-foreground' };
+                          return (
+                            <tr key={o.orc_codorc} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
+                              <td className="px-6 py-3.5">
+                                <button onClick={() => navigate(`/pedidos/${o.orc_codorc}`)} className="text-sm font-medium text-primary hover:underline">
+                                  #{o.orc_codorc}
+                                </button>
+                              </td>
+                              <td className="px-6 py-3.5">
+                                <Badge variant="outline" className={`text-[11px] font-medium border-0 px-2.5 py-0.5 ${st.color}`}>
+                                  {st.label}
+                                </Badge>
+                              </td>
+                              <td className="px-6 py-3.5 text-sm text-foreground">{formatCurrency(o.orc_vlrtot)}</td>
+                              <td className="px-6 py-3.5 text-sm text-muted-foreground">{formatDate(o.orc_datcad)}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+    </>
+  );
+};
+
+export default ClienteDetalhe;

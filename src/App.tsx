@@ -11,6 +11,7 @@ import ErpLayout from "@/components/erp/ErpLayout";
 // Lazy-loaded pages
 const Index = lazy(() => import("./pages/Index"));
 const Clientes = lazy(() => import("./pages/Clientes"));
+const ClienteDetalhe = lazy(() => import("./pages/ClienteDetalhe"));
 const Cobrancas = lazy(() => import("./pages/Cobrancas"));
 const Analitico = lazy(() => import("./pages/Analitico"));
 const Pedidos = lazy(() => import("./pages/Pedidos"));
@@ -53,6 +54,7 @@ const App = () => (
             <Route element={<ProtectedRoute><ErpLayout /></ProtectedRoute>}>
               <Route path="/" element={<Suspense fallback={<PageFallback />}><Index /></Suspense>} />
               <Route path="/clientes" element={<Suspense fallback={<PageFallback />}><Clientes /></Suspense>} />
+              <Route path="/clientes/:id" element={<Suspense fallback={<PageFallback />}><ClienteDetalhe /></Suspense>} />
               <Route path="/cobrancas" element={<Suspense fallback={<PageFallback />}><Cobrancas /></Suspense>} />
               <Route path="/analitico" element={<Suspense fallback={<PageFallback />}><Analitico /></Suspense>} />
               <Route path="/pedidos" element={<Suspense fallback={<PageFallback />}><Pedidos /></Suspense>} />

@@ -385,7 +385,7 @@ const Clientes = () => {
                                   Ver Pedido
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}/editar`)}>
-                                  <Pencil size={14} className="mr-2" />
+                                  <PencilDuotone size={14} className="mr-2" />
                                   Alterar
                                 </DropdownMenuItem>
                               </DropdownMenuContent>

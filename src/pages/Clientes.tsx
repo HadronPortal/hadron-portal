@@ -383,7 +383,7 @@ const Clientes = () => {
                                   <FileText size={14} className="mr-2" />
                                   Ver Pedido
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}/editar`)}>
+                                <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { tab: 'config' } })}>
                                   <Pencil size={14} className="mr-2" />
                                   Alterar
                                 </DropdownMenuItem>

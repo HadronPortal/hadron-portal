@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import Spinner from '@/components/ui/spinner';
+import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 
 interface ProductAPI {
   pro_codpro: number;
@@ -45,6 +45,8 @@ const tabs = [
   { key: 'BN', label: 'Bonificados' },
 ] as const;
 
+const TABLE_HEADERS = ['COD', 'FOTO', 'DESCRIÇÃO', 'QTDE', 'PESO', 'VALOR'];
+
 const Produtos = () => {
   const navigate = useNavigate();
   const { representantes } = useRepresentantes();
@@ -75,7 +77,6 @@ const Produtos = () => {
 
   const products = data?.products || [];
   const totalRecords = data?.total_records || 0;
-  const loading = isLoading || isFetching;
 
   const handleRepChange = () => {};
   const handleSearch = (query: string) => setSearch(query);
@@ -103,6 +104,8 @@ const Produtos = () => {
     const q = search.toLowerCase();
     return (p.pro_despro || '').toLowerCase().includes(q) || String(p.pro_codpro).includes(q);
   });
+
+  const showOverlay = isFetching && !isLoading;
 
   return (
     <>
@@ -153,60 +156,59 @@ const Produtos = () => {
           </div>
         </div>
 
-        {loading ? (
-          <Spinner />
+        {isLoading ? (
+          <SkeletonTable columns={6} rows={10} headers={TABLE_HEADERS} />
         ) : (
-          <div className="bg-card rounded-lg border border-border overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs font-bold text-foreground">COD</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">FOTO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">DESCRIÇÃO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">QTDE</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">PESO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.length === 0 ? (
+          <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
+            <div className="bg-card rounded-lg border border-border overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-muted-foreground py-6">
-                        Nenhum produto encontrado
-                      </TableCell>
+                      {TABLE_HEADERS.map(h => (
+                        <TableHead key={h} className="text-xs font-bold text-foreground">{h}</TableHead>
+                      ))}
                     </TableRow>
-                  ) : (
-                    filtered.map((p) => {
-                      const fileName = p.pro_foto ? p.pro_foto.split('/').pop() || '' : '';
-                      const imgUrl = fileName ? `${PROXY_BASE}${encodeURIComponent(fileName)}` : '';
-                      const qtde = parseFloat(p.QUANT || '0');
-                      const totalVendido = parseFloat(p.TOTAL_VENDIDO || '0');
-                      return (
-                        <TableRow key={p.pro_codpro} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/produtos/${p.pro_codpro}`)}>
-                          <TableCell className="text-sm">{p.pro_codpro}</TableCell>
-                          <TableCell>
-                            {imgUrl ? (
-                              <img
-                                src={imgUrl}
-                                alt={p.pro_despro}
-                                className="w-14 h-14 object-contain rounded bg-muted"
-                                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                              />
-                            ) : (
-                              <div className="w-14 h-14 rounded bg-muted" />
-                            )}
-                          </TableCell>
-                          <TableCell className="text-sm font-medium">{p.pro_despro}</TableCell>
-                          <TableCell className="text-sm">{qtde}</TableCell>
-                          <TableCell className="text-sm">{(qtde * (p.pro_peso_liq ?? 0)).toFixed(1)} {p.pro_unidade || 'Kg'}</TableCell>
-                          <TableCell className="text-sm">{formatCurrency(totalVendido)}</TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filtered.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center text-muted-foreground py-6">
+                          Nenhum produto encontrado
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filtered.map((p) => {
+                        const fileName = p.pro_foto ? p.pro_foto.split('/').pop() || '' : '';
+                        const imgUrl = fileName ? `${PROXY_BASE}${encodeURIComponent(fileName)}` : '';
+                        const qtde = parseFloat(p.QUANT || '0');
+                        const totalVendido = parseFloat(p.TOTAL_VENDIDO || '0');
+                        return (
+                          <TableRow key={p.pro_codpro} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/produtos/${p.pro_codpro}`)}>
+                            <TableCell className="text-sm">{p.pro_codpro}</TableCell>
+                            <TableCell>
+                              {imgUrl ? (
+                                <img
+                                  src={imgUrl}
+                                  alt={p.pro_despro}
+                                  className="w-14 h-14 object-contain rounded bg-muted"
+                                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              ) : (
+                                <div className="w-14 h-14 rounded bg-muted" />
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm font-medium">{p.pro_despro}</TableCell>
+                            <TableCell className="text-sm">{qtde}</TableCell>
+                            <TableCell className="text-sm">{(qtde * (p.pro_peso_liq ?? 0)).toFixed(1)} {p.pro_unidade || 'Kg'}</TableCell>
+                            <TableCell className="text-sm">{formatCurrency(totalVendido)}</TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         )}

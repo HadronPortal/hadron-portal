@@ -8,8 +8,8 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
-import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
+import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 
 interface Period {
   chave: string;
@@ -48,7 +48,6 @@ const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
 const getImageUrl = (foto: string) => {
-  // Extract just the filename if it's a full path/URL
   const filename = foto.includes('/') ? foto.split('/').pop()! : foto;
   return `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
 };
@@ -90,9 +89,7 @@ const Analitico = () => {
   const periods: Period[] = (data?.periods || []).filter((p: Period) => p.chave !== 'TOTAL');
   const totalRecords: number = data?.total_records || 0;
 
-  const handleRepChange = (_repCodes: number[]) => {
-    // State is set via handleFilter which is called automatically
-  };
+  const handleRepChange = (_repCodes: number[]) => {};
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedRep(filters.repCodes);
     setSelectedRepRaw(filters.repCodesRaw);
@@ -125,9 +122,10 @@ const Analitico = () => {
     peso: acc.peso + (p.totais?.qtde || 0) * (p.peso_un || 0),
   }), { valor: 0, qtde: 0, peso: 0 });
 
+  const showOverlay = isFetching && !isLoading;
+
   return (
     <>
-
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
@@ -169,102 +167,105 @@ const Analitico = () => {
           </Button>
         </div>
 
-        {(isLoading || isFetching) ? (
-          <Spinner />
-        ) : error ? (
-          <div className="text-center py-12 text-destructive text-sm">{error}</div>
+        {error ? (
+          <div className="bg-card border border-border rounded-xl p-8 text-center">
+            <p className="text-destructive text-sm">{error}</p>
+          </div>
+        ) : isLoading ? (
+          <SkeletonTable columns={5} rows={10} headers={['PRODUTO', 'MÊS 1', 'MÊS 2', 'MÊS 3', 'TOTAL']} />
         ) : (
-          <div className="bg-card rounded-lg border border-border overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs font-bold text-foreground">PRODUTO</TableHead>
-                    {totalPeriod.map((p) => (
-                      <TableHead key={p.chave} className="text-xs font-bold text-foreground">
-                        {p.legenda}
-                      </TableHead>
-                    ))}
-                    <TableHead className="text-xs font-bold text-foreground">TOTAL</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.length === 0 ? (
+          <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
+            <div className="bg-card rounded-lg border border-border overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={totalPeriod.length + 2} className="text-center text-muted-foreground py-6">
-                        Nenhum produto encontrado
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filtered.map((produto) => {
-                      const imgUrl = produto.foto ? getImageUrl(produto.foto) : '';
-                      return (
-                        <TableRow key={produto.codpro} className="hover:bg-accent/30">
-                          <TableCell className="text-sm">
-                            <div className="flex items-center gap-3">
-                              {imgUrl && (
-                                <img
-                                  src={imgUrl}
-                                  alt={produto.produto}
-                                  className="w-10 h-10 object-contain rounded bg-muted"
-                                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                                />
-                              )}
-                              <span className="font-semibold">{produto.codpro}-{produto.produto}</span>
-                            </div>
-                          </TableCell>
-                          {totalPeriod.map((p) => {
-                            const m = produto.mensal?.[p.chave];
-                            return (
-                              <TableCell key={p.chave} className="text-sm">
-                                {m ? (
-                                  <>
-                                    <div>{formatCurrency(m.valor)} ({m.qtde})</div>
-                                    <div className="text-xs text-muted-foreground">
-                                      {formatWeight(m.qtde * (produto.peso_un || 0))}
-                                    </div>
-                                  </>
-                                ) : (
-                                  <span className="text-muted-foreground">—</span>
-                                )}
-                              </TableCell>
-                            );
-                          })}
-                          <TableCell className="text-sm">
-                            <div className="text-foreground">
-                              {formatCurrency(produto.totais?.valor || 0)} ({produto.totais?.qtde || 0})
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {formatWeight((produto.totais?.qtde || 0) * (produto.peso_un || 0))}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-
-                  {filtered.length > 0 && (
-                    <TableRow className="border-t-2 border-border">
-                      <TableCell className="text-sm font-bold text-foreground">TOTAL</TableCell>
+                      <TableHead className="text-xs font-bold text-foreground">PRODUTO</TableHead>
                       {totalPeriod.map((p) => (
-                        <TableCell key={p.chave} className="text-sm">
-                          <div className="font-bold text-foreground">{formatCurrency(p.total_valor)}</div>
-                          <div className="text-xs font-bold text-foreground">{formatWeight(p.total_peso)}</div>
-                        </TableCell>
+                        <TableHead key={p.chave} className="text-xs font-bold text-foreground">
+                          {p.legenda}
+                        </TableHead>
                       ))}
-                      <TableCell className="text-sm">
-                        <div className="font-bold text-foreground">{formatCurrency(grandTotal.valor)}</div>
-                        <div className="text-xs font-bold text-foreground">{formatWeight(grandTotal.peso)}</div>
-                      </TableCell>
+                      <TableHead className="text-xs font-bold text-foreground">TOTAL</TableHead>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filtered.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={totalPeriod.length + 2} className="text-center text-muted-foreground py-6">
+                          Nenhum produto encontrado
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filtered.map((produto) => {
+                        const imgUrl = produto.foto ? getImageUrl(produto.foto) : '';
+                        return (
+                          <TableRow key={produto.codpro} className="hover:bg-accent/30">
+                            <TableCell className="text-sm">
+                              <div className="flex items-center gap-3">
+                                {imgUrl && (
+                                  <img
+                                    src={imgUrl}
+                                    alt={produto.produto}
+                                    className="w-10 h-10 object-contain rounded bg-muted"
+                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                  />
+                                )}
+                                <span className="font-semibold">{produto.codpro}-{produto.produto}</span>
+                              </div>
+                            </TableCell>
+                            {totalPeriod.map((p) => {
+                              const m = produto.mensal?.[p.chave];
+                              return (
+                                <TableCell key={p.chave} className="text-sm">
+                                  {m ? (
+                                    <>
+                                      <div>{formatCurrency(m.valor)} ({m.qtde})</div>
+                                      <div className="text-xs text-muted-foreground">
+                                        {formatWeight(m.qtde * (produto.peso_un || 0))}
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <span className="text-muted-foreground">—</span>
+                                  )}
+                                </TableCell>
+                              );
+                            })}
+                            <TableCell className="text-sm">
+                              <div className="text-foreground">
+                                {formatCurrency(produto.totais?.valor || 0)} ({produto.totais?.qtde || 0})
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {formatWeight((produto.totais?.qtde || 0) * (produto.peso_un || 0))}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+
+                    {filtered.length > 0 && (
+                      <TableRow className="border-t-2 border-border">
+                        <TableCell className="text-sm font-bold text-foreground">TOTAL</TableCell>
+                        {totalPeriod.map((p) => (
+                          <TableCell key={p.chave} className="text-sm">
+                            <div className="font-bold text-foreground">{formatCurrency(p.total_valor)}</div>
+                            <div className="text-xs font-bold text-foreground">{formatWeight(p.total_peso)}</div>
+                          </TableCell>
+                        ))}
+                        <TableCell className="text-sm">
+                          <div className="font-bold text-foreground">{formatCurrency(grandTotal.valor)}</div>
+                          <div className="text-xs font-bold text-foreground">{formatWeight(grandTotal.peso)}</div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Pagination */}
         {totalRecords > rowsPerPage && (
           <div className="flex items-center justify-center gap-2 pt-2">
             <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>

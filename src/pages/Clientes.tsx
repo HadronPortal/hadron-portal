@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
-import Spinner from '@/components/ui/spinner';
+import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 
@@ -280,8 +280,8 @@ const Clientes = () => {
 
           {/* Table */}
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Spinner />
+            <div className="px-2 sm:px-6 py-4">
+              <SkeletonTable columns={8} rows={10} headers={['Cliente', 'Documento', 'Local', 'Status', 'Vendas', 'Cadastro', 'Ações']} />
             </div>
           ) : error ? (
             <div className="text-center py-16 text-destructive text-sm">{error}</div>

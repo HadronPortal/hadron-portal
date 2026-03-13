@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
-import Spinner from '@/components/ui/spinner';
+import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 
 interface Charge {
   rec_id_rec: string;
@@ -36,6 +36,8 @@ const formatDate = (iso: string | null) => {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('pt-BR');
 };
+
+const TABLE_HEADERS = ['DOCUMENTO', 'CLIENTE', 'REPRESENTANTE', 'VALOR', 'PENDÊNCIA', 'EMISSÃO', 'VENCIMENTO'];
 
 const Cobrancas = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -69,7 +71,6 @@ const Cobrancas = () => {
 
   const charges = data?.charges || [];
   const totalRecords = data?.total_records || 0;
-  const loading = isLoading || isFetching;
 
   const clearClientFilter = () => {
     searchParams.delete('codter');
@@ -112,6 +113,8 @@ const Cobrancas = () => {
     return new Date(vnc) < new Date();
   };
 
+  const showOverlay = isFetching && !isLoading;
+
   return (
     <>
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
@@ -149,56 +152,54 @@ const Cobrancas = () => {
           </Button>
         </div>
 
-        {loading ? (
-          <Spinner />
+        {isLoading ? (
+          <SkeletonTable columns={7} rows={10} headers={TABLE_HEADERS} />
         ) : (
-          <div className="bg-card rounded-lg border border-border overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs font-bold text-foreground">DOCUMENTO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">CLIENTE</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">REPRESENTANTE</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">VALOR</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">PENDÊNCIA</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">EMISSÃO</TableHead>
-                    <TableHead className="text-xs font-bold text-foreground">VENCIMENTO</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredCharges.length === 0 ? (
+          <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
+            <div className="bg-card rounded-lg border border-border overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground py-6">
-                        Nenhuma cobrança encontrada
-                      </TableCell>
+                      {TABLE_HEADERS.map(h => (
+                        <TableHead key={h} className="text-xs font-bold text-foreground">{h}</TableHead>
+                      ))}
                     </TableRow>
-                  ) : (
-                    filteredCharges.map((c) => (
-                      <TableRow key={c.rec_id_rec} className="hover:bg-accent/30">
-                        <TableCell className="text-sm font-mono whitespace-nowrap">{c.rec_id_rec}</TableCell>
-                        <TableCell className="text-sm">
-                          <div className="font-semibold">{c.CLIENTE}</div>
-                          <div className="text-xs text-muted-foreground">Cód: {c.CODTER}</div>
-                        </TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">{c.REPRESENTANTE}</TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">{formatCurrency(c.rec_valrec)}</TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">
-                          <span className={parseFloat(c.PENDENCIA) > 0 ? 'text-destructive font-semibold' : 'text-muted-foreground'}>
-                            {formatCurrency(parseFloat(c.PENDENCIA))}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">{formatDate(c.rec_dta_ems)}</TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">
-                          <span className={isOverdue(c.rec_dta_vnc) ? 'text-destructive font-semibold' : ''}>
-                            {formatDate(c.rec_dta_vnc)}
-                          </span>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCharges.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center text-muted-foreground py-6">
+                          Nenhuma cobrança encontrada
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                    ) : (
+                      filteredCharges.map((c) => (
+                        <TableRow key={c.rec_id_rec} className="hover:bg-accent/30">
+                          <TableCell className="text-sm font-mono whitespace-nowrap">{c.rec_id_rec}</TableCell>
+                          <TableCell className="text-sm">
+                            <div className="font-semibold">{c.CLIENTE}</div>
+                            <div className="text-xs text-muted-foreground">Cód: {c.CODTER}</div>
+                          </TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">{c.REPRESENTANTE}</TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">{formatCurrency(c.rec_valrec)}</TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">
+                            <span className={parseFloat(c.PENDENCIA) > 0 ? 'text-destructive font-semibold' : 'text-muted-foreground'}>
+                              {formatCurrency(parseFloat(c.PENDENCIA))}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">{formatDate(c.rec_dta_ems)}</TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">
+                            <span className={isOverdue(c.rec_dta_vnc) ? 'text-destructive font-semibold' : ''}>
+                              {formatDate(c.rec_dta_vnc)}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         )}

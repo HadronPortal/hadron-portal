@@ -20,7 +20,7 @@ const ErpLayout = () => {
         </>
       ) : (
         <>
-          <div className="bg-[hsl(var(--erp-header))]">
+          <div style={{ backgroundColor: 'rgb(37, 41, 60)' }}>
             <Header />
           </div>
           <Outlet />

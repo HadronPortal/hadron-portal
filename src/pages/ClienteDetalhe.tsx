@@ -682,6 +682,7 @@ const ClienteDetalhe = () => {
                       uf: editUf,
                       nome: editName,
                     },
+                    ...extraAddresses,
                   ];
 
                   return (

@@ -80,7 +80,7 @@ const navItems = [
   { label: 'Catálogo', path: '/catalogo' },
 ];
 
-const tabs = ['Visão Geral', 'Configurações Gerais'] as const;
+const tabs = ['Visão Geral', 'Configurações Gerais', 'Configurações Avançadas'] as const;
 
 const ClienteDetalhe = () => {
   const { id } = useParams<{ id: string }>();

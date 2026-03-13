@@ -54,8 +54,17 @@ const DEFAULT_START_DATE = new Date(2026, 0, 8);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
+const navItems = [
+  { label: 'Home', path: '/' },
+  { label: 'Clientes', path: '/clientes' },
+  { label: 'Analítico', path: '/analitico' },
+  { label: 'Pedidos', path: '/pedidos' },
+  { label: 'Catálogo', path: '/catalogo' },
+];
+
 const Clientes = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { representantes } = useRepresentantes();
   const [activeTab, setActiveTab] = useState<string>('todos');
   const [rowsPerPage, setRowsPerPage] = useState(50);

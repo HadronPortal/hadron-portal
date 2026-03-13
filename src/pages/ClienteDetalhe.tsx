@@ -403,10 +403,10 @@ const ClienteDetalhe = () => {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+                    className={`pb-3 text-sm font-medium border-b-2 text-white ${
                       activeTab === tab
-                        ? 'border-foreground text-foreground'
-                        : 'border-transparent text-muted-foreground hover:text-foreground'
+                        ? 'border-white'
+                        : 'border-transparent'
                     }`}
                   >
                     {tab}

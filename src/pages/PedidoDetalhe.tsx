@@ -32,6 +32,12 @@ const statusMap: Record<string, { label: string; color: string; bg: string }> = 
   'CA': { label: 'Cancelado', color: '#ef4444', bg: '#ef444418' },
   'PC': { label: 'Pagamento Confirmado', color: '#22c55e', bg: '#22c55e18' },
   'PE': { label: 'Pendente', color: '#eab308', bg: '#eab30818' },
+  '10': { label: 'Digitação', color: '#8b8b8b', bg: '#8b8b8b18' },
+  '20': { label: 'Enviado', color: '#0d9488', bg: '#0d948818' },
+  '30': { label: 'Aprovado', color: '#f59e0b', bg: '#f59e0b18' },
+  '40': { label: 'Faturado', color: '#06b6d4', bg: '#06b6d418' },
+  '50': { label: 'Faturado', color: '#06b6d4', bg: '#06b6d418' },
+  '90': { label: 'Cancelado', color: '#ef4444', bg: '#ef444418' },
 };
 
 const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?url=`;

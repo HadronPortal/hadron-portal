@@ -95,17 +95,31 @@ const CriarPedido = () => {
   }, [clienteSearch, fetchClientes]);
 
   /* ─── fetch catalogo on mount ─── */
-  const fetchCatalogo = useCallback(async () => {
-    setLoadingCatalogo(true);
+  const fetchCatalogo = useCallback(async (page = 1, append = false) => {
+    if (page === 1) setLoadingCatalogo(true);
+    else setLoadingMore(true);
     try {
-      const res = await fetch(`${BASE}/fetch-catalogo?page=1&limit=100`);
+      const res = await fetch(`${BASE}/fetch-catalogo?page=${page}&limit=50`);
       const data = await res.json();
-      setCatalogo(data?.catalogs || []);
-    } catch { setCatalogo([]); }
-    finally { setLoadingCatalogo(false); }
+      const items: CatalogoItem[] = data?.catalogs || [];
+      if (append) {
+        setCatalogo(prev => [...prev, ...items]);
+      } else {
+        setCatalogo(items);
+      }
+      setHasMoreCatalogo(items.length >= 50);
+      setCatalogoPage(page);
+    } catch { if (!append) setCatalogo([]); }
+    finally { setLoadingCatalogo(false); setLoadingMore(false); }
   }, []);
 
-  useEffect(() => { fetchCatalogo(); }, [fetchCatalogo]);
+  useEffect(() => { fetchCatalogo(1); }, [fetchCatalogo]);
+
+  const loadMoreCatalogo = () => {
+    if (!loadingMore && hasMoreCatalogo) {
+      fetchCatalogo(catalogoPage + 1, true);
+    }
+  };
 
   /* ─── cart ops ─── */
   const toggleProduct = (item: CatalogoItem) => {

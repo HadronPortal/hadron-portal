@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,

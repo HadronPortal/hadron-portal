@@ -125,12 +125,13 @@ const ClienteDetalhe = () => {
           page: String(ordersPage),
           limit: String(ordersLimit),
           codter: id || '',
+          date_ini: '2000-01-01',
+          date_end: '2100-12-31',
         });
         const url = `https://${projectId}.supabase.co/functions/v1/fetch-orders?${params}`;
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');
         const data = await res.json();
-        console.log('[ClienteDetalhe] orders for codter:', id, 'response:', JSON.stringify(data).substring(0, 500));
         setOrders(data.orders || []);
         setOrdersTotal(data.total_records || 0);
       } catch (err) {

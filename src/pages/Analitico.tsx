@@ -231,7 +231,7 @@ const Analitico = () => {
                       >
                         <option value="">Todos</option>
                         {representantes.map((r: any) => (
-                          <option key={r.cod_rep} value={r.cod_rep}>{r.nome_rep}</option>
+                          <option key={r.rep_codrep} value={r.rep_codrep}>{r.rep_nomrep}</option>
                         ))}
                       </select>
                     </div>

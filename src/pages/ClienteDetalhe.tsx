@@ -84,18 +84,26 @@ const ClienteDetalhe = () => {
 
   // Fetch client
   useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    if (routeClient && String(routeClient.ter_codter) === id) {
+      setClient(routeClient);
+      setLoading(false);
+      return;
+    }
+
     const fetchClient = async () => {
       setLoading(true);
       try {
-        // Use search with the exact client code to find this client
-        const params = new URLSearchParams({ page: '1', limit: '50', search: id || '' });
+        const params = new URLSearchParams({ page: '1', limit: '100', search: id });
         const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params}`;
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');
         const data = await res.json();
         const clients = data.clients || [];
-        console.log('[ClienteDetalhe] searched for id:', id, 'got clients:', clients.map((c: ClienteAPI) => ({ code: c.ter_codter, name: c.ter_nomter, vendas: c.TOTAL_VENDAS })));
-        // Strict match on client code
         const found = clients.find((c: ClienteAPI) => String(c.ter_codter) === id);
         setClient(found || null);
       } catch (err) {
@@ -104,8 +112,9 @@ const ClienteDetalhe = () => {
         setLoading(false);
       }
     };
-    if (id) fetchClient();
-  }, [id, projectId]);
+
+    fetchClient();
+  }, [id, projectId, routeClient]);
 
   // Fetch orders for this client
   useEffect(() => {

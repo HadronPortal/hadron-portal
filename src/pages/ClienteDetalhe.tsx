@@ -397,7 +397,7 @@ const ClienteDetalhe = () => {
           {/* Right content area */}
           <div className="flex-1 min-w-0">
             {/* Tabs */}
-            <div className="border-b border-border mb-6">
+            <div className="mb-6">
               <div className="flex items-center gap-6">
                 {tabs.map((tab) => (
                   <button
@@ -405,7 +405,7 @@ const ClienteDetalhe = () => {
                     onClick={() => setActiveTab(tab)}
                     className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
                       activeTab === tab
-                        ? 'border-primary text-primary'
+                        ? 'border-foreground text-foreground'
                         : 'border-transparent text-muted-foreground hover:text-foreground'
                     }`}
                   >

@@ -626,8 +626,8 @@ const ClienteDetalhe = () => {
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">E-mail</label>
                         <Input
                           value={editEmail}
-                          onChange={(e) => setEditEmail(e.target.value)}
-                          className="bg-transparent"
+                          readOnly
+                          className="bg-transparent cursor-not-allowed opacity-70"
                           type="email"
                           placeholder="email@exemplo.com"
                         />

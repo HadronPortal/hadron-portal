@@ -83,7 +83,7 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
                       R$ {order.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell className="text-sm font-semibold text-foreground">
-                      $ {lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      R$ {lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell className="text-right">
                       <span

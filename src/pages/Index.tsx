@@ -140,8 +140,8 @@ const Index = () => {
   return (
     <>
       {/* Hero banner */}
-      <div className="relative overflow-hidden bg-black">
-        <div className="absolute inset-x-0 top-0 h-[70px] bg-black" />
+      <div className="relative overflow-hidden" style={{ backgroundColor: 'rgb(37, 41, 60)' }}>
+        <div className="absolute inset-x-0 top-0 h-[70px]" style={{ backgroundColor: 'rgb(37, 41, 60)' }} />
         <div className="h-[70px]" />
         <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
           <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>

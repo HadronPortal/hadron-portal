@@ -69,9 +69,11 @@ const ClienteDetalhe = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const [client, setClient] = useState<ClienteAPI | null>(null);
+  const routeClient = (location.state as { client?: ClienteAPI } | null)?.client;
+  const hasRouteClient = Boolean(routeClient && id && String(routeClient.ter_codter) === id);
+  const [client, setClient] = useState<ClienteAPI | null>(hasRouteClient ? routeClient! : null);
   const [orders, setOrders] = useState<OrderAPI[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!hasRouteClient);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('Visão Geral');
   const [ordersPage, setOrdersPage] = useState(1);

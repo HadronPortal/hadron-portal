@@ -810,6 +810,88 @@ const ClienteDetalhe = () => {
                     </div>
                   </DialogContent>
                 </Dialog>
+
+                {/* New Address Modal */}
+                <Dialog open={newAddressOpen} onOpenChange={setNewAddressOpen}>
+                  <DialogContent className="sm:max-w-[480px]">
+                    <DialogHeader>
+                      <DialogTitle>Adicionar novo endereço</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-5 pt-2">
+                      <p className="text-sm font-medium text-foreground flex items-center gap-1">
+                        Informações de envio
+                        <ChevronDown size={14} className="text-primary" />
+                      </p>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Endereço Nome <span className="text-destructive">*</span></Label>
+                        <Input value={newAddrNome} onChange={e => setNewAddrNome(e.target.value)} className="mt-1.5 bg-transparent" />
+                      </div>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Endereço Linha 1 <span className="text-destructive">*</span></Label>
+                        <Input value={newAddrLinha1} onChange={e => setNewAddrLinha1(e.target.value)} className="mt-1.5 bg-transparent" />
+                      </div>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Linha de endereço 2</Label>
+                        <Input value={newAddrLinha2} onChange={e => setNewAddrLinha2(e.target.value)} className="mt-1.5 bg-transparent" />
+                      </div>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Cidade / Vila <span className="text-destructive">*</span></Label>
+                        <Input value={newAddrCidade} onChange={e => setNewAddrCidade(e.target.value)} className="mt-1.5 bg-transparent" />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Estado/Provincia <span className="text-destructive">*</span></Label>
+                          <Input value={newAddrEstado} onChange={e => setNewAddrEstado(e.target.value)} className="mt-1.5 bg-transparent" />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Código postal <span className="text-destructive">*</span></Label>
+                          <Input value={newAddrCep} onChange={e => setNewAddrCep(e.target.value)} className="mt-1.5 bg-transparent" placeholder="00000-000" />
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label className="text-xs text-muted-foreground">País <span className="text-destructive">*</span></Label>
+                        <Select value={newAddrPais} onValueChange={setNewAddrPais}>
+                          <SelectTrigger className="mt-1.5 bg-transparent">
+                            <SelectValue placeholder="Selecione um país..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="BR">Brasil</SelectItem>
+                            <SelectItem value="US">Estados Unidos</SelectItem>
+                            <SelectItem value="AR">Argentina</SelectItem>
+                            <SelectItem value="PT">Portugal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-foreground">Utilizar como endereço de cobrança?</p>
+                          <p className="text-xs text-muted-foreground">Se precisar de mais informações, consulte o planejamento orçamentário.</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Switch checked={newAddrCobranca} onCheckedChange={setNewAddrCobranca} />
+                          <span className="text-xs text-muted-foreground">Sim</span>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-center gap-3 pt-3 border-t border-border">
+                        <Button variant="ghost" onClick={() => setNewAddressOpen(false)}>Descartar</Button>
+                        <Button onClick={() => {
+                          console.log('Novo endereço salvo', { newAddrNome, newAddrLinha1, newAddrLinha2, newAddrCidade, newAddrEstado, newAddrCep, newAddrPais, newAddrCobranca });
+                          setNewAddressOpen(false);
+                        }}>
+                          Enviar
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             )}
           </div>

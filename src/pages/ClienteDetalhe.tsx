@@ -176,7 +176,7 @@ const ClienteDetalhe = () => {
   }, [client, id, orders, ordersTotal]);
 
   const ordersTotalPages = Math.ceil(ordersTotal / ordersLimit);
-  const isPositivado = client ? ((client.TOTAL_VENDAS ?? 0) > 0 || ordersTotal > 0 || orders.length > 0) : ordersTotal > 0 || orders.length > 0;
+  const isPositivado = client ? ((client.TOTAL_VENDAS ?? 0) > 0 || (client.QUANT_VENDAS ?? 0) > 0) : ordersTotal > 0 || orders.length > 0;
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center py-32">

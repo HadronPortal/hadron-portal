@@ -585,7 +585,7 @@ const ClienteDetalhe = () => {
                         className="border-primary text-primary hover:bg-primary/10"
                         onClick={() => {
                           // TODO: integrar com API de atualização
-                          console.log('Salvar cliente', { editName, editFantasia, editDocumento, editCidade, editUf, editRep });
+                          console.log('Salvar cliente', { editName, editEmail, editTelefone, editDocumento, editCidade, editUf, editRep });
                         }}
                       >
                         Salvar

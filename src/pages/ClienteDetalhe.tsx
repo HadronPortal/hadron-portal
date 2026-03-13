@@ -574,37 +574,18 @@ const ClienteDetalhe = () => {
                   <div className="px-6 py-5 border-b border-border">
                     <h3 className="text-base font-semibold text-foreground">Cadastro do Cliente</h3>
                   </div>
-                  <div className="px-6 py-6 space-y-5">
-                    {/* Avatar upload */}
+                   <div className="px-6 py-6 space-y-5">
+                    {/* Avatar (view only) */}
                     <div>
-                      <label className="text-xs font-semibold text-foreground mb-2 block">Atualizar Foto</label>
+                      <label className="text-xs font-semibold text-foreground mb-2 block">Foto</label>
                       <div className="relative inline-block">
-                        <div className="w-28 h-28 rounded-lg border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center">
+                        <div className="w-28 h-28 rounded-lg border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center opacity-70">
                           {avatarPreview ? (
                             <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
                           ) : (
                             <User size={36} className="text-muted-foreground" />
                           )}
                         </div>
-                        {/* Edit button */}
-                        <label className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-card border border-border shadow-sm flex items-center justify-center cursor-pointer hover:bg-accent transition-colors">
-                          <Pencil size={12} className="text-muted-foreground" />
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleAvatarChange}
-                          />
-                        </label>
-                        {/* Remove button */}
-                        {avatarPreview && (
-                          <button
-                            onClick={clearAvatar}
-                            className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-destructive/10 transition-colors"
-                          >
-                            <X size={12} className="text-muted-foreground" />
-                          </button>
-                        )}
                       </div>
                     </div>
 

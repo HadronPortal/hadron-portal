@@ -230,29 +230,20 @@ const Pedidos = () => {
           <SkeletonKpiRow count={4} />
         ) : (
           <FadeIn>
-            <div className="rounded-2xl p-6 sm:p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, hsl(250 60% 55%), hsl(270 70% 60%))' }}>
-              {/* Decorative circles */}
-              <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, hsl(270 80% 80%), transparent)' }} />
-              <div className="absolute right-20 -bottom-10 w-32 h-32 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, hsl(250 80% 80%), transparent)' }} />
-
-              <div className="relative z-10">
-                <h2 className="text-base sm:text-lg font-bold text-white mb-1">Resumo de Pedidos</h2>
-                <p className="text-xs sm:text-sm text-white/70 mb-6">Total no período selecionado</p>
-
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                  {kpiItems.map(({ label, value, peso, icon: Icon }) => (
-                    <div key={label} className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2">
-                        <div className="h-9 w-9 rounded-lg flex items-center justify-center bg-white/15 backdrop-blur-sm">
-                          <Icon size={18} className="text-white" />
-                        </div>
-                        <span className="text-xs font-semibold text-white/80 uppercase tracking-wide">{label}</span>
-                      </div>
-                      <p className="text-lg sm:text-xl font-bold text-white">{value}</p>
-                      <p className="text-xs text-white/60">{peso}</p>
+            <div className="rounded-2xl bg-card border border-border overflow-hidden">
+              <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
+                {kpiItems.map(({ label, value, peso, icon: Icon }) => (
+                  <div key={label} className="flex items-center justify-between px-5 sm:px-7 py-5 sm:py-6">
+                    <div className="flex flex-col gap-1">
+                      <p className="text-xl sm:text-2xl font-bold text-foreground">{value}</p>
+                      <p className="text-xs text-muted-foreground">{label}</p>
+                      <p className="text-[10px] text-muted-foreground/60">{peso}</p>
                     </div>
-                  ))}
-                </div>
+                    <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-muted/60">
+                      <Icon size={20} className="text-muted-foreground" />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </FadeIn>

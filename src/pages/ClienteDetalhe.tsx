@@ -574,37 +574,18 @@ const ClienteDetalhe = () => {
                   <div className="px-6 py-5 border-b border-border">
                     <h3 className="text-base font-semibold text-foreground">Cadastro do Cliente</h3>
                   </div>
-                  <div className="px-6 py-6 space-y-5">
-                    {/* Avatar upload */}
+                   <div className="px-6 py-6 space-y-5">
+                    {/* Avatar (view only) */}
                     <div>
-                      <label className="text-xs font-semibold text-foreground mb-2 block">Atualizar Foto</label>
+                      <label className="text-xs font-semibold text-foreground mb-2 block">Foto</label>
                       <div className="relative inline-block">
-                        <div className="w-28 h-28 rounded-lg border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center">
+                        <div className="w-28 h-28 rounded-lg border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center opacity-70">
                           {avatarPreview ? (
                             <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
                           ) : (
                             <User size={36} className="text-muted-foreground" />
                           )}
                         </div>
-                        {/* Edit button */}
-                        <label className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-card border border-border shadow-sm flex items-center justify-center cursor-pointer hover:bg-accent transition-colors">
-                          <Pencil size={12} className="text-muted-foreground" />
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleAvatarChange}
-                          />
-                        </label>
-                        {/* Remove button */}
-                        {avatarPreview && (
-                          <button
-                            onClick={clearAvatar}
-                            className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-destructive/10 transition-colors"
-                          >
-                            <X size={12} className="text-muted-foreground" />
-                          </button>
-                        )}
                       </div>
                     </div>
 
@@ -615,8 +596,8 @@ const ClienteDetalhe = () => {
                       </label>
                       <Input
                         value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        className="bg-transparent"
+                        readOnly
+                        className="bg-transparent cursor-not-allowed opacity-70"
                       />
                     </div>
 
@@ -626,8 +607,8 @@ const ClienteDetalhe = () => {
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">E-mail</label>
                         <Input
                           value={editEmail}
-                          onChange={(e) => setEditEmail(e.target.value)}
-                          className="bg-transparent"
+                          readOnly
+                          className="bg-transparent cursor-not-allowed opacity-70"
                           type="email"
                           placeholder="email@exemplo.com"
                         />
@@ -636,8 +617,8 @@ const ClienteDetalhe = () => {
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Telefone</label>
                         <Input
                           value={editTelefone}
-                          onChange={(e) => setEditTelefone(maskPhone(e.target.value))}
-                          className="bg-transparent"
+                          readOnly
+                          className="bg-transparent cursor-not-allowed opacity-70"
                           placeholder="(00) 00000-0000"
                         />
                       </div>
@@ -649,8 +630,8 @@ const ClienteDetalhe = () => {
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Documento (CNPJ/CPF)</label>
                         <Input
                           value={editDocumento}
-                          onChange={(e) => setEditDocumento(maskDoc(e.target.value))}
-                          className="bg-transparent"
+                          readOnly
+                          className="bg-transparent cursor-not-allowed opacity-70"
                           placeholder="000.000.000-00"
                         />
                       </div>
@@ -658,8 +639,8 @@ const ClienteDetalhe = () => {
                       {/* Representante */}
                       <div>
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Cód. Representante</label>
-                        <Select value={editRep} onValueChange={setEditRep}>
-                          <SelectTrigger className="bg-transparent">
+                        <Select value={editRep} disabled>
+                          <SelectTrigger className="bg-transparent cursor-not-allowed opacity-70">
                             <SelectValue placeholder="Selecione o representante" />
                           </SelectTrigger>
                           <SelectContent>
@@ -673,29 +654,6 @@ const ClienteDetalhe = () => {
                       </div>
                     </div>
 
-                    <div className="flex justify-end pt-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className=""
-                        onClick={() => {
-                          if (client) {
-                            setClient({
-                              ...client,
-                              ter_nomter: editName,
-                              ter_documento: editDocumento,
-                              TEN_CIDLGR: editCidade,
-                              TEN_UF_LGR: editUf,
-                              COD_REP: editRep ? Number(editRep) : client.COD_REP,
-                            });
-                          }
-                          toast({ title: 'Cliente salvo!', description: 'As alterações foram salvas com sucesso.' });
-                          setActiveTab('Visão Geral');
-                        }}
-                      >
-                        Salvar
-                      </Button>
-                    </div>
                   </div>
                 </div>
 
@@ -717,12 +675,7 @@ const ClienteDetalhe = () => {
                     <div className="bg-card border border-border rounded-xl shadow-sm">
                       <div className="px-6 py-5 border-b border-border flex items-center justify-between">
                         <h3 className="text-base font-semibold text-foreground">Endereços</h3>
-                        <Button size="sm" variant="outline" className="text-xs" onClick={() => {
-                          setNewAddrNome(''); setNewAddrLinha1(''); setNewAddrLinha2('');
-                          setNewAddrCidade(''); setNewAddrEstado(''); setNewAddrCep('');
-                          setNewAddrPais(''); setNewAddrCobranca(true);
-                          setNewAddressOpen(true);
-                        }}>
+                        <Button size="sm" variant="outline" className="text-xs opacity-50 cursor-not-allowed" disabled>
                           Novo endereço
                         </Button>
                       </div>
@@ -753,25 +706,16 @@ const ClienteDetalhe = () => {
                                   {addr.cidade}{addr.uf ? ` - ${addr.uf}` : ''}
                                 </p>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => {
-                                    setEditAddressIdx(idx);
-                                    setEditLogradouro(addr.logradouro || '');
-                                    setEditComplemento('');
-                                    setEditBairro('');
-                                    setEditAddressOpen(true);
-                                  }}
-                                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-                                >
+                              <div className="flex items-center gap-2 opacity-50">
+                                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground cursor-not-allowed">
                                   <Pencil size={16} />
-                                </button>
-                                <button className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                </div>
+                                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground cursor-not-allowed">
                                   <Trash2 size={16} />
-                                </button>
-                                <button className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+                                </div>
+                                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground cursor-not-allowed">
                                   <GripVertical size={16} />
-                                </button>
+                                </div>
                               </div>
                             </div>
                             {/* Expanded details */}
@@ -945,27 +889,27 @@ const ClienteDetalhe = () => {
                         <div className="flex items-center gap-6">
                           <span className="text-sm text-muted-foreground w-[100px]">Telefone</span>
                           {editingAdvPhone ? (
-                            <Input value={advPhone} onChange={e => setAdvPhone(e.target.value)} className="bg-transparent max-w-[200px]" autoFocus onBlur={() => setEditingAdvPhone(false)} onKeyDown={e => e.key === 'Enter' && setEditingAdvPhone(false)} />
+                            <Input value={advPhone} readOnly className="bg-transparent max-w-[200px] cursor-not-allowed opacity-70" />
                           ) : (
                             <span className="text-sm font-medium text-foreground">{advPhone || '+55 (11) 99999-9999'}</span>
                           )}
                         </div>
-                        <button onClick={() => setEditingAdvPhone(true)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                           <Pencil size={15} className="text-muted-foreground" />
-                        </button>
+                        </div>
                       </div>
                       <div className="flex items-center justify-between py-4 last:pb-0">
                         <div className="flex items-center gap-6">
                           <span className="text-sm text-muted-foreground w-[100px]">Senha</span>
                           {editingAdvPassword ? (
-                            <Input type="password" value={advPassword} onChange={e => setAdvPassword(e.target.value)} className="bg-transparent max-w-[200px]" autoFocus onBlur={() => setEditingAdvPassword(false)} onKeyDown={e => e.key === 'Enter' && setEditingAdvPassword(false)} />
+                            <Input type="password" value={advPassword} readOnly className="bg-transparent max-w-[200px] cursor-not-allowed opacity-70" />
                           ) : (
                             <span className="text-sm font-medium text-foreground">******</span>
                           )}
                         </div>
-                        <button onClick={() => setEditingAdvPassword(true)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                           <Pencil size={15} className="text-muted-foreground" />
-                        </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -979,7 +923,7 @@ const ClienteDetalhe = () => {
                         <h3 className="text-base font-semibold text-foreground">Autenticação em duas etapas</h3>
                         <p className="text-sm text-muted-foreground mt-1">Mantenha sua conta ainda mais segura com uma segunda etapa de autenticação.</p>
                       </div>
-                      <Button variant="outline" size="sm" className="text-xs flex items-center gap-1.5 flex-shrink-0">
+                      <Button variant="outline" size="sm" className="text-xs flex items-center gap-1.5 flex-shrink-0 opacity-50 cursor-not-allowed" disabled>
                         <Shield size={14} />
                         Adicionar etapa de autenticação
                       </Button>
@@ -1036,15 +980,15 @@ const ClienteDetalhe = () => {
                               <p className="text-xs text-muted-foreground">Expira em {card.expiry}</p>
                             </div>
                             <div className="flex items-center gap-1">
-                              <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                                 <Pencil size={15} className="text-muted-foreground" />
-                              </button>
-                              <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-destructive/10 transition-colors">
+                              </div>
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                                 <Trash2 size={15} className="text-muted-foreground" />
-                              </button>
-                              <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                              </div>
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                                 <GripVertical size={15} className="text-muted-foreground" />
-                              </button>
+                              </div>
                             </div>
                           </div>
                           {expandedCard === idx && card.brand === 'MasterCard' && (

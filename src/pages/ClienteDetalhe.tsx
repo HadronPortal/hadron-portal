@@ -99,6 +99,20 @@ const ClienteDetalhe = () => {
   const [editCidade, setEditCidade] = useState('');
   const [editUf, setEditUf] = useState('');
   const [editRep, setEditRep] = useState('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const clearAvatar = () => {
+    setAvatarFile(null);
+    setAvatarPreview(null);
+  };
 
   const maskPhone = (v: string) => {
     const d = v.replace(/\D/g, '').slice(0, 11);

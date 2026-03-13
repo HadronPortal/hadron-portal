@@ -376,15 +376,12 @@ const Clientes = () => {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-40">
                                 <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { client: c } })}>
-                                  <Eye size={14} className="mr-2" />
                                   Visualizar
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => navigate(`/pedidos?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}>
-                                  <FileText size={14} className="mr-2" />
                                   Ver Pedido
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { tab: 'config' } })}>
-                                  <Pencil size={14} className="mr-2" />
                                   Alterar
                                 </DropdownMenuItem>
                               </DropdownMenuContent>

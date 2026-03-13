@@ -5,8 +5,10 @@ import { ArrowLeft, User, MapPin, FileText, Calendar, Hash, Phone, Mail, Buildin
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Spinner from '@/components/ui/spinner';
 import { fetchWithAuth } from '@/lib/auth-refresh';
+import { useRepresentantes } from '@/hooks/use-representantes';
 
 interface ClienteAPI {
   ter_codter: number;
@@ -78,6 +80,7 @@ const tabs = ['Visão Geral', 'Configurações Gerais'] as const;
 
 const ClienteDetalhe = () => {
   const { id } = useParams<{ id: string }>();
+  const { representantes } = useRepresentantes();
   const navigate = useNavigate();
   const location = useLocation();
   const routeClient = (location.state as { client?: ClienteAPI } | null)?.client;
@@ -616,12 +619,18 @@ const ClienteDetalhe = () => {
                       {/* Representante */}
                       <div>
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Cód. Representante</label>
-                        <Input
-                          value={editRep}
-                          onChange={(e) => setEditRep(e.target.value)}
-                          className="bg-transparent"
-                          type="number"
-                        />
+                        <Select value={editRep} onValueChange={setEditRep}>
+                          <SelectTrigger className="bg-transparent">
+                            <SelectValue placeholder="Selecione o representante" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {representantes.map((rep) => (
+                              <SelectItem key={rep.rep_codrep} value={String(rep.rep_codrep)}>
+                                {rep.rep_codrep} - {rep.rep_nomrep}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 

@@ -156,7 +156,7 @@ const ClienteDetalhe = () => {
 
     setClient({
       ter_codter: Number(id),
-      ter_nomter: orders[0].ter_nomter || `Cliente ${id}`,
+      ter_nomter: orders[0].CLIENTE || `Cliente ${id}`,
       ter_fanter: '',
       ter_documento: '',
       TEN_CIDLGR: '',

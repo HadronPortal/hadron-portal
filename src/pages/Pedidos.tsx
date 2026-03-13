@@ -2,8 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 
-import FilterBar from '@/components/erp/FilterBar';
-import { useRepresentantes } from '@/hooks/use-representantes';
+import { useApiFetch } from '@/hooks/use-api-fetch';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 
 import {

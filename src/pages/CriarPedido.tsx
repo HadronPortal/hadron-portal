@@ -38,6 +38,14 @@ const fmt = (v: number) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDi
 
 const CriarPedido = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const navItems = [
+    { label: 'Home', path: '/' },
+    { label: 'Clientes', path: '/clientes' },
+    { label: 'Analítico', path: '/analitico' },
+    { label: 'Pedidos', path: '/pedidos' },
+    { label: 'Catálogo', path: '/catalogo' },
+  ];
   const [step, setStep] = useState(0);
   const [pedidoNumero, setPedidoNumero] = useState('');
 

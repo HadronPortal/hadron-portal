@@ -85,6 +85,7 @@ const tabs = ['Visão Geral', 'Configurações Gerais'] as const;
 const ClienteDetalhe = () => {
   const { id } = useParams<{ id: string }>();
   const { representantes } = useRepresentantes();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const routeClient = (location.state as { client?: ClienteAPI } | null)?.client;

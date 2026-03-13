@@ -93,18 +93,42 @@ const ClienteDetalhe = () => {
 
   // Edit form state
   const [editName, setEditName] = useState('');
-  const [editFantasia, setEditFantasia] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editTelefone, setEditTelefone] = useState('');
   const [editDocumento, setEditDocumento] = useState('');
   const [editCidade, setEditCidade] = useState('');
   const [editUf, setEditUf] = useState('');
   const [editRep, setEditRep] = useState('');
 
+  const maskPhone = (v: string) => {
+    const d = v.replace(/\D/g, '').slice(0, 11);
+    if (d.length <= 2) return d.length ? `(${d}` : '';
+    if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+    if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  };
+
+  const maskDoc = (v: string) => {
+    const d = v.replace(/\D/g, '');
+    if (d.length <= 11) {
+      if (d.length <= 3) return d;
+      if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
+      if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+      return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+    }
+    const c = d.slice(0, 14);
+    if (c.length <= 2) return c;
+    if (c.length <= 5) return `${c.slice(0, 2)}.${c.slice(2)}`;
+    if (c.length <= 8) return `${c.slice(0, 2)}.${c.slice(2, 5)}.${c.slice(5)}`;
+    if (c.length <= 12) return `${c.slice(0, 2)}.${c.slice(2, 5)}.${c.slice(5, 8)}/${c.slice(8)}`;
+    return `${c.slice(0, 2)}.${c.slice(2, 5)}.${c.slice(5, 8)}/${c.slice(8, 12)}-${c.slice(12)}`;
+  };
+
   // Sync edit fields when client loads
   useEffect(() => {
     if (client) {
       setEditName(client.ter_nomter || '');
-      setEditFantasia(client.ter_fanter || '');
-      setEditDocumento(client.ter_documento || '');
+      setEditDocumento(maskDoc(client.ter_documento || ''));
       setEditCidade(client.TEN_CIDLGR || '');
       setEditUf(client.TEN_UF_LGR || '');
       setEditRep(String(client.COD_REP || ''));
@@ -507,14 +531,27 @@ const ClienteDetalhe = () => {
                       />
                     </div>
 
-                    {/* Nome Fantasia */}
-                    <div>
-                      <label className="text-xs font-semibold text-foreground mb-1.5 block">Nome Fantasia</label>
-                      <Input
-                        value={editFantasia}
-                        onChange={(e) => setEditFantasia(e.target.value)}
-                        className="bg-transparent"
-                      />
+                    {/* E-mail e Telefone */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">E-mail</label>
+                        <Input
+                          value={editEmail}
+                          onChange={(e) => setEditEmail(e.target.value)}
+                          className="bg-transparent"
+                          type="email"
+                          placeholder="email@exemplo.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">Telefone</label>
+                        <Input
+                          value={editTelefone}
+                          onChange={(e) => setEditTelefone(maskPhone(e.target.value))}
+                          className="bg-transparent"
+                          placeholder="(00) 00000-0000"
+                        />
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -523,8 +560,9 @@ const ClienteDetalhe = () => {
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Documento (CNPJ/CPF)</label>
                         <Input
                           value={editDocumento}
-                          onChange={(e) => setEditDocumento(e.target.value)}
+                          onChange={(e) => setEditDocumento(maskDoc(e.target.value))}
                           className="bg-transparent"
+                          placeholder="000.000.000-00"
                         />
                       </div>
 
@@ -547,7 +585,7 @@ const ClienteDetalhe = () => {
                         className="border-primary text-primary hover:bg-primary/10"
                         onClick={() => {
                           // TODO: integrar com API de atualização
-                          console.log('Salvar cliente', { editName, editFantasia, editDocumento, editCidade, editUf, editRep });
+                          console.log('Salvar cliente', { editName, editEmail, editTelefone, editDocumento, editCidade, editUf, editRep });
                         }}
                       >
                         Salvar

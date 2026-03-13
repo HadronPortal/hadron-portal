@@ -658,8 +658,8 @@ const ClienteDetalhe = () => {
                       {/* Representante */}
                       <div>
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Cód. Representante</label>
-                        <Select value={editRep} onValueChange={setEditRep}>
-                          <SelectTrigger className="bg-transparent">
+                        <Select value={editRep} disabled>
+                          <SelectTrigger className="bg-transparent cursor-not-allowed opacity-70">
                             <SelectValue placeholder="Selecione o representante" />
                           </SelectTrigger>
                           <SelectContent>

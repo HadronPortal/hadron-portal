@@ -105,6 +105,12 @@ const ClienteDetalhe = () => {
   const [editRep, setEditRep] = useState('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [expandedAddress, setExpandedAddress] = useState<number | null>(null);
+  const [editAddressOpen, setEditAddressOpen] = useState(false);
+  const [editAddressIdx, setEditAddressIdx] = useState<number | null>(null);
+  const [editLogradouro, setEditLogradouro] = useState('');
+  const [editComplemento, setEditComplemento] = useState('');
+  const [editBairro, setEditBairro] = useState('');
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

@@ -75,8 +75,9 @@ const statusMap: Record<string, { label: string; color: string }> = {
 const navItems = [
   { label: 'Home', path: '/' },
   { label: 'Clientes', path: '/clientes' },
-  { label: 'Relatórios', path: '/analitico' },
   { label: 'Pedidos', path: '/pedidos' },
+  { label: 'Relatórios', path: '/analitico' },
+  { label: 'Analítico', path: '/analitico-periodo' },
   { label: 'Catálogo', path: '/catalogo' },
 ];
 

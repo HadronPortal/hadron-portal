@@ -45,8 +45,9 @@ const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase
 const navItems = [
   { label: 'Home', path: '/' },
   { label: 'Clientes', path: '/clientes' },
-  { label: 'Relatórios', path: '/analitico' },
   { label: 'Pedidos', path: '/pedidos' },
+  { label: 'Relatórios', path: '/analitico' },
+  { label: 'Analítico', path: '/analitico-periodo' },
   { label: 'Catálogo', path: '/catalogo' },
 ];
 

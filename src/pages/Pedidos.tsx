@@ -2,8 +2,6 @@ import { useState, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 
-import FilterBar from '@/components/erp/FilterBar';
-import { useRepresentantes } from '@/hooks/use-representantes';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 
 import {
@@ -96,7 +94,7 @@ const Pedidos = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { representantes } = useRepresentantes();
+  
   const codter = searchParams.get('codter');
   const clienteNome = searchParams.get('nome');
 
@@ -129,22 +127,6 @@ const Pedidos = () => {
   const dashboard = data?.dashboard || { sent: 0, sent_peso: 0, approved: 0, approved_peso: 0, invoiced: 0, invoiced_peso: 0, canceled: 0, canceled_peso: 0 };
   const totalRecords = data?.total_records || 0;
 
-  const handleRepChange = useCallback((_repCodes: number[]) => {}, []);
-  const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
-  const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
-    setSelectedRep(filters.repCodes);
-    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
-    setSearchQuery(filters.search);
-    setPage(1);
-    setFilterNonce((n) => n + 1);
-  }, []);
-  const handleClear = useCallback(() => {
-    setSelectedRep([]);
-    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-    setSearchQuery('');
-    setPage(1);
-    setFilterNonce((n) => n + 1);
-  }, []);
 
   const filteredOrders = useMemo(() => {
     if (!searchQuery.trim()) return orders;
@@ -181,30 +163,24 @@ const Pedidos = () => {
         <div className="h-[70px]" />
         <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
           <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Pedidos</h1>
-          <div className="flex items-center gap-2">
-            <nav className="hidden lg:flex items-center gap-1">
-              {navItems.map(({ label, path }) => {
-                const isActive = location.pathname === path;
-                return (
-                  <button
-                    key={label}
-                    onClick={() => navigate(path)}
-                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-primary-foreground/15 text-primary-foreground'
-                        : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </nav>
-            <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
-            <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm" onClick={() => navigate('/pedidos/criar')}>
-              <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido
-            </Button>
-          </div>
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map(({ label, path }) => {
+              const isActive = location.pathname === path;
+              return (
+                <button
+                  key={label}
+                  onClick={() => navigate(path)}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary-foreground/15 text-primary-foreground'
+                      : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
         </div>
         <div className="h-16 sm:h-24" />
       </div>
@@ -264,6 +240,9 @@ const Pedidos = () => {
                   />
                 </div>
                 <div className="flex items-center gap-3">
+                  <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm h-10" onClick={() => navigate('/pedidos/criar')}>
+                    <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido
+                  </Button>
                   <select
                     value={rowsPerPage}
                     onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}

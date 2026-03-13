@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ArrowLeft, User, MapPin, FileText, Calendar, Hash, Phone, Mail, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import Spinner from '@/components/ui/spinner';
 import { fetchWithAuth } from '@/lib/auth-refresh';
@@ -73,7 +74,7 @@ const navItems = [
   { label: 'Catálogo', path: '/catalogo' },
 ];
 
-const tabs = ['Visão Geral', 'Pedidos'] as const;
+const tabs = ['Visão Geral', 'Configurações Gerais'] as const;
 
 const ClienteDetalhe = () => {
   const { id } = useParams<{ id: string }>();
@@ -89,6 +90,26 @@ const ClienteDetalhe = () => {
   const [ordersPage, setOrdersPage] = useState(1);
   const [ordersTotal, setOrdersTotal] = useState(0);
   const ordersLimit = 10;
+
+  // Edit form state
+  const [editName, setEditName] = useState('');
+  const [editFantasia, setEditFantasia] = useState('');
+  const [editDocumento, setEditDocumento] = useState('');
+  const [editCidade, setEditCidade] = useState('');
+  const [editUf, setEditUf] = useState('');
+  const [editRep, setEditRep] = useState('');
+
+  // Sync edit fields when client loads
+  useEffect(() => {
+    if (client) {
+      setEditName(client.ter_nomter || '');
+      setEditFantasia(client.ter_fanter || '');
+      setEditDocumento(client.ter_documento || '');
+      setEditCidade(client.TEN_CIDLGR || '');
+      setEditUf(client.TEN_UF_LGR || '');
+      setEditRep(String(client.COD_REP || ''));
+    }
+  }, [client]);
 
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 
@@ -466,58 +487,115 @@ const ClienteDetalhe = () => {
               </div>
             )}
 
-            {activeTab === 'Pedidos' && (
-              <div className="bg-card border border-border rounded-xl shadow-sm">
-                <div className="px-6 py-5 border-b border-border flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-foreground">Todos os Pedidos</h3>
-                  <Button size="sm" onClick={() => navigate(`/pedidos?codter=${client.ter_codter}&nome=${encodeURIComponent(client.ter_nomter)}`)}>
-                    Ver na página de Pedidos
-                  </Button>
+            {activeTab === 'Configurações Gerais' && (
+              <div className="space-y-6">
+                {/* Profile edit card */}
+                <div className="bg-card border border-border rounded-xl shadow-sm">
+                  <div className="px-6 py-5 border-b border-border">
+                    <h3 className="text-base font-semibold text-foreground">Cadastro do Cliente</h3>
+                  </div>
+                  <div className="px-6 py-6 space-y-5">
+                    {/* Nome */}
+                    <div>
+                      <label className="text-xs font-semibold text-foreground mb-1.5 block">
+                        Nome <span className="text-destructive">*</span>
+                      </label>
+                      <Input
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        className="bg-transparent"
+                      />
+                    </div>
+
+                    {/* Nome Fantasia */}
+                    <div>
+                      <label className="text-xs font-semibold text-foreground mb-1.5 block">Nome Fantasia</label>
+                      <Input
+                        value={editFantasia}
+                        onChange={(e) => setEditFantasia(e.target.value)}
+                        className="bg-transparent"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Documento */}
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">Documento (CNPJ/CPF)</label>
+                        <Input
+                          value={editDocumento}
+                          onChange={(e) => setEditDocumento(e.target.value)}
+                          className="bg-transparent"
+                        />
+                      </div>
+
+                      {/* Representante */}
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">Cód. Representante</label>
+                        <Input
+                          value={editRep}
+                          onChange={(e) => setEditRep(e.target.value)}
+                          className="bg-transparent"
+                          type="number"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-primary text-primary hover:bg-primary/10"
+                        onClick={() => {
+                          // TODO: integrar com API de atualização
+                          console.log('Salvar cliente', { editName, editFantasia, editDocumento, editCidade, editUf, editRep });
+                        }}
+                      >
+                        Salvar
+                      </Button>
+                    </div>
+                  </div>
                 </div>
 
-                {ordersLoading ? (
-                  <div className="flex items-center justify-center py-16">
-                    <Spinner />
+                {/* Address card */}
+                <div className="bg-card border border-border rounded-xl shadow-sm">
+                  <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+                    <h3 className="text-base font-semibold text-foreground">Endereço</h3>
                   </div>
-                ) : orders.length === 0 ? (
-                  <div className="text-center py-16 text-sm text-muted-foreground">
-                    Nenhum pedido encontrado
+                  <div className="px-6 py-6 space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">Cidade</label>
+                        <Input
+                          value={editCidade}
+                          onChange={(e) => setEditCidade(e.target.value)}
+                          className="bg-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-1.5 block">UF</label>
+                        <Input
+                          value={editUf}
+                          onChange={(e) => setEditUf(e.target.value)}
+                          className="bg-transparent"
+                          maxLength={2}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-primary text-primary hover:bg-primary/10"
+                        onClick={() => {
+                          console.log('Salvar endereço', { editCidade, editUf });
+                        }}
+                      >
+                        Salvar
+                      </Button>
+                    </div>
                   </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-border">
-                          <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Nº Pedido</th>
-                          <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Valor</th>
-                          <th className="px-6 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Data</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {orders.map((o) => {
-                          const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status), color: 'bg-muted text-muted-foreground' };
-                          return (
-                            <tr key={o.orc_codorc_web} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
-                              <td className="px-6 py-3.5">
-                                <button onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)} className="text-sm font-medium text-primary hover:underline">
-                                  #{o.orc_codorc_web}
-                                </button>
-                              </td>
-                              <td className="px-6 py-3.5">
-                                <Badge variant="outline" className={`text-[11px] font-medium border-0 px-2.5 py-0.5 ${st.color}`}>
-                                  {st.label}
-                                </Badge>
-                              </td>
-                              <td className="px-6 py-3.5 text-sm text-foreground">{formatCurrency(o.orc_val_tot)}</td>
-                              <td className="px-6 py-3.5 text-sm text-muted-foreground">{formatDate(o.DATA_PEDIDO || o.orc_datcad)}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                </div>
               </div>
             )}
           </div>

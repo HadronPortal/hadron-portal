@@ -42,13 +42,13 @@ serve(async (req) => {
 
     const token = extractUserToken(req) || await getServiceToken();
 
-    const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiProductDetails', {
+    const res = await fetch('https://dev.hadronweb.com.br/app/pages/apiProductDetails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ codpro: parseInt(productId) }),
+      body: JSON.stringify({ filter: { codpro: productId } }),
     });
 
     const responseText = await res.text();

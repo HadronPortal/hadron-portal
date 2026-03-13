@@ -142,8 +142,12 @@ const ClienteDetalhe = () => {
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');
         const data = await res.json();
-        setOrders(data.orders || []);
-        setOrdersTotal(data.total_records || 0);
+        const fetchedOrders: OrderAPI[] = Array.isArray(data.orders) ? data.orders : [];
+        const clientOrders = fetchedOrders.filter((o) => String(o.CODTER) === String(id));
+        const backendTotal = Number(data.total_records || 0);
+
+        setOrders(clientOrders);
+        setOrdersTotal(backendTotal > 0 && clientOrders.length > 0 ? backendTotal : clientOrders.length);
       } catch (err) {
         console.error(err);
       } finally {
@@ -172,7 +176,7 @@ const ClienteDetalhe = () => {
   }, [client, id, orders, ordersTotal]);
 
   const ordersTotalPages = Math.ceil(ordersTotal / ordersLimit);
-  const isPositivado = client ? ((client.TOTAL_VENDAS ?? 0) > 0 || ordersTotal > 0 || orders.length > 0) : ordersTotal > 0 || orders.length > 0;
+  const isPositivado = client ? ((client.TOTAL_VENDAS ?? 0) > 0 || (client.QUANT_VENDAS ?? 0) > 0) : ordersTotal > 0 || orders.length > 0;
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center py-32">

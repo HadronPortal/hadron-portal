@@ -636,8 +636,8 @@ const ClienteDetalhe = () => {
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Telefone</label>
                         <Input
                           value={editTelefone}
-                          onChange={(e) => setEditTelefone(maskPhone(e.target.value))}
-                          className="bg-transparent"
+                          readOnly
+                          className="bg-transparent cursor-not-allowed opacity-70"
                           placeholder="(00) 00000-0000"
                         />
                       </div>

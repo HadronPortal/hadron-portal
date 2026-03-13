@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeft, User, MapPin, FileText, Calendar, Hash, Phone, Mail, Building2, ChevronLeft, ChevronRight, Pencil, X, ChevronDown, Trash2, GripVertical } from 'lucide-react';
+import { ArrowLeft, User, MapPin, FileText, Calendar, Hash, Phone, Mail, Building2, ChevronLeft, ChevronRight, Pencil, X, ChevronDown, Trash2, GripVertical, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -80,7 +80,7 @@ const navItems = [
   { label: 'Catálogo', path: '/catalogo' },
 ];
 
-const tabs = ['Visão Geral', 'Configurações Gerais'] as const;
+const tabs = ['Visão Geral', 'Configurações Gerais', 'Configurações Avançadas'] as const;
 
 const ClienteDetalhe = () => {
   const { id } = useParams<{ id: string }>();
@@ -127,6 +127,20 @@ const ClienteDetalhe = () => {
   const [newAddrPais, setNewAddrPais] = useState('');
   const [newAddrCobranca, setNewAddrCobranca] = useState(true);
   const [extraAddresses, setExtraAddresses] = useState<Array<{ label: string; logradouro: string; cidade: string; uf: string; nome: string; isDefault: boolean }>>([]);
+
+  // Advanced settings state
+  const [advPhone, setAdvPhone] = useState('');
+  const [advPassword, setAdvPassword] = useState('******');
+  const [advSmsNumber, setAdvSmsNumber] = useState('');
+  const [editingAdvPhone, setEditingAdvPhone] = useState(false);
+  const [editingAdvPassword, setEditingAdvPassword] = useState(false);
+  const [editingAdvSms, setEditingAdvSms] = useState(false);
+  const [expandedCard, setExpandedCard] = useState<number | null>(0);
+  const [paymentMethods, setPaymentMethods] = useState([
+    { id: 1, brand: 'MasterCard', isPrimary: true, expired: false, lastFour: '6367', expiry: '12/2024', name: '', number: '', type: 'cartão de crédito Mastercard', issuer: 'VICBANK', euIa: 'id_4325df90sdf8', billingAddress: 'AU', phone: 'Nenhum telefone fornecido', email: 'smith@kpmg.com', origin: 'Austrália 🌏', cvc: 'Aprovado ✅' },
+    { id: 2, brand: 'Visa', isPrimary: false, expired: false, lastFour: '4521', expiry: '02/2022', name: '', number: '', type: '', issuer: '', euIa: '', billingAddress: '', phone: '', email: '', origin: '', cvc: '' },
+    { id: 3, brand: 'American Express', isPrimary: false, expired: true, lastFour: '8901', expiry: '08/2021', name: '', number: '', type: '', issuer: '', euIa: '', billingAddress: '', phone: '', email: '', origin: '', cvc: '' },
+  ]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -916,6 +930,153 @@ const ClienteDetalhe = () => {
                     </div>
                   </DialogContent>
                 </Dialog>
+              </div>
+            )}
+
+            {/* ===== Tab: Configurações Avançadas ===== */}
+            {activeTab === 'Configurações Avançadas' && (
+              <div className="space-y-6">
+                {/* Detalhes de segurança */}
+                <div className="bg-card border border-border rounded-xl shadow-sm">
+                  <div className="p-6 sm:px-8">
+                    <h3 className="text-base font-semibold text-foreground mb-5">Detalhes de segurança</h3>
+                    <div className="divide-y divide-border">
+                      <div className="flex items-center justify-between py-4 first:pt-0">
+                        <div className="flex items-center gap-6">
+                          <span className="text-sm text-muted-foreground w-[100px]">Telefone</span>
+                          {editingAdvPhone ? (
+                            <Input value={advPhone} onChange={e => setAdvPhone(e.target.value)} className="bg-transparent max-w-[200px]" autoFocus onBlur={() => setEditingAdvPhone(false)} onKeyDown={e => e.key === 'Enter' && setEditingAdvPhone(false)} />
+                          ) : (
+                            <span className="text-sm font-medium text-foreground">{advPhone || '+55 (11) 99999-9999'}</span>
+                          )}
+                        </div>
+                        <button onClick={() => setEditingAdvPhone(true)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                          <Pencil size={15} className="text-muted-foreground" />
+                        </button>
+                      </div>
+                      <div className="flex items-center justify-between py-4 last:pb-0">
+                        <div className="flex items-center gap-6">
+                          <span className="text-sm text-muted-foreground w-[100px]">Senha</span>
+                          {editingAdvPassword ? (
+                            <Input type="password" value={advPassword} onChange={e => setAdvPassword(e.target.value)} className="bg-transparent max-w-[200px]" autoFocus onBlur={() => setEditingAdvPassword(false)} onKeyDown={e => e.key === 'Enter' && setEditingAdvPassword(false)} />
+                          ) : (
+                            <span className="text-sm font-medium text-foreground">******</span>
+                          )}
+                        </div>
+                        <button onClick={() => setEditingAdvPassword(true)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                          <Pencil size={15} className="text-muted-foreground" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Autenticação em duas etapas */}
+                <div className="bg-card border border-border rounded-xl shadow-sm">
+                  <div className="p-6 sm:px-8">
+                    <div className="flex items-start justify-between mb-1">
+                      <div>
+                        <h3 className="text-base font-semibold text-foreground">Autenticação em duas etapas</h3>
+                        <p className="text-sm text-muted-foreground mt-1">Mantenha sua conta ainda mais segura com uma segunda etapa de autenticação.</p>
+                      </div>
+                      <Button variant="outline" size="sm" className="text-xs flex items-center gap-1.5 flex-shrink-0">
+                        <Shield size={14} />
+                        Adicionar etapa de autenticação
+                      </Button>
+                    </div>
+                    <div className="mt-5 border-t border-border pt-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-foreground">SMS</p>
+                          {editingAdvSms ? (
+                            <Input value={advSmsNumber} onChange={e => setAdvSmsNumber(e.target.value)} className="bg-transparent max-w-[200px] mt-1" autoFocus onBlur={() => setEditingAdvSms(false)} onKeyDown={e => e.key === 'Enter' && setEditingAdvSms(false)} />
+                          ) : (
+                            <p className="text-sm text-muted-foreground">{advSmsNumber || '+55 (11) 99999-9999'}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => setEditingAdvSms(true)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                            <Pencil size={15} className="text-muted-foreground" />
+                          </button>
+                          <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-destructive/10 transition-colors">
+                            <Trash2 size={15} className="text-muted-foreground" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-4">
+                      Caso perca seu dispositivo móvel ou chave de segurança, você pode <span className="text-primary hover:underline cursor-pointer">gerar um código de backup</span> para acessar sua conta.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Métodos de pagamento */}
+                <div className="bg-card border border-border rounded-xl shadow-sm">
+                  <div className="p-6 sm:px-8">
+                    <div className="flex items-center justify-between mb-5">
+                      <h3 className="text-base font-semibold text-foreground">Métodos de pagamento</h3>
+                      <Button variant="outline" size="sm" className="text-xs">Adicionar novo método</Button>
+                    </div>
+                    <div className="divide-y divide-border">
+                      {paymentMethods.map((card, idx) => (
+                        <div key={card.id}>
+                          <div className="flex items-center gap-4 py-4">
+                            <button onClick={() => setExpandedCard(expandedCard === idx ? null : idx)} className="text-muted-foreground hover:text-foreground transition-colors">
+                              <ChevronDown size={16} className={`transition-transform ${expandedCard === idx ? 'rotate-0' : '-rotate-90'}`} />
+                            </button>
+                            <div className="w-10 h-7 rounded border border-border flex items-center justify-center text-[10px] font-bold text-foreground bg-muted">
+                              {card.brand === 'MasterCard' ? '💳' : card.brand === 'Visa' ? '💳' : '💳'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold text-foreground">{card.brand}</span>
+                                {card.isPrimary && <Badge variant="outline" className="text-[10px] border-primary/30 text-primary bg-primary/5 px-2 py-0">Primário</Badge>}
+                                {card.expired && <Badge variant="destructive" className="text-[10px] px-2 py-0">Expirado</Badge>}
+                              </div>
+                              <p className="text-xs text-muted-foreground">Expira em {card.expiry}</p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                                <Pencil size={15} className="text-muted-foreground" />
+                              </button>
+                              <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-destructive/10 transition-colors">
+                                <Trash2 size={15} className="text-muted-foreground" />
+                              </button>
+                              <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                                <GripVertical size={15} className="text-muted-foreground" />
+                              </button>
+                            </div>
+                          </div>
+                          {expandedCard === idx && card.brand === 'MasterCard' && (
+                            <div className="pb-5 pl-14 grid grid-cols-2 gap-x-10 gap-y-2 text-sm">
+                              <div className="flex gap-3"><span className="text-muted-foreground">Nome</span><span className="font-medium text-foreground">Emma Smith</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">Endereço de Cobrança</span><span className="font-medium text-foreground">AU</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">Número</span><span className="font-medium text-foreground">**** {card.lastFour}</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">Telefone</span><span className="font-medium text-foreground">{card.phone}</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">Expira</span><span className="font-medium text-foreground">{card.expiry}</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">E-mail</span><span className="font-medium text-primary">{card.email}</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">Tipo</span><span className="font-medium text-foreground">{card.type}</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">Origem</span><span className="font-medium text-foreground">{card.origin}</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">Emissor</span><span className="font-medium text-foreground">{card.issuer}</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">Verificação CVC</span><span className="font-medium text-foreground">{card.cvc}</span></div>
+                              <div className="flex gap-3"><span className="text-muted-foreground">EU IA</span><span className="font-medium text-foreground">{card.euIa}</span></div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save all button */}
+                <div className="flex justify-end">
+                  <Button onClick={() => {
+                    toast({ title: 'Configurações salvas!', description: 'Todas as configurações avançadas foram salvas.' });
+                    setActiveTab('Visão Geral');
+                  }}>
+                    Salvar Configurações
+                  </Button>
+                </div>
               </div>
             )}
           </div>

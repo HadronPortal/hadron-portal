@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 
 import FilterBar from '@/components/erp/FilterBar';
@@ -10,7 +10,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, FileText, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ChevronDown, FileText, Plus, Search, Send, CheckCircle, XCircle } from 'lucide-react';
 import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import FadeIn from '@/components/erp/skeletons/FadeIn';
@@ -62,19 +63,19 @@ const formatDoc = (doc: string) => {
   return doc;
 };
 
-const statusMap: Record<string, { label: string; color: string }> = {
-  '10': { label: 'Digitação', color: 'bg-yellow-500' },
-  '20': { label: 'Enviado', color: 'bg-teal-600' },
-  '30': { label: 'Aprovado', color: 'bg-orange-500' },
-  '40': { label: 'Faturado', color: 'bg-cyan-500' },
-  '50': { label: 'Faturado', color: 'bg-cyan-500' },
-  '90': { label: 'Cancelado', color: 'bg-red-500' },
-  'EN': { label: 'Enviado', color: 'bg-teal-600' },
-  'AP': { label: 'Aprovado', color: 'bg-orange-500' },
-  'FA': { label: 'Faturado', color: 'bg-cyan-500' },
-  'CA': { label: 'Cancelado', color: 'bg-red-500' },
-  'PC': { label: 'Pagamento Confirmado', color: 'bg-green-500' },
-  'PE': { label: 'Pendente', color: 'bg-yellow-500' },
+const statusMap: Record<string, { label: string; color: string; bg: string }> = {
+  '10': { label: 'Digitação', color: '#eab308', bg: '#eab30818' },
+  '20': { label: 'Enviado', color: '#06b6d4', bg: '#06b6d418' },
+  '30': { label: 'Aprovado', color: '#f59e0b', bg: '#f59e0b18' },
+  '40': { label: 'Faturado', color: '#10b981', bg: '#10b98118' },
+  '50': { label: 'Faturado', color: '#10b981', bg: '#10b98118' },
+  '90': { label: 'Cancelado', color: '#ef4444', bg: '#ef444418' },
+  'EN': { label: 'Enviado', color: '#06b6d4', bg: '#06b6d418' },
+  'AP': { label: 'Aprovado', color: '#f59e0b', bg: '#f59e0b18' },
+  'FA': { label: 'Faturado', color: '#10b981', bg: '#10b98118' },
+  'CA': { label: 'Cancelado', color: '#ef4444', bg: '#ef444418' },
+  'PC': { label: 'Pag. Confirmado', color: '#22c55e', bg: '#22c55e18' },
+  'PE': { label: 'Pendente', color: '#eab308', bg: '#eab30818' },
 };
 
 const DEFAULT_START_DATE = new Date(2026, 0, 8);
@@ -83,8 +84,17 @@ const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
 const TABLE_HEADERS = ['CÓDIGO', 'CLIENTE', 'DOCUMENTO', 'LOCALIZAÇÃO', 'STATUS', 'VALOR', 'PESO(KG)', 'DATA'];
 
+const navItems = [
+  { label: 'Home', path: '/' },
+  { label: 'Clientes', path: '/clientes' },
+  { label: 'Analítico', path: '/analitico' },
+  { label: 'Pedidos', path: '/pedidos' },
+  { label: 'Catálogo', path: '/catalogo' },
+];
+
 const Pedidos = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { representantes } = useRepresentantes();
   const codter = searchParams.get('codter');
@@ -153,11 +163,11 @@ const Pedidos = () => {
     setSearchParams(searchParams);
   };
 
-  const kpiCards = [
-    { label: 'Enviados', valor: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, color: 'bg-teal-600' },
-    { label: 'Aprovados', valor: formatCurrency(dashboard.approved), peso: `${dashboard.approved_peso} Kg`, color: 'bg-orange-500' },
-    { label: 'Faturados', valor: formatCurrency(dashboard.invoiced), peso: `${dashboard.invoiced_peso} Kg`, color: 'bg-cyan-500' },
-    { label: 'Cancelados', valor: formatCurrency(dashboard.canceled), peso: `${dashboard.canceled_peso} Kg`, color: 'bg-blue-700' },
+  const kpiItems = [
+    { label: 'Enviados', value: formatCurrency(dashboard.sent), peso: `${dashboard.sent_peso} Kg`, icon: Send },
+    { label: 'Aprovados', value: formatCurrency(dashboard.approved), peso: `${dashboard.approved_peso} Kg`, icon: CheckCircle },
+    { label: 'Faturados', value: formatCurrency(dashboard.invoiced), peso: `${dashboard.invoiced_peso} Kg`, icon: FileText },
+    { label: 'Cancelados', value: formatCurrency(dashboard.canceled), peso: `${dashboard.canceled_peso} Kg`, icon: XCircle },
   ];
 
   const showSkeleton = isLoading;
@@ -165,42 +175,85 @@ const Pedidos = () => {
 
   return (
     <>
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
-
-      {clienteNome && (
-        <div className="px-6 pt-2 text-sm text-muted-foreground">
-          Filtro Cliente:{' '}
-          <button onClick={clearClientFilter} className="text-primary underline font-semibold">
-            {decodeURIComponent(clienteNome)}
-          </button>
-          <button onClick={clearClientFilter} className="ml-2 text-xs text-muted-foreground hover:text-foreground">✕</button>
+      {/* Hero banner - same pattern as Dashboard */}
+      <div className="relative overflow-hidden bg-black">
+        <div className="absolute inset-x-0 top-0 h-[70px] bg-black" />
+        <div className="h-[70px]" />
+        <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
+          <div>
+            <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Pedidos</h1>
+            <p className="text-xs sm:text-sm text-primary-foreground/60 mt-0.5">
+              Home › Pedidos
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+            <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm" onClick={() => navigate('/pedidos/criar')}>
+              <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido
+            </Button>
+          </div>
         </div>
-      )}
-
-      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
-        <div className="flex items-center justify-between gap-2">
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Pedidos</h1>
-          <Button className="gap-2 bg-erp-navy hover:bg-erp-navy/90 text-xs sm:text-sm" onClick={() => navigate('/pedidos/criar')}>
-            <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido
-          </Button>
+        <div className="hidden lg:flex items-center gap-1 px-4 sm:px-8 lg:px-12 xl:px-16 max-w-[1600px] mx-auto w-full">
+          {navItems.map(({ label, path }) => {
+            const isActive = location.pathname === path;
+            return (
+              <button
+                key={label}
+                onClick={() => navigate(path)}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-primary-foreground/15 text-primary-foreground'
+                    : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
+        <div className="h-16 sm:h-24" />
+      </div>
 
-        {/* KPI Cards */}
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-4 sm:space-y-5 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
+        {clienteNome && (
+          <div className="text-sm text-primary-foreground/80">
+            Filtro Cliente:{' '}
+            <button onClick={clearClientFilter} className="text-primary-foreground underline font-semibold">
+              {decodeURIComponent(clienteNome)}
+            </button>
+            <button onClick={clearClientFilter} className="ml-2 text-xs text-primary-foreground/60 hover:text-primary-foreground">✕</button>
+          </div>
+        )}
+
+        {/* KPI Summary Card - Inspired by uploaded image */}
         {showSkeleton ? (
           <SkeletonKpiRow count={4} />
         ) : (
           <FadeIn>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {kpiCards.map((kpi) => (
-                <div key={kpi.label} className={`${kpi.color} text-white rounded-lg p-4 relative`}>
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-sm">{kpi.label}</span>
-                    <FileText size={18} className="opacity-70" />
-                  </div>
-                  <div className="text-lg font-bold mt-1">{kpi.valor}</div>
-                  <div className="text-xs opacity-80">{kpi.peso}</div>
+            <div className="rounded-2xl p-6 sm:p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, hsl(250 60% 55%), hsl(270 70% 60%))' }}>
+              {/* Decorative circles */}
+              <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, hsl(270 80% 80%), transparent)' }} />
+              <div className="absolute right-20 -bottom-10 w-32 h-32 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, hsl(250 80% 80%), transparent)' }} />
+
+              <div className="relative z-10">
+                <h2 className="text-base sm:text-lg font-bold text-white mb-1">Resumo de Pedidos</h2>
+                <p className="text-xs sm:text-sm text-white/70 mb-6">Total no período selecionado</p>
+
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                  {kpiItems.map(({ label, value, peso, icon: Icon }) => (
+                    <div key={label} className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-9 w-9 rounded-lg flex items-center justify-center bg-white/15 backdrop-blur-sm">
+                          <Icon size={18} className="text-white" />
+                        </div>
+                        <span className="text-xs font-semibold text-white/80 uppercase tracking-wide">{label}</span>
+                      </div>
+                      <p className="text-lg sm:text-xl font-bold text-white">{value}</p>
+                      <p className="text-xs text-white/60">{peso}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </FadeIn>
         )}
@@ -211,75 +264,90 @@ const Pedidos = () => {
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-3">
-                <select
-                  value={rowsPerPage}
-                  onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-                  className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
-                >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                </select>
-                <span className="text-xs sm:text-sm text-muted-foreground">{totalRecords} registros</span>
+            {/* Search & controls card */}
+            <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="relative w-full sm:w-80">
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar pedido..."
+                    className="pl-9 h-10 text-sm"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <select
+                    value={rowsPerPage}
+                    onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
+                    className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
+                  >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">{totalRecords} registros</span>
+                </div>
               </div>
-              <Button variant="outline" size="sm" className="gap-1">
-                Colunas <ChevronDown size={14} />
-              </Button>
             </div>
 
-            {/* Table with skeleton or data */}
+            {/* Table */}
             {showSkeleton ? (
               <SkeletonTable columns={8} rows={10} headers={TABLE_HEADERS} />
             ) : (
               <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
-                <div className="bg-card rounded-lg border border-border overflow-hidden">
+                <div className="bg-card rounded-xl border border-border overflow-hidden">
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
                           {TABLE_HEADERS.map(h => (
-                            <TableHead key={h} className="text-xs font-bold text-foreground">{h}</TableHead>
+                            <TableHead key={h} className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</TableHead>
                           ))}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {filteredOrders.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
+                            <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                               Nenhum pedido encontrado
                             </TableCell>
                           </TableRow>
                         ) : (
                           filteredOrders.map((o, idx) => {
                             const code = o.orc_codorc_web || '';
-                            const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status || '—'), color: 'bg-muted' };
+                            const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status || '—'), color: '#8b8b8b', bg: '#8b8b8b18' };
                             return (
-                              <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
-                                <TableCell className="text-sm font-semibold underline">{code}</TableCell>
+                              <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer border-b border-border/50" onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
+                                <TableCell className="text-sm font-semibold text-primary">
+                                  #{code}
+                                </TableCell>
                                 <TableCell className="text-sm">
-                                  <div>{o.CODTER || ''} - {o.CLIENTE || ''}</div>
+                                  <div className="text-foreground">{o.CLIENTE || ''}</div>
                                   {o.FANTER && (
                                     <div className="text-xs text-muted-foreground">{o.FANTER}</div>
                                   )}
                                 </TableCell>
-                                <TableCell className="text-sm whitespace-nowrap">{formatDoc(o.orc_documento || '')}</TableCell>
-                                <TableCell className="text-sm whitespace-nowrap">
+                                <TableCell className="text-sm text-foreground whitespace-nowrap">{formatDoc(o.orc_documento || '')}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                                   {o.LOCALIZACAO || '—'}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                  <span className={`${st.color} text-white text-xs px-2 py-1 rounded`}>
+                                  <span
+                                    className="inline-block px-3 py-1 rounded-full text-xs font-medium border"
+                                    style={{ backgroundColor: st.bg, color: st.color, borderColor: st.color + '40' }}
+                                  >
                                     {st.label}
                                   </span>
                                   {o.orc_codorc_had > 0 && (
                                     <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_codorc_had}</div>
                                   )}
                                 </TableCell>
-                                <TableCell className="text-sm whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
-                                <TableCell className="text-sm whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
-                                <TableCell className="text-sm whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
+                                <TableCell className="text-sm font-medium text-foreground whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
                               </TableRow>
                             );
                           })

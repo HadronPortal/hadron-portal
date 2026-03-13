@@ -92,7 +92,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="text-primary-foreground">
+      <header className="text-primary-foreground bg-black">
         {/* Top row: Logo + Avatar */}
         <div className="flex items-center justify-between px-4 sm:px-8 lg:px-12 xl:px-16 h-[70px] max-w-[1600px] mx-auto w-full">
           <div className="flex items-center cursor-pointer flex-shrink-0 -ml-2" onClick={() => navigate('/')}>

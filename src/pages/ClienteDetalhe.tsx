@@ -112,6 +112,17 @@ const ClienteDetalhe = () => {
   const [editComplemento, setEditComplemento] = useState('');
   const [editBairro, setEditBairro] = useState('');
 
+  // New address modal state
+  const [newAddressOpen, setNewAddressOpen] = useState(false);
+  const [newAddrNome, setNewAddrNome] = useState('');
+  const [newAddrLinha1, setNewAddrLinha1] = useState('');
+  const [newAddrLinha2, setNewAddrLinha2] = useState('');
+  const [newAddrCidade, setNewAddrCidade] = useState('');
+  const [newAddrEstado, setNewAddrEstado] = useState('');
+  const [newAddrCep, setNewAddrCep] = useState('');
+  const [newAddrPais, setNewAddrPais] = useState('');
+  const [newAddrCobranca, setNewAddrCobranca] = useState(true);
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;

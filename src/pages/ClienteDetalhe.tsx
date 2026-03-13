@@ -142,8 +142,12 @@ const ClienteDetalhe = () => {
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');
         const data = await res.json();
-        setOrders(data.orders || []);
-        setOrdersTotal(data.total_records || 0);
+        const fetchedOrders: OrderAPI[] = Array.isArray(data.orders) ? data.orders : [];
+        const clientOrders = fetchedOrders.filter((o) => String(o.CODTER) === String(id));
+        const backendTotal = Number(data.total_records || 0);
+
+        setOrders(clientOrders);
+        setOrdersTotal(backendTotal > 0 && clientOrders.length > 0 ? backendTotal : clientOrders.length);
       } catch (err) {
         console.error(err);
       } finally {

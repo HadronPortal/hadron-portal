@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
-import Spinner from '@/components/ui/spinner';
+import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ArrowLeft, User, MapPin, FileText, Calendar, Hash, Phone, Mail, Building2, ChevronLeft, ChevronRight, Pencil, X, ChevronDown, Trash2, GripVertical } from 'lucide-react';
@@ -84,6 +85,7 @@ const tabs = ['Visão Geral', 'Configurações Gerais'] as const;
 const ClienteDetalhe = () => {
   const { id } = useParams<{ id: string }>();
   const { representantes } = useRepresentantes();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const routeClient = (location.state as { client?: ClienteAPI } | null)?.client;
@@ -661,8 +663,18 @@ const ClienteDetalhe = () => {
                         variant="outline"
                         className=""
                         onClick={() => {
-                          // TODO: integrar com API de atualização
-                          console.log('Salvar cliente', { editName, editEmail, editTelefone, editDocumento, editCidade, editUf, editRep });
+                          if (client) {
+                            setClient({
+                              ...client,
+                              ter_nomter: editName,
+                              ter_documento: editDocumento,
+                              TEN_CIDLGR: editCidade,
+                              TEN_UF_LGR: editUf,
+                              COD_REP: editRep ? Number(editRep) : client.COD_REP,
+                            });
+                          }
+                          toast({ title: 'Cliente salvo!', description: 'As alterações foram salvas com sucesso.' });
+                          setActiveTab('Visão Geral');
                         }}
                       >
                         Salvar

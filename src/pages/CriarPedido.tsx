@@ -556,6 +556,25 @@ const CriarPedido = () => {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Totals card */}
+            <div className="lg:col-span-2 bg-card rounded-xl border border-border shadow-sm px-5 py-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal:</span>
+                  <span className="font-medium">{fmt(subtotal)}</span>
+                </div>
+                {desconto > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Desconto:</span>
+                    <span className="text-destructive font-medium">- {fmt(desconto)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Frete:</span>
+                  <span className="font-medium">{frete > 0 ? fmt(frete) : 'Grátis'}</span>
+                </div>
                 <div className="border-t border-border pt-2 flex justify-between text-lg font-bold">
                   <span>Total:</span>
                   <span className="text-[hsl(var(--erp-green))]">{fmt(total)}</span>

@@ -482,7 +482,7 @@ const ClienteDetalhe = () => {
                       </thead>
                       <tbody>
                         {orders.map((o) => {
-                          const st = statusMap[o.orc_status] || { label: o.orc_status, color: 'bg-muted text-muted-foreground' };
+                          const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status), color: 'bg-muted text-muted-foreground' };
                           return (
                             <tr key={o.orc_codorc} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
                               <td className="px-6 py-3.5">

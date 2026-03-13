@@ -151,19 +151,26 @@ const CriarPedido = () => {
   /* ─── render ─── */
   return (
     <>
-      {/* Metronic-style page header with gradient */}
-      <div className="bg-gradient-to-r from-[hsl(var(--erp-navy))] to-[hsl(var(--erp-blue))] px-4 sm:px-8 py-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-white">Criar Pedido</h1>
-        <div className="flex items-center gap-2 text-xs text-white/70 mt-1">
-          <button onClick={() => navigate('/')} className="hover:text-white transition-colors">Home</button>
-          <ChevronRight size={12} />
-          <button onClick={() => navigate('/pedidos')} className="hover:text-white transition-colors">Pedidos</button>
-          <ChevronRight size={12} />
-          <span className="text-white/90">Criar Pedido</span>
+      {/* Hero banner - same pattern as other pages */}
+      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))]">
+        <div className="absolute inset-x-0 top-0 h-[70px] bg-[hsl(var(--erp-banner))]" />
+        <div className="h-[70px]" />
+        <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
+          <div>
+            <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Criar Pedido</h1>
+            <div className="flex items-center gap-2 text-xs text-primary-foreground/60 mt-1">
+              <button onClick={() => navigate('/')} className="hover:text-primary-foreground transition-colors">Home</button>
+              <ChevronRight size={12} />
+              <button onClick={() => navigate('/pedidos')} className="hover:text-primary-foreground transition-colors">Pedidos</button>
+              <ChevronRight size={12} />
+              <span className="text-primary-foreground/90">Criar Pedido</span>
+            </div>
+          </div>
         </div>
+        <div className="h-16 sm:h-24" />
       </div>
 
-      <main className="flex-1 px-3 sm:px-6 lg:px-8 py-5 sm:py-6">
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-4 sm:space-y-5 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
 
         {/* ═══════════════ STEP 0: Two-column layout ═══════════════ */}
         {step === 0 && (

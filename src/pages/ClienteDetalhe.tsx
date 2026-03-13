@@ -663,8 +663,18 @@ const ClienteDetalhe = () => {
                         variant="outline"
                         className=""
                         onClick={() => {
-                          // TODO: integrar com API de atualização
-                          console.log('Salvar cliente', { editName, editEmail, editTelefone, editDocumento, editCidade, editUf, editRep });
+                          if (client) {
+                            setClient({
+                              ...client,
+                              ter_nomter: editName,
+                              ter_documento: editDocumento,
+                              TEN_CIDLGR: editCidade,
+                              TEN_UF_LGR: editUf,
+                              COD_REP: editRep ? Number(editRep) : client.COD_REP,
+                            });
+                          }
+                          toast({ title: 'Cliente salvo!', description: 'As alterações foram salvas com sucesso.' });
+                          setActiveTab('Visão Geral');
                         }}
                       >
                         Salvar

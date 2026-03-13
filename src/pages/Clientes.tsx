@@ -1,29 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-
-import FilterBar from '@/components/erp/FilterBar';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+import { Search, Download, Eye, CreditCard, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Eye, CreditCard } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import Spinner from '@/components/ui/spinner';
 import { useRepresentantes } from '@/hooks/use-representantes';
-import ColumnToggle, { type ColumnDef } from '@/components/erp/ColumnToggle';
 import { fetchWithAuth } from '@/lib/auth-refresh';
-
-const COLUMNS: ColumnDef[] = [
-  { key: 'cod', label: 'COD' },
-  { key: 'descricao', label: 'DESCRICAO' },
-  { key: 'documento', label: 'DOCUMENTO' },
-  { key: 'local', label: 'LOCAL' },
-  { key: 'representante', label: 'REPRESENTANTE' },
-  { key: 'vendas', label: 'VENDAS' },
-  { key: 'ult_pedido', label: 'ULT PEDIDO' },
-  { key: 'cadastro', label: 'CADASTRO' },
-  { key: 'acao', label: 'AÇÃO' },
-];
+import FilterBar from '@/components/erp/FilterBar';
 
 interface ClienteAPI {
   ter_codter: number;
@@ -40,15 +26,10 @@ interface ClienteAPI {
   COD_REP: number;
 }
 
-interface Representante {
-  rep_codrep: number;
-  rep_nomrep: string;
-}
-
 const tabs = [
   { key: 'todos', label: 'Todos' },
-  { key: 'novos', label: 'Novos' },
   { key: 'positivados', label: 'Positivados' },
+  { key: 'novos', label: 'Novos' },
 ] as const;
 
 const formatDoc = (doc: string) => {
@@ -65,8 +46,8 @@ const formatDate = (iso: string | null) => {
 };
 
 const formatCurrency = (v: number | null) => {
-  if (v == null || v === 0) return 'R$0,00';
-  return 'R$' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (v == null || v === 0) return 'R$ 0,00';
+  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
 const DEFAULT_START_DATE = new Date(2026, 0, 8);
@@ -80,20 +61,15 @@ const Clientes = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
-    startDate: DEFAULT_START_DATE,
-    endDate: DEFAULT_END_DATE,
-  });
+  const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>(
-    Object.fromEntries(COLUMNS.map(c => [c.key, true]))
-  );
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [filterNonce, setFilterNonce] = useState(0);
-  const show = (key: string) => visibleCols[key] !== false;
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
@@ -131,13 +107,20 @@ const Clientes = () => {
     fetchClients();
   }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce]);
 
-  const handleRepChange = (_repCodes: number[]) => {
-    // State is set via handleFilter
-  };
+  // Debounced search
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSearchQuery(searchInput);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
   const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
     setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
     setSelectedRep(filters.repCodes);
     setSearchQuery(filters.search);
+    setSearchInput(filters.search);
     setPage(1);
     setFilterNonce((n) => n + 1);
   };
@@ -145,171 +128,295 @@ const Clientes = () => {
     setSelectedRep([]);
     setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
     setSearchQuery('');
+    setSearchInput('');
     setPage(1);
     setFilterNonce((n) => n + 1);
   };
 
-  const filtered = activeTab === 'todos'
-    ? clients
-    : activeTab === 'positivados'
-      ? clients.filter(c => (c.TOTAL_VENDAS ?? 0) > 0)
-      : clients.filter(c => {
-          const d = new Date(c.ter_dta_cad);
-          const sixMonthsAgo = new Date();
-          sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-          return d >= sixMonthsAgo;
-        });
-
-  const visibleCount = COLUMNS.filter(col => show(col.key)).length;
+  const filtered = useMemo(() => {
+    if (activeTab === 'todos') return clients;
+    if (activeTab === 'positivados') return clients.filter(c => (c.TOTAL_VENDAS ?? 0) > 0);
+    // novos
+    return clients.filter(c => {
+      const d = new Date(c.ter_dta_cad);
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      return d >= sixMonthsAgo;
+    });
+  }, [clients, activeTab]);
 
   const clientCountByRep = clients.reduce<Record<number, number>>((acc, c) => {
     acc[c.COD_REP] = (acc[c.COD_REP] || 0) + 1;
     return acc;
   }, {});
 
+  const totalPages = Math.ceil(totalRecords / rowsPerPage);
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    if (selectedIds.size === filtered.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map(c => c.ter_codter)));
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | '...')[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (page > 3) pages.push('...');
+      for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i);
+      if (page < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   return (
     <>
+      <FilterBar
+        representantes={representantes}
+        clientCountByRep={clientCountByRep}
+        onRepChange={() => {}}
+        onFilter={handleFilter}
+        onClear={handleClear}
+      />
 
-      <FilterBar representantes={representantes} clientCountByRep={clientCountByRep} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
-
-      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Clientes</h1>
-
-        <div className="flex items-center gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                activeTab === tab.key
-                  ? 'bg-erp-navy text-primary-foreground'
-                  : 'text-foreground hover:bg-accent'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 py-6 max-w-[1600px] mx-auto w-full space-y-6">
+        {/* Page Title */}
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Clientes</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {totalRecords} clientes encontrados
+          </p>
         </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-3">
-            <select
-              value={rowsPerPage}
-              onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-              className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-            <span className="text-sm text-muted-foreground">
-              {totalRecords} clientes encontrados
-            </span>
+        {/* Main Card */}
+        <div className="bg-card border border-border rounded-xl shadow-sm">
+          {/* Toolbar */}
+          <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* Search */}
+            <div className="relative w-full sm:max-w-xs">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Buscar clientes..."
+                className="pl-9 h-10 bg-background border-border"
+              />
+            </div>
+
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Tabs */}
+              <div className="flex items-center bg-muted rounded-lg p-0.5">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => { setActiveTab(tab.key); }}
+                    className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+                      activeTab === tab.key
+                        ? 'bg-card text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Rows per page */}
+              <select
+                value={rowsPerPage}
+                onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
+                className="appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-background text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
           </div>
 
-          <ColumnToggle columns={COLUMNS} visible={visibleCols} onChange={setVisibleCols} />
-        </div>
+          {/* Selected bar */}
+          {selectedIds.size > 0 && (
+            <div className="px-5 sm:px-6 pb-3 flex items-center gap-3">
+              <span className="text-sm font-medium text-foreground">{selectedIds.size} selecionado(s)</span>
+              <Button variant="destructive" size="sm" className="h-7 text-xs" onClick={() => setSelectedIds(new Set())}>
+                Limpar Seleção
+              </Button>
+            </div>
+          )}
 
-        {loading ? (
-          <Spinner />
-        ) : error ? (
-          <div className="text-center py-12 text-destructive text-sm">{error}</div>
-        ) : (
-          <div className="bg-card rounded-lg border border-border overflow-hidden">
+          {/* Table */}
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Spinner />
+            </div>
+          ) : error ? (
+            <div className="text-center py-16 text-destructive text-sm">{error}</div>
+          ) : (
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {show('cod') && <TableHead className="text-xs font-bold text-foreground">COD</TableHead>}
-                    {show('descricao') && <TableHead className="text-xs font-bold text-foreground">DESCRIÇÃO</TableHead>}
-                    {show('documento') && <TableHead className="text-xs font-bold text-foreground">DOCUMENTO</TableHead>}
-                    {show('local') && <TableHead className="text-xs font-bold text-foreground">LOCAL</TableHead>}
-                    {show('representante') && <TableHead className="text-xs font-bold text-foreground">REPRESENTANTE</TableHead>}
-                    {show('vendas') && <TableHead className="text-xs font-bold text-foreground">VENDAS</TableHead>}
-                    {show('ult_pedido') && <TableHead className="text-xs font-bold text-foreground">ULT PEDIDO</TableHead>}
-                    {show('cadastro') && <TableHead className="text-xs font-bold text-foreground">CADASTRO</TableHead>}
-                    {show('acao') && <TableHead className="text-xs font-bold text-foreground">AÇÃO</TableHead>}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <table className="w-full">
+                <thead>
+                  <tr className="border-t border-b border-border">
+                    <th className="w-12 px-5 py-3">
+                      <Checkbox
+                        checked={filtered.length > 0 && selectedIds.size === filtered.length}
+                        onCheckedChange={toggleAll}
+                      />
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Documento</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Local</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Vendas</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cadastro</th>
+                    <th className="px-4 py-3 text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {filtered.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={visibleCount} className="text-center text-muted-foreground py-6">
+                    <tr>
+                      <td colSpan={8} className="text-center text-muted-foreground py-16 text-sm">
                         Nenhum cliente encontrado
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ) : (
-                    filtered.map((c) => (
-                      <TableRow key={c.ter_codter} className="hover:bg-accent/30">
-                        {show('cod') && <TableCell className="text-sm whitespace-nowrap">{c.ter_codter}</TableCell>}
-                        {show('descricao') && (
-                          <TableCell className="text-sm">
-                            <span className="font-semibold underline cursor-pointer">{c.ter_nomter}</span>
-                            {c.ter_fanter && <div className="text-xs text-muted-foreground">{c.ter_fanter}</div>}
-                          </TableCell>
-                        )}
-                        {show('documento') && <TableCell className="text-sm whitespace-nowrap">{formatDoc(c.ter_documento)}</TableCell>}
-                        {show('local') && <TableCell className="text-sm whitespace-nowrap">{c.TEN_CIDLGR} - {c.TEN_UF_LGR}</TableCell>}
-                        {show('representante') && (
-                          <TableCell className="text-sm whitespace-nowrap">
-                            {representantes.find(r => r.rep_codrep === c.COD_REP)?.rep_nomrep || c.COD_REP}
-                          </TableCell>
-                        )}
-                        {show('vendas') && (
-                          <TableCell className="text-sm whitespace-nowrap">
-                            {formatCurrency(c.TOTAL_VENDAS)} ({c.QUANT_VENDAS ?? 0})
-                          </TableCell>
-                        )}
-                        {show('ult_pedido') && (
-                          <TableCell className="text-sm whitespace-nowrap">
-                            {c.ULT_VENDA ? formatDate(c.ULT_VENDA) : '—'}
-                            {c.ULT_CODORC && <div className="text-xs text-muted-foreground">ORC.{c.ULT_CODORC}</div>}
-                          </TableCell>
-                        )}
-                        {show('cadastro') && <TableCell className="text-sm whitespace-nowrap">{formatDate(c.ter_dta_cad)}</TableCell>}
-                        {show('acao') && (
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <button
-                                className="text-muted-foreground hover:text-foreground"
+                    filtered.map((c) => {
+                      const isPositivado = (c.TOTAL_VENDAS ?? 0) > 0;
+                      return (
+                        <tr
+                          key={c.ter_codter}
+                          className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors"
+                        >
+                          <td className="w-12 px-5 py-3.5">
+                            <Checkbox
+                              checked={selectedIds.has(c.ter_codter)}
+                              onCheckedChange={() => toggleSelect(c.ter_codter)}
+                            />
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <div>
+                              <span className="text-sm font-semibold text-foreground hover:text-primary cursor-pointer transition-colors">
+                                {c.ter_nomter}
+                              </span>
+                              {c.ter_fanter && (
+                                <p className="text-xs text-muted-foreground mt-0.5">{c.ter_fanter}</p>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3.5 text-sm text-muted-foreground whitespace-nowrap">
+                            {formatDoc(c.ter_documento)}
+                          </td>
+                          <td className="px-4 py-3.5 text-sm text-muted-foreground whitespace-nowrap">
+                            {c.TEN_CIDLGR} - {c.TEN_UF_LGR}
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <Badge
+                              variant="outline"
+                              className={`text-[11px] font-medium border-0 px-2.5 py-0.5 ${
+                                isPositivado
+                                  ? 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]'
+                                  : 'bg-destructive/10 text-destructive'
+                              }`}
+                            >
+                              {isPositivado ? 'Ativo' : 'Inativo'}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3.5 whitespace-nowrap">
+                            <span className="text-sm font-medium text-foreground">{formatCurrency(c.TOTAL_VENDAS)}</span>
+                            <span className="text-xs text-muted-foreground ml-1.5">({c.QUANT_VENDAS ?? 0})</span>
+                          </td>
+                          <td className="px-4 py-3.5 text-sm text-muted-foreground whitespace-nowrap">
+                            {formatDate(c.ter_dta_cad)}
+                          </td>
+                          <td className="px-4 py-3.5 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
                                 title="Ver Pedidos"
                                 onClick={() => navigate(`/pedidos?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}
                               >
-                                <Eye size={16} />
-                              </button>
-                              <button
-                                className="text-muted-foreground hover:text-foreground"
+                                <Eye size={15} />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
                                 title="Cobranças"
                                 onClick={() => navigate(`/cobrancas?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}
                               >
-                                <CreditCard size={16} />
-                              </button>
+                                <CreditCard size={15} />
+                              </Button>
                             </div>
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    ))
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
-          </div>
-        )}
+          )}
 
-        {totalRecords > rowsPerPage && (
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-              Anterior
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Página {page} de {Math.ceil(totalRecords / rowsPerPage)}
-            </span>
-            <Button variant="outline" size="sm" disabled={page >= Math.ceil(totalRecords / rowsPerPage)} onClick={() => setPage(p => p + 1)}>
-              Próxima
-            </Button>
-          </div>
-        )}
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-t border-border">
+              <p className="text-xs text-muted-foreground hidden sm:block">
+                Mostrando {Math.min((page - 1) * rowsPerPage + 1, totalRecords)} a {Math.min(page * rowsPerPage, totalRecords)} de {totalRecords}
+              </p>
+              <div className="flex items-center gap-1 mx-auto sm:mx-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  disabled={page <= 1}
+                  onClick={() => setPage(p => p - 1)}
+                >
+                  <ChevronLeft size={16} />
+                </Button>
+                {getPageNumbers().map((p, i) =>
+                  p === '...' ? (
+                    <span key={`dots-${i}`} className="px-1 text-xs text-muted-foreground">...</span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p as number)}
+                      className={`h-8 w-8 rounded-lg text-xs font-medium transition-colors ${
+                        page === p
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage(p => p + 1)}
+                >
+                  <ChevronRight size={16} />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </>
   );

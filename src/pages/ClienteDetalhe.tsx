@@ -923,7 +923,7 @@ const ClienteDetalhe = () => {
                         <h3 className="text-base font-semibold text-foreground">Autenticação em duas etapas</h3>
                         <p className="text-sm text-muted-foreground mt-1">Mantenha sua conta ainda mais segura com uma segunda etapa de autenticação.</p>
                       </div>
-                      <Button variant="outline" size="sm" className="text-xs flex items-center gap-1.5 flex-shrink-0">
+                      <Button variant="outline" size="sm" className="text-xs flex items-center gap-1.5 flex-shrink-0 opacity-50 cursor-not-allowed" disabled>
                         <Shield size={14} />
                         Adicionar etapa de autenticação
                       </Button>

@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import Spinner from '@/components/ui/spinner';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { fetchWithAuth } from '@/lib/auth-refresh';
-import FilterBar from '@/components/erp/FilterBar';
+
 
 interface ClienteAPI {
   ter_codter: number;

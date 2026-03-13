@@ -150,7 +150,15 @@ const PedidoDetalhe = () => {
               </TableHeader>
               <TableBody>
                 {items.map((item: any) => (
-                  <TableRow key={item.oit_id} className="hover:bg-accent/30">
+                  <TableRow
+                    key={item.oit_id}
+                    className="hover:bg-accent/30 cursor-pointer"
+                    onClick={() => {
+                      setSelectedProductId(item.oit_codpro);
+                      setSelectedProductName(item.oit_despro);
+                      setDetailOpen(true);
+                    }}
+                  >
                     <TableCell className="text-sm">
                       <span className="font-semibold">{item.oit_codpro} - {item.oit_despro}</span>
                       <div className="text-xs text-muted-foreground">{item.oit_undpro} | Peso: {item.oit_peso_liq} Kg</div>

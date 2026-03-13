@@ -328,7 +328,7 @@ const Clientes = () => {
                           </td>
                           <td className="px-4 py-3.5">
                             <div>
-                              <span className="text-sm font-semibold text-foreground hover:text-primary cursor-pointer transition-colors">
+                              <span className="text-sm font-normal text-foreground hover:text-primary cursor-pointer transition-colors">
                                 {c.ter_nomter}
                               </span>
                               {c.ter_fanter && (

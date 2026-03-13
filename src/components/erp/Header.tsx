@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2, ChevronDown, Moon, Sun } from 'lucide-react';
+import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2, ChevronDown, Moon, Sun, BarChart3 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import logoImg from '@/assets/logo_hadron_go.png';
@@ -9,8 +9,9 @@ import logoMobileImg from '@/assets/logo-mobile.png';
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Users, label: 'Clientes', path: '/clientes' },
-  { icon: Gauge, label: 'Relatórios', path: '/analitico' },
   { icon: ClipboardList, label: 'Pedidos', path: '/pedidos' },
+  { icon: Gauge, label: 'Relatórios', path: '/analitico' },
+  { icon: BarChart3, label: 'Analítico', path: '/analitico-periodo' },
   { icon: Box, label: 'Catálogo', path: '/catalogo' },
 ];
 

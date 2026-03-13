@@ -14,6 +14,7 @@ const Clientes = lazy(() => import("./pages/Clientes"));
 const ClienteDetalhe = lazy(() => import("./pages/ClienteDetalhe"));
 const Cobrancas = lazy(() => import("./pages/Cobrancas"));
 const Analitico = lazy(() => import("./pages/Analitico"));
+const AnaliticoPeriodo = lazy(() => import("./pages/AnaliticoPeriodo"));
 const Pedidos = lazy(() => import("./pages/Pedidos"));
 const Produtos = lazy(() => import("./pages/Produtos"));
 const ProdutoDetalhe = lazy(() => import("./pages/ProdutoDetalhe"));
@@ -57,6 +58,7 @@ const App = () => (
               <Route path="/clientes/:id" element={<Suspense fallback={<PageFallback />}><ClienteDetalhe /></Suspense>} />
               <Route path="/cobrancas" element={<Suspense fallback={<PageFallback />}><Cobrancas /></Suspense>} />
               <Route path="/analitico" element={<Suspense fallback={<PageFallback />}><Analitico /></Suspense>} />
+              <Route path="/analitico-periodo" element={<Suspense fallback={<PageFallback />}><AnaliticoPeriodo /></Suspense>} />
               <Route path="/pedidos" element={<Suspense fallback={<PageFallback />}><Pedidos /></Suspense>} />
               <Route path="/pedidos/criar" element={<Suspense fallback={<PageFallback />}><CriarPedido /></Suspense>} />
               <Route path="/pedidos/:id" element={<Suspense fallback={<PageFallback />}><PedidoDetalhe /></Suspense>} />

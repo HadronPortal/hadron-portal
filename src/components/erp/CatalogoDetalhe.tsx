@@ -66,7 +66,7 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
           <ScrollArea className="flex-1">
             <div className="p-6 space-y-6">
               {/* Product Image */}
-              <div className="relative rounded-xl border border-border bg-muted/20 flex items-center justify-center aspect-square overflow-hidden">
+              <div className="relative rounded-xl border border-border bg-muted/20 flex items-center justify-center aspect-[4/3] overflow-hidden">
                 {(info.pro_foto || productFoto) ? (
                   <img
                     src={`${PROXY_BASE}${encodeURIComponent(info.pro_foto || productFoto || '')}`}

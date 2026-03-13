@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 
 import { useApiFetch } from '@/hooks/use-api-fetch';
-import { useApiFetch } from '@/hooks/use-api-fetch';
 
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,

@@ -124,6 +124,7 @@ const ClienteDetalhe = () => {
   const [newAddrCep, setNewAddrCep] = useState('');
   const [newAddrPais, setNewAddrPais] = useState('');
   const [newAddrCobranca, setNewAddrCobranca] = useState(true);
+  const [extraAddresses, setExtraAddresses] = useState<Array<{ label: string; logradouro: string; cidade: string; uf: string; nome: string; isDefault: boolean }>>([]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

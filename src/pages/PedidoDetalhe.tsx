@@ -39,35 +39,21 @@ const PROXY_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase
 const PedidoDetalhe = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [order, setOrder] = useState<any>(null);
-  const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const [selectedProductName, setSelectedProductName] = useState<string | undefined>();
   const [detailOpen, setDetailOpen] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const res = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/fetch-order-details?order_id=${id}`
-        );
-        if (!res.ok) throw new Error('Falha ao buscar detalhes');
-        const data = await res.json();
-        setOrder(data.order || null);
-        setItems(data.items || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [id]);
+  const { data, isLoading: loading, error: queryError } = useApiFetch<{ order: any; items: any[] }>({
+    queryKey: ['order-details', String(id)],
+    endpoint: 'fetch-order-details',
+    params: { order_id: id },
+    enabled: !!id,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const error = queryError ? (queryError as Error).message : null;
+  const order = data?.order || null;
+  const items = data?.items || [];
 
   if (loading) return <Spinner />;
 

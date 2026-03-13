@@ -91,6 +91,26 @@ const ClienteDetalhe = () => {
   const [ordersTotal, setOrdersTotal] = useState(0);
   const ordersLimit = 10;
 
+  // Edit form state
+  const [editName, setEditName] = useState('');
+  const [editFantasia, setEditFantasia] = useState('');
+  const [editDocumento, setEditDocumento] = useState('');
+  const [editCidade, setEditCidade] = useState('');
+  const [editUf, setEditUf] = useState('');
+  const [editRep, setEditRep] = useState('');
+
+  // Sync edit fields when client loads
+  useEffect(() => {
+    if (client) {
+      setEditName(client.ter_nomter || '');
+      setEditFantasia(client.ter_fanter || '');
+      setEditDocumento(client.ter_documento || '');
+      setEditCidade(client.TEN_CIDLGR || '');
+      setEditUf(client.TEN_UF_LGR || '');
+      setEditRep(String(client.COD_REP || ''));
+    }
+  }, [client]);
+
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 
   // Fetch client

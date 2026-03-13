@@ -645,7 +645,7 @@ const ClienteDetalhe = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-primary text-primary hover:bg-primary/10"
+                        className=""
                         onClick={() => {
                           // TODO: integrar com API de atualização
                           console.log('Salvar cliente', { editName, editEmail, editTelefone, editDocumento, editCidade, editUf, editRep });
@@ -674,7 +674,7 @@ const ClienteDetalhe = () => {
                     <div className="bg-card border border-border rounded-xl shadow-sm">
                       <div className="px-6 py-5 border-b border-border flex items-center justify-between">
                         <h3 className="text-base font-semibold text-foreground">Endereços</h3>
-                        <Button size="sm" variant="outline" className="text-xs border-primary text-primary hover:bg-primary/10">
+                        <Button size="sm" variant="outline" className="text-xs">
                           Novo endereço
                         </Button>
                       </div>
@@ -714,7 +714,7 @@ const ClienteDetalhe = () => {
                                     setEditBairro('');
                                     setEditAddressOpen(true);
                                   }}
-                                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                                 >
                                   <Pencil size={16} />
                                 </button>

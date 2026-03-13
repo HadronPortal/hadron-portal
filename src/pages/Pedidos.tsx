@@ -274,7 +274,7 @@ const Pedidos = () => {
                       <TableHeader>
                         <TableRow>
                           {TABLE_HEADERS.map(h => (
-                            <TableHead key={h} className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</TableHead>
+                            <TableHead key={h} className={`text-[11px] font-semibold text-muted-foreground uppercase tracking-wider ${h === 'AÇÕES' ? 'text-right' : ''}`}>{h}</TableHead>
                           ))}
                         </TableRow>
                       </TableHeader>

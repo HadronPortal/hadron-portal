@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Package, X } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Package } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -46,28 +45,26 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
   const info = data?.info;
   const precos = data?.precos;
   const estoques = data?.estoques || [];
-
   const hasStock = (info?.pro_sdo_atu ?? 0) > 0;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] p-0 gap-0 overflow-hidden rounded-2xl border-border">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="w-full sm:max-w-[480px] p-0 flex flex-col bg-card overflow-hidden">
+        <SheetHeader className="px-6 pt-5 pb-4 border-b border-border flex-shrink-0">
+          <SheetTitle className="text-base font-semibold text-foreground">
+            Detalhes do Produto
+          </SheetTitle>
+        </SheetHeader>
+
         {loading ? (
-          <div className="flex items-center justify-center py-24">
+          <div className="flex items-center justify-center py-24 flex-1">
             <Spinner />
           </div>
         ) : error ? (
-          <div className="text-center py-20 text-destructive text-sm p-6">{error}</div>
+          <div className="text-center py-20 text-destructive text-sm px-6">{error}</div>
         ) : info ? (
-          <ScrollArea className="max-h-[85vh]">
+          <ScrollArea className="flex-1">
             <div className="p-6 space-y-6">
-              {/* Header */}
-              <DialogHeader className="space-y-0">
-                <DialogTitle className="text-base font-semibold text-foreground">
-                  Detalhes do Produto
-                </DialogTitle>
-              </DialogHeader>
-
               {/* Product Image */}
               <div className="relative rounded-xl border border-border bg-muted/20 flex items-center justify-center aspect-square overflow-hidden">
                 {(info.pro_foto || productFoto) ? (
@@ -88,9 +85,7 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
                   {info.pro_despro || productName || '—'}
                 </h2>
                 {info.pro_deswww && (
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {info.pro_deswww}
-                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{info.pro_deswww}</p>
                 )}
               </div>
 
@@ -183,8 +178,8 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
             </div>
           </ScrollArea>
         ) : null}
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 

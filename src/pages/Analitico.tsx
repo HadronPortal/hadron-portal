@@ -62,6 +62,8 @@ const getImageUrl = (foto: string) => {
 };
 
 const Analitico = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('todos');
   const { representantes } = useRepresentantes();
   const [rowsPerPage, setRowsPerPage] = useState(50);

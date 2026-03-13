@@ -69,9 +69,11 @@ const ClienteDetalhe = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const [client, setClient] = useState<ClienteAPI | null>(null);
+  const routeClient = (location.state as { client?: ClienteAPI } | null)?.client;
+  const hasRouteClient = Boolean(routeClient && id && String(routeClient.ter_codter) === id);
+  const [client, setClient] = useState<ClienteAPI | null>(hasRouteClient ? routeClient! : null);
   const [orders, setOrders] = useState<OrderAPI[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!hasRouteClient);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('Visão Geral');
   const [ordersPage, setOrdersPage] = useState(1);
@@ -82,18 +84,26 @@ const ClienteDetalhe = () => {
 
   // Fetch client
   useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    if (routeClient && String(routeClient.ter_codter) === id) {
+      setClient(routeClient);
+      setLoading(false);
+      return;
+    }
+
     const fetchClient = async () => {
       setLoading(true);
       try {
-        // Use search with the exact client code to find this client
-        const params = new URLSearchParams({ page: '1', limit: '50', search: id || '' });
+        const params = new URLSearchParams({ page: '1', limit: '100', search: id });
         const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params}`;
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');
         const data = await res.json();
         const clients = data.clients || [];
-        console.log('[ClienteDetalhe] searched for id:', id, 'got clients:', clients.map((c: ClienteAPI) => ({ code: c.ter_codter, name: c.ter_nomter, vendas: c.TOTAL_VENDAS })));
-        // Strict match on client code
         const found = clients.find((c: ClienteAPI) => String(c.ter_codter) === id);
         setClient(found || null);
       } catch (err) {
@@ -102,8 +112,9 @@ const ClienteDetalhe = () => {
         setLoading(false);
       }
     };
-    if (id) fetchClient();
-  }, [id, projectId]);
+
+    fetchClient();
+  }, [id, projectId, routeClient]);
 
   // Fetch orders for this client
   useEffect(() => {
@@ -114,12 +125,13 @@ const ClienteDetalhe = () => {
           page: String(ordersPage),
           limit: String(ordersLimit),
           codter: id || '',
+          date_ini: '2000-01-01',
+          date_end: '2100-12-31',
         });
         const url = `https://${projectId}.supabase.co/functions/v1/fetch-orders?${params}`;
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');
         const data = await res.json();
-        console.log('[ClienteDetalhe] orders for codter:', id, 'response:', JSON.stringify(data).substring(0, 500));
         setOrders(data.orders || []);
         setOrdersTotal(data.total_records || 0);
       } catch (err) {
@@ -130,10 +142,27 @@ const ClienteDetalhe = () => {
     };
     if (id) fetchOrders();
   }, [id, ordersPage, projectId]);
+  useEffect(() => {
+    if (client || !id || orders.length === 0) return;
+
+    setClient({
+      ter_codter: Number(id),
+      ter_nomter: orders[0].ter_nomter || `Cliente ${id}`,
+      ter_fanter: '',
+      ter_documento: '',
+      TEN_CIDLGR: '',
+      TEN_UF_LGR: '',
+      TOTAL_VENDAS: orders.reduce((acc, o) => acc + (o.orc_vlrtot || 0), 0),
+      QUANT_VENDAS: ordersTotal || orders.length,
+      ULT_VENDA: orders[0].orc_datcad || null,
+      ULT_CODORC: orders[0].orc_codorc || null,
+      ter_dta_cad: '',
+      COD_REP: 0,
+    });
+  }, [client, id, orders, ordersTotal]);
 
   const ordersTotalPages = Math.ceil(ordersTotal / ordersLimit);
-  const isPositivado = client ? (client.TOTAL_VENDAS ?? 0) > 0 : false;
-
+  const isPositivado = client ? ((client.TOTAL_VENDAS ?? 0) > 0 || ordersTotal > 0 || orders.length > 0) : ordersTotal > 0 || orders.length > 0;
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center py-32">

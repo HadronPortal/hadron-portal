@@ -14,6 +14,7 @@ const Clientes = lazy(() => import("./pages/Clientes"));
 const ClienteDetalhe = lazy(() => import("./pages/ClienteDetalhe"));
 const Cobrancas = lazy(() => import("./pages/Cobrancas"));
 const Analitico = lazy(() => import("./pages/Analitico"));
+const AnaliticoPeriodo = lazy(() => import("./pages/AnaliticoPeriodo"));
 const Pedidos = lazy(() => import("./pages/Pedidos"));
 const Produtos = lazy(() => import("./pages/Produtos"));
 const ProdutoDetalhe = lazy(() => import("./pages/ProdutoDetalhe"));

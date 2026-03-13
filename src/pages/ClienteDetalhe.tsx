@@ -902,14 +902,14 @@ const ClienteDetalhe = () => {
                         <div className="flex items-center gap-6">
                           <span className="text-sm text-muted-foreground w-[100px]">Senha</span>
                           {editingAdvPassword ? (
-                            <Input type="password" value={advPassword} onChange={e => setAdvPassword(e.target.value)} className="bg-transparent max-w-[200px]" autoFocus onBlur={() => setEditingAdvPassword(false)} onKeyDown={e => e.key === 'Enter' && setEditingAdvPassword(false)} />
+                            <Input type="password" value={advPassword} readOnly className="bg-transparent max-w-[200px] cursor-not-allowed opacity-70" />
                           ) : (
                             <span className="text-sm font-medium text-foreground">******</span>
                           )}
                         </div>
-                        <button onClick={() => setEditingAdvPassword(true)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                           <Pencil size={15} className="text-muted-foreground" />
-                        </button>
+                        </div>
                       </div>
                     </div>
                   </div>

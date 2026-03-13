@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Package } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
@@ -46,6 +47,12 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
   const precos = data?.precos;
   const estoques = data?.estoques || [];
   const hasStock = (info?.pro_sdo_atu ?? 0) > 0;
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

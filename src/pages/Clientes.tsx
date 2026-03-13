@@ -362,26 +362,32 @@ const Clientes = () => {
                             {formatDate(c.ter_dta_cad)}
                           </td>
                           <td className="px-4 py-3.5 text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                                title="Ver Pedidos"
-                                onClick={() => navigate(`/pedidos?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}
-                              >
-                                <Eye size={15} />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                                title="Cobranças"
-                                onClick={() => navigate(`/cobrancas?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}
-                              >
-                                <CreditCard size={15} />
-                              </Button>
-                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 text-xs font-medium gap-1.5 border-primary/30 text-primary bg-primary/5 hover:bg-primary/10"
+                                >
+                                  Actions
+                                  <ChevronDown size={14} />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-40">
+                                <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}`)}>
+                                  <Eye size={14} className="mr-2" />
+                                  Visualizar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => navigate(`/pedidos?codter=${c.ter_codter}&nome=${encodeURIComponent(c.ter_nomter)}`)}>
+                                  <FileText size={14} className="mr-2" />
+                                  Ver Pedido
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}/editar`)}>
+                                  <Pencil size={14} className="mr-2" />
+                                  Alterar
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </td>
                         </tr>
                       );

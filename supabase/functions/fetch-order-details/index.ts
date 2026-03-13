@@ -42,7 +42,7 @@ serve(async (req) => {
 
     const token = extractUserToken(req) || await getServiceToken();
 
-    const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiOrderDetails', {
+    const res = await fetch('https://dev.hadronweb.com.br/app/pages/apiOrderDetails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

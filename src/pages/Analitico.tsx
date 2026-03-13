@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Search, Download } from 'lucide-react';
 
-import FilterBar from '@/components/erp/FilterBar';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronDown } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 
@@ -74,6 +74,7 @@ const Analitico = () => {
     endDate: DEFAULT_END_DATE,
   });
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
   const [filterNonce, setFilterNonce] = useState(0);
 
@@ -100,31 +101,15 @@ const Analitico = () => {
   const periods: Period[] = (data?.periods || []).filter((p: Period) => p.chave !== 'TOTAL');
   const totalRecords: number = data?.total_records || 0;
 
-  const handleRepChange = (_repCodes: number[]) => {};
-  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
-    setSelectedRep(filters.repCodes);
-    setSelectedRepRaw(filters.repCodesRaw);
-    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
-    setSearchQuery(filters.search);
-    setPage(1);
-    setFilterNonce((n) => n + 1);
-  };
-  const handleClear = () => {
-    setSelectedRep([]);
-    setSelectedRepRaw([]);
-    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-    setSearchQuery('');
-    setPage(1);
-    setFilterNonce((n) => n + 1);
-  };
-
   const tabFiltered = activeTab === 'todos'
     ? products
     : products.filter((p) => p.tipo_op_banco === activeTab);
 
-  const filtered = searchQuery.trim()
-    ? tabFiltered.filter(p => (p.produto || '').toLowerCase().includes(searchQuery.toLowerCase()))
-    : tabFiltered;
+  const filtered = useMemo(() => {
+    if (!searchInput.trim()) return tabFiltered;
+    const q = searchInput.toLowerCase();
+    return tabFiltered.filter(p => (p.produto || '').toLowerCase().includes(q));
+  }, [tabFiltered, searchInput]);
 
   const totalPeriod = periods;
   const grandTotal = products.reduce((acc, p) => ({
@@ -133,16 +118,42 @@ const Analitico = () => {
     peso: acc.peso + (p.totais?.qtde || 0) * (p.peso_un || 0),
   }), { valor: 0, qtde: 0, peso: 0 });
 
+  const totalPages = Math.ceil(totalRecords / rowsPerPage);
   const showOverlay = isFetching && !isLoading;
+
+  const handleSearch = () => {
+    setSearchQuery(searchInput);
+    setPage(1);
+    setFilterNonce(n => n + 1);
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | '...')[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (page > 3) pages.push('...');
+      for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i);
+      if (page < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    return pages;
+  };
 
   return (
     <>
       {/* Hero banner */}
       <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))]">
-        <div className="absolute inset-x-0 top-0 h-[70px] bg-[hsl(var(--erp-banner))]" />
-        <div className="h-[70px]" />
         <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
-          <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Relatórios</h1>
+          <div>
+            <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Relatórios</h1>
+            <div className="flex items-center gap-1.5 text-xs text-primary-foreground/60 mt-1">
+              <button onClick={() => navigate('/')} className="hover:text-primary-foreground transition-colors">Home</button>
+              <span>›</span>
+              <span className="text-primary-foreground/80">Relatórios</span>
+            </div>
+          </div>
           <nav className="hidden lg:flex items-center gap-1">
             {navItems.map(({ label, path }) => {
               const isActive = location.pathname === path;
@@ -150,7 +161,11 @@ const Analitico = () => {
                 <button
                   key={path}
                   onClick={() => navigate(path)}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-white/80 hover:text-white ${isActive ? 'border-b-2 border-white text-white' : ''}`}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary-foreground/15 text-primary-foreground'
+                      : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'
+                  }`}
                 >
                   {label}
                 </button>
@@ -158,160 +173,201 @@ const Analitico = () => {
             })}
           </nav>
         </div>
+        <div className="h-16 sm:h-24" />
       </div>
 
-      
+      {/* Main content - card overlapping banner */}
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-6 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
+        <div className="bg-card border border-border rounded-xl shadow-sm">
 
-      <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
+          {/* Toolbar */}
+          <div className="p-5 sm:p-6 flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              {/* Search */}
+              <div className="relative w-full sm:max-w-xs">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  placeholder="Buscar produto..."
+                  className="pl-9 h-10 bg-transparent border-border"
+                />
+              </div>
 
-        <div className="flex items-center gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                activeTab === tab.key
-                  ? 'bg-erp-navy text-primary-foreground'
-                  : 'text-foreground hover:bg-accent'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+              <div className="flex items-center gap-3 flex-wrap">
+                {/* Tabs */}
+                <div className="flex items-center bg-muted rounded-lg p-0.5">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+                        activeTab === tab.key
+                          ? 'bg-card text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-3">
-            <select
-              value={rowsPerPage}
-              onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-              className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-            <span className="text-sm text-muted-foreground">{totalRecords} registros</span>
+                {/* Rows per page */}
+                <select
+                  value={rowsPerPage}
+                  onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
+                  className="appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-transparent text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+
+                {/* Export */}
+                <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs font-medium">
+                  <Download size={14} />
+                  Exportar
+                </Button>
+              </div>
+            </div>
           </div>
 
-          <Button variant="outline" size="sm" className="gap-1">
-            Colunas <ChevronDown size={14} />
-          </Button>
-        </div>
-
-        {error ? (
-          <div className="bg-card border border-border rounded-xl p-8 text-center">
-            <p className="text-destructive text-sm">{error}</p>
-          </div>
-        ) : isLoading ? (
-          <SkeletonTable columns={5} rows={10} headers={['PRODUTO', 'MÊS 1', 'MÊS 2', 'MÊS 3', 'TOTAL']} />
-        ) : (
-          <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
-            <div className="bg-card rounded-lg border border-border overflow-hidden">
+          {/* Table */}
+          {error ? (
+            <div className="text-center py-16 text-destructive text-sm">{error}</div>
+          ) : isLoading ? (
+            <div className="px-2 sm:px-6 py-4">
+              <SkeletonTable columns={5} rows={10} headers={['PRODUTO', 'MÊS 1', 'MÊS 2', 'MÊS 3', 'TOTAL']} />
+            </div>
+          ) : (
+            <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
               <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs font-bold text-foreground">PRODUTO</TableHead>
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-t border-b border-border">
+                      <th className="px-5 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Produto</th>
                       {totalPeriod.map((p) => (
-                        <TableHead key={p.chave} className="text-xs font-bold text-foreground">
+                        <th key={p.chave} className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                           {p.legenda}
-                        </TableHead>
+                        </th>
                       ))}
-                      <TableHead className="text-xs font-bold text-foreground">TOTAL</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                      <th className="px-4 py-3 text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {filtered.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={totalPeriod.length + 2} className="text-center text-muted-foreground py-6">
+                      <tr>
+                        <td colSpan={totalPeriod.length + 2} className="text-center text-muted-foreground py-12 text-sm">
                           Nenhum produto encontrado
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ) : (
-                      filtered.map((produto) => {
+                      filtered.map((produto, idx) => {
                         const imgUrl = produto.foto ? getImageUrl(produto.foto) : '';
                         return (
-                          <TableRow key={produto.codpro} className="hover:bg-accent/30">
-                            <TableCell className="text-sm">
+                          <tr key={produto.codpro} className={`border-b border-border hover:bg-accent/30 transition-colors ${idx % 2 === 1 ? 'bg-muted/30' : ''}`}>
+                            <td className="px-5 py-3 text-sm">
                               <div className="flex items-center gap-3">
                                 {imgUrl && (
                                   <img
                                     src={imgUrl}
                                     alt={produto.produto}
-                                    className="w-10 h-10 object-contain rounded bg-muted"
+                                    className="w-10 h-10 object-contain rounded bg-muted flex-shrink-0"
                                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                                   />
                                 )}
-                                <span className="font-semibold">{produto.codpro}-{produto.produto}</span>
+                                <div>
+                                  <span className="font-medium text-foreground">{produto.produto}</span>
+                                  <div className="text-xs text-muted-foreground">#{produto.codpro}</div>
+                                </div>
                               </div>
-                            </TableCell>
+                            </td>
                             {totalPeriod.map((p) => {
                               const m = produto.mensal?.[p.chave];
                               return (
-                                <TableCell key={p.chave} className="text-sm">
+                                <td key={p.chave} className="px-4 py-3 text-sm">
                                   {m ? (
                                     <>
-                                      <div>{formatCurrency(m.valor)} ({m.qtde})</div>
+                                      <div className="text-foreground">{formatCurrency(m.valor)}</div>
                                       <div className="text-xs text-muted-foreground">
-                                        {formatWeight(m.qtde * (produto.peso_un || 0))}
+                                        {m.qtde} un · {formatWeight(m.qtde * (produto.peso_un || 0))}
                                       </div>
                                     </>
                                   ) : (
                                     <span className="text-muted-foreground">—</span>
                                   )}
-                                </TableCell>
+                                </td>
                               );
                             })}
-                            <TableCell className="text-sm">
-                              <div className="text-foreground">
-                                {formatCurrency(produto.totais?.valor || 0)} ({produto.totais?.qtde || 0})
+                            <td className="px-4 py-3 text-sm text-right">
+                              <div className="font-semibold text-foreground">
+                                {formatCurrency(produto.totais?.valor || 0)}
                               </div>
                               <div className="text-xs text-muted-foreground">
-                                {formatWeight((produto.totais?.qtde || 0) * (produto.peso_un || 0))}
+                                {produto.totais?.qtde || 0} un · {formatWeight((produto.totais?.qtde || 0) * (produto.peso_un || 0))}
                               </div>
-                            </TableCell>
-                          </TableRow>
+                            </td>
+                          </tr>
                         );
                       })
                     )}
 
+                    {/* Totals row */}
                     {filtered.length > 0 && (
-                      <TableRow className="border-t-2 border-border">
-                        <TableCell className="text-sm font-bold text-foreground">TOTAL</TableCell>
+                      <tr className="border-t-2 border-border bg-muted/50">
+                        <td className="px-5 py-3 text-sm font-bold text-foreground">TOTAL</td>
                         {totalPeriod.map((p) => (
-                          <TableCell key={p.chave} className="text-sm">
+                          <td key={p.chave} className="px-4 py-3 text-sm">
                             <div className="font-bold text-foreground">{formatCurrency(p.total_valor)}</div>
-                            <div className="text-xs font-bold text-foreground">{formatWeight(p.total_peso)}</div>
-                          </TableCell>
+                            <div className="text-xs font-semibold text-muted-foreground">{formatWeight(p.total_peso)}</div>
+                          </td>
                         ))}
-                        <TableCell className="text-sm">
+                        <td className="px-4 py-3 text-sm text-right">
                           <div className="font-bold text-foreground">{formatCurrency(grandTotal.valor)}</div>
-                          <div className="text-xs font-bold text-foreground">{formatWeight(grandTotal.peso)}</div>
-                        </TableCell>
-                      </TableRow>
+                          <div className="text-xs font-semibold text-muted-foreground">{formatWeight(grandTotal.peso)}</div>
+                        </td>
+                      </tr>
                     )}
-                  </TableBody>
-                </Table>
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {totalRecords > rowsPerPage && (
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-              Anterior
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Página {page} de {Math.ceil(totalRecords / rowsPerPage)}
-            </span>
-            <Button variant="outline" size="sm" disabled={page >= Math.ceil(totalRecords / rowsPerPage)} onClick={() => setPage(p => p + 1)}>
-              Próxima
-            </Button>
-          </div>
-        )}
+          {/* Pagination */}
+          {totalRecords > rowsPerPage && (
+            <div className="px-5 sm:px-6 py-4 flex items-center justify-between border-t border-border">
+              <span className="text-xs text-muted-foreground">
+                Mostrando {(page - 1) * rowsPerPage + 1} a {Math.min(page * rowsPerPage, totalRecords)} de {totalRecords}
+              </span>
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="h-8 w-8 p-0">
+                  ‹
+                </Button>
+                {getPageNumbers().map((p, i) =>
+                  p === '...' ? (
+                    <span key={`ellipsis-${i}`} className="px-1 text-muted-foreground text-xs">...</span>
+                  ) : (
+                    <Button
+                      key={p}
+                      variant={page === p ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setPage(p as number)}
+                      className="h-8 w-8 p-0 text-xs"
+                    >
+                      {p}
+                    </Button>
+                  )
+                )}
+                <Button variant="ghost" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="h-8 w-8 p-0">
+                  ›
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </>
   );

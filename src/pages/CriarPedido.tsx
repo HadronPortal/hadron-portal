@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +38,14 @@ const fmt = (v: number) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDi
 
 const CriarPedido = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const navItems = [
+    { label: 'Home', path: '/' },
+    { label: 'Clientes', path: '/clientes' },
+    { label: 'Analítico', path: '/analitico' },
+    { label: 'Pedidos', path: '/pedidos' },
+    { label: 'Catálogo', path: '/catalogo' },
+  ];
   const [step, setStep] = useState(0);
   const [pedidoNumero, setPedidoNumero] = useState('');
 
@@ -166,6 +174,24 @@ const CriarPedido = () => {
               <span className="text-primary-foreground/90">Criar Pedido</span>
             </div>
           </div>
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map(({ label, path }) => {
+              const isActive = location.pathname === path;
+              return (
+                <button
+                  key={label}
+                  onClick={() => navigate(path)}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary-foreground/15 text-primary-foreground'
+                      : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
         </div>
         <div className="h-16 sm:h-24" />
       </div>

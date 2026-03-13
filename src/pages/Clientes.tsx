@@ -367,7 +367,7 @@ const Clientes = () => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="h-8 px-4 text-xs font-normal gap-1.5 rounded-md border border-border bg-card text-muted-foreground transition-all duration-150 hover:bg-[#DBEAFE] hover:text-[#3B82F6] hover:border-[#93C5FD] data-[state=open]:bg-[#DBEAFE] data-[state=open]:text-[#3B82F6] data-[state=open]:border-[#93C5FD] focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                                  className="h-8 px-4 text-xs font-normal gap-1.5 data-[state=open]:bg-[#DBEAFE] data-[state=open]:text-[#3B82F6] data-[state=open]:border-[#93C5FD] focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                                   style={{ fontFamily: "'Poppins', sans-serif" }}
                                 >
                                   Actions

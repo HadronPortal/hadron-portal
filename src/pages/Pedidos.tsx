@@ -258,6 +258,9 @@ const Pedidos = () => {
                   />
                 </div>
                 <div className="flex items-center gap-3">
+                  <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm h-10" onClick={() => navigate('/pedidos/criar')}>
+                    <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido
+                  </Button>
                   <select
                     value={rowsPerPage}
                     onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}

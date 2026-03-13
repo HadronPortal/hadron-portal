@@ -70,6 +70,40 @@ serve(async (req) => {
     let data;
     try { data = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON`); }
 
+    console.log('Orders response keys:', JSON.stringify(Object.keys(data || {})));
+    console.log('Orders sample (first order keys):', JSON.stringify(Object.keys(data?.orders?.[0] || data?.data?.[0] || {})));
+    console.log('Dashboard field:', JSON.stringify(data?.dashboard || 'NOT PRESENT'));
+
+    // If the API doesn't return a dashboard summary, compute it from orders
+    if (!data.dashboard && Array.isArray(data.orders)) {
+      const sent = { total: 0, peso: 0 };
+      const approved = { total: 0, peso: 0 };
+      const invoiced = { total: 0, peso: 0 };
+      const canceled = { total: 0, peso: 0 };
+
+      for (const o of data.orders) {
+        const status = String(o.orc_status || '');
+        const val = Number(o.orc_val_tot) || 0;
+        const peso = parseFloat(o.OIT_PESO) || 0;
+
+        if (status === '20' || status === 'EN') { sent.total += val; sent.peso += peso; }
+        else if (status === '30' || status === 'AP') { approved.total += val; approved.peso += peso; }
+        else if (status === '40' || status === '50' || status === 'FA' || status === 'PC') { invoiced.total += val; invoiced.peso += peso; }
+        else if (status === '90' || status === 'CA') { canceled.total += val; canceled.peso += peso; }
+      }
+
+      data.dashboard = {
+        sent: sent.total,
+        sent_peso: Math.round(sent.peso * 100) / 100,
+        approved: approved.total,
+        approved_peso: Math.round(approved.peso * 100) / 100,
+        invoiced: invoiced.total,
+        invoiced_peso: Math.round(invoiced.peso * 100) / 100,
+        canceled: canceled.total,
+        canceled_peso: Math.round(canceled.peso * 100) / 100,
+      };
+    }
+
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },
     });

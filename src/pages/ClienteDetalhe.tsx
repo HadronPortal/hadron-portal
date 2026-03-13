@@ -706,25 +706,16 @@ const ClienteDetalhe = () => {
                                   {addr.cidade}{addr.uf ? ` - ${addr.uf}` : ''}
                                 </p>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => {
-                                    setEditAddressIdx(idx);
-                                    setEditLogradouro(addr.logradouro || '');
-                                    setEditComplemento('');
-                                    setEditBairro('');
-                                    setEditAddressOpen(true);
-                                  }}
-                                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-                                >
+                              <div className="flex items-center gap-2 opacity-50">
+                                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground cursor-not-allowed">
                                   <Pencil size={16} />
-                                </button>
-                                <button className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                </div>
+                                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground cursor-not-allowed">
                                   <Trash2 size={16} />
-                                </button>
-                                <button className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+                                </div>
+                                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground cursor-not-allowed">
                                   <GripVertical size={16} />
-                                </button>
+                                </div>
                               </div>
                             </div>
                             {/* Expanded details */}

@@ -139,6 +139,11 @@ const CriarPedido = () => {
 
   const [enviando, setEnviando] = useState(false);
 
+  /* ─── delivery address state ─── */
+  const [billingAddr, setBillingAddr] = useState({ line1: '', line2: '', city: '', postcode: '', state: '', country: '' });
+  const [sameAsBilling, setSameAsBilling] = useState(true);
+  const [shippingAddr, setShippingAddr] = useState({ line1: '', line2: '', city: '', postcode: '', state: '', country: '' });
+
   const handleEnviarPedido = async () => {
     if (!selectedCliente || cart.length === 0) return;
     setEnviando(true);

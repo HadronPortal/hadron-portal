@@ -367,12 +367,8 @@ const Clientes = () => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="h-8 px-4 text-xs font-normal gap-1.5 rounded-md border-0 transition-all duration-150 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                                  style={{
-                                    fontFamily: "'Poppins', sans-serif",
-                                    backgroundColor: '#E1E9F5',
-                                    color: '#3E6BB5',
-                                  }}
+                                  className="h-8 px-4 text-xs font-normal gap-1.5 rounded-md border border-border bg-card text-muted-foreground transition-all duration-150 hover:bg-[#E1E9F5] hover:text-[#3E6BB5] hover:border-[#E1E9F5] data-[state=open]:bg-[#E1E9F5] data-[state=open]:text-[#3E6BB5] data-[state=open]:border-[#E1E9F5] focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                                  style={{ fontFamily: "'Poppins', sans-serif" }}
                                 >
                                   Actions
                                   <ChevronDown size={14} />

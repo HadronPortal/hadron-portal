@@ -85,14 +85,17 @@ const ClienteDetalhe = () => {
     const fetchClient = async () => {
       setLoading(true);
       try {
-        const params = new URLSearchParams({ page: '1', limit: '50', client_filter: id || '' });
+        // Use search with the exact client code to find this client
+        const params = new URLSearchParams({ page: '1', limit: '50', search: id || '' });
         const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params}`;
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');
         const data = await res.json();
         const clients = data.clients || [];
+        console.log('[ClienteDetalhe] searched for id:', id, 'got clients:', clients.map((c: ClienteAPI) => ({ code: c.ter_codter, name: c.ter_nomter, vendas: c.TOTAL_VENDAS })));
+        // Strict match on client code
         const found = clients.find((c: ClienteAPI) => String(c.ter_codter) === id);
-        setClient(found || clients[0] || null);
+        setClient(found || null);
       } catch (err) {
         console.error(err);
       } finally {
@@ -116,6 +119,7 @@ const ClienteDetalhe = () => {
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
         if (!res.ok) throw new Error('Falha');
         const data = await res.json();
+        console.log('[ClienteDetalhe] orders for codter:', id, 'response:', JSON.stringify(data).substring(0, 500));
         setOrders(data.orders || []);
         setOrdersTotal(data.total_records || 0);
       } catch (err) {

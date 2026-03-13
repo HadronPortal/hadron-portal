@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -41,6 +42,9 @@ const PedidoDetalhe = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [selectedProductName, setSelectedProductName] = useState<string | undefined>();
+  const [detailOpen, setDetailOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -146,7 +150,15 @@ const PedidoDetalhe = () => {
               </TableHeader>
               <TableBody>
                 {items.map((item: any) => (
-                  <TableRow key={item.oit_id} className="hover:bg-accent/30">
+                  <TableRow
+                    key={item.oit_id}
+                    className="hover:bg-accent/30 cursor-pointer"
+                    onClick={() => {
+                      setSelectedProductId(item.oit_codpro);
+                      setSelectedProductName(item.oit_despro);
+                      setDetailOpen(true);
+                    }}
+                  >
                     <TableCell className="text-sm">
                       <span className="font-semibold">{item.oit_codpro} - {item.oit_despro}</span>
                       <div className="text-xs text-muted-foreground">{item.oit_undpro} | Peso: {item.oit_peso_liq} Kg</div>
@@ -168,6 +180,13 @@ const PedidoDetalhe = () => {
           </div>
         </div>
       </main>
+
+      <CatalogoDetalhe
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        productId={selectedProductId}
+        productName={selectedProductName}
+      />
     </>
   );
 };

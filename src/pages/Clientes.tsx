@@ -232,7 +232,7 @@ const Clientes = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Buscar clientes..."
-                className="pl-9 h-10 bg-background border-border"
+                className="pl-9 h-10 bg-transparent border-border"
               />
             </div>
 

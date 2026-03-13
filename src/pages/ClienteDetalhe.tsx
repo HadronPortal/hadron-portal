@@ -165,7 +165,7 @@ const ClienteDetalhe = () => {
       TOTAL_VENDAS: orders.reduce((acc, o) => acc + (o.orc_val_tot || 0), 0),
       QUANT_VENDAS: ordersTotal || orders.length,
       ULT_VENDA: orders[0].DATA_PEDIDO || orders[0].orc_datcad || null,
-      ULT_CODORC: orders[0].orc_codorc || null,
+      ULT_CODORC: orders[0].orc_codorc_web || null,
       ter_dta_cad: '',
       COD_REP: 0,
     });

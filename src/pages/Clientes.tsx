@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Search, Eye, ChevronLeft, ChevronRight, ChevronDown, FileText } from 'lucide-react';
-import PencilDuotone from '@/components/icons/PencilDuotone';
+import { Search, Eye, ChevronLeft, ChevronRight, ChevronDown, FileText, Pencil } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -385,7 +384,7 @@ const Clientes = () => {
                                   Ver Pedido
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}/editar`)}>
-                                  <PencilDuotone size={14} className="mr-2" />
+                                  <Pencil size={14} className="mr-2" />
                                   Alterar
                                 </DropdownMenuItem>
                               </DropdownMenuContent>

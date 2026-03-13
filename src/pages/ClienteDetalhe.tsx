@@ -25,10 +25,12 @@ interface ClienteAPI {
 interface OrderAPI {
   orc_codorc: number;
   orc_datcad: string;
-  orc_vlrtot: number;
-  orc_status: string;
-  ter_nomter: string;
+  orc_val_tot: number;
+  orc_status: number | string;
+  CLIENTE: string;
   ter_codter: number;
+  DATA_PEDIDO: string;
+  [key: string]: unknown;
 }
 
 const formatDoc = (doc: string) => {
@@ -49,8 +51,15 @@ const formatDate = (iso: string | null) => {
 };
 
 const statusMap: Record<string, { label: string; color: string }> = {
+  '10': { label: 'Digitação', color: 'bg-[hsl(var(--erp-amber)/0.12)] text-[hsl(var(--erp-amber))]' },
+  '20': { label: 'Enviado', color: 'bg-primary/10 text-primary' },
+  '30': { label: 'Aprovado', color: 'bg-[hsl(var(--erp-orange)/0.12)] text-[hsl(var(--erp-orange))]' },
+  '40': { label: 'Faturado', color: 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]' },
+  '50': { label: 'Faturado', color: 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]' },
+  '90': { label: 'Cancelado', color: 'bg-destructive/10 text-destructive' },
   FA: { label: 'Faturado', color: 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]' },
-  EN: { label: 'Em Aberto', color: 'bg-primary/10 text-primary' },
+  EN: { label: 'Enviado', color: 'bg-primary/10 text-primary' },
+  AP: { label: 'Aprovado', color: 'bg-[hsl(var(--erp-orange)/0.12)] text-[hsl(var(--erp-orange))]' },
   CA: { label: 'Cancelado', color: 'bg-destructive/10 text-destructive' },
   PE: { label: 'Pendente', color: 'bg-[hsl(var(--erp-amber)/0.12)] text-[hsl(var(--erp-amber))]' },
 };

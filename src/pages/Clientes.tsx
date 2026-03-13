@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Search, Download, Eye, CreditCard, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';

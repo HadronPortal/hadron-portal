@@ -368,7 +368,7 @@ const CriarPedido = () => {
                           onClick={() => toggleProduct(item)}
                         >
                           <div className="col-span-1 flex items-center justify-center">
-                            <Checkbox checked={!!inCart} onClick={e => e.stopPropagation()} onCheckedChange={() => toggleProduct(item)} className="h-3.5 w-3.5 border-muted-foreground/40 data-[state=checked]:bg-primary/80" />
+                            <Checkbox checked={!!inCart} onClick={e => e.stopPropagation()} onCheckedChange={() => toggleProduct(item)} />
                           </div>
                           <div className="col-span-7 flex items-center gap-3">
                             <div className="w-10 h-10 rounded-lg bg-muted flex-shrink-0 overflow-hidden">

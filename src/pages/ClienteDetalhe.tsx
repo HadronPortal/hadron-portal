@@ -649,8 +649,8 @@ const ClienteDetalhe = () => {
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Documento (CNPJ/CPF)</label>
                         <Input
                           value={editDocumento}
-                          onChange={(e) => setEditDocumento(maskDoc(e.target.value))}
-                          className="bg-transparent"
+                          readOnly
+                          className="bg-transparent cursor-not-allowed opacity-70"
                           placeholder="000.000.000-00"
                         />
                       </div>

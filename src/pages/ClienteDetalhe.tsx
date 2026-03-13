@@ -142,10 +142,27 @@ const ClienteDetalhe = () => {
     };
     if (id) fetchOrders();
   }, [id, ordersPage, projectId]);
+  useEffect(() => {
+    if (client || !id || orders.length === 0) return;
+
+    setClient({
+      ter_codter: Number(id),
+      ter_nomter: orders[0].ter_nomter || `Cliente ${id}`,
+      ter_fanter: '',
+      ter_documento: '',
+      TEN_CIDLGR: '',
+      TEN_UF_LGR: '',
+      TOTAL_VENDAS: orders.reduce((acc, o) => acc + (o.orc_vlrtot || 0), 0),
+      QUANT_VENDAS: ordersTotal || orders.length,
+      ULT_VENDA: orders[0].orc_datcad || null,
+      ULT_CODORC: orders[0].orc_codorc || null,
+      ter_dta_cad: '',
+      COD_REP: 0,
+    });
+  }, [client, id, orders, ordersTotal]);
 
   const ordersTotalPages = Math.ceil(ordersTotal / ordersLimit);
   const isPositivado = client ? ((client.TOTAL_VENDAS ?? 0) > 0 || ordersTotal > 0 || orders.length > 0) : ordersTotal > 0 || orders.length > 0;
-
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center py-32">

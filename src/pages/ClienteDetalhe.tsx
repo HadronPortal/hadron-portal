@@ -714,7 +714,7 @@ const ClienteDetalhe = () => {
                                     setEditBairro('');
                                     setEditAddressOpen(true);
                                   }}
-                                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                                 >
                                   <Pencil size={16} />
                                 </button>

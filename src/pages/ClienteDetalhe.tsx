@@ -674,7 +674,7 @@ const ClienteDetalhe = () => {
                     <div className="bg-card border border-border rounded-xl shadow-sm">
                       <div className="px-6 py-5 border-b border-border flex items-center justify-between">
                         <h3 className="text-base font-semibold text-foreground">Endereços</h3>
-                        <Button size="sm" variant="outline" className="text-xs border-primary text-primary hover:bg-primary/10">
+                        <Button size="sm" variant="outline" className="text-xs">
                           Novo endereço
                         </Button>
                       </div>

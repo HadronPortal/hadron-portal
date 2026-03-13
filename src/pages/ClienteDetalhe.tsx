@@ -619,12 +619,18 @@ const ClienteDetalhe = () => {
                       {/* Representante */}
                       <div>
                         <label className="text-xs font-semibold text-foreground mb-1.5 block">Cód. Representante</label>
-                        <Input
-                          value={editRep}
-                          onChange={(e) => setEditRep(e.target.value)}
-                          className="bg-transparent"
-                          type="number"
-                        />
+                        <Select value={editRep} onValueChange={setEditRep}>
+                          <SelectTrigger className="bg-transparent">
+                            <SelectValue placeholder="Selecione o representante" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {representantes.map((rep) => (
+                              <SelectItem key={rep.rep_codrep} value={String(rep.rep_codrep)}>
+                                {rep.rep_codrep} - {rep.rep_nomrep}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 

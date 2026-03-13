@@ -25,10 +25,12 @@ interface ClienteAPI {
 interface OrderAPI {
   orc_codorc: number;
   orc_datcad: string;
-  orc_vlrtot: number;
-  orc_status: string;
-  ter_nomter: string;
+  orc_val_tot: number;
+  orc_status: number | string;
+  CLIENTE: string;
   ter_codter: number;
+  DATA_PEDIDO: string;
+  [key: string]: unknown;
 }
 
 const formatDoc = (doc: string) => {
@@ -49,8 +51,15 @@ const formatDate = (iso: string | null) => {
 };
 
 const statusMap: Record<string, { label: string; color: string }> = {
+  '10': { label: 'Digitação', color: 'bg-[hsl(var(--erp-amber)/0.12)] text-[hsl(var(--erp-amber))]' },
+  '20': { label: 'Enviado', color: 'bg-primary/10 text-primary' },
+  '30': { label: 'Aprovado', color: 'bg-[hsl(var(--erp-orange)/0.12)] text-[hsl(var(--erp-orange))]' },
+  '40': { label: 'Faturado', color: 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]' },
+  '50': { label: 'Faturado', color: 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]' },
+  '90': { label: 'Cancelado', color: 'bg-destructive/10 text-destructive' },
   FA: { label: 'Faturado', color: 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]' },
-  EN: { label: 'Em Aberto', color: 'bg-primary/10 text-primary' },
+  EN: { label: 'Enviado', color: 'bg-primary/10 text-primary' },
+  AP: { label: 'Aprovado', color: 'bg-[hsl(var(--erp-orange)/0.12)] text-[hsl(var(--erp-orange))]' },
   CA: { label: 'Cancelado', color: 'bg-destructive/10 text-destructive' },
   PE: { label: 'Pendente', color: 'bg-[hsl(var(--erp-amber)/0.12)] text-[hsl(var(--erp-amber))]' },
 };
@@ -147,14 +156,14 @@ const ClienteDetalhe = () => {
 
     setClient({
       ter_codter: Number(id),
-      ter_nomter: orders[0].ter_nomter || `Cliente ${id}`,
+      ter_nomter: orders[0].CLIENTE || `Cliente ${id}`,
       ter_fanter: '',
       ter_documento: '',
       TEN_CIDLGR: '',
       TEN_UF_LGR: '',
-      TOTAL_VENDAS: orders.reduce((acc, o) => acc + (o.orc_vlrtot || 0), 0),
+      TOTAL_VENDAS: orders.reduce((acc, o) => acc + (o.orc_val_tot || 0), 0),
       QUANT_VENDAS: ordersTotal || orders.length,
-      ULT_VENDA: orders[0].orc_datcad || null,
+      ULT_VENDA: orders[0].DATA_PEDIDO || orders[0].orc_datcad || null,
       ULT_CODORC: orders[0].orc_codorc || null,
       ter_dta_cad: '',
       COD_REP: 0,
@@ -378,7 +387,7 @@ const ClienteDetalhe = () => {
                           </thead>
                           <tbody>
                             {orders.map((o) => {
-                              const st = statusMap[o.orc_status] || { label: o.orc_status, color: 'bg-muted text-muted-foreground' };
+                              const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status), color: 'bg-muted text-muted-foreground' };
                               return (
                                 <tr key={o.orc_codorc} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
                                   <td className="px-6 py-3.5">
@@ -394,8 +403,8 @@ const ClienteDetalhe = () => {
                                       {st.label}
                                     </Badge>
                                   </td>
-                                  <td className="px-6 py-3.5 text-sm text-foreground">{formatCurrency(o.orc_vlrtot)}</td>
-                                  <td className="px-6 py-3.5 text-sm text-muted-foreground">{formatDate(o.orc_datcad)}</td>
+                                  <td className="px-6 py-3.5 text-sm text-foreground">{formatCurrency(o.orc_val_tot)}</td>
+                                  <td className="px-6 py-3.5 text-sm text-muted-foreground">{formatDate(o.DATA_PEDIDO || o.orc_datcad)}</td>
                                 </tr>
                               );
                             })}
@@ -473,7 +482,7 @@ const ClienteDetalhe = () => {
                       </thead>
                       <tbody>
                         {orders.map((o) => {
-                          const st = statusMap[o.orc_status] || { label: o.orc_status, color: 'bg-muted text-muted-foreground' };
+                          const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status), color: 'bg-muted text-muted-foreground' };
                           return (
                             <tr key={o.orc_codorc} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
                               <td className="px-6 py-3.5">
@@ -486,8 +495,8 @@ const ClienteDetalhe = () => {
                                   {st.label}
                                 </Badge>
                               </td>
-                              <td className="px-6 py-3.5 text-sm text-foreground">{formatCurrency(o.orc_vlrtot)}</td>
-                              <td className="px-6 py-3.5 text-sm text-muted-foreground">{formatDate(o.orc_datcad)}</td>
+                              <td className="px-6 py-3.5 text-sm text-foreground">{formatCurrency(o.orc_val_tot)}</td>
+                              <td className="px-6 py-3.5 text-sm text-muted-foreground">{formatDate(o.DATA_PEDIDO || o.orc_datcad)}</td>
                             </tr>
                           );
                         })}

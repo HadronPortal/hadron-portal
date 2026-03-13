@@ -980,15 +980,15 @@ const ClienteDetalhe = () => {
                               <p className="text-xs text-muted-foreground">Expira em {card.expiry}</p>
                             </div>
                             <div className="flex items-center gap-1">
-                              <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                                 <Pencil size={15} className="text-muted-foreground" />
-                              </button>
-                              <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-destructive/10 transition-colors">
+                              </div>
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                                 <Trash2 size={15} className="text-muted-foreground" />
-                              </button>
-                              <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                              </div>
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                                 <GripVertical size={15} className="text-muted-foreground" />
-                              </button>
+                              </div>
                             </div>
                           </div>
                           {expandedCard === idx && card.brand === 'MasterCard' && (

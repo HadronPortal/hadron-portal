@@ -128,6 +128,20 @@ const ClienteDetalhe = () => {
   const [newAddrCobranca, setNewAddrCobranca] = useState(true);
   const [extraAddresses, setExtraAddresses] = useState<Array<{ label: string; logradouro: string; cidade: string; uf: string; nome: string; isDefault: boolean }>>([]);
 
+  // Advanced settings state
+  const [advPhone, setAdvPhone] = useState('');
+  const [advPassword, setAdvPassword] = useState('******');
+  const [advSmsNumber, setAdvSmsNumber] = useState('');
+  const [editingAdvPhone, setEditingAdvPhone] = useState(false);
+  const [editingAdvPassword, setEditingAdvPassword] = useState(false);
+  const [editingAdvSms, setEditingAdvSms] = useState(false);
+  const [expandedCard, setExpandedCard] = useState<number | null>(0);
+  const [paymentMethods, setPaymentMethods] = useState([
+    { id: 1, brand: 'MasterCard', isPrimary: true, expired: false, lastFour: '6367', expiry: '12/2024', name: '', number: '', type: 'cartão de crédito Mastercard', issuer: 'VICBANK', euIa: 'id_4325df90sdf8', billingAddress: 'AU', phone: 'Nenhum telefone fornecido', email: 'smith@kpmg.com', origin: 'Austrália 🌏', cvc: 'Aprovado ✅' },
+    { id: 2, brand: 'Visa', isPrimary: false, expired: false, lastFour: '4521', expiry: '02/2022', name: '', number: '', type: '', issuer: '', euIa: '', billingAddress: '', phone: '', email: '', origin: '', cvc: '' },
+    { id: 3, brand: 'American Express', isPrimary: false, expired: true, lastFour: '8901', expiry: '08/2021', name: '', number: '', type: '', issuer: '', euIa: '', billingAddress: '', phone: '', email: '', origin: '', cvc: '' },
+  ]);
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;

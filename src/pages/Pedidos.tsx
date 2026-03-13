@@ -127,22 +127,6 @@ const Pedidos = () => {
   const dashboard = data?.dashboard || { sent: 0, sent_peso: 0, approved: 0, approved_peso: 0, invoiced: 0, invoiced_peso: 0, canceled: 0, canceled_peso: 0 };
   const totalRecords = data?.total_records || 0;
 
-  const handleRepChange = useCallback((_repCodes: number[]) => {}, []);
-  const handleSearch = useCallback((query: string) => setSearchQuery(query), []);
-  const handleFilter = useCallback((filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
-    setSelectedRep(filters.repCodes);
-    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
-    setSearchQuery(filters.search);
-    setPage(1);
-    setFilterNonce((n) => n + 1);
-  }, []);
-  const handleClear = useCallback(() => {
-    setSelectedRep([]);
-    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-    setSearchQuery('');
-    setPage(1);
-    setFilterNonce((n) => n + 1);
-  }, []);
 
   const filteredOrders = useMemo(() => {
     if (!searchQuery.trim()) return orders;

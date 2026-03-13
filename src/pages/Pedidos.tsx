@@ -318,6 +318,28 @@ const Pedidos = () => {
                                 <TableCell className="text-sm font-medium text-foreground whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
                                 <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
                                 <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
+                                <TableCell className="text-right" onClick={e => e.stopPropagation()}>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        className="h-8 px-3 text-xs font-light bg-muted/50 border-border hover:bg-[#DBEAFE] hover:text-[#3B82F6] hover:border-[#93C5FD] focus-visible:ring-0"
+                                        style={{ fontFamily: "'Poppins', sans-serif" }}
+                                      >
+                                        Actions
+                                        <ChevronDown size={14} />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-40">
+                                      <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
+                                        Visualizar
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`, { state: { edit: true } })}>
+                                        Editar
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </TableCell>
                               </TableRow>
                             );
                           })

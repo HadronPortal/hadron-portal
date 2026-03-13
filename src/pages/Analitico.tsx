@@ -77,8 +77,8 @@ const Analitico = () => {
     startDate: DEFAULT_START_DATE,
     endDate: DEFAULT_END_DATE,
   });
-  const [searchQuery, setSearchQuery] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [filterNonce, setFilterNonce] = useState(0);
 

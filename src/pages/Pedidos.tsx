@@ -94,7 +94,7 @@ const Pedidos = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { representantes } = useRepresentantes();
+  
   const codter = searchParams.get('codter');
   const clienteNome = searchParams.get('nome');
 

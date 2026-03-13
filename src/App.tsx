@@ -54,6 +54,7 @@ const App = () => (
             <Route element={<ProtectedRoute><ErpLayout /></ProtectedRoute>}>
               <Route path="/" element={<Suspense fallback={<PageFallback />}><Index /></Suspense>} />
               <Route path="/clientes" element={<Suspense fallback={<PageFallback />}><Clientes /></Suspense>} />
+              <Route path="/clientes/:id" element={<Suspense fallback={<PageFallback />}><ClienteDetalhe /></Suspense>} />
               <Route path="/cobrancas" element={<Suspense fallback={<PageFallback />}><Cobrancas /></Suspense>} />
               <Route path="/analitico" element={<Suspense fallback={<PageFallback />}><Analitico /></Suspense>} />
               <Route path="/pedidos" element={<Suspense fallback={<PageFallback />}><Pedidos /></Suspense>} />

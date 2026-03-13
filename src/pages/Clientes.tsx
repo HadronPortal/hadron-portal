@@ -192,6 +192,34 @@ const Clientes = () => {
 
   return (
     <>
+      {/* Hero banner - same as Dashboard */}
+      <div className="relative overflow-hidden bg-black">
+        <div className="absolute inset-x-0 top-0 h-[70px] bg-[hsl(220,60%,15%)]" />
+        <div className="h-[70px]" />
+        <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
+          <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Clientes</h1>
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map(({ label, path }) => {
+              const isActive = location.pathname === path;
+              return (
+                <button
+                  key={label}
+                  onClick={() => navigate(path)}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary-foreground/15 text-primary-foreground'
+                      : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+        <div className="h-16 sm:h-24" />
+      </div>
+
       <FilterBar
         representantes={representantes}
         clientCountByRep={clientCountByRep}
@@ -200,14 +228,7 @@ const Clientes = () => {
         onClear={handleClear}
       />
 
-      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 py-6 max-w-[1600px] mx-auto w-full space-y-6">
-        {/* Page Title */}
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Clientes</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {totalRecords} clientes encontrados
-          </p>
-        </div>
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-6 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
 
         {/* Main Card */}
         <div className="bg-card border border-border rounded-xl shadow-sm">

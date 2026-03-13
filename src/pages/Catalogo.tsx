@@ -11,7 +11,7 @@ import { useApiFetch } from '@/hooks/use-api-fetch';
 const navItems = [
   { label: 'Home', path: '/' },
   { label: 'Clientes', path: '/clientes' },
-  { label: 'Analítico', path: '/analitico' },
+  { label: 'Relatórios', path: '/analitico' },
   { label: 'Pedidos', path: '/pedidos' },
   { label: 'Catálogo', path: '/catalogo' },
 ];

@@ -9,7 +9,7 @@ import logoMobileImg from '@/assets/logo-mobile.png';
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Users, label: 'Clientes', path: '/clientes' },
-  { icon: Gauge, label: 'Analítico', path: '/analitico' },
+  { icon: Gauge, label: 'Relatórios', path: '/analitico' },
   { icon: ClipboardList, label: 'Pedidos', path: '/pedidos' },
   { icon: Box, label: 'Catálogo', path: '/catalogo' },
 ];

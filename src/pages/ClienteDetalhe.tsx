@@ -485,10 +485,10 @@ const ClienteDetalhe = () => {
                         {orders.map((o) => {
                           const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status), color: 'bg-muted text-muted-foreground' };
                           return (
-                            <tr key={o.orc_codorc} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
+                            <tr key={o.orc_codorc_web} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
                               <td className="px-6 py-3.5">
-                                <button onClick={() => navigate(`/pedidos/${o.orc_codorc}`)} className="text-sm font-medium text-primary hover:underline">
-                                  #{o.orc_codorc}
+                                <button onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)} className="text-sm font-medium text-primary hover:underline">
+                                  #{o.orc_codorc_web}
                                 </button>
                               </td>
                               <td className="px-6 py-3.5">

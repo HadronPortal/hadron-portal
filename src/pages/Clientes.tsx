@@ -374,7 +374,7 @@ const Clientes = () => {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-40">
-                                <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}`)}>
+                                <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { client: c } })}>
                                   <Eye size={14} className="mr-2" />
                                   Visualizar
                                 </DropdownMenuItem>

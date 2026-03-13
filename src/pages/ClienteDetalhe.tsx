@@ -144,7 +144,7 @@ const ClienteDetalhe = () => {
   }, [id, ordersPage, projectId]);
 
   const ordersTotalPages = Math.ceil(ordersTotal / ordersLimit);
-  const isPositivado = client ? (client.TOTAL_VENDAS ?? 0) > 0 : false;
+  const isPositivado = client ? ((client.TOTAL_VENDAS ?? 0) > 0 || ordersTotal > 0 || orders.length > 0) : ordersTotal > 0 || orders.length > 0;
 
   if (loading) {
     return (

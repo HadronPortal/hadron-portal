@@ -889,14 +889,14 @@ const ClienteDetalhe = () => {
                         <div className="flex items-center gap-6">
                           <span className="text-sm text-muted-foreground w-[100px]">Telefone</span>
                           {editingAdvPhone ? (
-                            <Input value={advPhone} onChange={e => setAdvPhone(e.target.value)} className="bg-transparent max-w-[200px]" autoFocus onBlur={() => setEditingAdvPhone(false)} onKeyDown={e => e.key === 'Enter' && setEditingAdvPhone(false)} />
+                            <Input value={advPhone} readOnly className="bg-transparent max-w-[200px] cursor-not-allowed opacity-70" />
                           ) : (
                             <span className="text-sm font-medium text-foreground">{advPhone || '+55 (11) 99999-9999'}</span>
                           )}
                         </div>
-                        <button onClick={() => setEditingAdvPhone(true)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed">
                           <Pencil size={15} className="text-muted-foreground" />
-                        </button>
+                        </div>
                       </div>
                       <div className="flex items-center justify-between py-4 last:pb-0">
                         <div className="flex items-center gap-6">

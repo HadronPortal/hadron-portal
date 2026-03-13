@@ -48,6 +48,12 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
   const estoques = data?.estoques || [];
   const hasStock = (info?.pro_sdo_atu ?? 0) > 0;
 
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[calc(100%-32px)] sm:max-w-[480px] p-0 flex flex-col bg-card overflow-hidden !inset-y-4 !right-4 !h-[calc(100vh-32px)] rounded-2xl border border-border shadow-2xl">

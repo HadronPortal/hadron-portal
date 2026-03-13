@@ -137,10 +137,32 @@ const Analitico = () => {
 
   return (
     <>
+      {/* Hero banner */}
+      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))]">
+        <div className="absolute inset-x-0 top-0 h-[70px] bg-[hsl(var(--erp-banner))]" />
+        <div className="h-[70px]" />
+        <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
+          <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Relatórios</h1>
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map(({ label, path }) => {
+              const isActive = location.pathname === path;
+              return (
+                <button
+                  key={path}
+                  onClick={() => navigate(path)}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-white/80 hover:text-white ${isActive ? 'border-b-2 border-white text-white' : ''}`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+
       <FilterBar representantes={representantes} onRepChange={handleRepChange} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Analítico Período</h1>
 
         <div className="flex items-center gap-2">
           {tabs.map((tab) => (

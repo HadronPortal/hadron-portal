@@ -127,6 +127,13 @@ const Header = () => {
 
             <div className="relative flex items-center gap-3" ref={menuRef}>
               <div className="hidden sm:flex items-center gap-5">
+                <button
+                  onClick={toggleTheme}
+                  className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-foreground/10 transition-colors"
+                  aria-label="Alternar tema"
+                >
+                  {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                </button>
                 <div className="relative" ref={companyRef}>
                   <button
                     onClick={() => setCompanyMenuOpen(!companyMenuOpen)}
@@ -155,13 +162,6 @@ const Header = () => {
                     </div>
                   )}
                 </div>
-                <button
-                  onClick={toggleTheme}
-                  className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-foreground/10 transition-colors"
-                  aria-label="Alternar tema"
-                >
-                  {isDark ? <Sun size={18} /> : <Moon size={18} />}
-                </button>
                 <span className="text-sm font-medium leading-tight truncate max-w-[180px]">{userName}</span>
               </div>
               <button

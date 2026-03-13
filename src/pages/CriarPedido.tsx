@@ -364,14 +364,14 @@ const CriarPedido = () => {
                       return (
                         <div
                           key={item.pro_codpro}
-                          className={`grid grid-cols-12 gap-2 px-5 py-4 border-b border-border/30 items-center hover:bg-accent/30 transition-colors cursor-pointer ${inCart ? 'bg-accent/20' : ''}`}
+                          className={`grid grid-cols-12 gap-3 px-5 py-5 border-b border-border/30 items-center hover:bg-accent/30 transition-colors cursor-pointer ${inCart ? 'bg-accent/20' : ''}`}
                           onClick={() => toggleProduct(item)}
                         >
                           <div className="col-span-1 flex items-center justify-center">
                             <Checkbox checked={!!inCart} onClick={e => e.stopPropagation()} onCheckedChange={() => toggleProduct(item)} />
                           </div>
                           <div className="col-span-7 flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
+                            <div className="w-12 h-12 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
                               {item.pro_foto ? (
                                 <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain"
                                   onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />

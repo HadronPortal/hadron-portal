@@ -67,9 +67,9 @@ const getImageUrl = (foto: string) => {
 };
 
 const reportTabs = [
-  { key: 'produtos', label: 'Produtos', icon: '📦' },
-  { key: 'clientes', label: 'Clientes', icon: '👥' },
-  { key: 'pedidos', label: 'Pedidos', icon: '🛒' },
+  { key: 'produtos', label: 'Produtos' },
+  { key: 'clientes', label: 'Clientes' },
+  { key: 'pedidos', label: 'Pedidos' },
 ] as const;
 
 type ReportTab = typeof reportTabs[number]['key'];

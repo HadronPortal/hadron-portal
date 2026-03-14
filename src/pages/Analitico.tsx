@@ -195,6 +195,27 @@ const Analitico = () => {
       <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-6 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
         <div className="bg-card border border-border rounded-xl shadow-sm">
 
+          {/* Report-level tabs */}
+          <div className="flex items-center gap-1 px-5 sm:px-6 pt-5 sm:pt-6 pb-0 border-b border-border overflow-x-auto">
+            {reportTabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setReportTab(tab.key)}
+                className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                  reportTab === tab.key
+                    ? 'border-primary text-foreground'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                }`}
+              >
+                <span>{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Produtos report content */}
+          {reportTab === 'produtos' && (
+          <>
           {/* Toolbar */}
           <div className="p-5 sm:p-6 flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

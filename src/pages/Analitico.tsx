@@ -201,10 +201,10 @@ const Analitico = () => {
               <button
                 key={tab.key}
                 onClick={() => setReportTab(tab.key)}
-                className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                className={`px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap ${
                   reportTab === tab.key
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {tab.label}

@@ -529,6 +529,31 @@ const Analitico = () => {
               </div>
             </div>
           )}
+          </>
+          )}
+
+          {/* Clientes report */}
+          {reportTab === 'clientes' && (
+            <div className="p-8 sm:p-12 flex flex-col items-center justify-center text-center min-h-[300px]">
+              <span className="text-4xl mb-3">👥</span>
+              <h3 className="text-lg font-semibold text-foreground mb-1">Relatório de Clientes</h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                Relatório detalhado de clientes por período, região e representante. Em breve disponível.
+              </p>
+            </div>
+          )}
+
+          {/* Pedidos report */}
+          {reportTab === 'pedidos' && (
+            <div className="p-8 sm:p-12 flex flex-col items-center justify-center text-center min-h-[300px]">
+              <span className="text-4xl mb-3">🛒</span>
+              <h3 className="text-lg font-semibold text-foreground mb-1">Relatório de Pedidos</h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                Relatório detalhado de pedidos com filtros por status, período e representante. Em breve disponível.
+              </p>
+            </div>
+          )}
+
         </div>
       </main>
     </>

@@ -1,4 +1,6 @@
-import { useState, useMemo, lazy, Suspense } from 'react';
+import { useState, useMemo } from 'react';
+import RelatorioClientes from '@/components/erp/relatorios/RelatorioClientes';
+import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';

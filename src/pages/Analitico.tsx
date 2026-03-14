@@ -196,14 +196,14 @@ const Analitico = () => {
         <div className="bg-card border border-border rounded-xl shadow-sm">
 
           {/* Report-level tabs */}
-          <div className="flex items-center border-b border-border px-5 sm:px-6 pt-4 overflow-x-auto">
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1 mx-5 sm:mx-6 mt-5 sm:mt-6 w-fit">
             {reportTabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setReportTab(tab.key)}
-                className={`px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap ${
+                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
                   reportTab === tab.key
-                    ? 'text-primary'
+                    ? 'bg-card text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >

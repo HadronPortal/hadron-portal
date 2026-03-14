@@ -91,6 +91,7 @@ const Analitico = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [filterNonce, setFilterNonce] = useState(0);
+  const [reportTab, setReportTab] = useState<ReportTab>('produtos');
 
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);

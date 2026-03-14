@@ -67,9 +67,9 @@ const getImageUrl = (foto: string) => {
 };
 
 const reportTabs = [
-  { key: 'produtos', label: 'Produtos', icon: '📦' },
-  { key: 'clientes', label: 'Clientes', icon: '👥' },
-  { key: 'pedidos', label: 'Pedidos', icon: '🛒' },
+  { key: 'produtos', label: 'Produtos' },
+  { key: 'clientes', label: 'Clientes' },
+  { key: 'pedidos', label: 'Pedidos' },
 ] as const;
 
 type ReportTab = typeof reportTabs[number]['key'];
@@ -196,18 +196,17 @@ const Analitico = () => {
         <div className="bg-card border border-border rounded-xl shadow-sm">
 
           {/* Report-level tabs */}
-          <div className="flex items-center gap-1 px-5 sm:px-6 pt-5 sm:pt-6 pb-0 border-b border-border overflow-x-auto">
+          <div className="flex items-center border-b border-border px-5 sm:px-6 pt-4 overflow-x-auto">
             {reportTabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setReportTab(tab.key)}
-                className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
                   reportTab === tab.key
-                    ? 'border-primary text-foreground'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <span>{tab.icon}</span>
                 {tab.label}
               </button>
             ))}

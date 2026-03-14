@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -66,6 +66,14 @@ const getImageUrl = (foto: string) => {
   return `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
 };
 
+const reportTabs = [
+  { key: 'produtos', label: 'Produtos', icon: '📦' },
+  { key: 'clientes', label: 'Clientes', icon: '👥' },
+  { key: 'pedidos', label: 'Pedidos', icon: '🛒' },
+] as const;
+
+type ReportTab = typeof reportTabs[number]['key'];
+
 const Analitico = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -83,6 +91,7 @@ const Analitico = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [filterNonce, setFilterNonce] = useState(0);
+  const [reportTab, setReportTab] = useState<ReportTab>('produtos');
 
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
@@ -186,6 +195,27 @@ const Analitico = () => {
       <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-6 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
         <div className="bg-card border border-border rounded-xl shadow-sm">
 
+          {/* Report-level tabs */}
+          <div className="flex items-center gap-1 px-5 sm:px-6 pt-5 sm:pt-6 pb-0 border-b border-border overflow-x-auto">
+            {reportTabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setReportTab(tab.key)}
+                className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                  reportTab === tab.key
+                    ? 'border-primary text-foreground'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                }`}
+              >
+                <span>{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Produtos report content */}
+          {reportTab === 'produtos' && (
+          <>
           {/* Toolbar */}
           <div className="p-5 sm:p-6 flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -499,6 +529,31 @@ const Analitico = () => {
               </div>
             </div>
           )}
+          </>
+          )}
+
+          {/* Clientes report */}
+          {reportTab === 'clientes' && (
+            <div className="p-8 sm:p-12 flex flex-col items-center justify-center text-center min-h-[300px]">
+              <span className="text-4xl mb-3">👥</span>
+              <h3 className="text-lg font-semibold text-foreground mb-1">Relatório de Clientes</h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                Relatório detalhado de clientes por período, região e representante. Em breve disponível.
+              </p>
+            </div>
+          )}
+
+          {/* Pedidos report */}
+          {reportTab === 'pedidos' && (
+            <div className="p-8 sm:p-12 flex flex-col items-center justify-center text-center min-h-[300px]">
+              <span className="text-4xl mb-3">🛒</span>
+              <h3 className="text-lg font-semibold text-foreground mb-1">Relatório de Pedidos</h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                Relatório detalhado de pedidos com filtros por status, período e representante. Em breve disponível.
+              </p>
+            </div>
+          )}
+
         </div>
       </main>
     </>

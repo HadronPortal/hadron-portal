@@ -66,6 +66,14 @@ const getImageUrl = (foto: string) => {
   return `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
 };
 
+const reportTabs = [
+  { key: 'produtos', label: 'Produtos', icon: '📦' },
+  { key: 'clientes', label: 'Clientes', icon: '👥' },
+  { key: 'pedidos', label: 'Pedidos', icon: '🛒' },
+] as const;
+
+type ReportTab = typeof reportTabs[number]['key'];
+
 const Analitico = () => {
   const location = useLocation();
   const navigate = useNavigate();

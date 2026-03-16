@@ -246,10 +246,10 @@ const CriarPedido = () => {
                   <h2 className="text-lg font-bold text-foreground">Detalhes do Pedido</h2>
                 </div>
                 <div className="p-6 space-y-6">
-                  {/* Order ID */}
+                  {/* Order ID - shown only after finalization */}
                   <div>
                     <span className="text-xs text-muted-foreground">Nº Pedido</span>
-                    <div className="text-xl font-bold text-foreground mt-0.5">#{Math.floor(10000 + Math.random() * 90000)}</div>
+                    <div className="text-xl font-bold text-foreground mt-0.5 text-muted-foreground/60 italic text-base">Gerado ao finalizar</div>
                   </div>
 
                   {/* Cliente */}

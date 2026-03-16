@@ -602,7 +602,7 @@ const CriarPedido = () => {
 
               <div className="space-y-3">
                 <Button
-                  className="w-full font-bold rounded-lg h-11 text-base bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className="w-full font-bold rounded-lg h-11 text-base bg-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/90 text-white"
                   onClick={handleEnviarPedido}
                   disabled={enviando}
                 >

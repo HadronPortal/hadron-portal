@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
-import ScrollToTop from '@/components/ScrollToTop';
 import { useLocation } from 'react-router-dom';
 
 const ErpLayout = () => {

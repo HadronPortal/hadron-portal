@@ -162,4 +162,9 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
+  /* Dark mode select options */
+  .dark select option {
+    background-color: hsl(230 24% 19%);
+    color: hsl(0 0% 95%);
+  }
 }

@@ -147,17 +147,7 @@ const Clientes = () => {
     setFilterNonce((n) => n + 1);
   };
 
-  const filtered = useMemo(() => {
-    if (activeTab === 'todos') return clients;
-    if (activeTab === 'positivados') return clients.filter(c => (c.TOTAL_VENDAS ?? 0) > 0);
-    // novos
-    return clients.filter(c => {
-      const d = new Date(c.ter_dta_cad);
-      const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-      return d >= sixMonthsAgo;
-    });
-  }, [clients, activeTab]);
+  const filtered = clients;
 
   const clientCountByRep = clients.reduce<Record<number, number>>((acc, c) => {
     acc[c.COD_REP] = (acc[c.COD_REP] || 0) + 1;

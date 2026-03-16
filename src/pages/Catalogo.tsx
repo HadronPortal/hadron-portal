@@ -25,6 +25,7 @@ interface CatalogoItem {
   pro_foto: string;
   NOME_GRUPO: string | null;
   SALDOS: string;
+  pro_sdo_atu?: number | string | null;
   pro_codgrp: number;
   pro_preco?: number | string | null;
 }
@@ -83,8 +84,8 @@ const Catalogo = () => {
     if (filters.category) list = list.filter((i) => i.NOME_GRUPO === filters.category);
 
     // Stock
-    if (filters.stockFilter === 'in_stock') list = list.filter((i) => parseFloat(i.SALDOS) > 0);
-    if (filters.stockFilter === 'out_of_stock') list = list.filter((i) => parseFloat(i.SALDOS) <= 0);
+    if (filters.stockFilter === 'in_stock') list = list.filter((i) => getSaldo(i) > 0);
+    if (filters.stockFilter === 'out_of_stock') list = list.filter((i) => getSaldo(i) <= 0);
 
     // Sort
     const dir = filters.sortDir === 'asc' ? 1 : -1;
@@ -93,7 +94,7 @@ const Catalogo = () => {
         case 'sku': return (a.pro_codpro - b.pro_codpro) * dir;
         case 'name': return a.pro_despro.localeCompare(b.pro_despro) * dir;
         case 'price': return (Number(a.pro_preco || 0) - Number(b.pro_preco || 0)) * dir;
-        case 'stock': return (parseFloat(a.SALDOS) - parseFloat(b.SALDOS)) * dir;
+        case 'stock': return (getSaldo(a) - getSaldo(b)) * dir;
         default: return 0;
       }
     });
@@ -104,9 +105,13 @@ const Catalogo = () => {
   const totalRecords = data?.total_records || 0;
   const totalPages = Math.ceil(totalRecords / limit);
 
-  const formatSaldo = (saldo: string) => {
-    const num = parseFloat(saldo);
-    return isNaN(num) ? saldo : num.toLocaleString('pt-BR');
+  const getSaldo = (item: CatalogoItem) => {
+    if (item.pro_sdo_atu != null) return Number(item.pro_sdo_atu);
+    return parseFloat(item.SALDOS) || 0;
+  };
+
+  const formatSaldo = (num: number) => {
+    return isNaN(num) ? '0' : num.toLocaleString('pt-BR');
   };
 
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
@@ -214,8 +219,8 @@ const Catalogo = () => {
                 : 'space-y-2.5'
             }`}>
               {items.map((item) => {
-                const saldoNum = parseFloat(item.SALDOS);
-                const inStock = !isNaN(saldoNum) && saldoNum > 0;
+                const saldoNum = getSaldo(item);
+                const inStock = saldoNum > 0;
 
                 if (viewMode === 'grid') {
                   return (
@@ -256,7 +261,7 @@ const Catalogo = () => {
                                 : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                             }`}>
                               <Boxes className="w-3 h-3" />
-                              {formatSaldo(item.SALDOS)}
+                              {formatSaldo(saldoNum)}
                             </span>
                             <span className="text-[11px] text-muted-foreground">SKU: <span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
                           </div>
@@ -287,7 +292,7 @@ const Catalogo = () => {
                       <h3 className="text-sm sm:text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors truncate">{item.pro_despro}</h3>
                       <div className="flex items-center gap-2 sm:gap-3 mt-1.5 flex-wrap">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${inStock ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                          <Boxes className="w-3 h-3" />{formatSaldo(item.SALDOS)}
+                          <Boxes className="w-3 h-3" />{formatSaldo(saldoNum)}
                         </span>
                         <span className="text-xs text-muted-foreground"><span className="hidden sm:inline">SKU: </span><span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
                         {item.NOME_GRUPO && <span className="text-xs text-muted-foreground">Grupo: <span className="font-medium text-foreground">{item.NOME_GRUPO}</span></span>}

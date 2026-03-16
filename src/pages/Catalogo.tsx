@@ -114,13 +114,6 @@ const Catalogo = () => {
   const totalRecords = data?.total_records || 0;
   const totalPages = Math.ceil(totalRecords / limit);
 
-  const getSaldo = (item: CatalogoItem) => {
-    return Number(item.SALDOS) || 0;
-  };
-
-  const formatSaldo = (num: number) => {
-    return isNaN(num) ? '0' : num.toLocaleString('pt-BR');
-  };
 
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
   const getImageUrl = (filename: string) =>

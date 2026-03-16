@@ -49,7 +49,8 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
   const info = data?.info;
   const precos = data?.precos;
   const estoques = data?.estoques || [];
-  const hasStock = (info?.pro_sdo_atu ?? 0) > 0;
+  const saldoDisponivel = catalogSaldos ?? 0;
+  const hasStock = saldoDisponivel > 0;
 
   useEffect(() => {
     if (!open) return;

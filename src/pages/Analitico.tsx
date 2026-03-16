@@ -107,6 +107,8 @@ const Analitico = () => {
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
+  const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
+
   const sharedFilters = {
     selectedRepRaw,
     selectedPeriod,
@@ -114,6 +116,7 @@ const Analitico = () => {
     searchInput,
     representantes,
     filterNonce,
+    selectedClients,
   };
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({

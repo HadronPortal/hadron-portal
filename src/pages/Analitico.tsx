@@ -378,6 +378,7 @@ const Analitico = () => {
                       <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => {
                         setSelectedRep([]);
                         setSelectedRepRaw([]);
+                        setSelectedClients([]);
                         setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
                         setSearchQuery('');
                         setSearchInput('');

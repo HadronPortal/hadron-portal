@@ -693,7 +693,11 @@ const Analitico = () => {
 
           {/* Comissionamento report */}
           {reportTab === 'comissionamento' && (
-            <ComissionamentoTab />
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              {comissionamentoSubTab === 'faturamento'
+                ? 'Em breve: Comissionamento por Faturamento'
+                : 'Em breve: Comissionamento por Contas a Receber'}
+            </div>
           )}
 
         </div>

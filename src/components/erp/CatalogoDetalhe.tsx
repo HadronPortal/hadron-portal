@@ -36,7 +36,7 @@ const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) =>
   </div>
 );
 
-const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFoto }: CatalogoDetalheProps) => {
+const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFoto, catalogSaldos, catalogSaldoFisico, catalogPrevSaida }: CatalogoDetalheProps) => {
   const { data, isLoading: loading, error: queryError } = useApiFetch<ProductDetail>({
     queryKey: ['product-detail', String(productId)],
     endpoint: 'fetch-product-details',

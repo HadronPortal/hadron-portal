@@ -313,13 +313,7 @@ const Clientes = () => {
                           key={c.ter_codter}
                           className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors"
                         >
-                          <td className="w-12 px-5 py-3.5">
-                            <Checkbox
-                              checked={selectedIds.has(c.ter_codter)}
-                              onCheckedChange={() => toggleSelect(c.ter_codter)}
-                            />
-                          </td>
-                          <td className="px-4 py-3.5">
+                           <td className="px-4 py-3.5">
                             <div>
                               <span className="text-sm font-normal text-foreground hover:text-primary cursor-pointer transition-colors">
                                 {c.ter_nomter}

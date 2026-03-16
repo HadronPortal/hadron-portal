@@ -424,6 +424,7 @@ const Clientes = () => {
                 Mostrando {Math.min((page - 1) * rowsPerPage + 1, totalRecords)} a {Math.min(page * rowsPerPage, totalRecords)} de {totalRecords}
               </p>
               <div className="flex items-center gap-1 mx-auto sm:mx-0">
+                <ScrollToTop />
                 <Button
                   variant="ghost"
                   size="icon"

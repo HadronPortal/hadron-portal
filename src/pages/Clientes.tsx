@@ -84,6 +84,8 @@ const Clientes = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [filterNonce, setFilterNonce] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);

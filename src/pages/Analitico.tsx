@@ -106,6 +106,15 @@ const Analitico = () => {
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
+  const sharedFilters = {
+    selectedRepRaw,
+    selectedPeriod,
+    searchQuery,
+    searchInput,
+    representantes,
+    filterNonce,
+  };
+
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
     queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam, searchQuery.trim(), String(filterNonce)],
     endpoint: 'fetch-analytics',
@@ -593,13 +602,13 @@ const Analitico = () => {
           )}
 
           {/* Produtos report */}
-          {reportTab === 'produtos' && <RelatorioProdutos />}
+          {reportTab === 'produtos' && <RelatorioProdutos filters={sharedFilters} />}
 
           {/* Clientes report */}
-          {reportTab === 'clientes' && <RelatorioClientes />}
+          {reportTab === 'clientes' && <RelatorioClientes filters={sharedFilters} />}
 
           {/* Pedidos report */}
-          {reportTab === 'pedidos' && <RelatorioPedidos />}
+          {reportTab === 'pedidos' && <RelatorioPedidos filters={sharedFilters} />}
 
           {/* Representantes report */}
           {reportTab === 'representantes' && (

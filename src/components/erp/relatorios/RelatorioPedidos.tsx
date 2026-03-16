@@ -1,16 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
-import { useRepresentantes } from '@/hooks/use-representantes';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
-import ReportToolbar from './ReportToolbar';
 import ScrollToTop from '@/components/ScrollToTop';
 import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
+import type { SharedFilterProps } from './RelatorioClientes';
 
-const DEFAULT_START_DATE = new Date(2026, 0, 8);
-const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
 const formatCurrency = (v: number) =>
@@ -50,30 +47,23 @@ interface OrderAPI {
   REPRESENTANTE?: string;
 }
 
-const RelatorioPedidos = () => {
-  const { representantes } = useRepresentantes();
+const RelatorioPedidos = ({ filters }: { filters: SharedFilterProps }) => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchInput, setSearchInput] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
-  const [filterNonce, setFilterNonce] = useState(0);
-  const [activeTab, setActiveTab] = useState('todos');
+  const [localSearchInput, setLocalSearchInput] = useState('');
 
-  const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
+  const repParam = filters.selectedRepRaw.length > 0 ? filters.selectedRepRaw.join(',') : undefined;
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['report-orders', String(page), String(rowsPerPage), repParam || 'all', toApiDate(selectedPeriod.startDate), toApiDate(selectedPeriod.endDate), searchQuery.trim(), String(filterNonce)],
+    queryKey: ['report-orders', String(page), String(rowsPerPage), repParam || 'all', toApiDate(filters.selectedPeriod.startDate), toApiDate(filters.selectedPeriod.endDate), filters.searchQuery.trim(), String(filters.filterNonce)],
     endpoint: 'fetch-orders',
     params: {
       page: String(page),
       limit: String(rowsPerPage),
-      date_ini: toApiDate(selectedPeriod.startDate),
-      date_end: toApiDate(selectedPeriod.endDate),
+      date_ini: toApiDate(filters.selectedPeriod.startDate),
+      date_end: toApiDate(filters.selectedPeriod.endDate),
       ...(repParam ? { rep: repParam } : {}),
-      ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+      ...(filters.searchQuery.trim() ? { search: filters.searchQuery.trim() } : {}),
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -84,19 +74,17 @@ const RelatorioPedidos = () => {
   const dashboard = data?.dashboard;
 
   const filtered = useMemo(() => {
-    if (!searchInput.trim()) return orders;
-    const q = searchInput.toLowerCase();
+    if (!localSearchInput.trim()) return orders;
+    const q = localSearchInput.toLowerCase();
     return orders.filter(o =>
       (o.CLIENTE || '').toLowerCase().includes(q) ||
       String(o.orc_codorc_web).includes(q) ||
       (o.orc_documento || '').includes(q)
     );
-  }, [orders, searchInput]);
+  }, [orders, localSearchInput]);
 
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
   const showOverlay = isFetching && !isLoading;
-
-  const handleSearch = () => { setSearchQuery(searchInput); setPage(1); setFilterNonce(n => n + 1); };
 
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
@@ -113,62 +101,11 @@ const RelatorioPedidos = () => {
 
   const getStatus = (s: number | string) => statusMap[String(s)] || { label: String(s), color: '#9ca3af', bg: '#9ca3af18' };
 
-  const orderColumns = [
-    { header: 'Nº Web', accessor: (o: OrderAPI) => String(o.orc_codorc_web) },
-    { header: 'Nº Hádron', accessor: (o: OrderAPI) => String(o.orc_codorc_had || '') },
-    { header: 'Cliente', accessor: (o: OrderAPI) => o.CLIENTE || '' },
-    { header: 'Documento', accessor: (o: OrderAPI) => o.orc_documento || '', forceText: true },
-    { header: 'Localização', accessor: (o: OrderAPI) => o.LOCALIZACAO || '' },
-    { header: 'Status', accessor: (o: OrderAPI) => getStatus(o.orc_status).label },
-    { header: 'Total', accessor: (o: OrderAPI) => formatCurrency(o.orc_val_tot), align: 'right' as const },
-    { header: 'Data', accessor: (o: OrderAPI) => formatDate(o.DATA_PEDIDO) },
-  ];
-
-  const handleExport = useCallback(async (fmt: 'pdf' | 'csv') => {
-    try {
-      toast.info('Exportando todos os registros...');
-      const allData = await fetchAllForExport('fetch-orders', {
-        date_ini: toApiDate(selectedPeriod.startDate),
-        date_end: toApiDate(selectedPeriod.endDate),
-        ...(repParam ? { rep: repParam } : {}),
-        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
-      }, 'orders');
-      const opts = { title: 'Relatório de Pedidos', columns: orderColumns, data: allData, fileName: 'relatorio-pedidos' };
-      fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
-      toast.success(`${allData.length} registros exportados!`);
-    } catch (e) {
-      toast.error('Erro ao exportar: ' + (e as Error).message);
-    }
-  }, [selectedPeriod, repParam, searchQuery]);
-
   return (
     <>
-      <ReportToolbar
-        searchPlaceholder="Buscar pedido..."
-        searchInput={searchInput}
-        onSearchInputChange={setSearchInput}
-        onSearch={handleSearch}
-        showFilters={showFilters}
-        onShowFiltersChange={setShowFilters}
-        representantes={representantes}
-        selectedRepRaw={selectedRepRaw}
-        onRepChange={(raw) => { setSelectedRepRaw(raw); }}
-        selectedPeriod={selectedPeriod}
-        onPeriodChange={setSelectedPeriod}
-        onApplyFilters={() => { setSearchQuery(searchInput); setPage(1); setFilterNonce(n => n + 1); setShowFilters(false); }}
-        onClearFilters={() => { setSelectedRepRaw([]); setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE }); setSearchQuery(''); setSearchInput(''); setPage(1); setFilterNonce(n => n + 1); setShowFilters(false); }}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={(n) => { setRowsPerPage(n); setPage(1); }}
-        searchQuery={searchQuery}
-        showOpTabs={false}
-        onExport={handleExport}
-      />
-
       {/* KPI summary */}
       {dashboard && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-5 sm:px-6 pb-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-5 sm:px-6 py-4">
           <div className="bg-muted/50 rounded-lg p-3">
             <p className="text-xs text-muted-foreground">Enviados</p>
             <p className="text-sm font-bold text-foreground">{formatCurrency(dashboard.sent)}</p>

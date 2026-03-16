@@ -101,6 +101,7 @@ const Analitico = () => {
   const [filterNonce, setFilterNonce] = useState(0);
   const [reportTab, setReportTab] = useState<ReportTab>('sintetico');
   const [exportOpen, setExportOpen] = useState(false);
+  const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
 
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);

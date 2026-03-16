@@ -94,7 +94,7 @@ const Catalogo = () => {
         case 'sku': return (a.pro_codpro - b.pro_codpro) * dir;
         case 'name': return a.pro_despro.localeCompare(b.pro_despro) * dir;
         case 'price': return (Number(a.pro_preco || 0) - Number(b.pro_preco || 0)) * dir;
-        case 'stock': return (parseFloat(a.SALDOS) - parseFloat(b.SALDOS)) * dir;
+        case 'stock': return (getSaldo(a) - getSaldo(b)) * dir;
         default: return 0;
       }
     });

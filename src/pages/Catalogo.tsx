@@ -111,16 +111,16 @@ const Catalogo = () => {
     return list;
   }, [data, filters]);
 
-  const totalRecords = data?.total_records || 0;
-  const totalPages = Math.ceil(totalRecords / limit);
-
+  const hasLocalFilters = !!(filters.skuFrom || filters.skuTo || filters.priceMin || filters.priceMax || filters.category || filters.stockFilter);
+  const totalRecords = hasLocalFilters ? items.length : (data?.total_records || 0);
+  const totalPages = hasLocalFilters ? 1 : Math.ceil((data?.total_records || 0) / limit);
 
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
   const getImageUrl = (filename: string) =>
     `https://${projectId}.supabase.co/functions/v1/proxy-image?file=${encodeURIComponent(filename)}`;
 
-  const startItem = (page - 1) * limit + 1;
-  const endItem = Math.min(page * limit, totalRecords);
+  const startItem = hasLocalFilters ? (items.length > 0 ? 1 : 0) : (page - 1) * limit + 1;
+  const endItem = hasLocalFilters ? items.length : Math.min(page * limit, data?.total_records || 0);
 
   return (
     <>

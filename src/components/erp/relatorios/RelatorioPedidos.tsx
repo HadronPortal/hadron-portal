@@ -117,17 +117,29 @@ const RelatorioPedidos = () => {
     { header: 'Nº Web', accessor: (o: OrderAPI) => String(o.orc_codorc_web) },
     { header: 'Nº Hádron', accessor: (o: OrderAPI) => String(o.orc_codorc_had || '') },
     { header: 'Cliente', accessor: (o: OrderAPI) => o.CLIENTE || '' },
-    { header: 'Documento', accessor: (o: OrderAPI) => o.orc_documento || '' },
+    { header: 'Documento', accessor: (o: OrderAPI) => o.orc_documento || '', forceText: true },
     { header: 'Localização', accessor: (o: OrderAPI) => o.LOCALIZACAO || '' },
     { header: 'Status', accessor: (o: OrderAPI) => getStatus(o.orc_status).label },
     { header: 'Total', accessor: (o: OrderAPI) => formatCurrency(o.orc_val_tot), align: 'right' as const },
     { header: 'Data', accessor: (o: OrderAPI) => formatDate(o.DATA_PEDIDO) },
   ];
 
-  const handleExport = useCallback((fmt: 'pdf' | 'csv') => {
-    const opts = { title: 'Relatório de Pedidos', columns: orderColumns, data: filtered, fileName: 'relatorio-pedidos' };
-    fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
-  }, [filtered]);
+  const handleExport = useCallback(async (fmt: 'pdf' | 'csv') => {
+    try {
+      toast.info('Exportando todos os registros...');
+      const allData = await fetchAllForExport('fetch-orders', {
+        date_ini: toApiDate(selectedPeriod.startDate),
+        date_end: toApiDate(selectedPeriod.endDate),
+        ...(repParam ? { rep: repParam } : {}),
+        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+      }, 'orders');
+      const opts = { title: 'Relatório de Pedidos', columns: orderColumns, data: allData, fileName: 'relatorio-pedidos' };
+      fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+      toast.success(`${allData.length} registros exportados!`);
+    } catch (e) {
+      toast.error('Erro ao exportar: ' + (e as Error).message);
+    }
+  }, [selectedPeriod, repParam, searchQuery]);
 
   return (
     <>

@@ -255,8 +255,8 @@ const Analitico = () => {
             ))}
           </div>
 
-          {/* Produtos report content */}
-          {reportTab === 'produtos' && (
+          {/* Sintético report content (was Produtos) */}
+          {reportTab === 'sintetico' && (
           <>
           {/* Toolbar */}
           <div className="p-5 sm:p-6 flex flex-col gap-4">

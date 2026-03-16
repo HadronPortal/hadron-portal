@@ -354,6 +354,8 @@ const Clientes = () => {
                 <option value={100}>100</option>
               </select>
             </div>
+          </div>
+
           {/* Active filters */}
           {selectedRepRaw.length > 0 && (
             <div className="px-5 sm:px-6 pb-3 flex items-center gap-2 flex-wrap">

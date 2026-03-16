@@ -1,10 +1,15 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { fetchWithAuth } from '@/lib/auth-refresh';
+
+const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+const BASE = `https://${projectId}.supabase.co/functions/v1`;
 
 interface ExportColumn {
   header: string;
   accessor: (row: any) => string | number;
   align?: 'left' | 'right' | 'center';
+  forceText?: boolean; // Forces text format in CSV (prevents Excel scientific notation)
 }
 
 interface ExportOptions {
@@ -19,8 +24,12 @@ export function exportCSV({ columns, data, fileName }: ExportOptions) {
   const header = columns.map(c => `"${c.header}"`).join(sep);
   const rows = data.map(row =>
     columns.map(c => {
-      const val = c.accessor(row);
-      return `"${String(val ?? '').replace(/"/g, '""')}"`;
+      const val = String(c.accessor(row) ?? '').replace(/"/g, '""');
+      // Prefix with = and wrap in quotes to force Excel text format for long numeric strings
+      if (c.forceText && val && /^\d{8,}$/.test(val)) {
+        return `="${val}"`;
+      }
+      return `"${val}"`;
     }).join(sep)
   );
   const bom = '\uFEFF';
@@ -55,6 +64,44 @@ export function exportPDF({ title, columns, data, fileName }: ExportOptions) {
   });
 
   doc.save(`${fileName}.pdf`);
+}
+
+/**
+ * Fetches ALL pages from an API endpoint for full export.
+ * Returns the complete array of records.
+ */
+export async function fetchAllForExport(
+  endpoint: string,
+  params: Record<string, string>,
+  dataKey: string, // e.g. 'clients' or 'orders'
+): Promise<any[]> {
+  const pageSize = 200;
+  let currentPage = 1;
+  let allData: any[] = [];
+  let hasMore = true;
+
+  while (hasMore) {
+    const url = new URL(`${BASE}/${endpoint}`);
+    Object.entries({ ...params, page: String(currentPage), limit: String(pageSize) }).forEach(([k, v]) => {
+      if (v) url.searchParams.set(k, v);
+    });
+
+    const res = await fetchWithAuth(url.toString());
+    if (!res.ok) throw new Error(`Erro ${res.status}`);
+    const json = await res.json();
+
+    const records = json[dataKey] || json.data || [];
+    allData = allData.concat(records);
+
+    const total = json.total_records || json.total || 0;
+    if (allData.length >= total || records.length < pageSize) {
+      hasMore = false;
+    } else {
+      currentPage++;
+    }
+  }
+
+  return allData;
 }
 
 function downloadBlob(blob: Blob, name: string) {

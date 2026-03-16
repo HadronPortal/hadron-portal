@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ReportToolbar from './ReportToolbar';
 import ScrollToTop from '@/components/ScrollToTop';
-import { exportPDF, exportCSV } from '@/lib/export-utils';
+import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
+import { toast } from 'sonner';
 
 const DEFAULT_START_DATE = new Date(2026, 0, 8);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);
@@ -93,7 +94,7 @@ const RelatorioClientes = () => {
   const clientColumns = [
     { header: 'Cliente', accessor: (c: ClienteAPI) => c.ter_nomter || '' },
     { header: 'Fantasia', accessor: (c: ClienteAPI) => c.ter_fanter || '' },
-    { header: 'Documento', accessor: (c: ClienteAPI) => c.ter_documento || '' },
+    { header: 'Documento', accessor: (c: ClienteAPI) => c.ter_documento || '', forceText: true },
     { header: 'Cidade', accessor: (c: ClienteAPI) => c.TEN_CIDLGR || '' },
     { header: 'UF', accessor: (c: ClienteAPI) => c.TEN_UF_LGR || '' },
     { header: 'Total Vendas', accessor: (c: ClienteAPI) => formatCurrency(c.TOTAL_VENDAS), align: 'right' as const },
@@ -101,10 +102,22 @@ const RelatorioClientes = () => {
     { header: 'Últ. Venda', accessor: (c: ClienteAPI) => formatDate(c.ULT_VENDA), align: 'right' as const },
   ];
 
-  const handleExport = useCallback((fmt: 'pdf' | 'csv') => {
-    const opts = { title: 'Relatório de Clientes', columns: clientColumns, data: filtered, fileName: 'relatorio-clientes' };
-    fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
-  }, [filtered]);
+  const handleExport = useCallback(async (fmt: 'pdf' | 'csv') => {
+    try {
+      toast.info('Exportando todos os registros...');
+      const allData = await fetchAllForExport('fetch-clients', {
+        date_ini: toApiDate(selectedPeriod.startDate),
+        date_end: toApiDate(selectedPeriod.endDate),
+        ...(repParam ? { rep: repParam } : {}),
+        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+      }, 'clients');
+      const opts = { title: 'Relatório de Clientes', columns: clientColumns, data: allData, fileName: 'relatorio-clientes' };
+      fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+      toast.success(`${allData.length} registros exportados!`);
+    } catch (e) {
+      toast.error('Erro ao exportar: ' + (e as Error).message);
+    }
+  }, [selectedPeriod, repParam, searchQuery]);
 
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];

@@ -282,6 +282,8 @@ const Header = () => {
               <button
                 key={label}
                 onClick={() => { navigate(path); setDrawerOpen(false); }}
+                onMouseEnter={() => handlePrefetch(path)}
+                onTouchStart={() => handlePrefetch(path)}
                 className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors mb-1 ${
                   isActive
                     ? 'bg-primary/10 text-primary'

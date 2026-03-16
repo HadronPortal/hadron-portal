@@ -226,7 +226,7 @@ const Catalogo = () => {
                   return (
                     <div
                       key={item.pro_codpro}
-                      onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
+                      onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 })}
                       className="bg-card rounded-lg border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col"
                     >
                       {/* Image */}

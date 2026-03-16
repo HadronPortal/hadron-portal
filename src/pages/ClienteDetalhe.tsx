@@ -1015,10 +1015,13 @@ const ClienteDetalhe = () => {
 
                 {/* Save all button */}
                 <div className="flex justify-end">
-                  <Button onClick={() => {
-                    toast({ title: 'Configurações salvas!', description: 'Todas as configurações avançadas foram salvas.' });
-                    setActiveTab('Visão Geral');
-                  }}>
+                  <Button
+                    disabled
+                    className="opacity-60 cursor-not-allowed"
+                    onClick={() => {
+                      toast({ title: 'Em breve', description: 'Esta funcionalidade estará disponível em breve.' });
+                    }}
+                  >
                     Salvar Configurações
                   </Button>
                 </div>

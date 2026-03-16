@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2, ChevronDown, Moon, Sun, BarChart3 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { usePrefetch } from '@/hooks/use-prefetch';
 
 import logoImg from '@/assets/logo_hadron_go.png';
 import avatarImg from '@/assets/avatar-user.png';
@@ -18,6 +19,11 @@ const navItems = [
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const prefetch = usePrefetch();
+
+  const handlePrefetch = useCallback((path: string) => {
+    prefetch(path);
+  }, [prefetch]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [companyMenuOpen, setCompanyMenuOpen] = useState(false);
@@ -276,6 +282,8 @@ const Header = () => {
               <button
                 key={label}
                 onClick={() => { navigate(path); setDrawerOpen(false); }}
+                onMouseEnter={() => handlePrefetch(path)}
+                onTouchStart={() => handlePrefetch(path)}
                 className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors mb-1 ${
                   isActive
                     ? 'bg-primary/10 text-primary'

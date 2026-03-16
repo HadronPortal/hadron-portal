@@ -593,11 +593,7 @@ const Analitico = () => {
           )}
 
           {/* Produtos report */}
-          {reportTab === 'produtos' && (
-            <div className="p-8 text-center text-muted-foreground text-sm">
-              Em breve: Relatório de Produtos
-            </div>
-          )}
+          {reportTab === 'produtos' && <RelatorioProdutos />}
 
           {/* Clientes report */}
           {reportTab === 'clientes' && <RelatorioClientes />}

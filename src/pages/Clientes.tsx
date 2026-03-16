@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Search, Eye, ChevronLeft, ChevronRight, ChevronDown, FileText, Pencil } from 'lucide-react';
+import { Search, Eye, ChevronLeft, ChevronRight, ChevronDown, FileText, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import { useRepresentantes } from '@/hooks/use-representantes';
@@ -273,9 +274,34 @@ const Clientes = () => {
           {selectedIds.size > 0 && (
             <div className="px-5 sm:px-6 pb-3 flex items-center gap-3">
               <span className="text-sm font-medium text-foreground">{selectedIds.size} selecionado(s)</span>
-              <Button variant="destructive" size="sm" className="h-7 text-xs" onClick={() => setSelectedIds(new Set())}>
-                Limpar Seleção
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm" className="h-7 text-xs gap-1.5">
+                    <Trash2 size={14} />
+                    Excluir
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Tem certeza que deseja excluir {selectedIds.size} cliente(s) selecionado(s)? Esta ação não pode ser desfeita.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={() => {
+                        // TODO: implementar exclusão via API
+                        setSelectedIds(new Set());
+                      }}
+                    >
+                      Excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           )}
 

@@ -289,25 +289,19 @@ const Clientes = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-t border-b border-border">
-                    <th className="w-12 px-5 py-3">
-                      <Checkbox
-                        checked={filtered.length > 0 && selectedIds.size === filtered.length}
-                        onCheckedChange={toggleAll}
-                      />
-                    </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</th>
+                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</th>
                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Documento</th>
                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Local</th>
                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Vendas</th>
                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cadastro</th>
-                    <th className="px-4 py-3 text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Ações</th>
+                    <th className="px-4 py-3 text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-16"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center text-muted-foreground py-16 text-sm">
+                      <td colSpan={7} className="text-center text-muted-foreground py-16 text-sm">
                         Nenhum cliente encontrado
                       </td>
                     </tr>
@@ -319,13 +313,7 @@ const Clientes = () => {
                           key={c.ter_codter}
                           className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors"
                         >
-                          <td className="w-12 px-5 py-3.5">
-                            <Checkbox
-                              checked={selectedIds.has(c.ter_codter)}
-                              onCheckedChange={() => toggleSelect(c.ter_codter)}
-                            />
-                          </td>
-                          <td className="px-4 py-3.5">
+                           <td className="px-4 py-3.5">
                             <div>
                               <span className="text-sm font-normal text-foreground hover:text-primary cursor-pointer transition-colors">
                                 {c.ter_nomter}
@@ -360,26 +348,15 @@ const Clientes = () => {
                           <td className="px-4 py-3.5 text-sm text-muted-foreground whitespace-nowrap">
                             {formatDate(c.ter_dta_cad)}
                           </td>
-                          <td className="px-4 py-3.5 text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-8 px-4 text-xs font-normal gap-1.5 bg-muted/50 border-border data-[state=open]:bg-[#DBEAFE] data-[state=open]:text-[#3B82F6] data-[state=open]:border-[#93C5FD] hover:bg-transparent hover:text-foreground focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 dark:hover:bg-transparent dark:hover:text-foreground"
-                                  style={{ fontFamily: "'Poppins', sans-serif" }}
-                                >
-                                  Ações
-                                  <ChevronDown size={14} />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-40">
-                                <DropdownMenuItem onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { client: c } })}>
-                                  Visualizar
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </td>
+                           <td className="px-4 py-3.5 text-center">
+                             <button
+                               onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { client: c } })}
+                               className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                               title="Visualizar"
+                             >
+                               <Eye size={16} />
+                             </button>
+                           </td>
                         </tr>
                       );
                     })

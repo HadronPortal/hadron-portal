@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import RelatorioClientes from '@/components/erp/relatorios/RelatorioClientes';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
+import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';

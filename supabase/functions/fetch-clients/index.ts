@@ -71,6 +71,8 @@ serve(async (req) => {
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
+    console.log('Clients request filter:', JSON.stringify(requestBody.filter));
+
     // Retry up to 3 times on connection errors
     let clientsRes: Response | null = null;
     let lastError: Error | null = null;

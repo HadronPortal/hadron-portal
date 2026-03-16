@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Package, Boxes, Search, LayoutGrid, List } f
 import Spinner from '@/components/ui/spinner';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 import { useApiFetch } from '@/hooks/use-api-fetch';
+import ScrollToTop from '@/components/ScrollToTop';
 
 const navItems = [
   { label: 'Home', path: '/' },
@@ -264,6 +265,7 @@ const Catalogo = () => {
                 Página {page} de {totalPages} — {totalRecords} produtos
               </span>
               <div className="flex items-center gap-1">
+                <ScrollToTop />
                 <Button
                   variant="outline"
                   size="sm"

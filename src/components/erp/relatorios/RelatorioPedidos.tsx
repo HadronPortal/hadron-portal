@@ -5,6 +5,7 @@ import { useApiFetch } from '@/hooks/use-api-fetch';
 import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ReportToolbar from './ReportToolbar';
+import ScrollToTop from '@/components/ScrollToTop';
 
 const DEFAULT_START_DATE = new Date(2026, 0, 8);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);
@@ -223,6 +224,7 @@ const RelatorioPedidos = () => {
             Mostrando {(page - 1) * rowsPerPage + 1} a {Math.min(page * rowsPerPage, totalRecords)} de {totalRecords}
           </span>
           <div className="flex items-center gap-1">
+            <ScrollToTop />
             <Button variant="ghost" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="h-8 w-8 p-0">‹</Button>
             {getPageNumbers().map((p, i) =>
               p === '...' ? (

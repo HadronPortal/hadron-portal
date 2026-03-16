@@ -369,6 +369,9 @@ const Catalogo = () => {
           productId={selectedProduct?.id ?? null}
           productName={selectedProduct?.name}
           productFoto={selectedProduct?.foto}
+          catalogSaldos={selectedProduct?.saldos}
+          catalogSaldoFisico={selectedProduct?.saldoFisico}
+          catalogPrevSaida={selectedProduct?.prevSaida}
         />
       </main>
       </div>

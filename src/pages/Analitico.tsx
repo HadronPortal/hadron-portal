@@ -451,13 +451,19 @@ const Analitico = () => {
             </div>
 
             {/* Active filters indicator */}
-            {(selectedRepRaw.length > 0 || searchQuery.trim()) && (
+            {(selectedRepRaw.length > 0 || searchQuery.trim() || selectedClients.length > 0) && (
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-muted-foreground">Filtros ativos:</span>
                 {selectedRepRaw.length > 0 && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
                     Rep: {representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
                     <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
+                  </span>
+                )}
+                {selectedClients.length > 0 && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-xs text-primary font-medium">
+                    {selectedClients.length} cliente{selectedClients.length > 1 ? 's' : ''}
+                    <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedClients([]); setPage(1); setFilterNonce(n => n + 1); }} />
                   </span>
                 )}
                 {searchQuery.trim() && (

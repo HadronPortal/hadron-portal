@@ -28,9 +28,11 @@ interface Props {
   filters: CatalogoFilters;
   onChange: (f: CatalogoFilters) => void;
   categories: string[];
+  searchQuery: string;
+  onSearchChange: (v: string) => void;
 }
 
-const CatalogoFilterBar = ({ filters, onChange, categories }: Props) => {
+const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearchChange }: Props) => {
   const [open, setOpen] = useState(false);
 
   const update = (partial: Partial<CatalogoFilters>) => {

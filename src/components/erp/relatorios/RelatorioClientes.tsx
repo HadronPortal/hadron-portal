@@ -90,6 +90,22 @@ const RelatorioClientes = () => {
 
   const handleSearch = () => { setSearchQuery(searchInput); setPage(1); setFilterNonce(n => n + 1); };
 
+  const clientColumns = [
+    { header: 'Cliente', accessor: (c: ClienteAPI) => c.ter_nomter || '' },
+    { header: 'Fantasia', accessor: (c: ClienteAPI) => c.ter_fanter || '' },
+    { header: 'Documento', accessor: (c: ClienteAPI) => c.ter_documento || '' },
+    { header: 'Cidade', accessor: (c: ClienteAPI) => c.TEN_CIDLGR || '' },
+    { header: 'UF', accessor: (c: ClienteAPI) => c.TEN_UF_LGR || '' },
+    { header: 'Total Vendas', accessor: (c: ClienteAPI) => formatCurrency(c.TOTAL_VENDAS), align: 'right' as const },
+    { header: 'Qtd. Vendas', accessor: (c: ClienteAPI) => String(c.QUANT_VENDAS || 0), align: 'right' as const },
+    { header: 'Últ. Venda', accessor: (c: ClienteAPI) => formatDate(c.ULT_VENDA), align: 'right' as const },
+  ];
+
+  const handleExport = useCallback((fmt: 'pdf' | 'csv') => {
+    const opts = { title: 'Relatório de Clientes', columns: clientColumns, data: filtered, fileName: 'relatorio-clientes' };
+    fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+  }, [filtered]);
+
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
     if (totalPages <= 5) { for (let i = 1; i <= totalPages; i++) pages.push(i); }

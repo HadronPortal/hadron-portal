@@ -301,7 +301,7 @@ const Clientes = () => {
                 <tbody>
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center text-muted-foreground py-16 text-sm">
+                      <td colSpan={7} className="text-center text-muted-foreground py-16 text-sm">
                         Nenhum cliente encontrado
                       </td>
                     </tr>

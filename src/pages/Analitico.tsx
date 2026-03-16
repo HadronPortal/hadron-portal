@@ -591,11 +591,32 @@ const Analitico = () => {
           </>
           )}
 
+          {/* Produtos report */}
+          {reportTab === 'produtos' && (
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              Em breve: Relatório de Produtos
+            </div>
+          )}
+
           {/* Clientes report */}
           {reportTab === 'clientes' && <RelatorioClientes />}
 
           {/* Pedidos report */}
           {reportTab === 'pedidos' && <RelatorioPedidos />}
+
+          {/* Representantes report */}
+          {reportTab === 'representantes' && (
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              Em breve: Relatório de Representantes
+            </div>
+          )}
+
+          {/* Comissionamento report */}
+          {reportTab === 'comissionamento' && (
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              Em breve: Relatório de Comissionamento
+            </div>
+          )}
 
         </div>
       </main>

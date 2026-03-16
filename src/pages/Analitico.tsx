@@ -407,11 +407,28 @@ const Analitico = () => {
                   <option value={100}>100</option>
                 </select>
 
-                {/* Export */}
-                <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs font-medium">
-                  <Download size={14} />
-                  Exportar
-                </Button>
+                <Popover open={exportOpen} onOpenChange={setExportOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs font-medium">
+                      <Download size={14} />
+                      Exportar
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-40 p-1.5" align="end">
+                    <button
+                      onClick={() => { handleExportProdutos('pdf'); setExportOpen(false); }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
+                    >
+                      <FileText size={14} className="text-destructive" /> Exportar PDF
+                    </button>
+                    <button
+                      onClick={() => { handleExportProdutos('csv'); setExportOpen(false); }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
+                    >
+                      <FileSpreadsheet size={14} className="text-primary" /> Exportar CSV
+                    </button>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 

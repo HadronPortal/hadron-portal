@@ -261,7 +261,7 @@ const Catalogo = () => {
                                 : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                             }`}>
                               <Boxes className="w-3 h-3" />
-                              {formatSaldo(item.SALDOS)}
+                              {formatSaldo(saldoNum)}
                             </span>
                             <span className="text-[11px] text-muted-foreground">SKU: <span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
                           </div>

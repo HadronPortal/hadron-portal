@@ -167,27 +167,34 @@ const CriarPedido = () => {
     if (!selectedCliente || cart.length === 0) return;
     setEnviando(true);
     try {
-      // Fetch the last order number from the API
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const baseUrl = `https://${projectId}.supabase.co/functions/v1`;
-      const res = await fetchWithAuth(`${baseUrl}/fetch-orders?page=1&limit=1&sort_field=orc_codorc_web&sort_dir=DESC`);
-      let nextNum = '';
-      if (res.ok) {
-        const ordData = await res.json();
-        const lastOrder = ordData?.orders?.[0];
-        if (lastOrder?.orc_codorc_web) {
-          nextNum = String(Number(lastOrder.orc_codorc_web) + 1);
-        }
-      }
-      if (!nextNum) {
-        nextNum = Math.floor(100000 + Math.random() * 900000).toString();
-      }
-      setPedidoNumero(nextNum);
+      const params = new URLSearchParams({
+        page: '1',
+        limit: '100',
+        date_ini: '2000-01-01',
+        date_end: '2100-12-31',
+      });
+
+      const res = await fetchWithAuth(`${BASE}/fetch-orders?${params.toString()}`, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) throw new Error(`Falha ao buscar último pedido (${res.status})`);
+
+      const ordData = await res.json();
+      const orders = Array.isArray(ordData?.orders) ? ordData.orders : [];
+      const lastOrderNumber = orders
+        .map((order: { orc_codorc_web?: number | string }) => Number(order.orc_codorc_web))
+        .filter((value: number) => Number.isFinite(value) && value > 0)
+        .reduce((max: number, value: number) => Math.max(max, value), 0);
+
+      if (!lastOrderNumber) throw new Error('Nenhum pedido válido retornado pela API');
+
+      setPedidoNumero(String(lastOrderNumber + 1));
       setStep(2);
       toast({ title: 'Pedido enviado com sucesso!' });
     } catch (err) {
       console.error(err);
-      toast({ title: 'Erro ao enviar pedido', description: 'Tente novamente.', variant: 'destructive' });
+      toast({ title: 'Erro ao gerar número do pedido', description: 'Não foi possível buscar o último pedido da API.', variant: 'destructive' });
     } finally {
       setEnviando(false);
     }

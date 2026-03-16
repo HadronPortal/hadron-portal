@@ -120,7 +120,7 @@ const Analitico = () => {
   };
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam, searchQuery.trim(), String(filterNonce)],
+    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', codterParam || 'all', dateIniParam, dateEndParam, searchQuery.trim(), String(filterNonce)],
     endpoint: 'fetch-analytics',
     params: {
       page: String(page),
@@ -128,6 +128,7 @@ const Analitico = () => {
       date_ini: dateIniParam,
       date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
+      ...(codterParam ? { codter: codterParam } : {}),
       ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
     },
     staleTime: 0,

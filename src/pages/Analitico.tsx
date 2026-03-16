@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import RelatorioClientes from '@/components/erp/relatorios/RelatorioClientes';
+import RelatorioClientes, { type SelectedClient } from '@/components/erp/relatorios/RelatorioClientes';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
 import { format } from 'date-fns';

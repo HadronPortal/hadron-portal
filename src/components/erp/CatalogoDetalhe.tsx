@@ -123,6 +123,11 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
                 <InfoRow label="Marca" value={info.pro_marca} />
                 <InfoRow label="NCM" value={info.pro_codncm} />
                 <InfoRow label="Unidade" value={info.pro_unidade} />
+              </div>
+
+              {/* Saldos */}
+              <div className="space-y-1">
+                <h3 className="text-sm font-bold text-foreground mb-2">Saldos</h3>
                 <InfoRow label="Saldo Físico" value={catalogSaldoFisico != null ? Number(catalogSaldoFisico).toLocaleString('pt-BR') : '—'} />
                 <InfoRow label="Previsão de Saída" value={catalogPrevSaida != null ? Number(catalogPrevSaida).toLocaleString('pt-BR') : '—'} />
                 <InfoRow label="Saldo Disponível" value={saldoDisponivel.toLocaleString('pt-BR')} />

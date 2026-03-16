@@ -431,7 +431,7 @@ const Analitico = () => {
               </div>
 
               <div className="flex items-center gap-3 flex-wrap">
-                {/* Operation tabs - only for Sintético */}
+                {/* Operation tabs - Sintético */}
                 {reportTab === 'sintetico' && (
                   <div className="flex items-center bg-muted rounded-lg p-0.5">
                     {tabs.map((tab) => (
@@ -440,6 +440,25 @@ const Analitico = () => {
                         onClick={() => setActiveTab(tab.key)}
                         className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
                           activeTab === tab.key
+                            ? 'bg-card text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Sub-tabs - Comissionamento */}
+                {reportTab === 'comissionamento' && (
+                  <div className="flex items-center bg-muted rounded-lg p-0.5">
+                    {comissionamentoSubTabs.map((tab) => (
+                      <button
+                        key={tab.key}
+                        onClick={() => setComissionamentoSubTab(tab.key)}
+                        className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+                          comissionamentoSubTab === tab.key
                             ? 'bg-card text-foreground shadow-sm'
                             : 'text-muted-foreground hover:text-foreground'
                         }`}

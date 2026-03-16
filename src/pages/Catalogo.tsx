@@ -43,6 +43,7 @@ const Catalogo = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [filters, setFilters] = useState<CatalogoFilters>(defaultFilters);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
 

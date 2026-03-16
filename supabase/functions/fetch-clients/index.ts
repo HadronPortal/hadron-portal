@@ -98,30 +98,6 @@ serve(async (req) => {
     let clientsData;
     try { clientsData = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON`); }
 
-    if (Array.isArray(clientsData?.clients) && clientFilter !== 'all') {
-      const now = new Date();
-      const sixMonthsAgo = new Date(now);
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-
-      clientsData.clients = clientsData.clients.filter((client: Record<string, unknown>) => {
-        const totalVendas = Number(client.TOTAL_VENDAS ?? 0);
-        const cadastro = typeof client.ter_dta_cad === 'string' ? new Date(client.ter_dta_cad) : null;
-
-        if (clientFilter === 'positivados') return totalVendas > 0;
-        if (clientFilter === 'novos') return totalVendas > 0 && !!cadastro && !Number.isNaN(cadastro.getTime()) && cadastro >= sixMonthsAgo;
-        return true;
-      });
-
-      clientsData.total_records = clientsData.clients.length;
-      clientsData.post = {
-        ...(clientsData.post || {}),
-        filter: {
-          ...((clientsData.post && clientsData.post.filter) || {}),
-          client_filter: clientFilter,
-        },
-      };
-    }
-
     return new Response(JSON.stringify(clientsData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },
     });

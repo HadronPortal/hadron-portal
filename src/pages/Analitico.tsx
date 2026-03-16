@@ -593,13 +593,13 @@ const Analitico = () => {
           )}
 
           {/* Produtos report */}
-          {reportTab === 'produtos' && <RelatorioProdutos />}
+          {reportTab === 'produtos' && <RelatorioProdutos filters={sharedFilters} />}
 
           {/* Clientes report */}
-          {reportTab === 'clientes' && <RelatorioClientes />}
+          {reportTab === 'clientes' && <RelatorioClientes filters={sharedFilters} />}
 
           {/* Pedidos report */}
-          {reportTab === 'pedidos' && <RelatorioPedidos />}
+          {reportTab === 'pedidos' && <RelatorioPedidos filters={sharedFilters} />}
 
           {/* Representantes report */}
           {reportTab === 'representantes' && (

@@ -71,9 +71,12 @@ const getImageUrl = (foto: string) => {
 };
 
 const reportTabs = [
+  { key: 'sintetico', label: 'Sintético' },
   { key: 'produtos', label: 'Produtos' },
   { key: 'clientes', label: 'Clientes' },
   { key: 'pedidos', label: 'Pedidos' },
+  { key: 'representantes', label: 'Representantes' },
+  { key: 'comissionamento', label: 'Comissionamento' },
 ] as const;
 
 type ReportTab = typeof reportTabs[number]['key'];
@@ -95,7 +98,7 @@ const Analitico = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [filterNonce, setFilterNonce] = useState(0);
-  const [reportTab, setReportTab] = useState<ReportTab>('produtos');
+  const [reportTab, setReportTab] = useState<ReportTab>('sintetico');
   const [exportOpen, setExportOpen] = useState(false);
 
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
@@ -252,8 +255,8 @@ const Analitico = () => {
             ))}
           </div>
 
-          {/* Produtos report content */}
-          {reportTab === 'produtos' && (
+          {/* Sintético report content (was Produtos) */}
+          {reportTab === 'sintetico' && (
           <>
           {/* Toolbar */}
           <div className="p-5 sm:p-6 flex flex-col gap-4">
@@ -588,11 +591,32 @@ const Analitico = () => {
           </>
           )}
 
+          {/* Produtos report */}
+          {reportTab === 'produtos' && (
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              Em breve: Relatório de Produtos
+            </div>
+          )}
+
           {/* Clientes report */}
           {reportTab === 'clientes' && <RelatorioClientes />}
 
           {/* Pedidos report */}
           {reportTab === 'pedidos' && <RelatorioPedidos />}
+
+          {/* Representantes report */}
+          {reportTab === 'representantes' && (
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              Em breve: Relatório de Representantes
+            </div>
+          )}
+
+          {/* Comissionamento report */}
+          {reportTab === 'comissionamento' && (
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              Em breve: Relatório de Comissionamento
+            </div>
+          )}
 
         </div>
       </main>

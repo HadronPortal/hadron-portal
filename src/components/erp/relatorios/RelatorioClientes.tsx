@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ScrollToTop from '@/components/ScrollToTop';
 import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
@@ -33,6 +34,11 @@ interface ClienteAPI {
   COD_REP: number;
 }
 
+export interface SelectedClient {
+  code: number;
+  name: string;
+}
+
 export interface SharedFilterProps {
   selectedRepRaw: string[];
   selectedPeriod: { startDate: Date; endDate: Date };
@@ -40,9 +46,15 @@ export interface SharedFilterProps {
   searchInput: string;
   representantes: any[];
   filterNonce: number;
+  selectedClients: SelectedClient[];
 }
 
-const RelatorioClientes = ({ filters }: { filters: SharedFilterProps }) => {
+interface Props {
+  filters: SharedFilterProps;
+  onSelectClients?: (clients: SelectedClient[]) => void;
+}
+
+const RelatorioClientes = ({ filters, onSelectClients }: Props) => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(1);
   const [localSearchInput, setLocalSearchInput] = useState('');
@@ -79,6 +91,36 @@ const RelatorioClientes = ({ filters }: { filters: SharedFilterProps }) => {
 
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
   const showOverlay = isFetching && !isLoading;
+
+  const selectedCodes = new Set(filters.selectedClients.map(c => c.code));
+  const allVisibleSelected = filtered.length > 0 && filtered.every(c => selectedCodes.has(c.ter_codter));
+
+  const toggleClient = useCallback((cli: ClienteAPI) => {
+    const current = filters.selectedClients;
+    const exists = current.find(c => c.code === cli.ter_codter);
+    const updated = exists
+      ? current.filter(c => c.code !== cli.ter_codter)
+      : [...current, { code: cli.ter_codter, name: cli.ter_nomter }];
+    onSelectClients?.(updated);
+  }, [filters.selectedClients, onSelectClients]);
+
+  const toggleAll = useCallback(() => {
+    if (allVisibleSelected) {
+      // Deselect all visible
+      const visibleCodes = new Set(filtered.map(c => c.ter_codter));
+      const updated = filters.selectedClients.filter(c => !visibleCodes.has(c.code));
+      onSelectClients?.(updated);
+    } else {
+      // Select all visible (merge with existing)
+      const current = new Map(filters.selectedClients.map(c => [c.code, c]));
+      filtered.forEach(c => {
+        if (!current.has(c.ter_codter)) {
+          current.set(c.ter_codter, { code: c.ter_codter, name: c.ter_nomter });
+        }
+      });
+      onSelectClients?.(Array.from(current.values()));
+    }
+  }, [allVisibleSelected, filtered, filters.selectedClients, onSelectClients]);
 
   const clientColumns = [
     { header: 'Cliente', accessor: (c: ClienteAPI) => c.ter_nomter || '' },
@@ -123,6 +165,24 @@ const RelatorioClientes = ({ filters }: { filters: SharedFilterProps }) => {
 
   return (
     <>
+      {/* Selection indicator */}
+      {filters.selectedClients.length > 0 && (
+        <div className="px-5 sm:px-6 py-2 bg-primary/5 border-b border-border flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-medium text-primary">
+            {filters.selectedClients.length} cliente{filters.selectedClients.length > 1 ? 's' : ''} selecionado{filters.selectedClients.length > 1 ? 's' : ''}
+          </span>
+          <span className="text-xs text-muted-foreground">— os filtros das outras abas serão aplicados apenas a estes clientes</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 text-xs text-destructive hover:text-destructive ml-auto"
+            onClick={() => onSelectClients?.([])}
+          >
+            Limpar seleção
+          </Button>
+        </div>
+      )}
+
       {error ? (
         <div className="text-center py-16 text-destructive text-sm">{error}</div>
       ) : isLoading ? (
@@ -135,6 +195,13 @@ const RelatorioClientes = ({ filters }: { filters: SharedFilterProps }) => {
             <table className="w-full">
               <thead>
                 <tr className="border-t border-b border-border">
+                  <th className="px-3 py-3 w-10">
+                    <Checkbox
+                      checked={allVisibleSelected}
+                      onCheckedChange={toggleAll}
+                      aria-label="Selecionar todos"
+                    />
+                  </th>
                   <th className="px-5 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</th>
                   <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Documento</th>
                   <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Localização</th>
@@ -146,13 +213,20 @@ const RelatorioClientes = ({ filters }: { filters: SharedFilterProps }) => {
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center text-muted-foreground py-12 text-sm">
+                    <td colSpan={7} className="text-center text-muted-foreground py-12 text-sm">
                       Nenhum cliente encontrado
                     </td>
                   </tr>
                 ) : (
                   filtered.map((cli, idx) => (
-                    <tr key={cli.ter_codter} className={`border-b border-border hover:bg-accent/30 transition-colors ${idx % 2 === 1 ? 'bg-muted/30' : ''}`}>
+                    <tr key={cli.ter_codter} className={`border-b border-border hover:bg-accent/30 transition-colors ${idx % 2 === 1 ? 'bg-muted/30' : ''} ${selectedCodes.has(cli.ter_codter) ? 'bg-primary/5' : ''}`}>
+                      <td className="px-3 py-3">
+                        <Checkbox
+                          checked={selectedCodes.has(cli.ter_codter)}
+                          onCheckedChange={() => toggleClient(cli)}
+                          aria-label={`Selecionar ${cli.ter_nomter}`}
+                        />
+                      </td>
                       <td className="px-5 py-3 text-sm">
                         <div>
                           <span className="text-foreground">{cli.ter_nomter}</span>

@@ -280,7 +280,6 @@ const Analitico = () => {
                   <Input
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="Buscar..."
                     className="pl-9 h-10 bg-transparent border-border"
                   />

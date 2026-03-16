@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import RelatorioClientes from '@/components/erp/relatorios/RelatorioClientes';
+import RelatorioClientes, { type SelectedClient } from '@/components/erp/relatorios/RelatorioClientes';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
 import { format } from 'date-fns';
@@ -101,10 +101,13 @@ const Analitico = () => {
   const [filterNonce, setFilterNonce] = useState(0);
   const [reportTab, setReportTab] = useState<ReportTab>('sintetico');
   const [exportOpen, setExportOpen] = useState(false);
+  const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
 
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
+
+  const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
 
   const sharedFilters = {
     selectedRepRaw,
@@ -113,10 +116,11 @@ const Analitico = () => {
     searchInput,
     representantes,
     filterNonce,
+    selectedClients,
   };
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam, searchQuery.trim(), String(filterNonce)],
+    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', codterParam || 'all', dateIniParam, dateEndParam, searchQuery.trim(), String(filterNonce)],
     endpoint: 'fetch-analytics',
     params: {
       page: String(page),
@@ -124,6 +128,7 @@ const Analitico = () => {
       date_ini: dateIniParam,
       date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
+      ...(codterParam ? { codter: codterParam } : {}),
       ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
     },
     staleTime: 0,
@@ -373,6 +378,7 @@ const Analitico = () => {
                       <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => {
                         setSelectedRep([]);
                         setSelectedRepRaw([]);
+                        setSelectedClients([]);
                         setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
                         setSearchQuery('');
                         setSearchInput('');
@@ -445,13 +451,19 @@ const Analitico = () => {
             </div>
 
             {/* Active filters indicator */}
-            {(selectedRepRaw.length > 0 || searchQuery.trim()) && (
+            {(selectedRepRaw.length > 0 || searchQuery.trim() || selectedClients.length > 0) && (
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-muted-foreground">Filtros ativos:</span>
                 {selectedRepRaw.length > 0 && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
                     Rep: {representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
                     <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
+                  </span>
+                )}
+                {selectedClients.length > 0 && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-xs text-primary font-medium">
+                    {selectedClients.length} cliente{selectedClients.length > 1 ? 's' : ''}
+                    <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedClients([]); setPage(1); setFilterNonce(n => n + 1); }} />
                   </span>
                 )}
                 {searchQuery.trim() && (
@@ -606,7 +618,7 @@ const Analitico = () => {
           {reportTab === 'produtos' && <RelatorioProdutos filters={sharedFilters} />}
 
           {/* Clientes report */}
-          {reportTab === 'clientes' && <RelatorioClientes filters={sharedFilters} />}
+          {reportTab === 'clientes' && <RelatorioClientes filters={sharedFilters} onSelectClients={setSelectedClients} />}
 
           {/* Pedidos report */}
           {reportTab === 'pedidos' && <RelatorioPedidos filters={sharedFilters} />}

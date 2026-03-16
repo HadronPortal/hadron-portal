@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Filter, ArrowUpDown, X, ChevronDown } from 'lucide-react';
+import { Filter, ArrowUpDown, X, ChevronDown, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface CatalogoFilters {
@@ -28,9 +28,11 @@ interface Props {
   filters: CatalogoFilters;
   onChange: (f: CatalogoFilters) => void;
   categories: string[];
+  searchQuery: string;
+  onSearchChange: (v: string) => void;
 }
 
-const CatalogoFilterBar = ({ filters, onChange, categories }: Props) => {
+const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearchChange }: Props) => {
   const [open, setOpen] = useState(false);
 
   const update = (partial: Partial<CatalogoFilters>) => {
@@ -49,11 +51,11 @@ const CatalogoFilterBar = ({ filters, onChange, categories }: Props) => {
 
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm">
-      {/* Toggle row */}
-      <div className="flex items-center justify-between p-3 sm:p-4">
+      {/* Search + Toggle row */}
+      <div className="flex items-center gap-3 p-3 sm:p-4">
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
+          className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors shrink-0"
         >
           <Filter className="w-4 h-4" />
           Filtros
@@ -63,8 +65,20 @@ const CatalogoFilterBar = ({ filters, onChange, categories }: Props) => {
           <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
         </button>
 
+        {/* Search input */}
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Buscar produtos..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full h-9 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+
         {/* Sort controls - always visible */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <ArrowUpDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
           <select
             value={filters.sortField}

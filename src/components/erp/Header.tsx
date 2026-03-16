@@ -19,6 +19,11 @@ const navItems = [
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const prefetch = usePrefetch();
+
+  const handlePrefetch = useCallback((path: string) => {
+    prefetch(path);
+  }, [prefetch]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [companyMenuOpen, setCompanyMenuOpen] = useState(false);

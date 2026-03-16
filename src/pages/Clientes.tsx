@@ -92,7 +92,7 @@ const Clientes = () => {
     setError(null);
     try {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const clientFilterMap: Record<string, string> = { todos: 'all', positivados: 'positivados', novos: 'novos' };
+      const clientFilterMap: Record<string, string> = { todos: 'all', positivados: 'positive', novos: 'new' };
       const params = new URLSearchParams({
         page: String(page),
         limit: String(rowsPerPage),

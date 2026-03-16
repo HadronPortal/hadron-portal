@@ -45,9 +45,22 @@ serve(async (req) => {
     const repParam = url.searchParams.get('rep') || '';
     const dateIni = url.searchParams.get('date_ini') || '';
     const dateEnd = url.searchParams.get('date_end') || '';
-    const clientFilter = url.searchParams.get('client_filter') || '';
+    const rawClientFilter = (url.searchParams.get('client_filter') || '').trim().toLowerCase();
     const sortField = url.searchParams.get('sort_field') || '';
     const sortDir = url.searchParams.get('sort_dir') || 'DESC';
+
+    const clientFilterAliases: Record<string, string> = {
+      '': 'all',
+      all: 'all',
+      todos: 'all',
+      positivados: 'positive',
+      positivado: 'positive',
+      positive: 'positive',
+      novos: 'new',
+      novo: 'new',
+      new: 'new',
+    };
+    const clientFilter = clientFilterAliases[rawClientFilter] ?? rawClientFilter;
 
     const token = extractUserToken(req) || await getServiceToken();
 

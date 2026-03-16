@@ -228,8 +228,8 @@ const RelatorioProdutos = () => {
                       <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{totals.qtde}</td>
                       <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{totals.peso.toFixed(1)} Kg</td>
                       <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{formatCurrency(totals.valor)}</td>
-                      <td className="px-4 py-3 text-sm text-right text-muted-foreground">—</td>
-                      <td className="px-4 py-3 text-sm text-right text-muted-foreground">—</td>
+                      <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{formatCurrency(totals.media)}</td>
+                      <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{totals.qtdVenda}</td>
                     </tr>
                   </>
                 )}

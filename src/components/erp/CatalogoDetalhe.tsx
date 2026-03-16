@@ -24,6 +24,9 @@ interface CatalogoDetalheProps {
   productId: number | null;
   productName?: string;
   productFoto?: string;
+  catalogSaldos?: number;
+  catalogSaldoFisico?: number;
+  catalogPrevSaida?: number;
 }
 
 const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (

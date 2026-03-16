@@ -78,6 +78,13 @@ serve(async (req) => {
     console.log('Orders sample (first order keys):', JSON.stringify(Object.keys(data?.orders?.[0] || data?.data?.[0] || {})));
     console.log('Dashboard field:', JSON.stringify(data?.dashboard || 'NOT PRESENT'));
 
+    // Filter by multiple clients if needed (API only supports single cod_ter)
+    if (codterList.length > 1 && Array.isArray(data.orders)) {
+      const codterSet = new Set(codterList.map(Number));
+      data.orders = data.orders.filter((o: any) => codterSet.has(Number(o.CODTER)));
+      data.total_records = data.orders.length;
+    }
+
     // If the API doesn't return a dashboard summary, compute it from orders
     if (!data.dashboard && Array.isArray(data.orders)) {
       const sent = { total: 0, peso: 0 };

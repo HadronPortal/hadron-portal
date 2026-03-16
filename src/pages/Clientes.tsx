@@ -274,9 +274,34 @@ const Clientes = () => {
           {selectedIds.size > 0 && (
             <div className="px-5 sm:px-6 pb-3 flex items-center gap-3">
               <span className="text-sm font-medium text-foreground">{selectedIds.size} selecionado(s)</span>
-              <Button variant="destructive" size="sm" className="h-7 text-xs" onClick={() => setSelectedIds(new Set())}>
-                Limpar Seleção
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm" className="h-7 text-xs gap-1.5">
+                    <Trash2 size={14} />
+                    Excluir
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Tem certeza que deseja excluir {selectedIds.size} cliente(s) selecionado(s)? Esta ação não pode ser desfeita.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={() => {
+                        // TODO: implementar exclusão via API
+                        setSelectedIds(new Set());
+                      }}
+                    >
+                      Excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           )}
 

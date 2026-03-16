@@ -184,6 +184,12 @@ const RelatorioClientes = ({ filters, onSelectClients }: Props) => {
         </div>
       )}
 
+      {!isLoading && !error && (
+        <div className="px-5 sm:px-6 pb-2">
+          <span className="text-xs text-muted-foreground">{filtered.length} resultado{filtered.length !== 1 ? 's' : ''}</span>
+        </div>
+      )}
+
       {error ? (
         <div className="text-center py-16 text-destructive text-sm">{error}</div>
       ) : isLoading ? (

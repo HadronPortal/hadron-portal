@@ -265,6 +265,7 @@ const Catalogo = () => {
                 Página {page} de {totalPages} — {totalRecords} produtos
               </span>
               <div className="flex items-center gap-1">
+                <ScrollToTop />
                 <Button
                   variant="outline"
                   size="sm"

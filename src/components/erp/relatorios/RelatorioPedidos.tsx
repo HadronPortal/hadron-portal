@@ -112,6 +112,22 @@ const RelatorioPedidos = () => {
 
   const getStatus = (s: number | string) => statusMap[String(s)] || { label: String(s), color: '#9ca3af', bg: '#9ca3af18' };
 
+  const orderColumns = [
+    { header: 'Nº Web', accessor: (o: OrderAPI) => String(o.orc_codorc_web) },
+    { header: 'Nº Hádron', accessor: (o: OrderAPI) => String(o.orc_codorc_had || '') },
+    { header: 'Cliente', accessor: (o: OrderAPI) => o.CLIENTE || '' },
+    { header: 'Documento', accessor: (o: OrderAPI) => o.orc_documento || '' },
+    { header: 'Localização', accessor: (o: OrderAPI) => o.LOCALIZACAO || '' },
+    { header: 'Status', accessor: (o: OrderAPI) => getStatus(o.orc_status).label },
+    { header: 'Total', accessor: (o: OrderAPI) => formatCurrency(o.orc_val_tot), align: 'right' as const },
+    { header: 'Data', accessor: (o: OrderAPI) => formatDate(o.DATA_PEDIDO) },
+  ];
+
+  const handleExport = useCallback((fmt: 'pdf' | 'csv') => {
+    const opts = { title: 'Relatório de Pedidos', columns: orderColumns, data: filtered, fileName: 'relatorio-pedidos' };
+    fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+  }, [filtered]);
+
   return (
     <>
       <ReportToolbar

@@ -1,10 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import RelatorioClientes from '@/components/erp/relatorios/RelatorioClientes';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Search, Download, Filter, CalendarIcon, X } from 'lucide-react';
+import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet } from 'lucide-react';
+import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -94,6 +96,7 @@ const Analitico = () => {
   const [page, setPage] = useState(1);
   const [filterNonce, setFilterNonce] = useState(0);
   const [reportTab, setReportTab] = useState<ReportTab>('produtos');
+  const [exportOpen, setExportOpen] = useState(false);
 
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
@@ -143,6 +146,41 @@ const Analitico = () => {
     setPage(1);
     setFilterNonce(n => n + 1);
   };
+
+  const productColumns = [
+    { header: 'Código', accessor: (p: ProductAnalytics) => String(p.codpro) },
+    { header: 'Produto', accessor: (p: ProductAnalytics) => p.produto || '' },
+    { header: 'GTIN', accessor: (p: ProductAnalytics) => p.gtin || '', forceText: true },
+    { header: 'Peso Un.', accessor: (p: ProductAnalytics) => String(p.peso_un || 0) },
+    { header: 'Tipo Op.', accessor: (p: ProductAnalytics) => p.tipo_op_banco || '' },
+    ...periods.map(per => ({
+      header: per.legenda,
+      accessor: (p: ProductAnalytics) => {
+        const m = p.mensal?.[per.chave];
+        return m ? formatCurrency(m.valor) : 'R$ 0,00';
+      },
+      align: 'right' as const,
+    })),
+    { header: 'Total Qtde', accessor: (p: ProductAnalytics) => String(p.totais?.qtde || 0), align: 'right' as const },
+    { header: 'Total Valor', accessor: (p: ProductAnalytics) => formatCurrency(p.totais?.valor || 0), align: 'right' as const },
+  ];
+
+  const handleExportProdutos = useCallback(async (fmt: 'pdf' | 'csv') => {
+    try {
+      toast.info('Exportando todos os produtos...');
+      const allData = await fetchAllForExport('fetch-analytics', {
+        date_ini: dateIniParam,
+        date_end: dateEndParam,
+        ...(repParam ? { rep: repParam } : {}),
+        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+      }, 'products');
+      const opts = { title: 'Relatório de Produtos', columns: productColumns, data: allData, fileName: 'relatorio-produtos' };
+      fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+      toast.success(`${allData.length} produtos exportados!`);
+    } catch (e) {
+      toast.error('Erro ao exportar: ' + (e as Error).message);
+    }
+  }, [dateIniParam, dateEndParam, repParam, searchQuery, periods]);
 
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
@@ -369,11 +407,28 @@ const Analitico = () => {
                   <option value={100}>100</option>
                 </select>
 
-                {/* Export */}
-                <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs font-medium">
-                  <Download size={14} />
-                  Exportar
-                </Button>
+                <Popover open={exportOpen} onOpenChange={setExportOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs font-medium">
+                      <Download size={14} />
+                      Exportar
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-40 p-1.5" align="end">
+                    <button
+                      onClick={() => { handleExportProdutos('pdf'); setExportOpen(false); }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
+                    >
+                      <FileText size={14} className="text-destructive" /> Exportar PDF
+                    </button>
+                    <button
+                      onClick={() => { handleExportProdutos('csv'); setExportOpen(false); }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
+                    >
+                      <FileSpreadsheet size={14} className="text-primary" /> Exportar CSV
+                    </button>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 

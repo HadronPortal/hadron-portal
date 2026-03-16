@@ -24,8 +24,9 @@ interface CatalogoItem {
   pro_despro: string;
   pro_foto: string;
   NOME_GRUPO: string | null;
-  SALDOS: string;
-  pro_sdo_atu?: number | string | null;
+  SALDOS: number | string;
+  SALDO_FISICO?: number | string | null;
+  PREV_SAIDA?: number | string | null;
   pro_codgrp: number;
   pro_preco?: number | string | null;
 }
@@ -42,7 +43,7 @@ const Catalogo = () => {
   const [limit, setLimit] = useState(12);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string; saldos?: number; saldoFisico?: number; prevSaida?: number } | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [filters, setFilters] = useState<CatalogoFilters>(defaultFilters);
 
@@ -106,8 +107,7 @@ const Catalogo = () => {
   const totalPages = Math.ceil(totalRecords / limit);
 
   const getSaldo = (item: CatalogoItem) => {
-    if (item.pro_sdo_atu != null) return Number(item.pro_sdo_atu);
-    return parseFloat(item.SALDOS) || 0;
+    return Number(item.SALDOS) || 0;
   };
 
   const formatSaldo = (num: number) => {
@@ -226,7 +226,7 @@ const Catalogo = () => {
                   return (
                     <div
                       key={item.pro_codpro}
-                      onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
+                      onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 })}
                       className="bg-card rounded-lg border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col"
                     >
                       {/* Image */}
@@ -278,7 +278,7 @@ const Catalogo = () => {
                 return (
                   <div
                     key={item.pro_codpro}
-                    onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
+                    onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 })}
                     className="bg-card rounded-lg border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200 cursor-pointer flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-2.5 group"
                   >
                     <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden">
@@ -302,7 +302,7 @@ const Catalogo = () => {
                       </div>
                     </div>
                     <div className="flex-shrink-0 flex items-center">
-                      <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={(e) => { e.stopPropagation(); setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto }); }}>
+                      <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={(e) => { e.stopPropagation(); setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 }); }}>
                         <Package className="w-3.5 h-3.5" />Ver Detalhes
                       </Button>
                     </div>
@@ -369,6 +369,9 @@ const Catalogo = () => {
           productId={selectedProduct?.id ?? null}
           productName={selectedProduct?.name}
           productFoto={selectedProduct?.foto}
+          catalogSaldos={selectedProduct?.saldos}
+          catalogSaldoFisico={selectedProduct?.saldoFisico}
+          catalogPrevSaida={selectedProduct?.prevSaida}
         />
       </main>
       </div>

@@ -24,6 +24,9 @@ interface CatalogoDetalheProps {
   productId: number | null;
   productName?: string;
   productFoto?: string;
+  catalogSaldos?: number;
+  catalogSaldoFisico?: number;
+  catalogPrevSaida?: number;
 }
 
 const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
@@ -33,7 +36,7 @@ const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) =>
   </div>
 );
 
-const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFoto }: CatalogoDetalheProps) => {
+const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFoto, catalogSaldos, catalogSaldoFisico, catalogPrevSaida }: CatalogoDetalheProps) => {
   const { data, isLoading: loading, error: queryError } = useApiFetch<ProductDetail>({
     queryKey: ['product-detail', String(productId)],
     endpoint: 'fetch-product-details',
@@ -46,7 +49,8 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
   const info = data?.info;
   const precos = data?.precos;
   const estoques = data?.estoques || [];
-  const hasStock = (info?.pro_sdo_atu ?? 0) > 0;
+  const saldoDisponivel = catalogSaldos ?? 0;
+  const hasStock = saldoDisponivel > 0;
 
   useEffect(() => {
     if (!open) return;
@@ -119,10 +123,9 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
                 <InfoRow label="Marca" value={info.pro_marca} />
                 <InfoRow label="NCM" value={info.pro_codncm} />
                 <InfoRow label="Unidade" value={info.pro_unidade} />
-                <InfoRow label="Saldo Atual" value={info.pro_sdo_atu != null ? Number(info.pro_sdo_atu).toLocaleString('pt-BR') : '0'} />
-                <InfoRow label="Previsão de Saída" value={
-                  info.wprc_mso?.PREV_SAIDA != null ? Number(info.wprc_mso.PREV_SAIDA).toLocaleString('pt-BR') : '—'
-                } />
+                <InfoRow label="Saldo Físico" value={catalogSaldoFisico != null ? Number(catalogSaldoFisico).toLocaleString('pt-BR') : '—'} />
+                <InfoRow label="Previsão de Saída" value={catalogPrevSaida != null ? Number(catalogPrevSaida).toLocaleString('pt-BR') : '—'} />
+                <InfoRow label="Saldo Disponível" value={saldoDisponivel.toLocaleString('pt-BR')} />
                 <InfoRow label="Previsão de Entrada" value={
                   info.wprc_mso?.PREV_ENTRADA != null ? Number(info.wprc_mso.PREV_ENTRADA).toLocaleString('pt-BR') : '—'
                 } />

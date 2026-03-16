@@ -292,7 +292,7 @@ const Catalogo = () => {
                       <h3 className="text-sm sm:text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors truncate">{item.pro_despro}</h3>
                       <div className="flex items-center gap-2 sm:gap-3 mt-1.5 flex-wrap">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${inStock ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                          <Boxes className="w-3 h-3" />{formatSaldo(item.SALDOS)}
+                          <Boxes className="w-3 h-3" />{formatSaldo(saldoNum)}
                         </span>
                         <span className="text-xs text-muted-foreground"><span className="hidden sm:inline">SKU: </span><span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
                         {item.NOME_GRUPO && <span className="text-xs text-muted-foreground">Grupo: <span className="font-medium text-foreground">{item.NOME_GRUPO}</span></span>}

@@ -75,15 +75,16 @@ const RelatorioPedidos = ({ filters }: { filters: SharedFilterProps }) => {
   const totalRecords: number = data?.total_records || orders.length;
   const dashboard = data?.dashboard;
 
+  const searchTerm = filters.searchInput || localSearchInput;
   const filtered = useMemo(() => {
-    if (!localSearchInput.trim()) return orders;
-    const q = localSearchInput.toLowerCase();
+    if (!searchTerm.trim()) return orders;
+    const q = searchTerm.toLowerCase();
     return orders.filter(o =>
       (o.CLIENTE || '').toLowerCase().includes(q) ||
       String(o.orc_codorc_web).includes(q) ||
       (o.orc_documento || '').includes(q)
     );
-  }, [orders, localSearchInput]);
+  }, [orders, searchTerm]);
 
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
   const showOverlay = isFetching && !isLoading;

@@ -53,14 +53,15 @@ serve(async (req) => {
       '': 'all',
       all: 'all',
       todos: 'all',
-      positivados: 'positive',
-      positivado: 'positive',
-      positive: 'positive',
-      novos: 'new',
-      novo: 'new',
-      new: 'new',
+      positivados: 'positivados',
+      positivado: 'positivados',
+      positive: 'positivados',
+      novos: 'novos',
+      novo: 'novos',
+      new: 'novos',
     };
-    const clientFilter = clientFilterAliases[rawClientFilter] ?? rawClientFilter;
+    const clientFilter = clientFilterAliases[rawClientFilter] ?? 'all';
+    const upstreamClientFilter = 'all';
 
     const token = extractUserToken(req) || await getServiceToken();
 

@@ -67,12 +67,12 @@ serve(async (req) => {
 
     const requestBody: Record<string, unknown> = {
       search,
-      filter: { cod_rep: repParam, date_ini: dateIni, date_end: dateEnd, client_filter: clientFilter },
+      filter: { cod_rep: repParam, date_ini: dateIni, date_end: dateEnd, client_filter: upstreamClientFilter },
       pagination: { page, limit },
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
-    console.log('Clients request filter:', JSON.stringify(requestBody.filter));
+    console.log('Clients request filter:', JSON.stringify({ ...requestBody.filter, requested_client_filter: clientFilter }));
 
     // Retry up to 3 times on connection errors
     let clientsRes: Response | null = null;

@@ -236,7 +236,7 @@ const Clientes = () => {
                 {tabs.map((tab) => (
                   <button
                     key={tab.key}
-                    onClick={() => { setActiveTab(tab.key); }}
+                    onClick={() => { setActiveTab(tab.key); setPage(1); }}
                     className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
                       activeTab === tab.key
                         ? 'bg-card text-foreground shadow-sm'

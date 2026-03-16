@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Package, Boxes, Search, LayoutGrid, List } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
+import CatalogoFilterBar, { CatalogoFilters, defaultFilters } from '@/components/erp/CatalogoFilterBar';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import ScrollToTop from '@/components/ScrollToTop';
 
@@ -42,6 +43,7 @@ const Catalogo = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [filters, setFilters] = useState<CatalogoFilters>(defaultFilters);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
 
@@ -58,10 +60,46 @@ const Catalogo = () => {
     placeholderData: keepPreviousData,
   });
 
-  const items = useMemo(() => {
-    const catalogs = data?.catalogs || [];
-    return [...catalogs].sort((a, b) => a.pro_codpro - b.pro_codpro);
+  const categories = useMemo(() => {
+    const cats = new Set<string>();
+    (data?.catalogs || []).forEach((item) => {
+      if (item.NOME_GRUPO) cats.add(item.NOME_GRUPO);
+    });
+    return Array.from(cats).sort();
   }, [data]);
+
+  const items = useMemo(() => {
+    let list = [...(data?.catalogs || [])];
+
+    // SKU range
+    if (filters.skuFrom) list = list.filter((i) => i.pro_codpro >= Number(filters.skuFrom));
+    if (filters.skuTo) list = list.filter((i) => i.pro_codpro <= Number(filters.skuTo));
+
+    // Price range
+    if (filters.priceMin) list = list.filter((i) => Number(i.pro_preco || 0) >= Number(filters.priceMin));
+    if (filters.priceMax) list = list.filter((i) => Number(i.pro_preco || 0) <= Number(filters.priceMax));
+
+    // Category
+    if (filters.category) list = list.filter((i) => i.NOME_GRUPO === filters.category);
+
+    // Stock
+    if (filters.stockFilter === 'in_stock') list = list.filter((i) => parseFloat(i.SALDOS) > 0);
+    if (filters.stockFilter === 'out_of_stock') list = list.filter((i) => parseFloat(i.SALDOS) <= 0);
+
+    // Sort
+    const dir = filters.sortDir === 'asc' ? 1 : -1;
+    list.sort((a, b) => {
+      switch (filters.sortField) {
+        case 'sku': return (a.pro_codpro - b.pro_codpro) * dir;
+        case 'name': return a.pro_despro.localeCompare(b.pro_despro) * dir;
+        case 'price': return (Number(a.pro_preco || 0) - Number(b.pro_preco || 0)) * dir;
+        case 'stock': return (parseFloat(a.SALDOS) - parseFloat(b.SALDOS)) * dir;
+        default: return 0;
+      }
+    });
+
+    return list;
+  }, [data, filters]);
 
   const totalRecords = data?.total_records || 0;
   const totalPages = Math.ceil(totalRecords / limit);
@@ -122,6 +160,9 @@ const Catalogo = () => {
             />
           </div>
         </div>
+        {/* Filter bar */}
+        <CatalogoFilterBar filters={filters} onChange={(f) => { setFilters(f); setPage(1); }} categories={categories} />
+
         {/* Header with results count and per-page */}
         <div className="flex items-center justify-between flex-wrap gap-2">
           <p className="text-sm text-muted-foreground">

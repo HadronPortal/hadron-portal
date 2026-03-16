@@ -289,13 +289,7 @@ const Clientes = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-t border-b border-border">
-                    <th className="w-12 px-5 py-3">
-                      <Checkbox
-                        checked={filtered.length > 0 && selectedIds.size === filtered.length}
-                        onCheckedChange={toggleAll}
-                      />
-                    </th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</th>
+                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</th>
                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Documento</th>
                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Local</th>
                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>

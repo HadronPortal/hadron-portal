@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { useApiFetch } from '@/hooks/use-api-fetch';
@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ReportToolbar from './ReportToolbar';
 import ScrollToTop from '@/components/ScrollToTop';
+import { exportPDF, exportCSV } from '@/lib/export-utils';
 
 const DEFAULT_START_DATE = new Date(2026, 0, 8);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);
@@ -111,6 +112,22 @@ const RelatorioPedidos = () => {
 
   const getStatus = (s: number | string) => statusMap[String(s)] || { label: String(s), color: '#9ca3af', bg: '#9ca3af18' };
 
+  const orderColumns = [
+    { header: 'Nº Web', accessor: (o: OrderAPI) => String(o.orc_codorc_web) },
+    { header: 'Nº Hádron', accessor: (o: OrderAPI) => String(o.orc_codorc_had || '') },
+    { header: 'Cliente', accessor: (o: OrderAPI) => o.CLIENTE || '' },
+    { header: 'Documento', accessor: (o: OrderAPI) => o.orc_documento || '' },
+    { header: 'Localização', accessor: (o: OrderAPI) => o.LOCALIZACAO || '' },
+    { header: 'Status', accessor: (o: OrderAPI) => getStatus(o.orc_status).label },
+    { header: 'Total', accessor: (o: OrderAPI) => formatCurrency(o.orc_val_tot), align: 'right' as const },
+    { header: 'Data', accessor: (o: OrderAPI) => formatDate(o.DATA_PEDIDO) },
+  ];
+
+  const handleExport = useCallback((fmt: 'pdf' | 'csv') => {
+    const opts = { title: 'Relatório de Pedidos', columns: orderColumns, data: filtered, fileName: 'relatorio-pedidos' };
+    fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+  }, [filtered]);
+
   return (
     <>
       <ReportToolbar
@@ -133,6 +150,7 @@ const RelatorioPedidos = () => {
         onRowsPerPageChange={(n) => { setRowsPerPage(n); setPage(1); }}
         searchQuery={searchQuery}
         showOpTabs={false}
+        onExport={handleExport}
       />
 
       {/* KPI summary */}

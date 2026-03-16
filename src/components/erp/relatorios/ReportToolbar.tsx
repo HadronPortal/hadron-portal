@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { Search, Download, Filter, CalendarIcon, X } from 'lucide-react';
+import { memo, useState as useLocalState } from 'react';
+import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -35,6 +35,7 @@ interface ReportToolbarProps {
   onRowsPerPageChange: (n: number) => void;
   searchQuery: string;
   showOpTabs?: boolean;
+  onExport?: (format: 'pdf' | 'csv') => void;
 }
 
 const ReportToolbar = memo(({
@@ -57,7 +58,9 @@ const ReportToolbar = memo(({
   onRowsPerPageChange,
   searchQuery,
   showOpTabs = true,
+  onExport,
 }: ReportToolbarProps) => {
+  const [exportOpen, setExportOpen] = useLocalState(false);
   const selectClass = "w-full appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-card text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer [&>option]:bg-card [&>option]:text-foreground";
   const rowsSelectClass = "appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-transparent text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer";
 
@@ -174,10 +177,28 @@ const ReportToolbar = memo(({
             <option value={100}>100</option>
           </select>
 
-          <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs font-medium">
-            <Download size={14} />
-            Exportar
-          </Button>
+          <Popover open={exportOpen} onOpenChange={setExportOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs font-medium">
+                <Download size={14} />
+                Exportar
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-40 p-1.5" align="end">
+              <button
+                onClick={() => { onExport?.('pdf'); setExportOpen(false); }}
+                className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
+              >
+                <FileText size={14} className="text-destructive" /> Exportar PDF
+              </button>
+              <button
+                onClick={() => { onExport?.('csv'); setExportOpen(false); }}
+                className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
+              >
+                <FileSpreadsheet size={14} className="text-primary" /> Exportar CSV
+              </button>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 

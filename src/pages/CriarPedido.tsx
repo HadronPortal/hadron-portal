@@ -7,6 +7,7 @@ import Spinner from '@/components/ui/spinner';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Minus, Search, X, Trash2, CheckCircle2, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { fetchWithAuth } from '@/lib/auth-refresh';
 
 /* ─── types ─── */
 interface CatalogoItem {

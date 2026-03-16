@@ -27,6 +27,7 @@ const ErpLayout = () => {
           <Outlet />
         </>
       )}
+      <ScrollToTop />
     </div>
   );
 };

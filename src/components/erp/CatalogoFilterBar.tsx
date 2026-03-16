@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Filter, ArrowUpDown, X, ChevronDown } from 'lucide-react';
+import { Filter, ArrowUpDown, X, ChevronDown, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface CatalogoFilters {

@@ -106,6 +106,15 @@ const Analitico = () => {
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
+  const sharedFilters = {
+    selectedRepRaw,
+    selectedPeriod,
+    searchQuery,
+    searchInput,
+    representantes,
+    filterNonce,
+  };
+
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
     queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', dateIniParam, dateEndParam, searchQuery.trim(), String(filterNonce)],
     endpoint: 'fetch-analytics',

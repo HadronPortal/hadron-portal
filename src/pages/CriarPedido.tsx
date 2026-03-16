@@ -7,6 +7,7 @@ import Spinner from '@/components/ui/spinner';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Minus, Search, X, Trash2, CheckCircle2, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { fetchWithAuth } from '@/lib/auth-refresh';
 
 /* ─── types ─── */
 interface CatalogoItem {
@@ -166,9 +167,22 @@ const CriarPedido = () => {
     if (!selectedCliente || cart.length === 0) return;
     setEnviando(true);
     try {
-      const num = Math.floor(100000 + Math.random() * 900000).toString();
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setPedidoNumero(num);
+      // Fetch the last order number from the API
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const baseUrl = `https://${projectId}.supabase.co/functions/v1`;
+      const res = await fetchWithAuth(`${baseUrl}/fetch-orders?page=1&limit=1&sort_field=orc_codorc_web&sort_dir=DESC`);
+      let nextNum = '';
+      if (res.ok) {
+        const ordData = await res.json();
+        const lastOrder = ordData?.orders?.[0];
+        if (lastOrder?.orc_codorc_web) {
+          nextNum = String(Number(lastOrder.orc_codorc_web) + 1);
+        }
+      }
+      if (!nextNum) {
+        nextNum = Math.floor(100000 + Math.random() * 900000).toString();
+      }
+      setPedidoNumero(nextNum);
       setStep(2);
       toast({ title: 'Pedido enviado com sucesso!' });
     } catch (err) {

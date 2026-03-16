@@ -84,9 +84,11 @@ const RelatorioProdutos = () => {
     return filtered.reduce((acc, p) => {
       const qtde = parseFloat(p.QUANT || '0');
       const valor = parseFloat(p.TOTAL_VENDIDO || '0');
+      const media = parseFloat(p.MEDIA || '0');
+      const qtdVenda = parseFloat(p.QUANT_VENDA || '0');
       const peso = qtde * (p.pro_peso_liq || 0);
-      return { qtde: acc.qtde + qtde, valor: acc.valor + valor, peso: acc.peso + peso };
-    }, { qtde: 0, valor: 0, peso: 0 });
+      return { qtde: acc.qtde + qtde, valor: acc.valor + valor, peso: acc.peso + peso, media: acc.media + media, qtdVenda: acc.qtdVenda + qtdVenda };
+    }, { qtde: 0, valor: 0, peso: 0, media: 0, qtdVenda: 0 });
   }, [filtered]);
 
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
@@ -226,8 +228,8 @@ const RelatorioProdutos = () => {
                       <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{totals.qtde}</td>
                       <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{totals.peso.toFixed(1)} Kg</td>
                       <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{formatCurrency(totals.valor)}</td>
-                      <td className="px-4 py-3 text-sm text-right text-muted-foreground">—</td>
-                      <td className="px-4 py-3 text-sm text-right text-muted-foreground">—</td>
+                      <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{formatCurrency(totals.media)}</td>
+                      <td className="px-4 py-3 text-sm text-right font-bold text-foreground">{totals.qtdVenda}</td>
                     </tr>
                   </>
                 )}

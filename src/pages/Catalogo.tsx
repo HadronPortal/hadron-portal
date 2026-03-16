@@ -25,6 +25,7 @@ interface CatalogoItem {
   NOME_GRUPO: string | null;
   SALDOS: string;
   pro_codgrp: number;
+  pro_preco?: number | string | null;
 }
 
 interface CatalogoAPIResponse {

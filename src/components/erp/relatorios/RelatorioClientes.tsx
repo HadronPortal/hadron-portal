@@ -79,15 +79,16 @@ const RelatorioClientes = ({ filters, onSelectClients }: Props) => {
   const clients: ClienteAPI[] = data?.clients || data?.data || [];
   const totalRecords: number = data?.total_records || clients.length;
 
+  const searchTerm = filters.searchInput || localSearchInput;
   const filtered = useMemo(() => {
-    if (!localSearchInput.trim()) return clients;
-    const q = localSearchInput.toLowerCase();
+    if (!searchTerm.trim()) return clients;
+    const q = searchTerm.toLowerCase();
     return clients.filter(c =>
       (c.ter_nomter || '').toLowerCase().includes(q) ||
       (c.ter_fanter || '').toLowerCase().includes(q) ||
       (c.ter_documento || '').includes(q)
     );
-  }, [clients, localSearchInput]);
+  }, [clients, searchTerm]);
 
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
   const showOverlay = isFetching && !isLoading;

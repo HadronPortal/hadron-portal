@@ -57,14 +57,15 @@ const RelatorioProdutos = ({ filters }: { filters: SharedFilterProps }) => {
   const products: ProductAPI[] = data?.products || [];
   const totalRecords: number = data?.total_records || products.length;
 
+  const searchTerm = filters.searchInput || localSearchInput;
   const filtered = useMemo(() => {
-    if (!localSearchInput.trim()) return products;
-    const q = localSearchInput.toLowerCase();
+    if (!searchTerm.trim()) return products;
+    const q = searchTerm.toLowerCase();
     return products.filter(p =>
       (p.pro_despro || '').toLowerCase().includes(q) ||
       String(p.pro_codpro).includes(q)
     );
-  }, [products, localSearchInput]);
+  }, [products, searchTerm]);
 
   const totals = useMemo(() => {
     return filtered.reduce((acc, p) => {

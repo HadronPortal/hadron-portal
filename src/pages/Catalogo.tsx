@@ -254,6 +254,9 @@ const Catalogo = () => {
                         </span>
                         <span className="text-xs text-muted-foreground"><span className="hidden sm:inline">SKU: </span><span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
                         {item.NOME_GRUPO && <span className="text-xs text-muted-foreground">Grupo: <span className="font-medium text-foreground">{item.NOME_GRUPO}</span></span>}
+                        {item.pro_preco != null && Number(item.pro_preco) > 0 && (
+                          <span className="text-xs font-bold text-primary whitespace-nowrap">R$ {Number(item.pro_preco).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        )}
                       </div>
                     </div>
                     <div className="flex-shrink-0 flex items-center">

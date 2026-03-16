@@ -107,7 +107,7 @@ const Catalogo = () => {
 
       <div className="bg-card flex-1">
       {/* Content overlaps into the black hero */}
-      <main className="px-3 sm:px-6 lg:px-12 xl:px-20 py-4 sm:py-5 space-y-4 max-w-[1100px] mx-auto w-full -mt-10 sm:-mt-16 relative z-10">
+      <main className="px-3 sm:px-6 lg:px-12 xl:px-20 py-4 sm:py-5 space-y-4 max-w-[1600px] mx-auto w-full -mt-10 sm:-mt-16 relative z-10">
         {/* Search bar */}
         <div className="bg-card rounded-xl border border-border shadow-sm p-3 sm:p-4">
           <div className="relative">

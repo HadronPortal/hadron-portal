@@ -49,6 +49,14 @@ const Catalogo = () => {
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
 
+  const getSaldo = (item: CatalogoItem) => {
+    return Number(item.SALDOS) || 0;
+  };
+
+  const formatSaldo = (num: number) => {
+    return isNaN(num) ? '0' : num.toLocaleString('pt-BR');
+  };
+
   const { data, isLoading, isFetching, error } = useApiFetch<CatalogoAPIResponse>({
     queryKey: ['catalogo', String(page), String(limit), repParam, searchQuery],
     endpoint: 'fetch-catalogo',

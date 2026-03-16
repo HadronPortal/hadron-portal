@@ -82,6 +82,46 @@ const reportTabs = [
 
 type ReportTab = typeof reportTabs[number]['key'];
 
+const comissionamentoSubTabs = [
+  { key: 'faturamento', label: 'Faturamento' },
+  { key: 'contas_receber', label: 'Contas a Receber' },
+] as const;
+
+const ComissionamentoTab = () => {
+  const [subTab, setSubTab] = useState<string>('faturamento');
+
+  return (
+    <div>
+      <div className="flex items-center bg-muted rounded-lg p-0.5 mx-5 sm:mx-6 mb-4 w-fit">
+        {comissionamentoSubTabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setSubTab(tab.key)}
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+              subTab === tab.key
+                ? 'bg-card text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {subTab === 'faturamento' && (
+        <div className="p-8 text-center text-muted-foreground text-sm">
+          Em breve: Comissionamento por Faturamento
+        </div>
+      )}
+      {subTab === 'contas_receber' && (
+        <div className="p-8 text-center text-muted-foreground text-sm">
+          Em breve: Comissionamento por Contas a Receber
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Analitico = () => {
   const location = useLocation();
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { Search, Download, Filter, CalendarIcon, X } from 'lucide-react';
+import { memo, useState as useLocalState } from 'react';
+import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';

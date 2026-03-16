@@ -668,9 +668,7 @@ const Analitico = () => {
 
           {/* Comissionamento report */}
           {reportTab === 'comissionamento' && (
-            <div className="p-8 text-center text-muted-foreground text-sm">
-              Em breve: Relatório de Comissionamento
-            </div>
+            <ComissionamentoTab />
           )}
 
         </div>

@@ -5,7 +5,7 @@ import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet } from 'lucide-react';
+import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet, Users } from 'lucide-react';
 import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -319,6 +319,38 @@ const Analitico = () => {
                           <option key={r.rep_codrep} value={r.rep_codrep}>{r.rep_nomrep}</option>
                         ))}
                       </select>
+                    </div>
+
+                    {/* Clientes selecionados */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">Clientes</label>
+                      {selectedClients.length > 0 ? (
+                        <div className="space-y-1.5">
+                          <div className="border border-border rounded-lg p-2 max-h-24 overflow-y-auto space-y-1">
+                            {selectedClients.map(cli => (
+                              <div key={cli.code} className="flex items-center justify-between text-xs">
+                                <span className="text-foreground truncate mr-2">{cli.name}</span>
+                                <button
+                                  onClick={() => setSelectedClients(prev => prev.filter(c => c.code !== cli.code))}
+                                  className="text-muted-foreground hover:text-destructive shrink-0"
+                                >
+                                  <X size={12} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => setSelectedClients([])}
+                            className="text-[11px] text-destructive hover:underline"
+                          >
+                            Limpar todos
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-muted-foreground italic">
+                          Selecione na aba Clientes via checkbox
+                        </p>
+                      )}
                     </div>
 
                     {/* Date range */}

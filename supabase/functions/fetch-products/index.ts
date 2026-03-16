@@ -52,9 +52,11 @@ serve(async (req) => {
 
     const token = extractUserToken(req) || await getServiceToken();
 
+    const codTerValue = codter ? (codter.includes(',') ? codter.split(',').map(Number) : codter) : '';
+
     const requestBody: Record<string, unknown> = {
       search,
-      filter: { cod_rep: repParam, cod_ter: codter, date_ini: dateIni, date_end: dateEnd, product_filter: productFilter },
+      filter: { cod_rep: repParam, cod_ter: codTerValue, date_ini: dateIni, date_end: dateEnd, product_filter: productFilter },
       pagination: { page, limit },
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };

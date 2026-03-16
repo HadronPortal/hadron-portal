@@ -278,7 +278,7 @@ const Catalogo = () => {
                 return (
                   <div
                     key={item.pro_codpro}
-                    onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto })}
+                    onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 })}
                     className="bg-card rounded-lg border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200 cursor-pointer flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-2.5 group"
                   >
                     <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden">

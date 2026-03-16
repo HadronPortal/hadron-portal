@@ -302,7 +302,7 @@ const Catalogo = () => {
                       </div>
                     </div>
                     <div className="flex-shrink-0 flex items-center">
-                      <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={(e) => { e.stopPropagation(); setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto }); }}>
+                      <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={(e) => { e.stopPropagation(); setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 }); }}>
                         <Package className="w-3.5 h-3.5" />Ver Detalhes
                       </Button>
                     </div>

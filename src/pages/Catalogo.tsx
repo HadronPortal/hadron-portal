@@ -107,8 +107,7 @@ const Catalogo = () => {
   const totalPages = Math.ceil(totalRecords / limit);
 
   const getSaldo = (item: CatalogoItem) => {
-    if (item.pro_sdo_atu != null) return Number(item.pro_sdo_atu);
-    return parseFloat(item.SALDOS) || 0;
+    return Number(item.SALDOS) || 0;
   };
 
   const formatSaldo = (num: number) => {

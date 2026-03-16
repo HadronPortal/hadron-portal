@@ -25,6 +25,7 @@ interface CatalogoItem {
   pro_foto: string;
   NOME_GRUPO: string | null;
   SALDOS: string;
+  pro_sdo_atu?: number | string | null;
   pro_codgrp: number;
   pro_preco?: number | string | null;
 }

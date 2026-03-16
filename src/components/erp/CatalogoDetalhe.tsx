@@ -120,6 +120,9 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
                 <InfoRow label="NCM" value={info.pro_codncm} />
                 <InfoRow label="Unidade" value={info.pro_unidade} />
                 <InfoRow label="Saldo Atual" value={info.pro_sdo_atu != null ? Number(info.pro_sdo_atu).toLocaleString('pt-BR') : '0'} />
+                <InfoRow label="Previsão de Saída" value={
+                  info.wprc_mso?.PREV_SAIDA != null ? Number(info.wprc_mso.PREV_SAIDA).toLocaleString('pt-BR') : '—'
+                } />
                 <InfoRow label="Previsão de Entrada" value={
                   info.wprc_mso?.PREV_ENTRADA != null ? Number(info.wprc_mso.PREV_ENTRADA).toLocaleString('pt-BR') : '—'
                 } />

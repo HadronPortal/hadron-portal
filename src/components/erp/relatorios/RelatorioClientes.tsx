@@ -141,6 +141,7 @@ const RelatorioClientes = () => {
         onRowsPerPageChange={(n) => { setRowsPerPage(n); setPage(1); }}
         searchQuery={searchQuery}
         showOpTabs={false}
+        onExport={handleExport}
       />
 
       {error ? (

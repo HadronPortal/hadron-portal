@@ -1,16 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
-import { useRepresentantes } from '@/hooks/use-representantes';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
-import ReportToolbar from './ReportToolbar';
 import ScrollToTop from '@/components/ScrollToTop';
 import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
+import type { SharedFilterProps } from './RelatorioClientes';
 
-const DEFAULT_START_DATE = new Date(2026, 0, 8);
-const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
 const formatCurrency = (v: number) =>
@@ -33,30 +30,23 @@ interface ProductAPI {
   ORC_ORIORC?: string;
 }
 
-const RelatorioProdutos = () => {
-  const { representantes } = useRepresentantes();
+const RelatorioProdutos = ({ filters }: { filters: SharedFilterProps }) => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchInput, setSearchInput] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
-  const [filterNonce, setFilterNonce] = useState(0);
-  const [activeTab, setActiveTab] = useState('todos');
+  const [localSearchInput, setLocalSearchInput] = useState('');
 
-  const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
+  const repParam = filters.selectedRepRaw.length > 0 ? filters.selectedRepRaw.join(',') : undefined;
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['report-products', String(page), String(rowsPerPage), repParam || 'all', toApiDate(selectedPeriod.startDate), toApiDate(selectedPeriod.endDate), searchQuery.trim(), String(filterNonce)],
+    queryKey: ['report-products', String(page), String(rowsPerPage), repParam || 'all', toApiDate(filters.selectedPeriod.startDate), toApiDate(filters.selectedPeriod.endDate), filters.searchQuery.trim(), String(filters.filterNonce)],
     endpoint: 'fetch-products',
     params: {
       page: String(page),
       limit: String(rowsPerPage),
-      date_ini: toApiDate(selectedPeriod.startDate),
-      date_end: toApiDate(selectedPeriod.endDate),
+      date_ini: toApiDate(filters.selectedPeriod.startDate),
+      date_end: toApiDate(filters.selectedPeriod.endDate),
       ...(repParam ? { rep: repParam } : {}),
-      ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+      ...(filters.searchQuery.trim() ? { search: filters.searchQuery.trim() } : {}),
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -65,21 +55,15 @@ const RelatorioProdutos = () => {
   const products: ProductAPI[] = data?.products || [];
   const totalRecords: number = data?.total_records || products.length;
 
-  const tabFiltered = useMemo(() => {
-    if (activeTab === 'todos') return products;
-    return products.filter(p => p.ORC_ORIORC === activeTab);
-  }, [products, activeTab]);
-
   const filtered = useMemo(() => {
-    if (!searchInput.trim()) return tabFiltered;
-    const q = searchInput.toLowerCase();
-    return tabFiltered.filter(p =>
+    if (!localSearchInput.trim()) return products;
+    const q = localSearchInput.toLowerCase();
+    return products.filter(p =>
       (p.pro_despro || '').toLowerCase().includes(q) ||
       String(p.pro_codpro).includes(q)
     );
-  }, [tabFiltered, searchInput]);
+  }, [products, localSearchInput]);
 
-  // Totals
   const totals = useMemo(() => {
     return filtered.reduce((acc, p) => {
       const qtde = parseFloat(p.QUANT || '0');
@@ -94,8 +78,6 @@ const RelatorioProdutos = () => {
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
   const showOverlay = isFetching && !isLoading;
 
-  const handleSearch = () => { setSearchQuery(searchInput); setPage(1); setFilterNonce(n => n + 1); };
-
   const productColumns = [
     { header: 'Código', accessor: (p: ProductAPI) => String(p.pro_codpro) },
     { header: 'Produto', accessor: (p: ProductAPI) => p.pro_despro || '' },
@@ -109,10 +91,10 @@ const RelatorioProdutos = () => {
     try {
       toast.info('Exportando todos os produtos...');
       const allData = await fetchAllForExport('fetch-products', {
-        date_ini: toApiDate(selectedPeriod.startDate),
-        date_end: toApiDate(selectedPeriod.endDate),
+        date_ini: toApiDate(filters.selectedPeriod.startDate),
+        date_end: toApiDate(filters.selectedPeriod.endDate),
         ...(repParam ? { rep: repParam } : {}),
-        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+        ...(filters.searchQuery.trim() ? { search: filters.searchQuery.trim() } : {}),
       }, 'products');
       const opts = { title: 'Relatório de Produtos', columns: productColumns, data: allData, fileName: 'relatorio-produtos' };
       fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
@@ -120,7 +102,7 @@ const RelatorioProdutos = () => {
     } catch (e) {
       toast.error('Erro ao exportar: ' + (e as Error).message);
     }
-  }, [selectedPeriod, repParam, searchQuery]);
+  }, [filters.selectedPeriod, repParam, filters.searchQuery]);
 
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
@@ -137,29 +119,6 @@ const RelatorioProdutos = () => {
 
   return (
     <>
-      <ReportToolbar
-        searchPlaceholder="Buscar produto..."
-        searchInput={searchInput}
-        onSearchInputChange={setSearchInput}
-        onSearch={handleSearch}
-        showFilters={showFilters}
-        onShowFiltersChange={setShowFilters}
-        representantes={representantes}
-        selectedRepRaw={selectedRepRaw}
-        onRepChange={(raw) => { setSelectedRepRaw(raw); }}
-        selectedPeriod={selectedPeriod}
-        onPeriodChange={setSelectedPeriod}
-        onApplyFilters={() => { setSearchQuery(searchInput); setPage(1); setFilterNonce(n => n + 1); setShowFilters(false); }}
-        onClearFilters={() => { setSelectedRepRaw([]); setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE }); setSearchQuery(''); setSearchInput(''); setPage(1); setFilterNonce(n => n + 1); setShowFilters(false); }}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={(n) => { setRowsPerPage(n); setPage(1); }}
-        searchQuery={searchQuery}
-        showOpTabs={false}
-        onExport={handleExport}
-      />
-
       {error ? (
         <div className="text-center py-16 text-destructive text-sm">{error}</div>
       ) : isLoading ? (

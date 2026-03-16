@@ -1,16 +1,12 @@
 import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
-import { useRepresentantes } from '@/hooks/use-representantes';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
-import ReportToolbar from './ReportToolbar';
 import ScrollToTop from '@/components/ScrollToTop';
 import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 
-const DEFAULT_START_DATE = new Date(2026, 0, 8);
-const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
 const formatCurrency = (v: number | null) => {
@@ -37,30 +33,32 @@ interface ClienteAPI {
   COD_REP: number;
 }
 
-const RelatorioClientes = () => {
-  const { representantes } = useRepresentantes();
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchInput, setSearchInput] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
-  const [page, setPage] = useState(1);
-  const [filterNonce, setFilterNonce] = useState(0);
-  const [activeTab, setActiveTab] = useState('todos');
+export interface SharedFilterProps {
+  selectedRepRaw: string[];
+  selectedPeriod: { startDate: Date; endDate: Date };
+  searchQuery: string;
+  searchInput: string;
+  representantes: any[];
+  filterNonce: number;
+}
 
-  const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
+const RelatorioClientes = ({ filters }: { filters: SharedFilterProps }) => {
+  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [page, setPage] = useState(1);
+  const [localSearchInput, setLocalSearchInput] = useState('');
+
+  const repParam = filters.selectedRepRaw.length > 0 ? filters.selectedRepRaw.join(',') : undefined;
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['report-clients', String(page), String(rowsPerPage), repParam || 'all', toApiDate(selectedPeriod.startDate), toApiDate(selectedPeriod.endDate), searchQuery.trim(), String(filterNonce)],
+    queryKey: ['report-clients', String(page), String(rowsPerPage), repParam || 'all', toApiDate(filters.selectedPeriod.startDate), toApiDate(filters.selectedPeriod.endDate), filters.searchQuery.trim(), String(filters.filterNonce)],
     endpoint: 'fetch-clients',
     params: {
       page: String(page),
       limit: String(rowsPerPage),
-      date_ini: toApiDate(selectedPeriod.startDate),
-      date_end: toApiDate(selectedPeriod.endDate),
+      date_ini: toApiDate(filters.selectedPeriod.startDate),
+      date_end: toApiDate(filters.selectedPeriod.endDate),
       ...(repParam ? { rep: repParam } : {}),
-      ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+      ...(filters.searchQuery.trim() ? { search: filters.searchQuery.trim() } : {}),
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -69,27 +67,18 @@ const RelatorioClientes = () => {
   const clients: ClienteAPI[] = data?.clients || data?.data || [];
   const totalRecords: number = data?.total_records || clients.length;
 
-  // Tab filter
-  const tabFiltered = useMemo(() => {
-    if (activeTab === 'todos') return clients;
-    // No operation type filter for clients - tabs not applicable
-    return clients;
-  }, [clients, activeTab]);
-
   const filtered = useMemo(() => {
-    if (!searchInput.trim()) return tabFiltered;
-    const q = searchInput.toLowerCase();
-    return tabFiltered.filter(c =>
+    if (!localSearchInput.trim()) return clients;
+    const q = localSearchInput.toLowerCase();
+    return clients.filter(c =>
       (c.ter_nomter || '').toLowerCase().includes(q) ||
       (c.ter_fanter || '').toLowerCase().includes(q) ||
       (c.ter_documento || '').includes(q)
     );
-  }, [tabFiltered, searchInput]);
+  }, [clients, localSearchInput]);
 
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
   const showOverlay = isFetching && !isLoading;
-
-  const handleSearch = () => { setSearchQuery(searchInput); setPage(1); setFilterNonce(n => n + 1); };
 
   const clientColumns = [
     { header: 'Cliente', accessor: (c: ClienteAPI) => c.ter_nomter || '' },
@@ -106,10 +95,10 @@ const RelatorioClientes = () => {
     try {
       toast.info('Exportando todos os registros...');
       const allData = await fetchAllForExport('fetch-clients', {
-        date_ini: toApiDate(selectedPeriod.startDate),
-        date_end: toApiDate(selectedPeriod.endDate),
+        date_ini: toApiDate(filters.selectedPeriod.startDate),
+        date_end: toApiDate(filters.selectedPeriod.endDate),
         ...(repParam ? { rep: repParam } : {}),
-        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+        ...(filters.searchQuery.trim() ? { search: filters.searchQuery.trim() } : {}),
       }, 'clients');
       const opts = { title: 'Relatório de Clientes', columns: clientColumns, data: allData, fileName: 'relatorio-clientes' };
       fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
@@ -117,7 +106,7 @@ const RelatorioClientes = () => {
     } catch (e) {
       toast.error('Erro ao exportar: ' + (e as Error).message);
     }
-  }, [selectedPeriod, repParam, searchQuery]);
+  }, [filters.selectedPeriod, repParam, filters.searchQuery]);
 
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
@@ -134,29 +123,6 @@ const RelatorioClientes = () => {
 
   return (
     <>
-      <ReportToolbar
-        searchPlaceholder="Buscar cliente..."
-        searchInput={searchInput}
-        onSearchInputChange={setSearchInput}
-        onSearch={handleSearch}
-        showFilters={showFilters}
-        onShowFiltersChange={setShowFilters}
-        representantes={representantes}
-        selectedRepRaw={selectedRepRaw}
-        onRepChange={(raw) => { setSelectedRepRaw(raw); }}
-        selectedPeriod={selectedPeriod}
-        onPeriodChange={setSelectedPeriod}
-        onApplyFilters={() => { setSearchQuery(searchInput); setPage(1); setFilterNonce(n => n + 1); setShowFilters(false); }}
-        onClearFilters={() => { setSelectedRepRaw([]); setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE }); setSearchQuery(''); setSearchInput(''); setPage(1); setFilterNonce(n => n + 1); setShowFilters(false); }}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={(n) => { setRowsPerPage(n); setPage(1); }}
-        searchQuery={searchQuery}
-        showOpTabs={false}
-        onExport={handleExport}
-      />
-
       {error ? (
         <div className="text-center py-16 text-destructive text-sm">{error}</div>
       ) : isLoading ? (

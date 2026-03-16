@@ -51,8 +51,8 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
 
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm">
-      {/* Toggle row */}
-      <div className="flex items-center justify-between p-3 sm:p-4">
+      {/* Search + Toggle row */}
+      <div className="flex items-center gap-3 p-3 sm:p-4">
         <button
           onClick={() => setOpen(!open)}
           className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"

@@ -147,21 +147,14 @@ const Catalogo = () => {
       <div className="bg-card flex-1">
       {/* Content overlaps into the black hero */}
       <main className="px-3 sm:px-6 lg:px-12 xl:px-20 py-4 sm:py-5 space-y-4 max-w-[1600px] mx-auto w-full -mt-10 sm:-mt-16 relative z-10">
-        {/* Search bar */}
-        <div className="bg-card rounded-xl border border-border shadow-sm p-3 sm:p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Buscar produtos..."
-              value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-              className="w-full h-10 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-        </div>
-        {/* Filter bar */}
-        <CatalogoFilterBar filters={filters} onChange={(f) => { setFilters(f); setPage(1); }} categories={categories} />
+        {/* Filter bar with integrated search */}
+        <CatalogoFilterBar
+          filters={filters}
+          onChange={(f) => { setFilters(f); setPage(1); }}
+          categories={categories}
+          searchQuery={searchQuery}
+          onSearchChange={(v) => { setSearchQuery(v); setPage(1); }}
+        />
 
         {/* Header with results count and per-page */}
         <div className="flex items-center justify-between flex-wrap gap-2">

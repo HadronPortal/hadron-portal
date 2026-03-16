@@ -120,6 +120,16 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
                 <InfoRow label="NCM" value={info.pro_codncm} />
                 <InfoRow label="Unidade" value={info.pro_unidade} />
                 <InfoRow label="Saldo Atual" value={info.pro_sdo_atu?.toLocaleString('pt-BR') ?? 0} />
+                <InfoRow label="Previsão de Saída" value={info.pro_sdo_prv_sai != null ? Number(info.pro_sdo_prv_sai).toLocaleString('pt-BR') : '—'} />
+                <InfoRow label="Previsão de Entrada" value={info.pro_sdo_prv_ent != null ? Number(info.pro_sdo_prv_ent).toLocaleString('pt-BR') : '—'} />
+                <InfoRow
+                  label="Saldo Disponível"
+                  value={
+                    info.pro_sdo_atu != null
+                      ? (Number(info.pro_sdo_atu) - Number(info.pro_sdo_prv_sai || 0)).toLocaleString('pt-BR')
+                      : '—'
+                  }
+                />
               </div>
 
               {/* Preços */}

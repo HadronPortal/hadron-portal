@@ -5,6 +5,7 @@ import { useApiFetch } from '@/hooks/use-api-fetch';
 import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ReportToolbar from './ReportToolbar';
+import ScrollToTop from '@/components/ScrollToTop';
 
 const DEFAULT_START_DATE = new Date(2026, 0, 8);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);

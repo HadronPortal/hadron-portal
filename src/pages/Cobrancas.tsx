@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
+import ScrollToTop from '@/components/ScrollToTop';
 
 interface Charge {
   rec_id_rec: string;

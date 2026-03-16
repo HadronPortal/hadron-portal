@@ -12,6 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
+import ScrollToTop from '@/components/ScrollToTop';
 
 interface ProductAPI {
   pro_codpro: number;

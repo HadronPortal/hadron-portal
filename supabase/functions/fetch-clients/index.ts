@@ -50,29 +50,28 @@ serve(async (req) => {
     const sortDir = url.searchParams.get('sort_dir') || 'DESC';
 
     const clientFilterAliases: Record<string, string> = {
-      '': 'all',
-      all: 'all',
-      todos: 'all',
-      positivados: 'positivados',
-      positivado: 'positivados',
-      positive: 'positivados',
-      novos: 'novos',
-      novo: 'novos',
-      new: 'novos',
+      '': '',
+      all: '',
+      todos: '',
+      positivados: 'positive',
+      positivado: 'positive',
+      positive: 'positive',
+      novos: 'new',
+      novo: 'new',
+      new: 'new',
     };
-    const clientFilter = clientFilterAliases[rawClientFilter] ?? 'all';
-    const upstreamClientFilter = 'all';
+    const clientFilter = clientFilterAliases[rawClientFilter] ?? '';
 
     const token = extractUserToken(req) || await getServiceToken();
 
     const requestBody: Record<string, unknown> = {
       search,
-      filter: { cod_rep: repParam, date_ini: dateIni, date_end: dateEnd, client_filter: upstreamClientFilter },
+      filter: { cod_rep: repParam, date_ini: dateIni, date_end: dateEnd, client_filter: clientFilter },
       pagination: { page, limit },
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
-    console.log('Clients request filter:', JSON.stringify({ ...requestBody.filter, requested_client_filter: clientFilter }));
+    console.log('Clients request filter:', JSON.stringify(requestBody.filter));
 
     // Retry up to 3 times on connection errors
     let clientsRes: Response | null = null;
@@ -98,30 +97,6 @@ serve(async (req) => {
 
     let clientsData;
     try { clientsData = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON`); }
-
-    if (Array.isArray(clientsData?.clients) && clientFilter !== 'all') {
-      const now = new Date();
-      const sixMonthsAgo = new Date(now);
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-
-      clientsData.clients = clientsData.clients.filter((client: Record<string, unknown>) => {
-        const totalVendas = Number(client.TOTAL_VENDAS ?? 0);
-        const cadastro = typeof client.ter_dta_cad === 'string' ? new Date(client.ter_dta_cad) : null;
-
-        if (clientFilter === 'positivados') return totalVendas > 0;
-        if (clientFilter === 'novos') return totalVendas > 0 && !!cadastro && !Number.isNaN(cadastro.getTime()) && cadastro >= sixMonthsAgo;
-        return true;
-      });
-
-      clientsData.total_records = clientsData.clients.length;
-      clientsData.post = {
-        ...(clientsData.post || {}),
-        filter: {
-          ...((clientsData.post && clientsData.post.filter) || {}),
-          client_filter: clientFilter,
-        },
-      };
-    }
 
     return new Response(JSON.stringify(clientsData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },

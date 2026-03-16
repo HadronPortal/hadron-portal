@@ -92,6 +92,7 @@ const Clientes = () => {
     setError(null);
     try {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const clientFilterMap: Record<string, string> = { positivados: 'positivados', novos: 'positivados' };
       const params = new URLSearchParams({
         page: String(page),
         limit: String(rowsPerPage),
@@ -100,6 +101,7 @@ const Clientes = () => {
       });
       if (repParam) params.set('rep', repParam);
       if (searchQuery.trim()) params.set('search', searchQuery.trim());
+      if (clientFilterMap[activeTab]) params.set('client_filter', clientFilterMap[activeTab]);
 
       const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params.toString()}`;
       const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
@@ -117,7 +119,7 @@ const Clientes = () => {
 
   useEffect(() => {
     fetchClients();
-  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce]);
+  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce, activeTab]);
 
   // Debounced search
   useEffect(() => {
@@ -145,17 +147,7 @@ const Clientes = () => {
     setFilterNonce((n) => n + 1);
   };
 
-  const filtered = useMemo(() => {
-    if (activeTab === 'todos') return clients;
-    if (activeTab === 'positivados') return clients.filter(c => (c.TOTAL_VENDAS ?? 0) > 0);
-    // novos
-    return clients.filter(c => {
-      const d = new Date(c.ter_dta_cad);
-      const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-      return d >= sixMonthsAgo;
-    });
-  }, [clients, activeTab]);
+  const filtered = clients;
 
   const clientCountByRep = clients.reduce<Record<number, number>>((acc, c) => {
     acc[c.COD_REP] = (acc[c.COD_REP] || 0) + 1;
@@ -244,7 +236,7 @@ const Clientes = () => {
                 {tabs.map((tab) => (
                   <button
                     key={tab.key}
-                    onClick={() => { setActiveTab(tab.key); }}
+                    onClick={() => { setActiveTab(tab.key); setPage(1); }}
                     className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
                       activeTab === tab.key
                         ? 'bg-card text-foreground shadow-sm'

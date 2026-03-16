@@ -87,41 +87,6 @@ const comissionamentoSubTabs = [
   { key: 'contas_receber', label: 'Contas a Receber' },
 ] as const;
 
-const ComissionamentoTab = () => {
-  const [subTab, setSubTab] = useState<string>('faturamento');
-
-  return (
-    <div>
-      <div className="flex items-center bg-muted rounded-lg p-0.5 mx-5 sm:mx-6 mb-4 w-fit">
-        {comissionamentoSubTabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setSubTab(tab.key)}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
-              subTab === tab.key
-                ? 'bg-card text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {subTab === 'faturamento' && (
-        <div className="p-8 text-center text-muted-foreground text-sm">
-          Em breve: Comissionamento por Faturamento
-        </div>
-      )}
-      {subTab === 'contas_receber' && (
-        <div className="p-8 text-center text-muted-foreground text-sm">
-          Em breve: Comissionamento por Contas a Receber
-        </div>
-      )}
-    </div>
-  );
-};
-
 const Analitico = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -142,6 +107,7 @@ const Analitico = () => {
   const [reportTab, setReportTab] = useState<ReportTab>('sintetico');
   const [exportOpen, setExportOpen] = useState(false);
   const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
+  const [comissionamentoSubTab, setComissionamentoSubTab] = useState<string>('faturamento');
 
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
@@ -465,7 +431,7 @@ const Analitico = () => {
               </div>
 
               <div className="flex items-center gap-3 flex-wrap">
-                {/* Operation tabs - only for Sintético */}
+                {/* Operation tabs - Sintético */}
                 {reportTab === 'sintetico' && (
                   <div className="flex items-center bg-muted rounded-lg p-0.5">
                     {tabs.map((tab) => (
@@ -474,6 +440,25 @@ const Analitico = () => {
                         onClick={() => setActiveTab(tab.key)}
                         className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
                           activeTab === tab.key
+                            ? 'bg-card text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Sub-tabs - Comissionamento */}
+                {reportTab === 'comissionamento' && (
+                  <div className="flex items-center bg-muted rounded-lg p-0.5">
+                    {comissionamentoSubTabs.map((tab) => (
+                      <button
+                        key={tab.key}
+                        onClick={() => setComissionamentoSubTab(tab.key)}
+                        className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+                          comissionamentoSubTab === tab.key
                             ? 'bg-card text-foreground shadow-sm'
                             : 'text-muted-foreground hover:text-foreground'
                         }`}
@@ -708,7 +693,11 @@ const Analitico = () => {
 
           {/* Comissionamento report */}
           {reportTab === 'comissionamento' && (
-            <ComissionamentoTab />
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              {comissionamentoSubTab === 'faturamento'
+                ? 'Em breve: Comissionamento por Faturamento'
+                : 'Em breve: Comissionamento por Contas a Receber'}
+            </div>
           )}
 
         </div>

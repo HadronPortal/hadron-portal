@@ -105,9 +105,13 @@ const Catalogo = () => {
   const totalRecords = data?.total_records || 0;
   const totalPages = Math.ceil(totalRecords / limit);
 
-  const formatSaldo = (saldo: string) => {
-    const num = parseFloat(saldo);
-    return isNaN(num) ? saldo : num.toLocaleString('pt-BR');
+  const getSaldo = (item: CatalogoItem) => {
+    if (item.pro_sdo_atu != null) return Number(item.pro_sdo_atu);
+    return parseFloat(item.SALDOS) || 0;
+  };
+
+  const formatSaldo = (num: number) => {
+    return isNaN(num) ? '0' : num.toLocaleString('pt-BR');
   };
 
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;

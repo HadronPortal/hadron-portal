@@ -219,8 +219,8 @@ const Catalogo = () => {
                 : 'space-y-2.5'
             }`}>
               {items.map((item) => {
-                const saldoNum = parseFloat(item.SALDOS);
-                const inStock = !isNaN(saldoNum) && saldoNum > 0;
+                const saldoNum = getSaldo(item);
+                const inStock = saldoNum > 0;
 
                 if (viewMode === 'grid') {
                   return (

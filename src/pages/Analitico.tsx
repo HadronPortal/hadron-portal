@@ -147,6 +147,41 @@ const Analitico = () => {
     setFilterNonce(n => n + 1);
   };
 
+  const productColumns = [
+    { header: 'Código', accessor: (p: ProductAnalytics) => String(p.codpro) },
+    { header: 'Produto', accessor: (p: ProductAnalytics) => p.produto || '' },
+    { header: 'GTIN', accessor: (p: ProductAnalytics) => p.gtin || '', forceText: true },
+    { header: 'Peso Un.', accessor: (p: ProductAnalytics) => String(p.peso_un || 0) },
+    { header: 'Tipo Op.', accessor: (p: ProductAnalytics) => p.tipo_op_banco || '' },
+    ...periods.map(per => ({
+      header: per.legenda,
+      accessor: (p: ProductAnalytics) => {
+        const m = p.mensal?.[per.chave];
+        return m ? formatCurrency(m.valor) : 'R$ 0,00';
+      },
+      align: 'right' as const,
+    })),
+    { header: 'Total Qtde', accessor: (p: ProductAnalytics) => String(p.totais?.qtde || 0), align: 'right' as const },
+    { header: 'Total Valor', accessor: (p: ProductAnalytics) => formatCurrency(p.totais?.valor || 0), align: 'right' as const },
+  ];
+
+  const handleExportProdutos = useCallback(async (fmt: 'pdf' | 'csv') => {
+    try {
+      toast.info('Exportando todos os produtos...');
+      const allData = await fetchAllForExport('fetch-analytics', {
+        date_ini: dateIniParam,
+        date_end: dateEndParam,
+        ...(repParam ? { rep: repParam } : {}),
+        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+      }, 'products');
+      const opts = { title: 'Relatório de Produtos', columns: productColumns, data: allData, fileName: 'relatorio-produtos' };
+      fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+      toast.success(`${allData.length} produtos exportados!`);
+    } catch (e) {
+      toast.error('Erro ao exportar: ' + (e as Error).message);
+    }
+  }, [dateIniParam, dateEndParam, repParam, searchQuery, periods]);
+
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
     if (totalPages <= 5) {

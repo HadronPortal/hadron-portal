@@ -1,10 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import RelatorioClientes from '@/components/erp/relatorios/RelatorioClientes';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Search, Download, Filter, CalendarIcon, X } from 'lucide-react';
+import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet } from 'lucide-react';
+import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';

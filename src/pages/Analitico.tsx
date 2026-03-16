@@ -142,6 +142,7 @@ const Analitico = () => {
   const [reportTab, setReportTab] = useState<ReportTab>('sintetico');
   const [exportOpen, setExportOpen] = useState(false);
   const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
+  const [comissionamentoSubTab, setComissionamentoSubTab] = useState<string>('faturamento');
 
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);

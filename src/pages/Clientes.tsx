@@ -119,7 +119,7 @@ const Clientes = () => {
 
   useEffect(() => {
     fetchClients();
-  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce]);
+  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce, activeTab]);
 
   // Debounced search
   useEffect(() => {

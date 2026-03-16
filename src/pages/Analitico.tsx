@@ -265,10 +265,7 @@ const Analitico = () => {
             ))}
           </div>
 
-          {/* Sintético report content (was Produtos) */}
-          {reportTab === 'sintetico' && (
-          <>
-          {/* Toolbar */}
+          {/* Shared Toolbar - visible on all tabs */}
           <div className="p-5 sm:p-6 flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               {/* Search + Filter */}
@@ -279,7 +276,7 @@ const Analitico = () => {
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    placeholder="Buscar produto..."
+                    placeholder="Buscar..."
                     className="pl-9 h-10 bg-transparent border-border"
                   />
                 </div>
@@ -391,22 +388,24 @@ const Analitico = () => {
               </div>
 
               <div className="flex items-center gap-3 flex-wrap">
-                {/* Tabs */}
-                <div className="flex items-center bg-muted rounded-lg p-0.5">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab.key}
-                      onClick={() => setActiveTab(tab.key)}
-                      className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
-                        activeTab === tab.key
-                          ? 'bg-card text-foreground shadow-sm'
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
+                {/* Operation tabs - only for Sintético */}
+                {reportTab === 'sintetico' && (
+                  <div className="flex items-center bg-muted rounded-lg p-0.5">
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+                          activeTab === tab.key
+                            ? 'bg-card text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 {/* Rows per page */}
                 <select
@@ -465,7 +464,9 @@ const Analitico = () => {
             )}
           </div>
 
-          {/* Table */}
+          {/* Sintético report content */}
+          {reportTab === 'sintetico' && (
+          <>
           {error ? (
             <div className="text-center py-16 text-destructive text-sm">{error}</div>
           ) : isLoading ? (

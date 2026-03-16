@@ -43,7 +43,7 @@ const Catalogo = () => {
   const [limit, setLimit] = useState(12);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string } | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string; saldos?: number; saldoFisico?: number; prevSaida?: number } | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [filters, setFilters] = useState<CatalogoFilters>(defaultFilters);
 

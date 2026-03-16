@@ -50,29 +50,28 @@ serve(async (req) => {
     const sortDir = url.searchParams.get('sort_dir') || 'DESC';
 
     const clientFilterAliases: Record<string, string> = {
-      '': 'all',
-      all: 'all',
-      todos: 'all',
-      positivados: 'positivados',
-      positivado: 'positivados',
-      positive: 'positivados',
-      novos: 'novos',
-      novo: 'novos',
-      new: 'novos',
+      '': '',
+      all: '',
+      todos: '',
+      positivados: 'positive',
+      positivado: 'positive',
+      positive: 'positive',
+      novos: 'new',
+      novo: 'new',
+      new: 'new',
     };
-    const clientFilter = clientFilterAliases[rawClientFilter] ?? 'all';
-    const upstreamClientFilter = 'all';
+    const clientFilter = clientFilterAliases[rawClientFilter] ?? '';
 
     const token = extractUserToken(req) || await getServiceToken();
 
     const requestBody: Record<string, unknown> = {
       search,
-      filter: { cod_rep: repParam, date_ini: dateIni, date_end: dateEnd, client_filter: upstreamClientFilter },
+      filter: { cod_rep: repParam, date_ini: dateIni, date_end: dateEnd, client_filter: clientFilter },
       pagination: { page, limit },
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
-    console.log('Clients request filter:', JSON.stringify({ ...requestBody.filter, requested_client_filter: clientFilter }));
+    console.log('Clients request filter:', JSON.stringify(requestBody.filter));
 
     // Retry up to 3 times on connection errors
     let clientsRes: Response | null = null;

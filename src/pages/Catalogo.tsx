@@ -160,6 +160,9 @@ const Catalogo = () => {
             />
           </div>
         </div>
+        {/* Filter bar */}
+        <CatalogoFilterBar filters={filters} onChange={(f) => { setFilters(f); setPage(1); }} categories={categories} />
+
         {/* Header with results count and per-page */}
         <div className="flex items-center justify-between flex-wrap gap-2">
           <p className="text-sm text-muted-foreground">

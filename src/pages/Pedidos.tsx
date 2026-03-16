@@ -354,6 +354,7 @@ const Pedidos = () => {
 
             {totalRecords > rowsPerPage && (
               <div className="flex items-center justify-center gap-2 pt-2">
+                <ScrollToTop />
                 <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
                   Anterior
                 </Button>

@@ -181,6 +181,7 @@ const RelatorioClientes = () => {
             Mostrando {(page - 1) * rowsPerPage + 1} a {Math.min(page * rowsPerPage, totalRecords)} de {totalRecords}
           </span>
           <div className="flex items-center gap-1">
+            <ScrollToTop />
             <Button variant="ghost" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="h-8 w-8 p-0">‹</Button>
             {getPageNumbers().map((p, i) =>
               p === '...' ? (

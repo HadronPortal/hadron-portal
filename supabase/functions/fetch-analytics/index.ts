@@ -43,6 +43,7 @@ serve(async (req) => {
     const limit = Number(url.searchParams.get('limit') || '50');
     const search = url.searchParams.get('search') || '';
     const repParam = url.searchParams.get('rep') || '';
+    const codter = url.searchParams.get('codter') || '';
     const dateIni = url.searchParams.get('date_ini') || '';
     const dateEnd = url.searchParams.get('date_end') || '';
     const sortField = url.searchParams.get('sort_field') || '';
@@ -52,7 +53,7 @@ serve(async (req) => {
 
     const requestBody: Record<string, unknown> = {
       search,
-      filter: { cod_rep: repParam || '', date_ini: dateIni, date_end: dateEnd },
+      filter: { cod_rep: repParam || '', cod_ter: codter, date_ini: dateIni, date_end: dateEnd },
       pagination: { page, limit },
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };

@@ -35,6 +35,7 @@ interface ReportToolbarProps {
   onRowsPerPageChange: (n: number) => void;
   searchQuery: string;
   showOpTabs?: boolean;
+  onExport?: (format: 'pdf' | 'csv') => void;
 }
 
 const ReportToolbar = memo(({

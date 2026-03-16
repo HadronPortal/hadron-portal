@@ -5,7 +5,7 @@ import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet } from 'lucide-react';
+import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet, Users } from 'lucide-react';
 import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';

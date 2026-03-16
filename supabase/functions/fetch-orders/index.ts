@@ -51,13 +51,14 @@ serve(async (req) => {
 
     const token = extractUserToken(req) || await getServiceToken();
 
-    // cod_ter: single value as string, multiple as array of numbers
-    const codTerValue = codter ? (codter.includes(',') ? codter.split(',').map(Number) : codter) : '';
+    // Hadron API only supports single cod_ter; for multiple, we filter after fetch
+    const codterList = codter ? codter.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const singleCodter = codterList.length === 1 ? codterList[0] : '';
 
     const requestBody: Record<string, unknown> = {
       search,
-      filter: { cod_ter: codTerValue, cod_rep: repParam, date_ini: dateIni, date_end: dateEnd },
-      pagination: { page, limit },
+      filter: { cod_ter: singleCodter, cod_rep: repParam, date_ini: dateIni, date_end: dateEnd },
+      pagination: { page, limit: codterList.length > 1 ? 500 : limit },
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
@@ -76,6 +77,13 @@ serve(async (req) => {
     console.log('Orders response keys:', JSON.stringify(Object.keys(data || {})));
     console.log('Orders sample (first order keys):', JSON.stringify(Object.keys(data?.orders?.[0] || data?.data?.[0] || {})));
     console.log('Dashboard field:', JSON.stringify(data?.dashboard || 'NOT PRESENT'));
+
+    // Filter by multiple clients if needed (API only supports single cod_ter)
+    if (codterList.length > 1 && Array.isArray(data.orders)) {
+      const codterSet = new Set(codterList.map(Number));
+      data.orders = data.orders.filter((o: any) => codterSet.has(Number(o.CODTER)));
+      data.total_records = data.orders.length;
+    }
 
     // If the API doesn't return a dashboard summary, compute it from orders
     if (!data.dashboard && Array.isArray(data.orders)) {

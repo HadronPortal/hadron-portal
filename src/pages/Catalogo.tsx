@@ -208,7 +208,7 @@ const Catalogo = () => {
                         <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                           {item.pro_despro}
                         </h3>
-                        <span className="text-[11px] text-muted-foreground mt-1">SKU: <span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
+                        
                         {item.pro_preco != null && Number(item.pro_preco) > 0 && (
                           <span className="text-sm font-bold text-primary mt-1">
                             R$ {Number(item.pro_preco).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}

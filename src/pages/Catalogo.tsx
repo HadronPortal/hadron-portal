@@ -215,14 +215,17 @@ const Catalogo = () => {
                           </span>
                         )}
                         <div className="mt-auto pt-2 flex items-center justify-between gap-2">
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
-                            inStock
-                              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                              : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                          }`}>
-                            <Boxes className="w-3 h-3" />
-                            {formatSaldo(item.SALDOS)}
-                          </span>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
+                              inStock
+                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            }`}>
+                              <Boxes className="w-3 h-3" />
+                              {formatSaldo(item.SALDOS)}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">SKU: <span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
+                          </div>
                           <Button variant="outline" size="sm" className="text-[11px] gap-1 h-7 px-2">
                             <Package className="w-3 h-3" />
                             Ver

@@ -92,16 +92,16 @@ const Clientes = () => {
     setError(null);
     try {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const clientFilterMap: Record<string, string> = { positivados: 'positivados', novos: 'positivados' };
+      const clientFilterMap: Record<string, string> = { todos: 'all', positivados: 'positivados', novos: 'novos' };
       const params = new URLSearchParams({
         page: String(page),
         limit: String(rowsPerPage),
         date_ini: dateIniParam,
         date_end: dateEndParam,
+        client_filter: clientFilterMap[activeTab] || 'all',
       });
       if (repParam) params.set('rep', repParam);
       if (searchQuery.trim()) params.set('search', searchQuery.trim());
-      if (clientFilterMap[activeTab]) params.set('client_filter', clientFilterMap[activeTab]);
 
       const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params.toString()}`;
       const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });

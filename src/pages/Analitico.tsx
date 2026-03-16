@@ -618,7 +618,7 @@ const Analitico = () => {
           {reportTab === 'produtos' && <RelatorioProdutos filters={sharedFilters} />}
 
           {/* Clientes report */}
-          {reportTab === 'clientes' && <RelatorioClientes filters={sharedFilters} />}
+          {reportTab === 'clientes' && <RelatorioClientes filters={sharedFilters} onSelectClients={setSelectedClients} />}
 
           {/* Pedidos report */}
           {reportTab === 'pedidos' && <RelatorioPedidos filters={sharedFilters} />}

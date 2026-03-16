@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Package, Boxes, Search, LayoutGrid, List } f
 import Spinner from '@/components/ui/spinner';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 import { useApiFetch } from '@/hooks/use-api-fetch';
+import ScrollToTop from '@/components/ScrollToTop';
 
 const navItems = [
   { label: 'Home', path: '/' },

@@ -58,11 +58,24 @@ serve(async (req) => {
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
-    const clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiClients', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-    });
+    // Retry up to 3 times on connection errors
+    let clientsRes: Response | null = null;
+    let lastError: Error | null = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        clientsRes = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiClients', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody),
+        });
+        break;
+      } catch (e) {
+        lastError = e instanceof Error ? e : new Error(String(e));
+        console.warn(`Attempt ${attempt + 1} failed:`, lastError.message);
+        if (attempt < 2) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+      }
+    }
+    if (!clientsRes) throw new Error(`Clients fetch failed after 3 attempts: ${lastError?.message}`);
 
     const responseText = await clientsRes.text();
     if (!clientsRes.ok) throw new Error(`Clients fetch failed [${clientsRes.status}]: ${responseText.substring(0, 500)}`);

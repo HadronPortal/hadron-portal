@@ -52,12 +52,13 @@ serve(async (req) => {
 
     const token = extractUserToken(req) || await getServiceToken();
 
-    const codTerValue = codter ? (codter.includes(',') ? codter.split(',').map(Number) : codter) : '';
+    const codterList = codter ? codter.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const singleCodter = codterList.length === 1 ? codterList[0] : '';
 
     const requestBody: Record<string, unknown> = {
       search,
-      filter: { cod_rep: repParam, cod_ter: codTerValue, date_ini: dateIni, date_end: dateEnd, product_filter: productFilter },
-      pagination: { page, limit },
+      filter: { cod_rep: repParam, cod_ter: singleCodter, date_ini: dateIni, date_end: dateEnd, product_filter: productFilter },
+      pagination: { page, limit: codterList.length > 1 ? 500 : limit },
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
@@ -72,6 +73,8 @@ serve(async (req) => {
 
     let data;
     try { data = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON`); }
+
+    // Note: Products API may not have per-row client code for multi-client filtering
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },

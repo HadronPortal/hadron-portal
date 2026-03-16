@@ -208,7 +208,13 @@ const Catalogo = () => {
                         <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                           {item.pro_despro}
                         </h3>
-                        <div className="mt-auto pt-3 flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-muted-foreground mt-1">SKU: <span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
+                        {item.pro_preco != null && Number(item.pro_preco) > 0 && (
+                          <span className="text-sm font-bold text-primary mt-1">
+                            R$ {Number(item.pro_preco).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </span>
+                        )}
+                        <div className="mt-auto pt-2 flex items-center justify-between gap-2">
                           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
                             inStock
                               ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'

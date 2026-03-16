@@ -26,6 +26,27 @@ async function getServiceToken(): Promise<string> {
   return loginData.access_token;
 }
 
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.ok || attempt === maxRetries) return res;
+      // On server error, retry
+      if (res.status >= 500) {
+        console.log(`Attempt ${attempt} failed with ${res.status}, retrying...`);
+        await new Promise(r => setTimeout(r, attempt * 1000));
+        continue;
+      }
+      return res;
+    } catch (err) {
+      if (attempt === maxRetries) throw err;
+      console.log(`Attempt ${attempt} network error, retrying...`);
+      await new Promise(r => setTimeout(r, attempt * 1000));
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -42,7 +63,7 @@ serve(async (req) => {
 
     const token = extractUserToken(req) || await getServiceToken();
 
-    const res = await fetch('https://dev.hadronweb.com.br/app/pages/apiProductDetails', {
+    const res = await fetchWithRetry('https://dev.hadronweb.com.br/app/pages/apiProductDetails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -52,10 +73,19 @@ serve(async (req) => {
     });
 
     const responseText = await res.text();
-    if (!res.ok) throw new Error(`ProductDetails fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
+    if (!res.ok) {
+      console.error(`ProductDetails failed [${res.status}] after retries`);
+      return new Response(JSON.stringify({ error: 'A API externa está temporariamente indisponível. Tente novamente em alguns instantes.' }), {
+        status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     let data;
-    try { data = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`); }
+    try { data = JSON.parse(responseText); } catch {
+      return new Response(JSON.stringify({ error: 'Resposta inválida da API externa.' }), {
+        status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },

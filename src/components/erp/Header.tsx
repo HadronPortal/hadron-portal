@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Home, Users, Gauge, ClipboardList, Box, LogOut, Menu, X, User, Settings, Building2, ChevronDown, Moon, Sun, BarChart3 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { usePrefetch } from '@/hooks/use-prefetch';
 
 import logoImg from '@/assets/logo_hadron_go.png';
 import avatarImg from '@/assets/avatar-user.png';

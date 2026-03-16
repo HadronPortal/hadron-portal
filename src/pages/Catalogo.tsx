@@ -84,8 +84,8 @@ const Catalogo = () => {
     if (filters.category) list = list.filter((i) => i.NOME_GRUPO === filters.category);
 
     // Stock
-    if (filters.stockFilter === 'in_stock') list = list.filter((i) => parseFloat(i.SALDOS) > 0);
-    if (filters.stockFilter === 'out_of_stock') list = list.filter((i) => parseFloat(i.SALDOS) <= 0);
+    if (filters.stockFilter === 'in_stock') list = list.filter((i) => getSaldo(i) > 0);
+    if (filters.stockFilter === 'out_of_stock') list = list.filter((i) => getSaldo(i) <= 0);
 
     // Sort
     const dir = filters.sortDir === 'asc' ? 1 : -1;

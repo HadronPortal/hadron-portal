@@ -6,8 +6,9 @@ import { Search, Eye, ChevronLeft, ChevronRight, Filter, X, CalendarIcon } from 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ScrollToTop from '@/components/ScrollToTop';
 import { useRepresentantes } from '@/hooks/use-representantes';

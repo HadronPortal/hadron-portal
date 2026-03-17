@@ -504,6 +504,12 @@ const Analitico = () => {
                     >
                       <FileSpreadsheet size={14} className="text-primary" /> Exportar CSV
                     </button>
+                    <button
+                      onClick={() => { handleExportProdutos('xlsx'); setExportOpen(false); }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
+                    >
+                      <FileSpreadsheet size={14} className="text-green-600" /> Exportar XLSX
+                    </button>
                   </PopoverContent>
                 </Popover>
               </div>

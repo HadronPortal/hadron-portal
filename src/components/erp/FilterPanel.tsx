@@ -44,10 +44,6 @@ const FilterPanel = ({
   setSelectedRep,
   selectedClients,
   setSelectedClients,
-  selectedPeriod,
-  setSelectedPeriod,
-  defaultStartDate,
-  defaultEndDate,
   hasActiveFilters,
   onApply,
   onClear,
@@ -63,10 +59,6 @@ const FilterPanel = ({
     let count = 0;
     if (selectedRepRaw.length > 0) count++;
     if (selectedClients.length > 0) count++;
-    const isDefaultPeriod =
-      selectedPeriod.startDate.getTime() === defaultStartDate.getTime() &&
-      selectedPeriod.endDate.getTime() === defaultEndDate.getTime();
-    if (!isDefaultPeriod) count++;
     return count;
   }, [selectedRepRaw, selectedClients, selectedPeriod, defaultStartDate, defaultEndDate]);
 

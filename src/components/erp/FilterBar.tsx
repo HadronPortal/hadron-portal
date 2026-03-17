@@ -90,16 +90,26 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
+  const hasActiveFilters = selectedRep !== 'all' || search.trim() !== '';
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           size="sm"
-          className="bg-primary/90 border-primary/20 text-primary-foreground hover:bg-primary hover:text-primary-foreground gap-1.5"
+          className={cn(
+            "gap-1.5",
+            hasActiveFilters
+              ? "bg-primary border-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+              : "bg-primary/90 border-primary/20 text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+          )}
         >
           <Filter size={14} />
           Filtro
+          {hasActiveFilters && (
+            <span className="ml-0.5 w-2 h-2 rounded-full bg-primary-foreground animate-pulse" />
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72 p-0" align="end" sideOffset={8}>

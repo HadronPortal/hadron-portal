@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
-import ScrollToTop from '@/components/ScrollToTop';
+import TablePagination from '@/components/erp/TablePagination';
 import { useSessionState } from '@/hooks/use-session-state';
 
 interface ProductAPI {

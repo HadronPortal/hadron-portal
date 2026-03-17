@@ -82,9 +82,21 @@ const ReportToolbar = memo(({
 
           <Popover open={showFilters} onOpenChange={onShowFiltersChange}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5 h-10 text-xs font-medium shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "gap-1.5 h-10 text-xs font-medium shrink-0",
+                  (selectedRepRaw.length > 0 || searchQuery.trim())
+                    ? "bg-primary border-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                    : ""
+                )}
+              >
                 <Filter size={14} />
                 Filtrar
+                {(selectedRepRaw.length > 0 || searchQuery.trim()) && (
+                  <span className="ml-0.5 w-2 h-2 rounded-full bg-primary-foreground animate-pulse" />
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[340px] p-4 space-y-4" align="start">

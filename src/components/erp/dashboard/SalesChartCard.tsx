@@ -160,9 +160,9 @@ const SalesChartCard = ({ totalValue, salesData = [] }: Props) => {
               />
               <Tooltip
                 content={<CustomTooltip />}
-                cursor={{ fill: 'hsl(var(--muted-foreground))', fillOpacity: 0.05 }}
+                cursor={{ fill: 'transparent' }}
               />
-              <Bar dataKey="value" shape={<CustomBar />} isAnimationActive={false} activeBar={{ fillOpacity: 0.9 }} />
+              <Bar dataKey="value" shape={<CustomBar />} isAnimationActive={false} activeBar={false} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -271,10 +271,6 @@ const Pedidos = () => {
                     setSelectedRep={setSelectedRep}
                     selectedClients={selectedClients}
                     setSelectedClients={setSelectedClients}
-                    selectedPeriod={selectedPeriod}
-                    setSelectedPeriod={(v) => setSelectedPeriod({ startDate: v.startDate instanceof Date ? v.startDate.toISOString() : v.startDate, endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate })}
-                    defaultStartDate={DEFAULT_START_DATE}
-                    defaultEndDate={DEFAULT_END_DATE}
                     hasActiveFilters={hasActiveFilters}
                     onApply={() => {
                       setPage(1);
@@ -285,6 +281,16 @@ const Pedidos = () => {
                       setSelectedRepRaw([]);
                       setSelectedClients([]);
                       setSelectedPeriod({ startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
+                      setPage(1);
+                      setFilterNonce(n => n + 1);
+                    }}
+                  />
+
+                  <PeriodPicker
+                    startDate={selectedPeriod.startDate}
+                    endDate={selectedPeriod.endDate}
+                    onChange={(v) => {
+                      setSelectedPeriod({ startDate: v.startDate.toISOString(), endDate: v.endDate.toISOString() });
                       setPage(1);
                       setFilterNonce(n => n + 1);
                     }}

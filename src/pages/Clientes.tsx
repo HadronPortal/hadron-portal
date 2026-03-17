@@ -269,10 +269,6 @@ const Clientes = () => {
                 setSelectedRep={setSelectedRep}
                 selectedClients={selectedClients}
                 setSelectedClients={setSelectedClients}
-                selectedPeriod={selectedPeriod}
-                setSelectedPeriod={(v) => setSelectedPeriod({ startDate: v.startDate, endDate: v.endDate })}
-                defaultStartDate={DEFAULT_START_DATE}
-                defaultEndDate={DEFAULT_END_DATE}
                 hasActiveFilters={hasActiveFilters}
                 onApply={() => {
                   setPage(1);
@@ -285,6 +281,16 @@ const Clientes = () => {
                   setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
                   setSearchQuery('');
                   setSearchInput('');
+                  setPage(1);
+                  setFilterNonce(n => n + 1);
+                }}
+              />
+
+              <PeriodPicker
+                startDate={selectedPeriod.startDate}
+                endDate={selectedPeriod.endDate}
+                onChange={(v) => {
+                  setSelectedPeriod(v);
                   setPage(1);
                   setFilterNonce(n => n + 1);
                 }}

@@ -473,35 +473,41 @@ const Analitico = () => {
                           </button>
                         </div>
                       ) : null}
-                      <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
-                        {filteredRepresentantes.map((r: any) => {
-                          const isSelected = selectedRepRaw.includes(String(r.rep_codrep));
-                          return (
-                            <label
-                              key={r.rep_codrep}
-                              className="flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-accent/50 cursor-pointer transition-colors"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => {
-                                  if (isSelected) {
-                                    const newRaw = selectedRepRaw.filter(c => c !== String(r.rep_codrep));
-                                    setSelectedRepRaw(newRaw);
-                                    setSelectedRep(newRaw.map(Number));
-                                  } else {
-                                    const newRaw = [...selectedRepRaw, String(r.rep_codrep)];
-                                    setSelectedRepRaw(newRaw);
-                                    setSelectedRep(newRaw.map(Number));
-                                  }
-                                }}
-                                className="h-3.5 w-3.5 rounded border-border accent-primary"
-                              />
-                              <span className="text-foreground truncate">{r.rep_nomrep}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
+                      {selectedClients.length > 0 && filteredRepresentantes.length > 0 ? (
+                        <div className="border border-border rounded-lg px-3 py-2 text-xs text-foreground bg-card/50">
+                          {filteredRepresentantes.map(r => r.rep_nomrep).join(', ')}
+                        </div>
+                      ) : (
+                        <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
+                          {filteredRepresentantes.map((r: any) => {
+                            const isSelected = selectedRepRaw.includes(String(r.rep_codrep));
+                            return (
+                              <label
+                                key={r.rep_codrep}
+                                className="flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-accent/50 cursor-pointer transition-colors"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => {
+                                    if (isSelected) {
+                                      const newRaw = selectedRepRaw.filter(c => c !== String(r.rep_codrep));
+                                      setSelectedRepRaw(newRaw);
+                                      setSelectedRep(newRaw.map(Number));
+                                    } else {
+                                      const newRaw = [...selectedRepRaw, String(r.rep_codrep)];
+                                      setSelectedRepRaw(newRaw);
+                                      setSelectedRep(newRaw.map(Number));
+                                    }
+                                  }}
+                                  className="h-3.5 w-3.5 rounded border-border accent-primary"
+                                />
+                                <span className="text-foreground truncate">{r.rep_nomrep}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
 
                     <FilterClientPicker

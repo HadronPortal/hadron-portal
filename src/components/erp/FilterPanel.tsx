@@ -154,12 +154,12 @@ const FilterPanel = ({
       <PopoverContent
         className={cn(
           "p-0 shadow-lg border-border/80",
-          isMobile ? "w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] translate-y-[-6px]" : "w-[340px] max-w-[calc(100vw-2rem)]"
+          isMobile ? "w-[calc(100vw-2rem)]" : "w-[340px]"
         )}
         align="start"
         side="bottom"
-        sideOffset={isMobile ? 0 : 8}
-        collisionPadding={isMobile ? 12 : 16}
+        sideOffset={4}
+        collisionPadding={8}
         avoidCollisions
       >
         {/* Header */}

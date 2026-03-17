@@ -81,7 +81,7 @@ const FilterPanel = ({
     } finally {
       setClientLoading(false);
     }
-  }, [selectedRepRaw]);
+  }, []);
 
   // Pre-load clients when popover opens
   useEffect(() => {

@@ -138,8 +138,8 @@ const SalesChartCard = ({ totalValue, salesData = [] }: Props) => {
             <BarChart data={visibleData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }} barCategoryGap="30%">
               <defs>
                 <linearGradient id="barBlueFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#171717" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#404040" stopOpacity={0.8} />
+                  <stop offset="0%" stopColor="#3B82F6" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#1D4ED8" stopOpacity={0.8} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false} />

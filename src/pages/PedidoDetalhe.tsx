@@ -1,11 +1,11 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 import { useApiFetch } from '@/hooks/use-api-fetch';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Pencil } from 'lucide-react';
+import { Pencil, Trash2, Plus, Search, X } from 'lucide-react';
 
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -67,6 +67,12 @@ const PedidoDetalhe = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editItems, setEditItems] = useState<Record<string, { qty: number; price: number }>>({});
   const [editObs, setEditObs] = useState('');
+  const [removedItemIds, setRemovedItemIds] = useState<Set<string>>(new Set());
+  const [addedItems, setAddedItems] = useState<Array<{ id: string; codpro: number; despro: string; undpro: string; peso_liq: number; qty: number; price: number }>>([]);
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [addProductSearch, setAddProductSearch] = useState('');
+  const [catalogoResults, setCatalogoResults] = useState<any[]>([]);
+  const [loadingCatalogo, setLoadingCatalogo] = useState(false);
 
   useEffect(() => {
     if (location.state?.edit) {
@@ -112,12 +118,69 @@ const PedidoDetalhe = () => {
 
   const cancelEditing = () => {
     setIsEditing(false);
+    setRemovedItemIds(new Set());
+    setAddedItems([]);
+    setShowAddProduct(false);
+    setAddProductSearch('');
   };
 
   const handleSave = () => {
-    // For now, show a toast since saving requires API integration
     toast.info('Funcionalidade de salvamento será integrada com a API em breve.');
     setIsEditing(false);
+    setRemovedItemIds(new Set());
+    setAddedItems([]);
+    setShowAddProduct(false);
+  };
+
+  const removeItem = (itemId: string) => {
+    setRemovedItemIds(prev => new Set(prev).add(itemId));
+  };
+
+  const restoreItem = (itemId: string) => {
+    setRemovedItemIds(prev => { const s = new Set(prev); s.delete(itemId); return s; });
+  };
+
+  const removeAddedItem = (id: string) => {
+    setAddedItems(prev => prev.filter(i => i.id !== id));
+  };
+
+  const searchCatalogo = useCallback(async (search: string) => {
+    if (!search.trim()) { setCatalogoResults([]); return; }
+    setLoadingCatalogo(true);
+    try {
+      const BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1`;
+      const res = await fetch(`${BASE}/fetch-catalogo?page=1&limit=20&search=${encodeURIComponent(search)}`);
+      const data = await res.json();
+      setCatalogoResults(data?.catalogs || []);
+    } catch { setCatalogoResults([]); }
+    finally { setLoadingCatalogo(false); }
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => { if (showAddProduct) searchCatalogo(addProductSearch); }, 400);
+    return () => clearTimeout(t);
+  }, [addProductSearch, showAddProduct, searchCatalogo]);
+
+  const addProduct = (cat: any) => {
+    // Check if already in order
+    const existsInOrder = items.some((i: any) => i.oit_codpro === cat.pro_codpro && !removedItemIds.has(i.oit_id));
+    const existsInAdded = addedItems.some(i => i.codpro === cat.pro_codpro);
+    if (existsInOrder || existsInAdded) {
+      toast.warning('Produto já está no pedido');
+      return;
+    }
+    setAddedItems(prev => [...prev, {
+      id: `new_${cat.pro_codpro}_${Date.now()}`,
+      codpro: cat.pro_codpro,
+      despro: cat.pro_despro,
+      undpro: cat.pro_unidade || 'UN',
+      peso_liq: 0,
+      qty: 1,
+      price: 0,
+    }]);
+    toast.success('Produto adicionado');
+    setAddProductSearch('');
+    setCatalogoResults([]);
   };
 
   const updateItemQty = (itemId: string, qty: number) => {
@@ -146,8 +209,11 @@ const PedidoDetalhe = () => {
   const getItemPrice = (item: any) => isEditing ? (editItems[item.oit_id]?.price ?? item.oit_prcpro) : item.oit_prcpro;
   const getItemTotal = (item: any) => getItemQty(item) * getItemPrice(item);
 
-  const totalItens = items.reduce((s: number, i: any) => s + getItemTotal(i), 0);
-  const totalPeso = items.reduce((s: number, i: any) => s + (getItemQty(i) * (i.oit_peso_liq || 0)), 0);
+  const visibleItems = items.filter((i: any) => !removedItemIds.has(i.oit_id));
+  const totalItens = visibleItems.reduce((s: number, i: any) => s + getItemTotal(i), 0)
+    + addedItems.reduce((s, i) => s + i.qty * i.price, 0);
+  const totalPeso = visibleItems.reduce((s: number, i: any) => s + (getItemQty(i) * (i.oit_peso_liq || 0)), 0)
+    + addedItems.reduce((s, i) => s + i.qty * i.peso_liq, 0);
 
   return (
     <>
@@ -384,12 +450,61 @@ const PedidoDetalhe = () => {
         <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <h2 className="text-base font-bold text-foreground">Pedido #{order.orc_codorc_web}</h2>
-            {isEditing && <span className="text-xs text-primary font-medium px-2 py-1 bg-primary/10 rounded-md">Modo edição</span>}
+            <div className="flex items-center gap-2">
+              {isEditing && (
+                <>
+                  <span className="text-xs text-primary font-medium px-2 py-1 bg-primary/10 rounded-md">Modo edição</span>
+                  <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8" onClick={() => setShowAddProduct(!showAddProduct)}>
+                    <Plus size={14} /> Adicionar Produto
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
+
+          {/* Add product search */}
+          {isEditing && showAddProduct && (
+            <div className="px-5 py-3 border-b border-border bg-muted/30 space-y-2">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={addProductSearch}
+                  onChange={e => setAddProductSearch(e.target.value)}
+                  placeholder="Buscar produto por nome ou código..."
+                  className="pl-9 h-9 text-sm"
+                />
+                {addProductSearch && (
+                  <button onClick={() => { setAddProductSearch(''); setCatalogoResults([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+              {loadingCatalogo && <p className="text-xs text-muted-foreground">Buscando...</p>}
+              {catalogoResults.length > 0 && (
+                <div className="border border-border rounded-lg max-h-48 overflow-y-auto bg-card">
+                  {catalogoResults.map((cat: any) => (
+                    <button
+                      key={cat.pro_codpro}
+                      onClick={() => addProduct(cat)}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-accent/50 transition-colors border-b border-border/50 last:border-0 flex items-center justify-between"
+                    >
+                      <div>
+                        <span className="font-medium text-foreground">{cat.pro_despro}</span>
+                        <span className="text-xs text-muted-foreground ml-2">SKU: {cat.pro_codpro}</span>
+                      </div>
+                      <Plus size={14} className="text-primary shrink-0" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
+                  {isEditing && <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-12"></TableHead>}
                   <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Produto</TableHead>
                   <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">SKU</TableHead>
                   <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider text-center">Qtde</TableHead>
@@ -398,69 +513,103 @@ const PedidoDetalhe = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((item: any) => (
-                  <TableRow
-                    key={item.oit_id}
-                    className={`hover:bg-accent/30 border-b border-border/50 ${!isEditing ? 'cursor-pointer' : ''}`}
-                    onClick={() => {
-                      if (!isEditing) {
-                        setSelectedProductId(item.oit_codpro);
-                        setSelectedProductName(item.oit_despro);
-                        setDetailOpen(true);
-                      }
-                    }}
-                  >
+                {/* Existing items */}
+                {items.map((item: any) => {
+                  const isRemoved = removedItemIds.has(item.oit_id);
+                  return (
+                    <TableRow
+                      key={item.oit_id}
+                      className={`hover:bg-accent/30 border-b border-border/50 ${!isEditing ? 'cursor-pointer' : ''} ${isRemoved ? 'opacity-40 line-through' : ''}`}
+                      onClick={() => {
+                        if (!isEditing) {
+                          setSelectedProductId(item.oit_codpro);
+                          setSelectedProductName(item.oit_despro);
+                          setDetailOpen(true);
+                        }
+                      }}
+                    >
+                      {isEditing && (
+                        <TableCell onClick={e => e.stopPropagation()}>
+                          {isRemoved ? (
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => restoreItem(item.oit_id)}>
+                              <Plus size={14} className="text-primary" />
+                            </Button>
+                          ) : (
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => removeItem(item.oit_id)}>
+                              <Trash2 size={14} className="text-destructive" />
+                            </Button>
+                          )}
+                        </TableCell>
+                      )}
+                      <TableCell className="text-sm">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <span className="font-medium text-foreground">{item.oit_despro}</span>
+                            <div className="text-xs text-muted-foreground">{item.oit_undpro} | Peso: {item.oit_peso_liq} Kg</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground font-mono">{item.oit_codpro}</TableCell>
+                      <TableCell className="text-sm text-center text-foreground" onClick={e => isEditing && e.stopPropagation()}>
+                        {isEditing && !isRemoved ? (
+                          <Input type="number" min={0} value={getItemQty(item)} onChange={(e) => updateItemQty(item.oit_id, Number(e.target.value))} className="h-8 w-20 text-center text-sm mx-auto" />
+                        ) : (
+                          item.oit_qtdoit
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-right text-foreground" onClick={e => isEditing && e.stopPropagation()}>
+                        {isEditing && !isRemoved ? (
+                          <Input type="number" min={0} step={0.01} value={getItemPrice(item)} onChange={(e) => updateItemPrice(item.oit_id, Number(e.target.value))} className="h-8 w-24 text-right text-sm ml-auto" />
+                        ) : (
+                          formatCurrency(item.oit_prcpro)
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-right font-semibold text-foreground">{isRemoved ? '—' : formatCurrency(getItemTotal(item))}</TableCell>
+                    </TableRow>
+                  );
+                })}
+
+                {/* Added items */}
+                {addedItems.map(item => (
+                  <TableRow key={item.id} className="hover:bg-accent/30 border-b border-border/50 bg-primary/5">
+                    {isEditing && (
+                      <TableCell>
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => removeAddedItem(item.id)}>
+                          <Trash2 size={14} className="text-destructive" />
+                        </Button>
+                      </TableCell>
+                    )}
                     <TableCell className="text-sm">
                       <div className="flex items-center gap-3">
                         <div>
-                          <span className="font-medium text-foreground">{item.oit_despro}</span>
-                          <div className="text-xs text-muted-foreground">{item.oit_undpro} | Peso: {item.oit_peso_liq} Kg</div>
+                          <span className="font-medium text-foreground">{item.despro}</span>
+                          <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">Novo</span>
+                          <div className="text-xs text-muted-foreground">{item.undpro}</div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground font-mono">{item.oit_codpro}</TableCell>
-                    <TableCell className="text-sm text-center text-foreground" onClick={e => isEditing && e.stopPropagation()}>
-                      {isEditing ? (
-                        <Input
-                          type="number"
-                          min={0}
-                          value={getItemQty(item)}
-                          onChange={(e) => updateItemQty(item.oit_id, Number(e.target.value))}
-                          className="h-8 w-20 text-center text-sm mx-auto"
-                        />
-                      ) : (
-                        item.oit_qtdoit
-                      )}
+                    <TableCell className="text-sm text-muted-foreground font-mono">{item.codpro}</TableCell>
+                    <TableCell className="text-sm text-center">
+                      <Input type="number" min={1} value={item.qty} onChange={e => setAddedItems(prev => prev.map(i => i.id === item.id ? { ...i, qty: Number(e.target.value) || 1 } : i))} className="h-8 w-20 text-center text-sm mx-auto" />
                     </TableCell>
-                    <TableCell className="text-sm text-right text-foreground" onClick={e => isEditing && e.stopPropagation()}>
-                      {isEditing ? (
-                        <Input
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          value={getItemPrice(item)}
-                          onChange={(e) => updateItemPrice(item.oit_id, Number(e.target.value))}
-                          className="h-8 w-24 text-right text-sm ml-auto"
-                        />
-                      ) : (
-                        formatCurrency(item.oit_prcpro)
-                      )}
+                    <TableCell className="text-sm text-right">
+                      <Input type="number" min={0} step={0.01} value={item.price} onChange={e => setAddedItems(prev => prev.map(i => i.id === item.id ? { ...i, price: Number(e.target.value) || 0 } : i))} className="h-8 w-24 text-right text-sm ml-auto" />
                     </TableCell>
-                    <TableCell className="text-sm text-right font-semibold text-foreground">{formatCurrency(getItemTotal(item))}</TableCell>
+                    <TableCell className="text-sm text-right font-semibold text-foreground">{formatCurrency(item.qty * item.price)}</TableCell>
                   </TableRow>
                 ))}
 
                 {/* Totals rows */}
                 <TableRow className="border-t border-border">
-                  <TableCell colSpan={4} className="text-sm text-muted-foreground text-right">Subtotal</TableCell>
+                  <TableCell colSpan={isEditing ? 5 : 4} className="text-sm text-muted-foreground text-right">Subtotal</TableCell>
                   <TableCell className="text-sm font-medium text-foreground text-right">{formatCurrency(totalItens)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell colSpan={4} className="text-sm text-muted-foreground text-right">Peso Total</TableCell>
+                  <TableCell colSpan={isEditing ? 5 : 4} className="text-sm text-muted-foreground text-right">Peso Total</TableCell>
                   <TableCell className="text-sm font-medium text-foreground text-right">{totalPeso.toFixed(1)} Kg</TableCell>
                 </TableRow>
                 <TableRow className="border-t-2 border-border">
-                  <TableCell colSpan={4} className="text-sm font-bold text-foreground text-right">Total</TableCell>
+                  <TableCell colSpan={isEditing ? 5 : 4} className="text-sm font-bold text-foreground text-right">Total</TableCell>
                   <TableCell className="text-sm font-bold text-foreground text-right">{formatCurrency(isEditing ? totalItens : (order.orc_vlrorc || totalItens))}</TableCell>
                 </TableRow>
               </TableBody>

@@ -68,7 +68,9 @@ const CriarPedido = () => {
 
   /* carrinho */
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [desconto, setDesconto] = useState(0);
+  const [descontoType, setDescontoType] = useState<'none' | 'percent' | 'fixed'>('none');
+  const [descontoPercent, setDescontoPercent] = useState(0);
+  const [descontoFixed, setDescontoFixed] = useState(0);
   const [frete, setFrete] = useState(0);
 
   const representante = 'REPRESENTANTE ONLINE';
@@ -145,7 +147,12 @@ const CriarPedido = () => {
   };
 
   const subtotal = cart.reduce((s, c) => s + c.quantidade * c.preco_unitario, 0);
-  const total = subtotal - desconto + frete;
+  const desconto = descontoType === 'percent'
+    ? subtotal * (descontoPercent / 100)
+    : descontoType === 'fixed'
+      ? descontoFixed
+      : 0;
+  const total = Math.max(0, subtotal - desconto + frete);
 
   const getImageUrl = (filename: string) => `${BASE}/proxy-image?file=${encodeURIComponent(filename)}`;
 
@@ -303,14 +310,67 @@ const CriarPedido = () => {
                     <p className="text-xs text-muted-foreground mt-1.5">Representante responsável pelo pedido.</p>
                   </div>
 
-                  {/* Desconto */}
+                  {/* Tipo de Desconto */}
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-1.5 block">
-                      Desconto
+                    <label className="text-sm font-medium text-foreground mb-2 block">
+                      Tipo de Desconto
                     </label>
-                    <Input type="number" value={desconto || ''} onChange={e => setDesconto(parseFloat(e.target.value) || 0)}
-                      className="h-10 text-sm rounded-lg" placeholder="0,00" step="0.01" />
-                    <p className="text-xs text-muted-foreground mt-1.5">Insira o valor do desconto, se houver.</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {([
+                        { value: 'none', label: 'Sem Desconto' },
+                        { value: 'percent', label: 'Percentual %' },
+                        { value: 'fixed', label: 'Preço Fixo' },
+                      ] as const).map(opt => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setDescontoType(opt.value)}
+                          className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-xs font-medium transition-colors ${
+                            descontoType === opt.value
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border bg-transparent text-muted-foreground hover:border-primary/40'
+                          }`}
+                        >
+                          <span className={`h-3.5 w-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                            descontoType === opt.value ? 'border-primary' : 'border-muted-foreground/40'
+                          }`}>
+                            {descontoType === opt.value && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
+                          </span>
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Percentage slider */}
+                    {descontoType === 'percent' && (
+                      <div className="mt-4 space-y-3">
+                        <label className="text-xs font-medium text-muted-foreground block">Percentual de Desconto</label>
+                        <div className="flex items-baseline justify-center gap-0.5">
+                          <span className="text-3xl font-bold text-foreground">{descontoPercent}</span>
+                          <span className="text-lg text-muted-foreground">%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          value={descontoPercent}
+                          onChange={e => setDescontoPercent(Number(e.target.value))}
+                          className="w-full accent-primary h-1.5 rounded-full cursor-pointer"
+                        />
+                        <div className="flex justify-between text-[10px] text-muted-foreground">
+                          <span>0%</span><span>50%</span><span>100%</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Fixed value input */}
+                    {descontoType === 'fixed' && (
+                      <div className="mt-4">
+                        <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Valor do Desconto</label>
+                        <Input type="number" value={descontoFixed || ''} onChange={e => setDescontoFixed(parseFloat(e.target.value) || 0)}
+                          className="h-10 text-sm rounded-lg" placeholder="0,00" step="0.01" />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -668,7 +728,7 @@ const CriarPedido = () => {
                 <Button variant="outline" className="flex-1 border-primary text-primary hover:bg-primary/10 dark:border-primary dark:text-primary dark:hover:bg-primary/20 rounded-lg" onClick={() => navigate('/pedidos')}>
                   Ver pedidos
                 </Button>
-                <Button className="flex-1 bg-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/90 rounded-lg" onClick={() => { setStep(0); setCart([]); setSelectedCliente(null); setDesconto(0); setFrete(0); }}>
+                <Button className="flex-1 bg-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/90 rounded-lg" onClick={() => { setStep(0); setCart([]); setSelectedCliente(null); setDescontoType('none'); setDescontoPercent(0); setDescontoFixed(0); setFrete(0); }}>
                   Nova compra
                 </Button>
               </div>

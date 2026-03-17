@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 
 const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;

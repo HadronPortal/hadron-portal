@@ -43,6 +43,7 @@ const FilterPanel = ({
   const [showFilters, setShowFilters] = useState(false);
   const [clientResults, setClientResults] = useState<SelectedClient[]>([]);
   const [clientLoading, setClientLoading] = useState(false);
+  const isMobile = useIsMobile();
 
   const activeCount = useMemo(() => {
     let count = 0;

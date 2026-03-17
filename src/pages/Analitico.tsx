@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useSessionState } from '@/hooks/use-session-state';
 import RelatorioClientes, { type SelectedClient } from '@/components/erp/relatorios/RelatorioClientes';
-import FilterClientPicker from '@/components/erp/FilterClientPicker';
+import FilterPanel from '@/components/erp/FilterPanel';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
 import RelatorioRepresentantes from '@/components/erp/relatorios/RelatorioRepresentantes';

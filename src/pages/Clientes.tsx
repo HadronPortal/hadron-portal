@@ -295,13 +295,14 @@ const Clientes = () => {
                       className="w-full appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-card text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer [&>option]:bg-card [&>option]:text-foreground"
                     >
                       <option value="">Todos</option>
-                      {representantes.map((r: any) => (
+                      {filteredRepresentantes.map((r: any) => (
                         <option key={r.rep_codrep} value={r.rep_codrep}>{r.rep_nomrep}</option>
                       ))}
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <FilterClientPicker selectedClients={selectedClients} onChangeClients={setSelectedClients} />
+
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-muted-foreground">Data Início</label>
                       <Popover>

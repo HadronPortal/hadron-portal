@@ -37,6 +37,7 @@ const FilterPanel = ({
   hasActiveFilters,
   onApply,
   onClear,
+  hideClientFilter = false,
 }: FilterPanelProps) => {
   const [showFilters, setShowFilters] = useState(false);
   const [clientResults, setClientResults] = useState<SelectedClient[]>([]);

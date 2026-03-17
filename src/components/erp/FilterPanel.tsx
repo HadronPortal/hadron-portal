@@ -23,6 +23,7 @@ export interface FilterPanelProps {
   hasActiveFilters: boolean;
   onApply: () => void;
   onClear: () => void;
+  hideClientFilter?: boolean;
 }
 
 const FilterPanel = ({

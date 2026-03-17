@@ -88,6 +88,46 @@ const PedidoDetalhe = () => {
   const order = data?.order || null;
   const items = data?.items || [];
 
+  // Initialize edit state when data loads
+  useEffect(() => {
+    if (items.length > 0 && Object.keys(editItems).length === 0) {
+      const initial: Record<string, { qty: number; price: number }> = {};
+      items.forEach((item: any) => {
+        initial[item.oit_id] = { qty: item.oit_qtdoit || 0, price: item.oit_prcpro || 0 };
+      });
+      setEditItems(initial);
+      setEditObs(order?.orc_obs || '');
+    }
+  }, [items]);
+
+  const startEditing = () => {
+    const initial: Record<string, { qty: number; price: number }> = {};
+    items.forEach((item: any) => {
+      initial[item.oit_id] = { qty: item.oit_qtdoit || 0, price: item.oit_prcpro || 0 };
+    });
+    setEditItems(initial);
+    setEditObs(order?.orc_obs || '');
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setIsEditing(false);
+  };
+
+  const handleSave = () => {
+    // For now, show a toast since saving requires API integration
+    toast.info('Funcionalidade de salvamento será integrada com a API em breve.');
+    setIsEditing(false);
+  };
+
+  const updateItemQty = (itemId: string, qty: number) => {
+    setEditItems(prev => ({ ...prev, [itemId]: { ...prev[itemId], qty } }));
+  };
+
+  const updateItemPrice = (itemId: string, price: number) => {
+    setEditItems(prev => ({ ...prev, [itemId]: { ...prev[itemId], price } }));
+  };
+
   if (loading) return (
     <div className="flex-1 flex items-center justify-center py-24">
       <Spinner />
@@ -101,8 +141,13 @@ const PedidoDetalhe = () => {
   );
 
   const st = statusMap[order.orc_status] || { label: order.orc_status || '—', color: '#8b8b8b', bg: '#8b8b8b18' };
-  const totalItens = items.reduce((s: number, i: any) => s + (i.oit_val_tot || 0), 0);
-  const totalPeso = items.reduce((s: number, i: any) => s + ((i.oit_qtdoit || 0) * (i.oit_peso_liq || 0)), 0);
+
+  const getItemQty = (item: any) => isEditing ? (editItems[item.oit_id]?.qty ?? item.oit_qtdoit) : item.oit_qtdoit;
+  const getItemPrice = (item: any) => isEditing ? (editItems[item.oit_id]?.price ?? item.oit_prcpro) : item.oit_prcpro;
+  const getItemTotal = (item: any) => getItemQty(item) * getItemPrice(item);
+
+  const totalItens = items.reduce((s: number, i: any) => s + getItemTotal(i), 0);
+  const totalPeso = items.reduce((s: number, i: any) => s + (getItemQty(i) * (i.oit_peso_liq || 0)), 0);
 
   return (
     <>

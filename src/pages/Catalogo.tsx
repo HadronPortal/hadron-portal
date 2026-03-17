@@ -10,7 +10,7 @@ import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 import CatalogoFilterBar, { CatalogoFilters, defaultFilters } from '@/components/erp/CatalogoFilterBar';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import ScrollToTop from '@/components/ScrollToTop';
-import { exportPDF, exportCSV, exportXLSX } from '@/lib/export-utils';
+import { exportPDF, exportCSV, exportXLSX, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 
 const navItems = [

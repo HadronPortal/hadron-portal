@@ -117,7 +117,7 @@ const RelatorioClientes = ({ filters, onSelectClients }: Props) => {
       const current = new Map(filters.selectedClients.map(c => [c.code, c]));
       filtered.forEach(c => {
         if (!current.has(c.ter_codter)) {
-          current.set(c.ter_codter, { code: c.ter_codter, name: c.ter_nomter, repCode: cli.COD_REP });
+          current.set(c.ter_codter, { code: c.ter_codter, name: c.ter_nomter, repCode: c.COD_REP });
         }
       });
       onSelectClients?.(Array.from(current.values()));

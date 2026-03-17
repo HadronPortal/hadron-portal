@@ -76,7 +76,7 @@ const Clientes = () => {
   const [rowsPerPage, setRowsPerPage] = useSessionState('clientes_rowsPerPage', 50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
   const [selectedRep, setSelectedRep] = useSessionState<number[]>('clientes_rep', []);
-  const [selectedPeriod, setSelectedPeriod] = useSessionState('clientes_period', { startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+  const [selectedPeriodRaw, setSelectedPeriodRaw] = useSessionState('clientes_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
   const [searchQuery, setSearchQuery] = useSessionState('clientes_searchQuery', '');
   const [searchInput, setSearchInput] = useSessionState('clientes_searchInput', '');
   const [loading, setLoading] = useState(true);
@@ -88,6 +88,13 @@ const Clientes = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('clientes_repRaw', []);
 
+  const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
+  const setSelectedPeriod = (v: { startDate: Date | string; endDate: Date | string }) => {
+    setSelectedPeriodRaw({
+      startDate: v.startDate instanceof Date ? v.startDate.toISOString() : v.startDate,
+      endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate,
+    });
+  };
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);

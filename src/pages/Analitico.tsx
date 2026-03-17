@@ -97,10 +97,7 @@ const Analitico = () => {
   const [rowsPerPage, setRowsPerPage] = useSessionState('analitico_rowsPerPage', 50);
   const [selectedRep, setSelectedRep] = useSessionState<number[]>('analitico_rep', []);
   const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('analitico_repRaw', []);
-  const [selectedPeriod, setSelectedPeriod] = useSessionState<{ startDate: Date; endDate: Date }>('analitico_period', {
-    startDate: DEFAULT_START_DATE,
-    endDate: DEFAULT_END_DATE,
-  });
+  const [selectedPeriodRaw, setSelectedPeriodRaw] = useSessionState('analitico_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
   const [searchQuery, setSearchQuery] = useSessionState('analitico_searchQuery', '');
   const [searchInput, setSearchInput] = useSessionState('analitico_searchInput', '');
   const [showFilters, setShowFilters] = useState(false);
@@ -111,6 +108,13 @@ const Analitico = () => {
   const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('analitico_clients', []);
   const [comissionamentoSubTab, setComissionamentoSubTab] = useSessionState('analitico_comSubTab', 'faturamento');
 
+  const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
+  const setSelectedPeriod = (v: { startDate: Date | string; endDate: Date | string }) => {
+    setSelectedPeriodRaw({
+      startDate: v.startDate instanceof Date ? v.startDate.toISOString() : v.startDate,
+      endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate,
+    });
+  };
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);

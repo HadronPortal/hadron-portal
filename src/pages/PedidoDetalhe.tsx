@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronRight, CalendarDays, CreditCard, Truck, User, Mail, Phone, FileText, Package, Award } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import { exportOrderPDF } from '@/lib/export-order-pdf';
 
 const formatCurrency = (v: number) =>
   'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

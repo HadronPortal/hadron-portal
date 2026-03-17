@@ -17,6 +17,14 @@ const RelatorioRepresentantes = ({ filters }: Props) => {
   const filtered = useMemo(() => {
     let list = representantes;
 
+    // Filter by selected clients' rep codes
+    if (filters.selectedClients.length > 0) {
+      const clientRepCodes = new Set(filters.selectedClients.map(c => (c as any).repCode ?? 0).filter(Boolean));
+      if (clientRepCodes.size > 0) {
+        list = list.filter(r => clientRepCodes.has(r.rep_codrep));
+      }
+    }
+
     // Filter by selected rep if any
     if (filters.selectedRepRaw.length > 0) {
       const codes = new Set(filters.selectedRepRaw.map(Number));
@@ -33,7 +41,7 @@ const RelatorioRepresentantes = ({ filters }: Props) => {
     }
 
     return list;
-  }, [representantes, filters.selectedRepRaw, filters.searchInput]);
+  }, [representantes, filters.selectedRepRaw, filters.searchInput, filters.selectedClients]);
 
   if (loading) {
     return (

@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet, Users } from 'lucide-react';
-import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
+import { exportPDF, exportCSV, exportXLSX, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -190,7 +190,7 @@ const Analitico = () => {
     { header: 'Total Valor', accessor: (p: ProductAnalytics) => formatCurrency(p.totais?.valor || 0), align: 'right' as const },
   ];
 
-  const handleExportProdutos = useCallback(async (fmt: 'pdf' | 'csv') => {
+  const handleExportProdutos = useCallback(async (fmt: 'pdf' | 'csv' | 'xlsx') => {
     try {
       toast.info('Exportando todos os produtos...');
       const allData = await fetchAllForExport('fetch-analytics', {
@@ -200,7 +200,9 @@ const Analitico = () => {
         ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
       }, 'products');
       const opts = { title: 'Relatório de Produtos', columns: productColumns, data: allData, fileName: 'relatorio-produtos' };
-      fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+      if (fmt === 'pdf') exportPDF(opts);
+      else if (fmt === 'xlsx') exportXLSX(opts);
+      else exportCSV(opts);
       toast.success(`${allData.length} produtos exportados!`);
     } catch (e) {
       toast.error('Erro ao exportar: ' + (e as Error).message);
@@ -501,6 +503,12 @@ const Analitico = () => {
                       className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
                     >
                       <FileSpreadsheet size={14} className="text-primary" /> Exportar CSV
+                    </button>
+                    <button
+                      onClick={() => { handleExportProdutos('xlsx'); setExportOpen(false); }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
+                    >
+                      <FileSpreadsheet size={14} className="text-green-600" /> Exportar XLSX
                     </button>
                   </PopoverContent>
                 </Popover>

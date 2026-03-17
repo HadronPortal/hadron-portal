@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ScrollToTop from '@/components/ScrollToTop';
-import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
+import { exportPDF, exportCSV, exportXLSX, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
@@ -134,7 +134,7 @@ const RelatorioClientes = ({ filters, onSelectClients }: Props) => {
     { header: 'Últ. Venda', accessor: (c: ClienteAPI) => formatDate(c.ULT_VENDA), align: 'right' as const },
   ];
 
-  const handleExport = useCallback(async (fmt: 'pdf' | 'csv') => {
+  const handleExport = useCallback(async (fmt: 'pdf' | 'csv' | 'xlsx') => {
     try {
       toast.info('Exportando todos os registros...');
       const allData = await fetchAllForExport('fetch-clients', {
@@ -144,7 +144,9 @@ const RelatorioClientes = ({ filters, onSelectClients }: Props) => {
         ...(filters.searchQuery.trim() ? { search: filters.searchQuery.trim() } : {}),
       }, 'clients');
       const opts = { title: 'Relatório de Clientes', columns: clientColumns, data: allData, fileName: 'relatorio-clientes' };
-      fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+      if (fmt === 'pdf') exportPDF(opts);
+      else if (fmt === 'xlsx') exportXLSX(opts);
+      else exportCSV(opts);
       toast.success(`${allData.length} registros exportados!`);
     } catch (e) {
       toast.error('Erro ao exportar: ' + (e as Error).message);

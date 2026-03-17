@@ -35,7 +35,7 @@ interface ReportToolbarProps {
   onRowsPerPageChange: (n: number) => void;
   searchQuery: string;
   showOpTabs?: boolean;
-  onExport?: (format: 'pdf' | 'csv') => void;
+  onExport?: (format: 'pdf' | 'csv' | 'xlsx') => void;
 }
 
 const ReportToolbar = memo(({
@@ -196,6 +196,12 @@ const ReportToolbar = memo(({
                 className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
               >
                 <FileSpreadsheet size={14} className="text-primary" /> Exportar CSV
+              </button>
+              <button
+                onClick={() => { onExport?.('xlsx'); setExportOpen(false); }}
+                className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
+              >
+                <FileSpreadsheet size={14} className="text-green-600" /> Exportar XLSX
               </button>
             </PopoverContent>
           </Popover>

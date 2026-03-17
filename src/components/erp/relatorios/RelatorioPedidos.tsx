@@ -4,7 +4,7 @@ import { useApiFetch } from '@/hooks/use-api-fetch';
 import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ScrollToTop from '@/components/ScrollToTop';
-import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
+import { exportPDF, exportCSV, exportXLSX, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 import type { SharedFilterProps } from './RelatorioClientes';
 

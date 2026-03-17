@@ -299,7 +299,7 @@ const Pedidos = () => {
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar mode="single" selected={selectedPeriod.startDate} onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, startDate: d }))} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
+                              <Calendar mode="single" selected={selectedPeriod.startDate} onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, startDate: d.toISOString() }))} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
                             </PopoverContent>
                           </Popover>
                         </div>

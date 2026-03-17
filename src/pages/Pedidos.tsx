@@ -20,10 +20,6 @@ import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ScrollToTop from '@/components/ScrollToTop';
 import FadeIn from '@/components/erp/skeletons/FadeIn';
-import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
-import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
-import ScrollToTop from '@/components/ScrollToTop';
-import FadeIn from '@/components/erp/skeletons/FadeIn';
 
 interface OrderAPI {
   orc_codorc_web: number;

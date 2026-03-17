@@ -86,6 +86,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
               onClick={() => setExportOpen(!exportOpen)}
             >
               <Download className="w-4 h-4" />
+              Exportar
               <ChevronDown className={`w-3.5 h-3.5 transition-transform ${exportOpen ? 'rotate-180' : ''}`} />
             </Button>
             {exportOpen && (

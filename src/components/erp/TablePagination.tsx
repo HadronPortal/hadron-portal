@@ -34,52 +34,54 @@ const TablePagination = ({ page, totalRecords, rowsPerPage, onPageChange }: Tabl
       <p className="text-xs text-muted-foreground hidden sm:block">
         Mostrando {Math.min((page - 1) * rowsPerPage + 1, totalRecords)} a {Math.min(page * rowsPerPage, totalRecords)} de {totalRecords}
       </p>
-      <div className="flex items-center gap-1 mx-auto sm:mx-0">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="Voltar ao topo"
-        >
-          <ArrowUp size={16} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          disabled={page <= 1}
-          onClick={() => onPageChange(page - 1)}
-        >
-          <ChevronLeft size={16} />
-        </Button>
-        {getPageNumbers().map((p, i) =>
-          p === '...' ? (
-            <span key={`dots-${i}`} className="px-1 text-xs text-muted-foreground">...</span>
-          ) : (
-            <button
-              key={p}
-              onClick={() => onPageChange(p as number)}
-              className={`h-8 w-8 rounded-lg text-xs font-medium transition-colors ${
-                page === p
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-              }`}
-            >
-              {p}
-            </button>
-          )
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          disabled={page >= totalPages}
-          onClick={() => onPageChange(page + 1)}
-        >
-          <ChevronRight size={16} />
-        </Button>
-      </div>
+      {showPageButtons && (
+        <div className="flex items-center gap-1 mx-auto sm:mx-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="Voltar ao topo"
+          >
+            <ArrowUp size={16} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            disabled={page <= 1}
+            onClick={() => onPageChange(page - 1)}
+          >
+            <ChevronLeft size={16} />
+          </Button>
+          {getPageNumbers().map((p, i) =>
+            p === '...' ? (
+              <span key={`dots-${i}`} className="px-1 text-xs text-muted-foreground">...</span>
+            ) : (
+              <button
+                key={p}
+                onClick={() => onPageChange(p as number)}
+                className={`h-8 w-8 rounded-lg text-xs font-medium transition-colors ${
+                  page === p
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                }`}
+              >
+                {p}
+              </button>
+            )
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            disabled={page >= totalPages}
+            onClick={() => onPageChange(page + 1)}
+          >
+            <ChevronRight size={16} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

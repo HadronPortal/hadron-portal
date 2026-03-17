@@ -87,7 +87,6 @@ const Clientes = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [filterNonce, setFilterNonce] = useState(0);
-  const [showFilters, setShowFilters] = useState(false);
   const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('global_repRaw', []);
   const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('global_clients', []);
 

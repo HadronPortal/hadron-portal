@@ -728,7 +728,7 @@ const CriarPedido = () => {
                 <Button variant="outline" className="flex-1 border-primary text-primary hover:bg-primary/10 dark:border-primary dark:text-primary dark:hover:bg-primary/20 rounded-lg" onClick={() => navigate('/pedidos')}>
                   Ver pedidos
                 </Button>
-                <Button className="flex-1 bg-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/90 rounded-lg" onClick={() => { setStep(0); setCart([]); setSelectedCliente(null); setDesconto(0); setFrete(0); }}>
+                <Button className="flex-1 bg-[hsl(var(--erp-navy))] hover:bg-[hsl(var(--erp-navy))]/90 rounded-lg" onClick={() => { setStep(0); setCart([]); setSelectedCliente(null); setDescontoType('none'); setDescontoPercent(0); setDescontoFixed(0); setFrete(0); }}>
                   Nova compra
                 </Button>
               </div>

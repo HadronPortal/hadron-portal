@@ -214,6 +214,123 @@ const Analitico = () => {
     }
   }, [dateIniParam, dateEndParam, repParam, searchQuery, periods]);
 
+  const handleExportClientes = useCallback(async (fmt: 'pdf' | 'csv' | 'xlsx') => {
+    try {
+      toast.info('Exportando clientes...');
+      const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
+      const allData = await fetchAllForExport('fetch-clients', {
+        date_ini: dateIniParam,
+        date_end: dateEndParam,
+        ...(repParam ? { rep: repParam } : {}),
+        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+        ...(codterParam ? { codter: codterParam } : {}),
+      }, 'clients');
+      const cols = [
+        { header: 'Cliente', accessor: (c: any) => c.ter_nomter || '' },
+        { header: 'Fantasia', accessor: (c: any) => c.ter_fanter || '' },
+        { header: 'Documento', accessor: (c: any) => c.ter_documento || '', forceText: true },
+        { header: 'Cidade', accessor: (c: any) => c.TEN_CIDLGR || '' },
+        { header: 'UF', accessor: (c: any) => c.TEN_UF_LGR || '' },
+        { header: 'Total Vendas', accessor: (c: any) => c.TOTAL_VENDAS != null ? 'R$ ' + Number(c.TOTAL_VENDAS).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : 'R$ 0,00', align: 'right' as const },
+        { header: 'Qtd. Vendas', accessor: (c: any) => String(c.QUANT_VENDAS || 0), align: 'right' as const },
+      ];
+      const opts = { title: 'Relatório de Clientes', columns: cols, data: allData, fileName: 'relatorio-clientes' };
+      if (fmt === 'pdf') exportPDF(opts);
+      else if (fmt === 'xlsx') exportXLSX(opts);
+      else exportCSV(opts);
+      toast.success(`${allData.length} clientes exportados!`);
+    } catch (e) {
+      toast.error('Erro ao exportar: ' + (e as Error).message);
+    }
+  }, [dateIniParam, dateEndParam, repParam, searchQuery, selectedClients]);
+
+  const handleExportPedidos = useCallback(async (fmt: 'pdf' | 'csv' | 'xlsx') => {
+    try {
+      toast.info('Exportando pedidos...');
+      const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
+      const allData = await fetchAllForExport('fetch-orders', {
+        date_ini: dateIniParam,
+        date_end: dateEndParam,
+        ...(repParam ? { rep: repParam } : {}),
+        ...(codterParam ? { codter: codterParam } : {}),
+        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+      }, 'orders');
+      const cols = [
+        { header: 'Código', accessor: (o: any) => String(o.orc_codorc_web || '') },
+        { header: 'Cliente', accessor: (o: any) => o.CLIENTE || '' },
+        { header: 'Documento', accessor: (o: any) => o.orc_documento || '', forceText: true },
+        { header: 'Localização', accessor: (o: any) => o.LOCALIZACAO || '' },
+        { header: 'Valor', accessor: (o: any) => 'R$ ' + Number(o.orc_val_tot || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 }), align: 'right' as const },
+        { header: 'Peso', accessor: (o: any) => String(o.OIT_PESO || '0') + ' Kg', align: 'right' as const },
+        { header: 'Data', accessor: (o: any) => o.DATA_PEDIDO ? new Date(o.DATA_PEDIDO).toLocaleDateString('pt-BR') : '—' },
+      ];
+      const opts = { title: 'Relatório de Pedidos', columns: cols, data: allData, fileName: 'relatorio-pedidos' };
+      if (fmt === 'pdf') exportPDF(opts);
+      else if (fmt === 'xlsx') exportXLSX(opts);
+      else exportCSV(opts);
+      toast.success(`${allData.length} pedidos exportados!`);
+    } catch (e) {
+      toast.error('Erro ao exportar: ' + (e as Error).message);
+    }
+  }, [dateIniParam, dateEndParam, repParam, searchQuery, selectedClients]);
+
+  const handleExportRepresentantes = useCallback(async (fmt: 'pdf' | 'csv' | 'xlsx') => {
+    try {
+      toast.info('Exportando representantes...');
+      const cols = [
+        { header: 'Código', accessor: (r: any) => String(r.rep_codrep) },
+        { header: 'Representante', accessor: (r: any) => r.rep_nomrep || '' },
+      ];
+      const opts = { title: 'Relatório de Representantes', columns: cols, data: representantes, fileName: 'relatorio-representantes' };
+      if (fmt === 'pdf') exportPDF(opts);
+      else if (fmt === 'xlsx') exportXLSX(opts);
+      else exportCSV(opts);
+      toast.success(`${representantes.length} representantes exportados!`);
+    } catch (e) {
+      toast.error('Erro ao exportar: ' + (e as Error).message);
+    }
+  }, [representantes]);
+
+  const handleExportProductsTab = useCallback(async (fmt: 'pdf' | 'csv' | 'xlsx') => {
+    try {
+      toast.info('Exportando produtos...');
+      const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
+      const allData = await fetchAllForExport('fetch-products', {
+        date_ini: dateIniParam,
+        date_end: dateEndParam,
+        ...(repParam ? { rep: repParam } : {}),
+        ...(codterParam ? { codter: codterParam } : {}),
+        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+      }, 'products');
+      const cols = [
+        { header: 'Código', accessor: (p: any) => String(p.pro_codpro) },
+        { header: 'Produto', accessor: (p: any) => p.pro_despro || '' },
+        { header: 'Qtde', accessor: (p: any) => p.QUANT || '0', align: 'right' as const },
+        { header: 'Peso', accessor: (p: any) => (parseFloat(p.QUANT || '0') * (p.pro_peso_liq || 0)).toFixed(1) + ' Kg', align: 'right' as const },
+        { header: 'Total Vendido', accessor: (p: any) => 'R$ ' + Number(parseFloat(p.TOTAL_VENDIDO || '0')).toLocaleString('pt-BR', { minimumFractionDigits: 2 }), align: 'right' as const },
+      ];
+      const opts = { title: 'Relatório de Produtos', columns: cols, data: allData, fileName: 'relatorio-produtos-tab' };
+      if (fmt === 'pdf') exportPDF(opts);
+      else if (fmt === 'xlsx') exportXLSX(opts);
+      else exportCSV(opts);
+      toast.success(`${allData.length} produtos exportados!`);
+    } catch (e) {
+      toast.error('Erro ao exportar: ' + (e as Error).message);
+    }
+  }, [dateIniParam, dateEndParam, repParam, searchQuery, selectedClients]);
+
+  const handleExport = useCallback((fmt: 'pdf' | 'csv' | 'xlsx') => {
+    switch (reportTab) {
+      case 'sintetico': return handleExportProdutos(fmt);
+      case 'clientes': return handleExportClientes(fmt);
+      case 'pedidos': return handleExportPedidos(fmt);
+      case 'representantes': return handleExportRepresentantes(fmt);
+      case 'produtos': return handleExportProductsTab(fmt);
+      case 'comissionamento': return handleExportProdutos(fmt); // fallback
+      default: return handleExportProdutos(fmt);
+    }
+  }, [reportTab, handleExportProdutos, handleExportClientes, handleExportPedidos, handleExportRepresentantes, handleExportProductsTab]);
+
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
     if (totalPages <= 5) {

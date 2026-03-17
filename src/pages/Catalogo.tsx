@@ -25,6 +25,7 @@ interface CatalogoItem {
   pro_foto: string;
   NOME_GRUPO: string | null;
   SALDOS: number | string;
+  SALDO_DISPONIVEL?: number | string | null;
   SALDO_FISICO?: number | string | null;
   PREV_SAIDA?: number | string | null;
   pro_codgrp: number;

@@ -303,6 +303,8 @@ const Pedidos = () => {
                       </div>
 
                       <FilterClientPicker selectedClients={selectedClients} onChangeClients={setSelectedClients} />
+
+                      <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
                           <label className="text-xs font-medium text-muted-foreground">Data Início</label>
                           <Popover>

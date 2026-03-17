@@ -474,7 +474,7 @@ const Analitico = () => {
                         </div>
                       ) : null}
                       <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
-                        {representantes.map((r: any) => {
+                        {filteredRepresentantes.map((r: any) => {
                           const isSelected = selectedRepRaw.includes(String(r.rep_codrep));
                           return (
                             <label

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { X, Search, Loader2, Check, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -36,6 +36,8 @@ const FilterSelect = ({
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const onSearchRef = useRef(onSearch);
+  onSearchRef.current = onSearch;
 
   // Close on outside click
   useEffect(() => {
@@ -53,18 +55,17 @@ const FilterSelect = ({
   useEffect(() => {
     if (open) {
       setSearch('');
-      setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [open]);
 
-  // External search with debounce
+  // Debounced external search - uses ref to avoid re-triggering on function identity changes
   useEffect(() => {
     if (!open) return;
-    if (onSearch) {
-      const t = setTimeout(() => onSearch(search), 300);
-      return () => clearTimeout(t);
-    }
-  }, [search, onSearch, open]);
+    const fn = onSearchRef.current;
+    if (!fn) return;
+    const t = setTimeout(() => fn(search), 300);
+    return () => clearTimeout(t);
+  }, [search, open]);
 
   const filtered = useMemo(() => {
     if (onSearch) return items;

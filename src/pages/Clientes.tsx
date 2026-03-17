@@ -261,7 +261,8 @@ const Clientes = () => {
                 />
               </div>
 
-              <FilterPanel
+               <FilterPanel
+                hideClientFilter
                 representantes={representantes}
                 selectedRepRaw={selectedRepRaw}
                 setSelectedRepRaw={setSelectedRepRaw}

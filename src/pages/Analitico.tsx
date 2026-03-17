@@ -105,7 +105,7 @@ const Analitico = () => {
   const [filterNonce, setFilterNonce] = useState(0);
   const [reportTab, setReportTab] = useSessionState<ReportTab>('analitico_reportTab', 'sintetico');
   const [exportOpen, setExportOpen] = useState(false);
-  const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('analitico_clients', []);
+  const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('global_clients', []);
   const [comissionamentoSubTab, setComissionamentoSubTab] = useSessionState('analitico_comSubTab', 'faturamento');
 
   const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };

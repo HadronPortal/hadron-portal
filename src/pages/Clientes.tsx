@@ -91,38 +91,49 @@ const Clientes = () => {
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
-  const fetchClients = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const clientFilterMap: Record<string, string> = { todos: 'all', positivados: 'positive', novos: 'new' };
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: String(rowsPerPage),
-        date_ini: dateIniParam,
-        date_end: dateEndParam,
-        client_filter: clientFilterMap[activeTab] || 'all',
-      });
-      if (repParam) params.set('rep', repParam);
-      if (searchQuery.trim()) params.set('search', searchQuery.trim());
-
-      const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params.toString()}`;
-      const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' } });
-      if (!res.ok) throw new Error('Falha ao buscar clientes');
-      const result = await res.json();
-      setClients(result.clients || []);
-      setTotalRecords(result.total_records || 0);
-    } catch (err) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const abortController = new AbortController();
+    let cancelled = false;
+
+    const fetchClients = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const clientFilterMap: Record<string, string> = { todos: 'all', positivados: 'positive', novos: 'new' };
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: String(rowsPerPage),
+          date_ini: dateIniParam,
+          date_end: dateEndParam,
+          client_filter: clientFilterMap[activeTab] || 'all',
+        });
+        if (repParam) params.set('rep', repParam);
+        if (searchQuery.trim()) params.set('search', searchQuery.trim());
+
+        const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params.toString()}`;
+        const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' }, signal: abortController.signal });
+        if (cancelled) return;
+        if (!res.ok) throw new Error('Falha ao buscar clientes');
+        const result = await res.json();
+        if (cancelled) return;
+        setClients(result.clients || []);
+        setTotalRecords(result.total_records || 0);
+      } catch (err) {
+        if (cancelled || (err instanceof DOMException && err.name === 'AbortError')) return;
+        console.error(err);
+        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
     fetchClients();
+
+    return () => {
+      cancelled = true;
+      abortController.abort();
+    };
   }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce, activeTab]);
 
   // Debounced search

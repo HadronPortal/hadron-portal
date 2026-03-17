@@ -92,20 +92,59 @@ const ReportToolbar = memo(({
 
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Representante</label>
-                <select
-                  value={selectedRepRaw.length === 1 ? selectedRepRaw[0] : ''}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val) { onRepChange([val], [Number(val)]); }
-                    else { onRepChange([], []); }
-                  }}
-                  className={selectClass}
-                >
-                  <option value="">Todos</option>
-                  {representantes.map((r: any) => (
-                    <option key={r.rep_codrep} value={r.rep_codrep}>{r.rep_nomrep}</option>
-                  ))}
-                </select>
+                {selectedRepRaw.length > 0 && (
+                  <div className="space-y-1.5">
+                    <div className="border border-border rounded-lg p-2 max-h-24 overflow-y-auto space-y-1">
+                      {selectedRepRaw.map(code => {
+                        const rep = representantes.find((r: any) => String(r.rep_codrep) === code);
+                        return (
+                          <div key={code} className="flex items-center justify-between text-xs">
+                            <span className="text-foreground truncate mr-2">{rep?.rep_nomrep || code}</span>
+                            <button
+                              onClick={() => {
+                                const newRaw = selectedRepRaw.filter(c => c !== code);
+                                onRepChange(newRaw, newRaw.map(Number));
+                              }}
+                              className="text-muted-foreground hover:text-destructive shrink-0"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => onRepChange([], [])}
+                      className="text-[11px] text-destructive hover:underline"
+                    >
+                      Limpar todos
+                    </button>
+                  </div>
+                )}
+                <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
+                  {representantes.map((r: any) => {
+                    const isSelected = selectedRepRaw.includes(String(r.rep_codrep));
+                    return (
+                      <label
+                        key={r.rep_codrep}
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-accent/50 cursor-pointer transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {
+                            const newRaw = isSelected
+                              ? selectedRepRaw.filter(c => c !== String(r.rep_codrep))
+                              : [...selectedRepRaw, String(r.rep_codrep)];
+                            onRepChange(newRaw, newRaw.map(Number));
+                          }}
+                          className="h-3.5 w-3.5 rounded border-border accent-primary"
+                        />
+                        <span className="text-foreground truncate">{r.rep_nomrep}</span>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

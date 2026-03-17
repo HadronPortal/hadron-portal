@@ -441,7 +441,7 @@ const Analitico = () => {
                             <Calendar
                               mode="single"
                               selected={selectedPeriod.endDate}
-                              onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, endDate: d }))}
+                              onSelect={(d) => d && setSelectedPeriod({ startDate: selectedPeriod.startDate, endDate: d })}
                               locale={ptBR}
                               className={cn("p-3 pointer-events-auto")}
                             />

@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { ChevronDown, FileText, Plus, Search, Send, CheckCircle, XCircle, Filter, X, CalendarIcon } from 'lucide-react';
 import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
-import ScrollToTop from '@/components/ScrollToTop';
+import TablePagination from '@/components/erp/TablePagination';
 import FadeIn from '@/components/erp/skeletons/FadeIn';
 
 interface OrderAPI {

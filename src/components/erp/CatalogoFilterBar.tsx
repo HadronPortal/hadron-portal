@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Filter, ArrowUpDown, X, ChevronDown, Search } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Filter, ArrowUpDown, X, ChevronDown, Search, Download, FileText, FileSpreadsheet, File } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface CatalogoFilters {
@@ -30,6 +30,7 @@ interface Props {
   categories: string[];
   searchQuery: string;
   onSearchChange: (v: string) => void;
+  onExport?: (format: 'pdf' | 'csv' | 'xlsx') => void;
 }
 
 const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearchChange }: Props) => {

@@ -63,6 +63,19 @@ const PedidoDetalhe = () => {
   const [selectedProductName, setSelectedProductName] = useState<string | undefined>();
   const [detailOpen, setDetailOpen] = useState(false);
 
+  // Edit mode
+  const [isEditing, setIsEditing] = useState(false);
+  const [editItems, setEditItems] = useState<Record<string, { qty: number; price: number }>>({});
+  const [editObs, setEditObs] = useState('');
+
+  useEffect(() => {
+    if (location.state?.edit) {
+      setIsEditing(true);
+      // Clean the state so refreshing doesn't re-enter edit mode
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
+
   const { data, isLoading: loading, error: queryError } = useApiFetch<{ order: any; items: any[] }>({
     queryKey: ['order-details', String(id)],
     endpoint: 'fetch-order-details',

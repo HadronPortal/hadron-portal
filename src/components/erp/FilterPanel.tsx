@@ -53,14 +53,16 @@ const FilterPanel = ({
     [representantes]
   );
 
-  const clientItems: FilterDrawerItem[] = useMemo(() =>
-    clientResults.map(c => ({
-      code: c.code,
-      name: c.name,
-      subtitle: c.repCode ? `Rep. ${c.repCode}` : undefined,
-    })),
-    [clientResults]
-  );
+  const clientItems: FilterDrawerItem[] = useMemo(() => {
+    const selectedCodes = new Set(selectedClients.map(c => c.code));
+    return clientResults
+      .filter(c => !selectedCodes.has(c.code))
+      .map(c => ({
+        code: c.code,
+        name: c.name,
+        subtitle: c.repCode ? `Rep. ${c.repCode}` : undefined,
+      }));
+  }, [clientResults, selectedClients]);
 
   const fetchClients = useCallback(async (q: string) => {
     setClientLoading(true);

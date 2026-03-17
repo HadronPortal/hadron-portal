@@ -343,7 +343,7 @@ const Pedidos = () => {
                 <div className="flex items-center gap-3">
                   <Button
                     variant="outline"
-                    className="gap-2 text-xs sm:text-sm h-10 bg-muted/50 border-border hover:bg-[#DBEAFE] hover:text-[#3B82F6] hover:border-[#93C5FD] focus-visible:ring-0"
+                    className="gap-2 text-xs sm:text-sm h-10 bg-muted/50 border-border hover:bg-foreground/10 hover:text-foreground hover:border-foreground/30 focus-visible:ring-0"
                     onClick={() => navigate('/pedidos/criar')}
                   >
                     <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido

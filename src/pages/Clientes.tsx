@@ -148,7 +148,7 @@ const Clientes = () => {
       cancelled = true;
       abortController.abort();
     };
-  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce, activeTab]);
+  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce, activeTab, selectedClients]);
 
   // Debounced search
   useEffect(() => {

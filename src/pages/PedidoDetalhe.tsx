@@ -145,12 +145,15 @@ const PedidoDetalhe = () => {
     setAddedItems(prev => prev.filter(i => i.id !== id));
   };
 
-  const searchCatalogo = useCallback(async (search: string) => {
-    if (!search.trim()) { setCatalogoResults([]); return; }
+  const searchCatalogo = useCallback(async (search: string, forceAll = false) => {
+    if (!search.trim() && !forceAll) { setCatalogoResults([]); return; }
     setLoadingCatalogo(true);
     try {
       const BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1`;
-      const res = await fetch(`${BASE}/fetch-catalogo?page=1&limit=20&search=${encodeURIComponent(search)}`);
+      const url = search.trim()
+        ? `${BASE}/fetch-catalogo?page=1&limit=20&search=${encodeURIComponent(search)}`
+        : `${BASE}/fetch-catalogo?page=1&limit=50`;
+      const res = await fetch(url);
       const data = await res.json();
       setCatalogoResults(data?.catalogs || []);
     } catch { setCatalogoResults([]); }
@@ -474,7 +477,8 @@ const PedidoDetalhe = () => {
                 <Input
                   value={addProductSearch}
                   onChange={e => setAddProductSearch(e.target.value)}
-                  placeholder="Buscar produto por nome ou código..."
+                  onDoubleClick={() => searchCatalogo('', true)}
+                  placeholder="Buscar produto por nome ou código... (duplo clique para listar todos)"
                   className="pl-9 h-9 text-sm"
                 />
                 {addProductSearch && (

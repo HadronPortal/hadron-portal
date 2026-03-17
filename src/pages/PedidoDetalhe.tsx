@@ -285,6 +285,9 @@ const PedidoDetalhe = () => {
                 <Button variant="outline" className="rounded-lg text-sm gap-1.5 bg-card border-border text-foreground hover:bg-accent" onClick={startEditing}>
                   <Pencil size={14} /> Editar
                 </Button>
+                <Button variant="outline" className="rounded-lg text-sm gap-1.5 bg-card border-border text-foreground hover:bg-accent" onClick={() => exportOrderPDF(order, items)}>
+                  <Download size={14} /> Exportar PDF
+                </Button>
                 <Button variant="outline" className="rounded-lg text-sm bg-card border-border text-foreground hover:bg-accent" onClick={() => navigate('/pedidos')}>
                   Voltar
                 </Button>

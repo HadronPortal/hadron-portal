@@ -1,7 +1,11 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 import { useApiFetch } from '@/hooks/use-api-fetch';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
+import { Pencil } from 'lucide-react';
 
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -59,6 +63,19 @@ const PedidoDetalhe = () => {
   const [selectedProductName, setSelectedProductName] = useState<string | undefined>();
   const [detailOpen, setDetailOpen] = useState(false);
 
+  // Edit mode
+  const [isEditing, setIsEditing] = useState(false);
+  const [editItems, setEditItems] = useState<Record<string, { qty: number; price: number }>>({});
+  const [editObs, setEditObs] = useState('');
+
+  useEffect(() => {
+    if (location.state?.edit) {
+      setIsEditing(true);
+      // Clean the state so refreshing doesn't re-enter edit mode
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
+
   const { data, isLoading: loading, error: queryError } = useApiFetch<{ order: any; items: any[] }>({
     queryKey: ['order-details', String(id)],
     endpoint: 'fetch-order-details',
@@ -70,6 +87,46 @@ const PedidoDetalhe = () => {
   const error = queryError ? (queryError as Error).message : null;
   const order = data?.order || null;
   const items = data?.items || [];
+
+  // Initialize edit state when data loads
+  useEffect(() => {
+    if (items.length > 0 && Object.keys(editItems).length === 0) {
+      const initial: Record<string, { qty: number; price: number }> = {};
+      items.forEach((item: any) => {
+        initial[item.oit_id] = { qty: item.oit_qtdoit || 0, price: item.oit_prcpro || 0 };
+      });
+      setEditItems(initial);
+      setEditObs(order?.orc_obs || '');
+    }
+  }, [items]);
+
+  const startEditing = () => {
+    const initial: Record<string, { qty: number; price: number }> = {};
+    items.forEach((item: any) => {
+      initial[item.oit_id] = { qty: item.oit_qtdoit || 0, price: item.oit_prcpro || 0 };
+    });
+    setEditItems(initial);
+    setEditObs(order?.orc_obs || '');
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setIsEditing(false);
+  };
+
+  const handleSave = () => {
+    // For now, show a toast since saving requires API integration
+    toast.info('Funcionalidade de salvamento será integrada com a API em breve.');
+    setIsEditing(false);
+  };
+
+  const updateItemQty = (itemId: string, qty: number) => {
+    setEditItems(prev => ({ ...prev, [itemId]: { ...prev[itemId], qty } }));
+  };
+
+  const updateItemPrice = (itemId: string, price: number) => {
+    setEditItems(prev => ({ ...prev, [itemId]: { ...prev[itemId], price } }));
+  };
 
   if (loading) return (
     <div className="flex-1 flex items-center justify-center py-24">
@@ -84,8 +141,13 @@ const PedidoDetalhe = () => {
   );
 
   const st = statusMap[order.orc_status] || { label: order.orc_status || '—', color: '#8b8b8b', bg: '#8b8b8b18' };
-  const totalItens = items.reduce((s: number, i: any) => s + (i.oit_val_tot || 0), 0);
-  const totalPeso = items.reduce((s: number, i: any) => s + ((i.oit_qtdoit || 0) * (i.oit_peso_liq || 0)), 0);
+
+  const getItemQty = (item: any) => isEditing ? (editItems[item.oit_id]?.qty ?? item.oit_qtdoit) : item.oit_qtdoit;
+  const getItemPrice = (item: any) => isEditing ? (editItems[item.oit_id]?.price ?? item.oit_prcpro) : item.oit_prcpro;
+  const getItemTotal = (item: any) => getItemQty(item) * getItemPrice(item);
+
+  const totalItens = items.reduce((s: number, i: any) => s + getItemTotal(i), 0);
+  const totalPeso = items.reduce((s: number, i: any) => s + (getItemQty(i) * (i.oit_peso_liq || 0)), 0);
 
   return (
     <>
@@ -142,9 +204,25 @@ const PedidoDetalhe = () => {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="rounded-lg text-sm" onClick={() => navigate('/pedidos')}>
-              Voltar
-            </Button>
+            {isEditing ? (
+              <>
+                <Button variant="outline" className="rounded-lg text-sm" onClick={cancelEditing}>
+                  Cancelar
+                </Button>
+                <Button className="rounded-lg text-sm gap-1.5" onClick={handleSave}>
+                  Salvar Alterações
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" className="rounded-lg text-sm gap-1.5" onClick={startEditing}>
+                  <Pencil size={14} /> Editar
+                </Button>
+                <Button variant="outline" className="rounded-lg text-sm" onClick={() => navigate('/pedidos')}>
+                  Voltar
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
@@ -289,10 +367,24 @@ const PedidoDetalhe = () => {
           </div>
         </div>
 
+        {/* Observação (edit mode) */}
+        {isEditing && (
+          <div className="bg-card rounded-xl border border-border shadow-sm p-5">
+            <h3 className="text-base font-bold text-foreground mb-3">Observação</h3>
+            <Textarea
+              value={editObs}
+              onChange={(e) => setEditObs(e.target.value)}
+              placeholder="Observações do pedido..."
+              className="min-h-[80px] text-sm"
+            />
+          </div>
+        )}
+
         {/* Items table */}
         <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-border">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <h2 className="text-base font-bold text-foreground">Pedido #{order.orc_codorc_web}</h2>
+            {isEditing && <span className="text-xs text-primary font-medium px-2 py-1 bg-primary/10 rounded-md">Modo edição</span>}
           </div>
           <div className="overflow-x-auto">
             <Table>
@@ -309,11 +401,13 @@ const PedidoDetalhe = () => {
                 {items.map((item: any) => (
                   <TableRow
                     key={item.oit_id}
-                    className="hover:bg-accent/30 cursor-pointer border-b border-border/50"
+                    className={`hover:bg-accent/30 border-b border-border/50 ${!isEditing ? 'cursor-pointer' : ''}`}
                     onClick={() => {
-                      setSelectedProductId(item.oit_codpro);
-                      setSelectedProductName(item.oit_despro);
-                      setDetailOpen(true);
+                      if (!isEditing) {
+                        setSelectedProductId(item.oit_codpro);
+                        setSelectedProductName(item.oit_despro);
+                        setDetailOpen(true);
+                      }
                     }}
                   >
                     <TableCell className="text-sm">
@@ -325,9 +419,34 @@ const PedidoDetalhe = () => {
                       </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground font-mono">{item.oit_codpro}</TableCell>
-                    <TableCell className="text-sm text-center text-foreground">{item.oit_qtdoit}</TableCell>
-                    <TableCell className="text-sm text-right text-foreground">{formatCurrency(item.oit_prcpro)}</TableCell>
-                    <TableCell className="text-sm text-right font-semibold text-foreground">{formatCurrency(item.oit_val_tot)}</TableCell>
+                    <TableCell className="text-sm text-center text-foreground" onClick={e => isEditing && e.stopPropagation()}>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          min={0}
+                          value={getItemQty(item)}
+                          onChange={(e) => updateItemQty(item.oit_id, Number(e.target.value))}
+                          className="h-8 w-20 text-center text-sm mx-auto"
+                        />
+                      ) : (
+                        item.oit_qtdoit
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-right text-foreground" onClick={e => isEditing && e.stopPropagation()}>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          min={0}
+                          step={0.01}
+                          value={getItemPrice(item)}
+                          onChange={(e) => updateItemPrice(item.oit_id, Number(e.target.value))}
+                          className="h-8 w-24 text-right text-sm ml-auto"
+                        />
+                      ) : (
+                        formatCurrency(item.oit_prcpro)
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-right font-semibold text-foreground">{formatCurrency(getItemTotal(item))}</TableCell>
                   </TableRow>
                 ))}
 
@@ -342,7 +461,7 @@ const PedidoDetalhe = () => {
                 </TableRow>
                 <TableRow className="border-t-2 border-border">
                   <TableCell colSpan={4} className="text-sm font-bold text-foreground text-right">Total</TableCell>
-                  <TableCell className="text-sm font-bold text-foreground text-right">{formatCurrency(order.orc_vlrorc || totalItens)}</TableCell>
+                  <TableCell className="text-sm font-bold text-foreground text-right">{formatCurrency(isEditing ? totalItens : (order.orc_vlrorc || totalItens))}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>

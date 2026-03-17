@@ -421,170 +421,35 @@ const Analitico = () => {
                   />
                 </div>
 
-                {/* Filter Button */}
-                <Popover open={showFilters} onOpenChange={setShowFilters}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={hasActiveFilters ? "default" : "outline"}
-                      size="sm"
-                      className={cn(
-                        "gap-1.5 h-10 text-xs font-medium shrink-0",
-                        hasActiveFilters && "border-primary shadow-sm"
-                      )}
-                    >
-                      <Filter size={14} />
-                      Filtrar
-                      {hasActiveFilters && <span className="ml-0.5 h-2 w-2 rounded-full bg-primary-foreground" />}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[340px] p-4 space-y-4" align="start">
-                    <h4 className="text-sm font-semibold text-foreground">Filtros</h4>
-
-                    {/* Representante multi-select */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">Representante</label>
-                      {selectedRepRaw.length > 0 ? (
-                        <div className="space-y-1.5">
-                          <div className="border border-border rounded-lg p-2 max-h-24 overflow-y-auto space-y-1">
-                            {selectedRepRaw.map(code => {
-                              const rep = representantes.find((r: any) => String(r.rep_codrep) === code);
-                              return (
-                                <div key={code} className="flex items-center justify-between text-xs">
-                                  <span className="text-foreground truncate mr-2">{rep?.rep_nomrep || code}</span>
-                                  <button
-                                    onClick={() => {
-                                      const newRaw = selectedRepRaw.filter(c => c !== code);
-                                      setSelectedRepRaw(newRaw);
-                                      setSelectedRep(newRaw.map(Number));
-                                    }}
-                                    className="text-muted-foreground hover:text-destructive shrink-0"
-                                  >
-                                    <X size={12} />
-                                  </button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                          <button
-                            onClick={() => { setSelectedRepRaw([]); setSelectedRep([]); }}
-                            className="text-[11px] text-destructive hover:underline"
-                          >
-                            Limpar todos
-                          </button>
-                        </div>
-                      ) : null}
-                      {selectedClients.length > 0 && filteredRepresentantes.length > 0 ? (
-                        <div className="border border-border rounded-lg px-3 py-2 text-xs text-foreground bg-card/50">
-                          {filteredRepresentantes.map(r => r.rep_nomrep).join(', ')}
-                        </div>
-                      ) : (
-                        <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
-                          {filteredRepresentantes.map((r: any) => {
-                            const isSelected = selectedRepRaw.includes(String(r.rep_codrep));
-                            return (
-                              <label
-                                key={r.rep_codrep}
-                                className="flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-accent/50 cursor-pointer transition-colors"
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={() => {
-                                    if (isSelected) {
-                                      const newRaw = selectedRepRaw.filter(c => c !== String(r.rep_codrep));
-                                      setSelectedRepRaw(newRaw);
-                                      setSelectedRep(newRaw.map(Number));
-                                    } else {
-                                      const newRaw = [...selectedRepRaw, String(r.rep_codrep)];
-                                      setSelectedRepRaw(newRaw);
-                                      setSelectedRep(newRaw.map(Number));
-                                    }
-                                  }}
-                                  className="h-3.5 w-3.5 rounded border-border accent-primary"
-                                />
-                                <span className="text-foreground truncate">{r.rep_nomrep}</span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-
-                    <FilterClientPicker
-                      selectedClients={selectedClients.map(c => ({ code: c.code, name: c.name, repCode: c.repCode ?? 0 }))}
-                      onChangeClients={(clients) => setSelectedClients(clients.map(c => ({ code: c.code, name: c.name, repCode: c.repCode })))}
-                    />
-
-                    {/* Date range */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Data Início</label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full justify-start text-left font-normal h-9 text-xs">
-                              <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
-                              {format(selectedPeriod.startDate, 'dd/MM/yy')}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={selectedPeriod.startDate}
-                              onSelect={(d) => d && setSelectedPeriod({ startDate: d, endDate: selectedPeriod.endDate })}
-                              locale={ptBR}
-                              className={cn("p-3 pointer-events-auto")}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Data Fim</label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full justify-start text-left font-normal h-9 text-xs">
-                              <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
-                              {format(selectedPeriod.endDate, 'dd/MM/yy')}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={selectedPeriod.endDate}
-                              onSelect={(d) => d && setSelectedPeriod({ startDate: selectedPeriod.startDate, endDate: d })}
-                              locale={ptBR}
-                              className={cn("p-3 pointer-events-auto")}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 pt-1">
-                      <Button size="sm" className="flex-1 h-8 text-xs" onClick={() => {
-                        setSearchQuery(searchInput);
-                        setPage(1);
-                        setFilterNonce(n => n + 1);
-                        setShowFilters(false);
-                      }}>
-                        Aplicar
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => {
-                        setSelectedRep([]);
-                        setSelectedRepRaw([]);
-                        setSelectedClients([]);
-                        setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-                        setSearchQuery('');
-                        setSearchInput('');
-                        setPage(1);
-                        setFilterNonce(n => n + 1);
-                        setShowFilters(false);
-                      }}>
-                        Limpar
-                      </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <FilterPanel
+                  representantes={representantes}
+                  selectedRepRaw={selectedRepRaw}
+                  setSelectedRepRaw={setSelectedRepRaw}
+                  selectedRep={selectedRep}
+                  setSelectedRep={setSelectedRep}
+                  selectedClients={selectedClients}
+                  setSelectedClients={setSelectedClients}
+                  selectedPeriod={selectedPeriod}
+                  setSelectedPeriod={(v) => setSelectedPeriod({ startDate: v.startDate, endDate: v.endDate })}
+                  defaultStartDate={DEFAULT_START_DATE}
+                  defaultEndDate={DEFAULT_END_DATE}
+                  hasActiveFilters={hasActiveFilters}
+                  onApply={() => {
+                    setSearchQuery(searchInput);
+                    setPage(1);
+                    setFilterNonce(n => n + 1);
+                  }}
+                  onClear={() => {
+                    setSelectedRep([]);
+                    setSelectedRepRaw([]);
+                    setSelectedClients([]);
+                    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+                    setSearchQuery('');
+                    setSearchInput('');
+                    setPage(1);
+                    setFilterNonce(n => n + 1);
+                  }}
+                />
               </div>
 
               <div className="flex items-center gap-3 flex-wrap">

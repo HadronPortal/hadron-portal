@@ -67,7 +67,6 @@ const FilterPanel = ({
     try {
       const params = new URLSearchParams({ page: '1', limit: '50' });
       if (q.trim()) params.set('search', q.trim());
-      if (selectedRepRaw.length > 0) params.set('rep', selectedRepRaw.join(','));
       const res = await fetchWithAuth(`${BASE}/fetch-clients?${params}`);
       if (!res.ok) { setClientResults([]); return; }
       const data = await res.json();

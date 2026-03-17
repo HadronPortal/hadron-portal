@@ -845,7 +845,10 @@ const ClienteDetalhe = () => {
                         </div>
                         <div>
                           <Label className="text-xs text-muted-foreground">Código postal <span className="text-destructive">*</span></Label>
-                          <Input value={newAddrCep} onChange={e => setNewAddrCep(e.target.value)} className="mt-1.5 bg-transparent" placeholder="00000-000" />
+                          <Input value={newAddrCep} onChange={e => setNewAddrCep(e.target.value)}
+                            onBlur={() => fetchNewAddrCep(newAddrCep)}
+                            className="mt-1.5 bg-transparent" placeholder="00000-000" />
+                          {newAddrCepLoading && <span className="text-[10px] text-muted-foreground">Buscando...</span>}
                         </div>
                       </div>
 

@@ -117,6 +117,22 @@ const ClienteDetalhe = () => {
   const [editLogradouro, setEditLogradouro] = useState('');
   const [editComplemento, setEditComplemento] = useState('');
   const [editBairro, setEditBairro] = useState('');
+  const [editCep, setEditCep] = useState('');
+
+  const handleEditCep = useCallback((d: any) => {
+    setEditLogradouro(d.logradouro || '');
+    setEditBairro(d.bairro || '');
+    setEditCidade(d.localidade || '');
+    setEditUf(d.uf || '');
+  }, []);
+  const { fetchCep: fetchEditCep, loading: editCepLoading } = useCep(handleEditCep);
+
+  const handleNewAddrCep = useCallback((d: any) => {
+    setNewAddrLinha1(d.logradouro || '');
+    setNewAddrCidade(d.localidade || '');
+    setNewAddrEstado(d.uf || '');
+  }, []);
+  const { fetchCep: fetchNewAddrCep, loading: newAddrCepLoading } = useCep(handleNewAddrCep);
 
   // New address modal state
   const [newAddressOpen, setNewAddressOpen] = useState(false);

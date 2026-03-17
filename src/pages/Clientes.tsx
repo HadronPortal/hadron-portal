@@ -101,6 +101,8 @@ const Clientes = () => {
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
+  const clientCodes = selectedClients.map(c => c.code).join(',');
+  const effectiveRepParam = clientCodes ? '' : repParam;
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -119,10 +121,8 @@ const Clientes = () => {
           date_end: dateEndParam,
           client_filter: clientFilterMap[activeTab] || 'all',
         });
-        if (repParam) params.set('rep', repParam);
+        if (effectiveRepParam) params.set('rep', effectiveRepParam);
         if (searchQuery.trim()) params.set('search', searchQuery.trim());
-        // Pass selected client codes from filter panel
-        const clientCodes = selectedClients.map(c => c.code).join(',');
         if (clientCodes) params.set('codter', clientCodes);
 
         const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params.toString()}`;

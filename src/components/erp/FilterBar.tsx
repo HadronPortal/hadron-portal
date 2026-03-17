@@ -74,6 +74,7 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
     setStartDate(new Date(2026, 0, 8));
     setEndDate(new Date(2026, 2, 9));
     onClear?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClear]);
 
   // Debounce: auto-filter on search typing

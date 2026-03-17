@@ -88,6 +88,7 @@ const Clientes = () => {
   const [filterNonce, setFilterNonce] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('global_repRaw', []);
+  const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('global_clients', []);
 
   const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
   const setSelectedPeriod = (v: { startDate: Date | string; endDate: Date | string }) => {
@@ -96,7 +97,10 @@ const Clientes = () => {
       endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate,
     });
   };
-  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
+  const filteredRepresentantes = selectedClients.length > 0
+    ? representantes.filter((r: any) => selectedClients.some(c => c.repCode === r.rep_codrep))
+    : representantes;
+  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedClients.length > 0 || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);

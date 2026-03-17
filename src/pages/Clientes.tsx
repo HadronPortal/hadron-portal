@@ -75,8 +75,8 @@ const Clientes = () => {
   const [activeTab, setActiveTab] = useSessionState<string>('clientes_tab', 'todos');
   const [rowsPerPage, setRowsPerPage] = useSessionState('clientes_rowsPerPage', 50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
-  const [selectedRep, setSelectedRep] = useSessionState<number[]>('clientes_rep', []);
-  const [selectedPeriodRaw, setSelectedPeriodRaw] = useSessionState('clientes_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('global_rep', []);
+  const [selectedPeriodRaw, setSelectedPeriodRaw] = useSessionState('global_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
   const [searchQuery, setSearchQuery] = useSessionState('clientes_searchQuery', '');
   const [searchInput, setSearchInput] = useSessionState('clientes_searchInput', '');
   const [loading, setLoading] = useState(true);

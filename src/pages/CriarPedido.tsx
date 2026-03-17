@@ -167,9 +167,9 @@ const CriarPedido = () => {
   const [enviando, setEnviando] = useState(false);
 
   /* ─── delivery address state ─── */
-  const [billingAddr, setBillingAddr] = useState({ line1: '', line2: '', city: '', postcode: '', state: '', country: '' });
+  const [billingAddr, setBillingAddr] = useState({ line1: '', number: '', line2: '', city: '', postcode: '', state: '', country: '' });
   const [sameAsBilling, setSameAsBilling] = useState(true);
-  const [shippingAddr, setShippingAddr] = useState({ line1: '', line2: '', city: '', postcode: '', state: '', country: '' });
+  const [shippingAddr, setShippingAddr] = useState({ line1: '', number: '', line2: '', city: '', postcode: '', state: '', country: '' });
 
   const handleBillingCep = useCallback((d: any) => {
     setBillingAddr(p => ({ ...p, line1: d.logradouro || p.line1, line2: d.bairro || p.line2, city: d.localidade || p.city, state: d.uf || p.state, country: 'Brasil' }));

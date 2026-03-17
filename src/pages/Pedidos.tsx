@@ -111,9 +111,9 @@ const Pedidos = () => {
 
   const [rowsPerPage, setRowsPerPage] = useSessionState('pedidos_rowsPerPage', 50);
   const [page, setPage] = useState(1);
-  const [selectedRep, setSelectedRep] = useSessionState<number[]>('pedidos_rep', []);
-  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('pedidos_repRaw', []);
-  const [selectedPeriodRaw, setSelectedPeriod] = useSessionState('pedidos_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('global_rep', []);
+  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('global_repRaw', []);
+  const [selectedPeriodRaw, setSelectedPeriod] = useSessionState('global_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
   const [searchQuery, setSearchQuery] = useSessionState('pedidos_search', '');
   const [filterNonce, setFilterNonce] = useState(0);
   const [showFilters, setShowFilters] = useState(false);

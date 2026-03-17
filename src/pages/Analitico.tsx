@@ -95,9 +95,9 @@ const Analitico = () => {
   const [activeTab, setActiveTab] = useSessionState<string>('analitico_tab', 'todos');
   const { representantes } = useRepresentantes();
   const [rowsPerPage, setRowsPerPage] = useSessionState('analitico_rowsPerPage', 50);
-  const [selectedRep, setSelectedRep] = useSessionState<number[]>('analitico_rep', []);
-  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('analitico_repRaw', []);
-  const [selectedPeriodRaw, setSelectedPeriodRaw] = useSessionState('analitico_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('global_rep', []);
+  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('global_repRaw', []);
+  const [selectedPeriodRaw, setSelectedPeriodRaw] = useSessionState('global_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
   const [searchQuery, setSearchQuery] = useSessionState('analitico_searchQuery', '');
   const [searchInput, setSearchInput] = useSessionState('analitico_searchInput', '');
   const [showFilters, setShowFilters] = useState(false);

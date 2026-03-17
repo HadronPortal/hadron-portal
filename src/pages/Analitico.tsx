@@ -390,7 +390,7 @@ const Analitico = () => {
             {reportTabs.map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => { setReportTab(tab.key); setSearchInput(''); }}
+                onClick={() => setReportTab(tab.key)}
                 className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
                   reportTab === tab.key
                     ? 'bg-card text-foreground shadow-sm'

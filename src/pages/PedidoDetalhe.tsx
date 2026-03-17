@@ -118,12 +118,69 @@ const PedidoDetalhe = () => {
 
   const cancelEditing = () => {
     setIsEditing(false);
+    setRemovedItemIds(new Set());
+    setAddedItems([]);
+    setShowAddProduct(false);
+    setAddProductSearch('');
   };
 
   const handleSave = () => {
-    // For now, show a toast since saving requires API integration
     toast.info('Funcionalidade de salvamento será integrada com a API em breve.');
     setIsEditing(false);
+    setRemovedItemIds(new Set());
+    setAddedItems([]);
+    setShowAddProduct(false);
+  };
+
+  const removeItem = (itemId: string) => {
+    setRemovedItemIds(prev => new Set(prev).add(itemId));
+  };
+
+  const restoreItem = (itemId: string) => {
+    setRemovedItemIds(prev => { const s = new Set(prev); s.delete(itemId); return s; });
+  };
+
+  const removeAddedItem = (id: string) => {
+    setAddedItems(prev => prev.filter(i => i.id !== id));
+  };
+
+  const searchCatalogo = useCallback(async (search: string) => {
+    if (!search.trim()) { setCatalogoResults([]); return; }
+    setLoadingCatalogo(true);
+    try {
+      const BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1`;
+      const res = await fetch(`${BASE}/fetch-catalogo?page=1&limit=20&search=${encodeURIComponent(search)}`);
+      const data = await res.json();
+      setCatalogoResults(data?.catalogs || []);
+    } catch { setCatalogoResults([]); }
+    finally { setLoadingCatalogo(false); }
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => { if (showAddProduct) searchCatalogo(addProductSearch); }, 400);
+    return () => clearTimeout(t);
+  }, [addProductSearch, showAddProduct, searchCatalogo]);
+
+  const addProduct = (cat: any) => {
+    // Check if already in order
+    const existsInOrder = items.some((i: any) => i.oit_codpro === cat.pro_codpro && !removedItemIds.has(i.oit_id));
+    const existsInAdded = addedItems.some(i => i.codpro === cat.pro_codpro);
+    if (existsInOrder || existsInAdded) {
+      toast.warning('Produto já está no pedido');
+      return;
+    }
+    setAddedItems(prev => [...prev, {
+      id: `new_${cat.pro_codpro}_${Date.now()}`,
+      codpro: cat.pro_codpro,
+      despro: cat.pro_despro,
+      undpro: cat.pro_unidade || 'UN',
+      peso_liq: 0,
+      qty: 1,
+      price: 0,
+    }]);
+    toast.success('Produto adicionado');
+    setAddProductSearch('');
+    setCatalogoResults([]);
   };
 
   const updateItemQty = (itemId: string, qty: number) => {

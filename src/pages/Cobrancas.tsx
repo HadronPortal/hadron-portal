@@ -49,7 +49,7 @@ const Cobrancas = () => {
 
   const [rowsPerPage, setRowsPerPage] = useSessionState('cobrancas_rowsPerPage', 50);
   const [page, setPage] = useState(1);
-  const [selectedRep, setSelectedRep] = useSessionState<number[]>('cobrancas_rep', []);
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('global_rep', []);
   const [searchQuery, setSearchQuery] = useSessionState('cobrancas_search', '');
   const [dateIni, setDateIni] = useSessionState('cobrancas_dateIni', '');
   const [dateEnd, setDateEnd] = useSessionState('cobrancas_dateEnd', '');

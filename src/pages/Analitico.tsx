@@ -305,28 +305,68 @@ const Analitico = () => {
                   <PopoverContent className="w-[340px] p-4 space-y-4" align="start">
                     <h4 className="text-sm font-semibold text-foreground">Filtros</h4>
 
-                    {/* Representante */}
+                    {/* Representante multi-select */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-muted-foreground">Representante</label>
-                      <select
-                        value={selectedRepRaw.length === 1 ? selectedRepRaw[0] : ''}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val) {
-                            setSelectedRepRaw([val]);
-                            setSelectedRep([Number(val)]);
-                          } else {
-                            setSelectedRepRaw([]);
-                            setSelectedRep([]);
-                          }
-                        }}
-                        className="w-full appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-card text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer [&>option]:bg-card [&>option]:text-foreground"
-                      >
-                        <option value="">Todos</option>
-                        {representantes.map((r: any) => (
-                          <option key={r.rep_codrep} value={r.rep_codrep}>{r.rep_nomrep}</option>
-                        ))}
-                      </select>
+                      {selectedRepRaw.length > 0 ? (
+                        <div className="space-y-1.5">
+                          <div className="border border-border rounded-lg p-2 max-h-24 overflow-y-auto space-y-1">
+                            {selectedRepRaw.map(code => {
+                              const rep = representantes.find((r: any) => String(r.rep_codrep) === code);
+                              return (
+                                <div key={code} className="flex items-center justify-between text-xs">
+                                  <span className="text-foreground truncate mr-2">{rep?.rep_nomrep || code}</span>
+                                  <button
+                                    onClick={() => {
+                                      const newRaw = selectedRepRaw.filter(c => c !== code);
+                                      setSelectedRepRaw(newRaw);
+                                      setSelectedRep(newRaw.map(Number));
+                                    }}
+                                    className="text-muted-foreground hover:text-destructive shrink-0"
+                                  >
+                                    <X size={12} />
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <button
+                            onClick={() => { setSelectedRepRaw([]); setSelectedRep([]); }}
+                            className="text-[11px] text-destructive hover:underline"
+                          >
+                            Limpar todos
+                          </button>
+                        </div>
+                      ) : null}
+                      <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
+                        {representantes.map((r: any) => {
+                          const isSelected = selectedRepRaw.includes(String(r.rep_codrep));
+                          return (
+                            <label
+                              key={r.rep_codrep}
+                              className="flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-accent/50 cursor-pointer transition-colors"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => {
+                                  if (isSelected) {
+                                    const newRaw = selectedRepRaw.filter(c => c !== String(r.rep_codrep));
+                                    setSelectedRepRaw(newRaw);
+                                    setSelectedRep(newRaw.map(Number));
+                                  } else {
+                                    const newRaw = [...selectedRepRaw, String(r.rep_codrep)];
+                                    setSelectedRepRaw(newRaw);
+                                    setSelectedRep(newRaw.map(Number));
+                                  }
+                                }}
+                                className="h-3.5 w-3.5 rounded border-border accent-primary"
+                              />
+                              <span className="text-foreground truncate">{r.rep_nomrep}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     {/* Clientes selecionados */}
@@ -521,7 +561,9 @@ const Analitico = () => {
                 <span className="text-xs text-muted-foreground">Filtros ativos:</span>
                 {selectedRepRaw.length > 0 && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
-                    Rep: {representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
+                    {selectedRepRaw.length === 1
+                      ? `Rep: ${representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}`
+                      : `${selectedRepRaw.length} representantes`}
                     <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
                   </span>
                 )}

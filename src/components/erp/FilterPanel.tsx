@@ -24,8 +24,8 @@ interface FilterPanelProps {
   setSelectedRepRaw: (v: string[]) => void;
   selectedRep: number[];
   setSelectedRep: (v: number[]) => void;
-  selectedClients: SelectedClient[];
-  setSelectedClients: (v: SelectedClient[]) => void;
+  selectedClients: FilterClient[];
+  setSelectedClients: (v: FilterClient[]) => void;
   selectedPeriod: { startDate: Date; endDate: Date };
   setSelectedPeriod: (v: { startDate: any; endDate: any }) => void;
   defaultStartDate: Date;

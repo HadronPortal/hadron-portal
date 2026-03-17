@@ -628,10 +628,14 @@ const CriarPedido = () => {
                         <label className="text-xs font-medium text-primary mb-1.5 block">Cidade</label>
                         <Input className="h-10 text-sm rounded-lg" value={shippingAddr.city} onChange={e => setShippingAddr(p => ({ ...p, city: e.target.value }))} />
                       </div>
-                      <div>
-                        <label className="text-xs font-medium text-primary mb-1.5 block">CEP</label>
-                        <Input className="h-10 text-sm rounded-lg" value={shippingAddr.postcode} onChange={e => setShippingAddr(p => ({ ...p, postcode: e.target.value }))} />
-                      </div>
+                        <div>
+                          <label className="text-xs font-medium text-primary mb-1.5 block">CEP</label>
+                          <Input className="h-10 text-sm rounded-lg" value={shippingAddr.postcode}
+                            onChange={e => setShippingAddr(p => ({ ...p, postcode: e.target.value }))}
+                            onBlur={() => fetchShippingCep(shippingAddr.postcode)}
+                            placeholder="00000-000" />
+                          {shippingCepLoading && <span className="text-[10px] text-muted-foreground">Buscando...</span>}
+                        </div>
                       <div>
                         <label className="text-xs font-medium text-primary mb-1.5 block">Estado</label>
                         <Input className="h-10 text-sm rounded-lg" value={shippingAddr.state} onChange={e => setShippingAddr(p => ({ ...p, state: e.target.value }))} />

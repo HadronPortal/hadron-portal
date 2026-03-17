@@ -33,8 +33,18 @@ interface Props {
   onExport?: (format: 'pdf' | 'csv' | 'xlsx') => void;
 }
 
-const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearchChange }: Props) => {
+const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearchChange, onExport }: Props) => {
   const [open, setOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) setExportOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const update = (partial: Partial<CatalogoFilters>) => {
     onChange({ ...filters, ...partial });

@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import FilterPanel from '@/components/erp/FilterPanel';
+import PeriodPicker from '@/components/erp/PeriodPicker';
 import { type SelectedClient } from '@/components/erp/FilterClientPicker';
 import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';

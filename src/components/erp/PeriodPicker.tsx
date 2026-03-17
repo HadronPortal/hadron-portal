@@ -30,7 +30,7 @@ const PeriodPicker = ({ startDate, endDate, onChange }: PeriodPickerProps) => (
         />
       </PopoverContent>
     </Popover>
-    <span className="text-xs text-muted-foreground font-medium px-1">até</span>
+    <span className="text-muted-foreground font-medium select-none">—</span>
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="h-10 px-3 text-xs font-normal gap-1.5 min-w-[120px] justify-start">

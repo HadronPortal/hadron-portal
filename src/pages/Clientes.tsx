@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import FilterPanel from '@/components/erp/FilterPanel';
 import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';

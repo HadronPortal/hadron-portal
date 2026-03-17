@@ -122,6 +122,7 @@ const Analitico = () => {
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
   const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
+  const effectiveRepParam = codterParam ? undefined : repParam;
 
   const sharedFilters = {
     selectedRepRaw,
@@ -134,14 +135,14 @@ const Analitico = () => {
   };
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['analytics', String(page), String(rowsPerPage), repParam || 'all', codterParam || 'all', dateIniParam, dateEndParam, searchQuery.trim(), String(filterNonce)],
+    queryKey: ['analytics', String(page), String(rowsPerPage), effectiveRepParam || 'all', codterParam || 'all', dateIniParam, dateEndParam, searchQuery.trim(), String(filterNonce)],
     endpoint: 'fetch-analytics',
     params: {
       page: String(page),
       limit: String(rowsPerPage),
       date_ini: dateIniParam,
       date_end: dateEndParam,
-      ...(repParam ? { rep: repParam } : {}),
+      ...(effectiveRepParam ? { rep: effectiveRepParam } : {}),
       ...(codterParam ? { codter: codterParam } : {}),
       ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
     },
@@ -220,10 +221,11 @@ const Analitico = () => {
     try {
       toast.info('Exportando clientes...');
       const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
+      const effectiveRepParam = codterParam ? undefined : repParam;
       const allData = await fetchAllForExport('fetch-clients', {
         date_ini: dateIniParam,
         date_end: dateEndParam,
-        ...(repParam ? { rep: repParam } : {}),
+        ...(effectiveRepParam ? { rep: effectiveRepParam } : {}),
         ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
         ...(codterParam ? { codter: codterParam } : {}),
       }, 'clients');
@@ -250,10 +252,11 @@ const Analitico = () => {
     try {
       toast.info('Exportando pedidos...');
       const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
+      const effectiveRepParam = codterParam ? undefined : repParam;
       const allData = await fetchAllForExport('fetch-orders', {
         date_ini: dateIniParam,
         date_end: dateEndParam,
-        ...(repParam ? { rep: repParam } : {}),
+        ...(effectiveRepParam ? { rep: effectiveRepParam } : {}),
         ...(codterParam ? { codter: codterParam } : {}),
         ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
       }, 'orders');
@@ -297,10 +300,11 @@ const Analitico = () => {
     try {
       toast.info('Exportando produtos...');
       const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
+      const effectiveRepParam = codterParam ? undefined : repParam;
       const allData = await fetchAllForExport('fetch-products', {
         date_ini: dateIniParam,
         date_end: dateEndParam,
-        ...(repParam ? { rep: repParam } : {}),
+        ...(effectiveRepParam ? { rep: effectiveRepParam } : {}),
         ...(codterParam ? { codter: codterParam } : {}),
         ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
       }, 'products');

@@ -37,16 +37,17 @@ const RelatorioProdutos = ({ filters }: { filters: SharedFilterProps }) => {
 
   const repParam = filters.selectedRepRaw.length > 0 ? filters.selectedRepRaw.join(',') : undefined;
   const codterParam = filters.selectedClients.length > 0 ? filters.selectedClients.map(c => c.code).join(',') : undefined;
+  const effectiveRepParam = codterParam ? undefined : repParam;
 
   const { data, isLoading, isFetching, error: queryError } = useApiFetch<any>({
-    queryKey: ['report-products', String(page), String(rowsPerPage), repParam || 'all', codterParam || 'all', toApiDate(filters.selectedPeriod.startDate), toApiDate(filters.selectedPeriod.endDate), filters.searchQuery.trim(), String(filters.filterNonce)],
+    queryKey: ['report-products', String(page), String(rowsPerPage), effectiveRepParam || 'all', codterParam || 'all', toApiDate(filters.selectedPeriod.startDate), toApiDate(filters.selectedPeriod.endDate), filters.searchQuery.trim(), String(filters.filterNonce)],
     endpoint: 'fetch-products',
     params: {
       page: String(page),
       limit: String(rowsPerPage),
       date_ini: toApiDate(filters.selectedPeriod.startDate),
       date_end: toApiDate(filters.selectedPeriod.endDate),
-      ...(repParam ? { rep: repParam } : {}),
+      ...(effectiveRepParam ? { rep: effectiveRepParam } : {}),
       ...(codterParam ? { codter: codterParam } : {}),
       ...(filters.searchQuery.trim() ? { search: filters.searchQuery.trim() } : {}),
     },

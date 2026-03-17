@@ -51,7 +51,7 @@ const Catalogo = () => {
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
 
   const getSaldo = (item: CatalogoItem) => {
-    return Number(item.SALDOS) || 0;
+    return Number(item.SALDO_DISPONIVEL) || 0;
   };
 
   const formatSaldo = (num: number) => {

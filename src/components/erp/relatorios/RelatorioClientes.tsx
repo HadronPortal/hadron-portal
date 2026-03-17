@@ -102,7 +102,7 @@ const RelatorioClientes = ({ filters, onSelectClients }: Props) => {
     const exists = current.find(c => c.code === cli.ter_codter);
     const updated = exists
       ? current.filter(c => c.code !== cli.ter_codter)
-      : [...current, { code: cli.ter_codter, name: cli.ter_nomter }];
+      : [...current, { code: cli.ter_codter, name: cli.ter_nomter, repCode: cli.COD_REP }];
     onSelectClients?.(updated);
   }, [filters.selectedClients, onSelectClients]);
 
@@ -117,7 +117,7 @@ const RelatorioClientes = ({ filters, onSelectClients }: Props) => {
       const current = new Map(filters.selectedClients.map(c => [c.code, c]));
       filtered.forEach(c => {
         if (!current.has(c.ter_codter)) {
-          current.set(c.ter_codter, { code: c.ter_codter, name: c.ter_nomter });
+          current.set(c.ter_codter, { code: c.ter_codter, name: c.ter_nomter, repCode: c.COD_REP });
         }
       });
       onSelectClients?.(Array.from(current.values()));

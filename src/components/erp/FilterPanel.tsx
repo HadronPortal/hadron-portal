@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 import FilterSelect from '@/components/erp/FilterSelect';
 import type { FilterDrawerItem } from '@/components/erp/FilterSelect';
@@ -42,6 +43,7 @@ const FilterPanel = ({
   const [showFilters, setShowFilters] = useState(false);
   const [clientResults, setClientResults] = useState<SelectedClient[]>([]);
   const [clientLoading, setClientLoading] = useState(false);
+  const isMobile = useIsMobile();
 
   const activeCount = useMemo(() => {
     let count = 0;
@@ -149,7 +151,17 @@ const FilterPanel = ({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] p-0 shadow-lg border-border/80" align="start" side="bottom" sideOffset={8} collisionPadding={16} avoidCollisions>
+      <PopoverContent
+        className={cn(
+          "p-0 shadow-lg border-border/80",
+          isMobile ? "w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] translate-y-[-6px]" : "w-[340px] max-w-[calc(100vw-2rem)]"
+        )}
+        align="start"
+        side="bottom"
+        sideOffset={isMobile ? 0 : 8}
+        collisionPadding={isMobile ? 12 : 16}
+        avoidCollisions
+      >
         {/* Header */}
         <div className="px-5 py-3.5 border-b border-border bg-muted/40 flex items-center justify-between rounded-t-md">
           <div className="flex items-center gap-2">

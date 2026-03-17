@@ -300,10 +300,11 @@ const Analitico = () => {
     try {
       toast.info('Exportando produtos...');
       const codterParam = selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : undefined;
+      const effectiveRepParam = codterParam ? undefined : repParam;
       const allData = await fetchAllForExport('fetch-products', {
         date_ini: dateIniParam,
         date_end: dateEndParam,
-        ...(repParam ? { rep: repParam } : {}),
+        ...(effectiveRepParam ? { rep: effectiveRepParam } : {}),
         ...(codterParam ? { codter: codterParam } : {}),
         ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
       }, 'products');

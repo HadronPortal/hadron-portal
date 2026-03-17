@@ -110,7 +110,7 @@ const FilterPanel = ({
     return () => clearTimeout(t);
   }, [clientSearch, selectedRepRaw, fetchClients]);
 
-  const toggleClient = (client: SelectedClient) => {
+  const toggleClient = (client: FilterClient) => {
     const exists = selectedClients.some(c => c.code === client.code);
     if (exists) {
       setSelectedClients(selectedClients.filter(c => c.code !== client.code));

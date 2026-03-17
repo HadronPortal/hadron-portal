@@ -1,16 +1,25 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 import { useApiFetch } from '@/hooks/use-api-fetch';
+import { useRepresentantes } from '@/hooks/use-representantes';
 
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, FileText, Plus, Search, Send, CheckCircle, XCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { ChevronDown, FileText, Plus, Search, Send, CheckCircle, XCircle, Filter, X, CalendarIcon } from 'lucide-react';
+import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
+import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
+import ScrollToTop from '@/components/ScrollToTop';
+import FadeIn from '@/components/erp/skeletons/FadeIn';
 import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ScrollToTop from '@/components/ScrollToTop';

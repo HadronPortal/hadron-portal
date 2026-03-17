@@ -67,6 +67,44 @@ export function exportPDF({ title, columns, data, fileName }: ExportOptions) {
   doc.save(`${fileName}.pdf`);
 }
 
+export function exportXLSX({ title, columns, data, fileName }: ExportOptions) {
+  const header = columns.map(c => c.header);
+  const rows = data.map(row =>
+    columns.map(c => {
+      const val = c.accessor(row);
+      // Keep long numeric strings as text
+      if (c.forceText && typeof val === 'string' && /^\d{8,}$/.test(val)) return val;
+      return val ?? '';
+    })
+  );
+
+  const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+
+  // Force text format for forceText columns
+  columns.forEach((col, colIdx) => {
+    if (!col.forceText) return;
+    for (let r = 1; r <= data.length; r++) {
+      const cell = ws[XLSX.utils.encode_cell({ r, c: colIdx })];
+      if (cell && typeof cell.v === 'string' && /^\d{8,}$/.test(cell.v)) {
+        cell.t = 's';
+      }
+    }
+  });
+
+  // Auto-size columns
+  ws['!cols'] = columns.map((_, i) => {
+    const maxLen = Math.max(
+      header[i].length,
+      ...rows.map(r => String(r[i] ?? '').length)
+    );
+    return { wch: Math.min(maxLen + 2, 40) };
+  });
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, title.substring(0, 31));
+  XLSX.writeFile(wb, `${fileName}.xlsx`);
+}
+
 /**
  * Fetches ALL pages from an API endpoint for full export.
  * Returns the complete array of records.

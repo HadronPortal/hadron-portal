@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useSessionState } from '@/hooks/use-session-state';
 import RelatorioClientes, { type SelectedClient } from '@/components/erp/relatorios/RelatorioClientes';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';

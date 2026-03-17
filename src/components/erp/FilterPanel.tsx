@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Filter, X, Users, UserCheck, Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { fetchWithAuth } from '@/lib/auth-refresh';
@@ -24,16 +24,6 @@ export interface FilterPanelProps {
   onClear: () => void;
 }
 
-const SectionHeader = ({ icon: Icon, label, badge }: { icon: any; label: string; badge?: React.ReactNode }) => (
-  <div className="flex items-center gap-2 mb-2.5">
-    <div className="flex items-center justify-center h-6 w-6 rounded-md bg-primary/10">
-      <Icon size={13} className="text-primary" />
-    </div>
-    <span className="text-xs font-semibold text-foreground tracking-wide">{label}</span>
-    {badge}
-  </div>
-);
-
 const FilterPanel = ({
   representantes,
   selectedRepRaw,
@@ -46,11 +36,12 @@ const FilterPanel = ({
   onApply,
   onClear,
 }: FilterPanelProps) => {
-  const [showFilters, setShowFilters] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'rep' | 'client'>('rep');
   const [clientSearch, setClientSearch] = useState('');
   const [clientResults, setClientResults] = useState<SelectedClient[]>([]);
   const [clientLoading, setClientLoading] = useState(false);
-  const [showClientResults, setShowClientResults] = useState(false);
+  const [repSearch, setRepSearch] = useState('');
 
   const activeCount = useMemo(() => {
     let count = 0;
@@ -80,7 +71,6 @@ const FilterPanel = ({
         repCode: c.COD_REP,
       }));
       setClientResults(clients);
-      setShowClientResults(true);
     } catch {
       setClientResults([]);
     } finally {
@@ -88,17 +78,24 @@ const FilterPanel = ({
     }
   }, []);
 
+  // Auto-fetch clients when rep selected
   useEffect(() => {
-    if (selectedRepRaw.length > 0 && selectedClients.length === 0) {
+    if (selectedRepRaw.length > 0 && selectedClients.length === 0 && activeTab === 'client') {
       fetchClients('', selectedRepRaw.join(','));
     }
-  }, [selectedRepRaw, selectedClients.length, fetchClients]);
+  }, [selectedRepRaw, selectedClients.length, fetchClients, activeTab]);
 
+  // When switching to client tab, load clients
   useEffect(() => {
-    if (clientSearch.trim().length < 2) {
-      if (clientSearch.trim().length === 0) setShowClientResults(selectedRepRaw.length > 0);
-      return;
+    if (activeTab === 'client' && clientResults.length === 0) {
+      const repForSearch = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
+      fetchClients('', repForSearch);
     }
+  }, [activeTab]);
+
+  // Debounced client search
+  useEffect(() => {
+    if (clientSearch.trim().length < 2) return;
     const repForSearch = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
     const t = setTimeout(() => fetchClients(clientSearch, repForSearch), 300);
     return () => clearTimeout(t);
@@ -113,34 +110,44 @@ const FilterPanel = ({
     }
   };
 
-  const selectRep = (code: string) => {
-    if (code) {
+  const selectRep = (code: string, name: string) => {
+    if (selectedRepRaw.includes(code)) {
+      // Deselect
+      setSelectedRepRaw([]);
+      setSelectedRep([]);
+    } else {
       setSelectedRepRaw([code]);
       setSelectedRep([Number(code)]);
       setSelectedClients([]);
       setClientSearch('');
-    } else {
-      setSelectedRepRaw([]);
-      setSelectedRep([]);
+      setClientResults([]);
     }
   };
 
   const handleApply = () => {
     onApply();
-    setShowFilters(false);
+    setOpen(false);
   };
 
   const handleClear = () => {
     onClear();
     setClientSearch('');
+    setRepSearch('');
     setClientResults([]);
-    setShowClientResults(false);
-    setShowFilters(false);
+    setOpen(false);
   };
 
+  const filteredReps = useMemo(() => {
+    if (!repSearch.trim()) return representantes;
+    const q = repSearch.toLowerCase();
+    return representantes.filter(r =>
+      r.rep_nomrep.toLowerCase().includes(q) || String(r.rep_codrep).includes(q)
+    );
+  }, [representantes, repSearch]);
+
   return (
-    <Popover open={showFilters} onOpenChange={setShowFilters}>
-      <PopoverTrigger asChild>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
         <Button
           variant={hasActiveFilters ? "default" : "outline"}
           size="sm"
@@ -157,186 +164,258 @@ const FilterPanel = ({
             </span>
           )}
         </Button>
-      </PopoverTrigger>
+      </SheetTrigger>
 
-      <PopoverContent className="w-[360px] max-w-[calc(100vw-2rem)] p-0 shadow-lg border-border/80" align="start" sideOffset={8}>
+      <SheetContent side="right" className="w-[340px] sm:w-[380px] p-0 flex flex-col">
         {/* Header */}
-        <div className="px-5 py-3.5 border-b border-border bg-muted/40 flex items-center justify-between rounded-t-md">
-          <div className="flex items-center gap-2">
-            <Filter size={14} className="text-primary" />
-            <h4 className="text-sm font-bold text-foreground">Filtros</h4>
-            {activeCount > 0 && (
-              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-semibold">
-                {activeCount} {activeCount === 1 ? 'ativo' : 'ativos'}
-              </Badge>
+        <SheetHeader className="px-5 py-4 border-b border-border space-y-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Filter size={15} className="text-primary" />
+              <SheetTitle className="text-sm font-bold">Filtros</SheetTitle>
+              {activeCount > 0 && (
+                <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-semibold">
+                  {activeCount}
+                </Badge>
+              )}
+            </div>
+            {hasActiveFilters && (
+              <button onClick={handleClear} className="text-[11px] text-destructive hover:underline font-medium">
+                Limpar tudo
+              </button>
             )}
           </div>
-          {hasActiveFilters && (
-            <button onClick={handleClear} className="text-[11px] text-destructive hover:underline font-medium">
-              Limpar tudo
-            </button>
-          )}
+        </SheetHeader>
+
+        {/* Tabs */}
+        <div className="flex border-b border-border">
+          <button
+            onClick={() => setActiveTab('rep')}
+            className={cn(
+              "flex-1 py-2.5 text-xs font-semibold transition-colors relative",
+              activeTab === 'rep'
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <div className="flex items-center justify-center gap-1.5">
+              <UserCheck size={13} />
+              Representante
+              {selectedRepRaw.length > 0 && (
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              )}
+            </div>
+            {activeTab === 'rep' && (
+              <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('client')}
+            className={cn(
+              "flex-1 py-2.5 text-xs font-semibold transition-colors relative",
+              activeTab === 'client'
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <div className="flex items-center justify-center gap-1.5">
+              <Users size={13} />
+              Cliente
+              {selectedClients.length > 0 && (
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              )}
+            </div>
+            {activeTab === 'client' && (
+              <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
+            )}
+          </button>
         </div>
 
-        <div className="p-5 space-y-5 max-h-[72vh] overflow-y-auto">
-          {/* REPRESENTANTE */}
-          <div>
-            <SectionHeader
-              icon={UserCheck}
-              label="Representante"
-              badge={selectedRepRaw.length > 0 ? (
-                <Badge variant="outline" className="text-[10px] h-5 ml-auto font-medium border-primary/30 text-primary">
-                  1 selecionado
-                </Badge>
-              ) : undefined}
-            />
-
-            {selectedClients.length > 0 && linkedReps.length > 0 ? (
-              <div className="border border-primary/20 rounded-lg px-3.5 py-3 bg-primary/5 space-y-1">
-                <span className="text-[10px] text-primary font-semibold uppercase tracking-wider">
-                  Vinculado ao(s) cliente(s)
-                </span>
-                <p className="text-xs font-medium text-foreground leading-relaxed">
-                  {linkedReps.map(r => r.rep_nomrep).join(', ')}
-                </p>
-              </div>
-            ) : (
-              <div className="relative">
-                <select
-                  value={selectedRepRaw.length === 1 ? selectedRepRaw[0] : ''}
-                  onChange={(e) => selectRep(e.target.value)}
-                  className="w-full appearance-none border border-border rounded-lg px-3.5 py-2.5 text-xs bg-card text-foreground h-10 pr-8 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_8px_center] bg-no-repeat cursor-pointer focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all [&>option]:bg-card [&>option]:text-foreground"
-                >
-                  <option value="">Todos os representantes</option>
-                  {representantes.map((r) => (
-                    <option key={r.rep_codrep} value={r.rep_codrep}>{r.rep_nomrep}</option>
-                  ))}
-                </select>
-                {selectedRepRaw.length > 0 && (
+        {/* Selected items bar */}
+        {(selectedRepRaw.length > 0 || selectedClients.length > 0) && (
+          <div className="px-4 py-2.5 bg-primary/5 border-b border-primary/10 space-y-1.5">
+            {selectedRepRaw.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider shrink-0">Rep:</span>
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="text-xs font-medium text-foreground truncate">
+                    {representantes.find(r => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
+                  </span>
                   <button
-                    onClick={() => selectRep('')}
-                    className="absolute right-8 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive transition-colors"
+                    onClick={() => { setSelectedRepRaw([]); setSelectedRep([]); }}
+                    className="text-muted-foreground hover:text-destructive shrink-0 ml-1"
                   >
                     <X size={12} />
                   </button>
-                )}
+                </div>
+              </div>
+            )}
+            {selectedClients.length > 0 && (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                    {selectedClients.length} cliente{selectedClients.length > 1 ? 's' : ''}:
+                  </span>
+                  <button onClick={() => setSelectedClients([])} className="text-[10px] text-destructive hover:underline font-medium">
+                    Remover todos
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {selectedClients.map(cli => (
+                    <span
+                      key={cli.code}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-card border border-border text-[11px] text-foreground"
+                    >
+                      {cli.name.length > 20 ? cli.name.slice(0, 20) + '…' : cli.name}
+                      <button
+                        onClick={() => setSelectedClients(selectedClients.filter(c => c.code !== cli.code))}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <X size={10} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Show linked rep when clients selected */}
+            {selectedClients.length > 0 && linkedReps.length > 0 && selectedRepRaw.length === 0 && (
+              <div className="text-[10px] text-primary/80 italic">
+                Rep: {linkedReps.map(r => r.rep_nomrep).join(', ')}
               </div>
             )}
           </div>
+        )}
 
-          <div className="h-px bg-border" />
-
-          {/* CLIENTE */}
-          <div>
-            <SectionHeader
-              icon={Users}
-              label="Cliente"
-              badge={selectedClients.length > 0 ? (
-                <Badge variant="outline" className="text-[10px] h-5 ml-auto font-medium border-primary/30 text-primary">
-                  {selectedClients.length} selecionado{selectedClients.length > 1 ? 's' : ''}
-                </Badge>
-              ) : selectedRepRaw.length > 0 ? (
-                <span className="text-[10px] text-primary/70 ml-auto italic">filtrado pelo representante</span>
-              ) : undefined}
-            />
-
-            {selectedClients.length > 0 && (
-              <div className="mb-3 space-y-2">
-                <div className="border border-border rounded-lg p-2 max-h-28 overflow-y-auto space-y-0.5">
-                  {selectedClients.map(cli => (
-                    <div key={cli.code} className="flex items-center justify-between text-xs group py-1 px-1.5 rounded hover:bg-muted/50 transition-colors">
-                      <span className="text-foreground truncate mr-2">
-                        <span className="text-muted-foreground font-mono text-[10px] mr-1.5">{cli.code}</span>
-                        {cli.name}
-                      </span>
-                      <button
-                        onClick={() => setSelectedClients(selectedClients.filter(c => c.code !== cli.code))}
-                        className="text-muted-foreground hover:text-destructive shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X size={12} />
-                      </button>
-                    </div>
-                  ))}
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto">
+          {activeTab === 'rep' && (
+            <div className="flex flex-col h-full">
+              {/* Search */}
+              <div className="p-3 border-b border-border">
+                <div className="relative">
+                  <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                  <Input
+                    value={repSearch}
+                    onChange={e => setRepSearch(e.target.value)}
+                    placeholder="Buscar representante..."
+                    className="h-9 text-xs pl-8"
+                  />
                 </div>
-                <button onClick={() => setSelectedClients([])} className="text-[11px] text-destructive hover:underline font-medium">
-                  Limpar seleção
-                </button>
               </div>
-            )}
 
-            <div className="relative">
-              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-              <Input
-                value={clientSearch}
-                onChange={e => setClientSearch(e.target.value)}
-                onDoubleClick={() => {
-                  const repForSearch = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
-                  fetchClients('', repForSearch);
-                }}
-                placeholder="Buscar cliente por nome ou código..."
-                className="h-9 text-xs pl-8 pr-3"
-              />
-              {clientLoading && (
-                <Loader2 size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" />
-              )}
+              {/* List */}
+              <div className="flex-1 overflow-y-auto">
+                {filteredReps.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-muted-foreground">Nenhum representante encontrado</div>
+                ) : (
+                  filteredReps.map(r => {
+                    const isSelected = selectedRepRaw.includes(String(r.rep_codrep));
+                    return (
+                      <button
+                        key={r.rep_codrep}
+                        onClick={() => selectRep(String(r.rep_codrep), r.rep_nomrep)}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b border-border/40",
+                          isSelected
+                            ? "bg-primary/10 text-primary"
+                            : "hover:bg-accent/50 text-foreground"
+                        )}
+                      >
+                        <div className={cn(
+                          "h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0",
+                          isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                        )}>
+                          {r.rep_nomrep.charAt(0)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className={cn("text-xs truncate", isSelected && "font-semibold")}>{r.rep_nomrep}</p>
+                          <p className="text-[10px] text-muted-foreground">Cód: {r.rep_codrep}</p>
+                        </div>
+                        {isSelected && (
+                          <X size={14} className="shrink-0 text-primary hover:text-destructive" />
+                        )}
+                      </button>
+                    );
+                  })
+                )}
+              </div>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-1 ml-0.5">
-              Duplo clique para listar todos
-            </p>
+          )}
 
-            {(showClientResults || (selectedRepRaw.length > 0 && clientResults.length > 0)) && (
-              <div className="border border-border rounded-lg max-h-40 overflow-y-auto mt-2 bg-card">
-                {clientLoading ? (
-                  <div className="p-4 text-center">
-                    <Loader2 size={16} className="mx-auto text-primary animate-spin mb-1" />
-                    <span className="text-[11px] text-muted-foreground">Buscando clientes...</span>
+          {activeTab === 'client' && (
+            <div className="flex flex-col h-full">
+              {/* Search */}
+              <div className="p-3 border-b border-border">
+                <div className="relative">
+                  <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                  <Input
+                    value={clientSearch}
+                    onChange={e => setClientSearch(e.target.value)}
+                    placeholder="Buscar cliente por nome ou código..."
+                    className="h-9 text-xs pl-8"
+                  />
+                  {clientLoading && (
+                    <Loader2 size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" />
+                  )}
+                </div>
+                {selectedRepRaw.length > 0 && (
+                  <p className="text-[10px] text-primary/70 mt-1.5 ml-0.5 italic">
+                    Filtrado pelo representante selecionado
+                  </p>
+                )}
+              </div>
+
+              {/* List */}
+              <div className="flex-1 overflow-y-auto">
+                {clientLoading && clientResults.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <Loader2 size={18} className="mx-auto text-primary animate-spin mb-2" />
+                    <span className="text-xs text-muted-foreground">Buscando clientes...</span>
                   </div>
                 ) : clientResults.length === 0 ? (
-                  <div className="p-4 text-center text-[11px] text-muted-foreground">
+                  <div className="p-6 text-center text-xs text-muted-foreground">
                     Nenhum cliente encontrado
                   </div>
                 ) : (
                   clientResults.map(c => {
                     const isSelected = selectedClients.some(s => s.code === c.code);
                     return (
-                      <label
+                      <button
                         key={c.code}
+                        onClick={() => toggleClient(c)}
                         className={cn(
-                          "flex items-center gap-2.5 px-3 py-2 text-xs cursor-pointer transition-colors border-b border-border/50 last:border-b-0",
-                          isSelected ? "bg-primary/5" : "hover:bg-accent/50"
+                          "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b border-border/40",
+                          isSelected
+                            ? "bg-primary/10 text-primary"
+                            : "hover:bg-accent/50 text-foreground"
                         )}
                       >
                         <div className={cn(
-                          "h-4 w-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors",
-                          isSelected ? "bg-primary border-primary" : "border-border bg-card"
+                          "h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0",
+                          isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                         )}>
-                          {isSelected && (
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-primary-foreground">
-                              <path d="M20 6L9 17l-5-5" />
-                            </svg>
-                          )}
+                          {(c.name || '?').charAt(0)}
                         </div>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleClient(c)}
-                          className="sr-only"
-                        />
-                        <span className="text-foreground truncate">
-                          <span className="text-muted-foreground font-mono text-[10px] mr-1.5">{c.code}</span>
-                          {c.name}
-                        </span>
-                      </label>
+                        <div className="min-w-0 flex-1">
+                          <p className={cn("text-xs truncate", isSelected && "font-semibold")}>{c.name}</p>
+                          <p className="text-[10px] text-muted-foreground">Cód: {c.code}</p>
+                        </div>
+                        {isSelected && (
+                          <X size={14} className="shrink-0 text-primary hover:text-destructive" />
+                        )}
+                      </button>
                     );
                   })
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3.5 border-t border-border bg-muted/30 flex items-center gap-3 rounded-b-md">
+        <div className="px-4 py-3 border-t border-border bg-muted/30 flex items-center gap-3">
           <Button size="sm" className="flex-1 h-10 text-xs font-semibold" onClick={handleApply}>
             Aplicar Filtros
           </Button>
@@ -344,8 +423,8 @@ const FilterPanel = ({
             Limpar
           </Button>
         </div>
-      </PopoverContent>
-    </Popover>
+      </SheetContent>
+    </Sheet>
   );
 };
 

@@ -171,6 +171,15 @@ const CriarPedido = () => {
   const [sameAsBilling, setSameAsBilling] = useState(true);
   const [shippingAddr, setShippingAddr] = useState({ line1: '', line2: '', city: '', postcode: '', state: '', country: '' });
 
+  const handleBillingCep = useCallback((d: any) => {
+    setBillingAddr(p => ({ ...p, line1: d.logradouro || p.line1, line2: d.bairro || p.line2, city: d.localidade || p.city, state: d.uf || p.state, country: 'Brasil' }));
+  }, []);
+  const handleShippingCep = useCallback((d: any) => {
+    setShippingAddr(p => ({ ...p, line1: d.logradouro || p.line1, line2: d.bairro || p.line2, city: d.localidade || p.city, state: d.uf || p.state, country: 'Brasil' }));
+  }, []);
+  const { fetchCep: fetchBillingCep, loading: billingCepLoading } = useCep(handleBillingCep);
+  const { fetchCep: fetchShippingCep, loading: shippingCepLoading } = useCep(handleShippingCep);
+
   const handleEnviarPedido = async () => {
     if (!selectedCliente || cart.length === 0) return;
     setEnviando(true);

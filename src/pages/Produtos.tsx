@@ -187,7 +187,7 @@ const Produtos = () => {
                         const totalVendido = parseFloat(p.TOTAL_VENDIDO || '0');
                         return (
                           <TableRow key={p.pro_codpro} className="hover:bg-accent/30 cursor-pointer" onClick={() => navigate(`/produtos/${p.pro_codpro}`)}>
-                            <TableCell className="text-sm">{p.pro_codpro}</TableCell>
+                            <TableCell className="text-sm font-semibold text-primary hover:underline">{p.pro_codpro}</TableCell>
                             <TableCell>
                               {imgUrl ? (
                                 <img

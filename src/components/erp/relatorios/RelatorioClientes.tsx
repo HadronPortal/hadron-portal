@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ScrollToTop from '@/components/ScrollToTop';
-import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
+import { exportPDF, exportCSV, exportXLSX, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');

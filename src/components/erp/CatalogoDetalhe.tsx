@@ -49,7 +49,13 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
   const info = data?.info;
   const precos = data?.precos;
   const estoques = data?.estoques || [];
-  const saldoDisponivel = catalogSaldos ?? 0;
+  const mso = info?.wprc_mso;
+
+  // Prefer API detail data, fallback to catalog props
+  const saldoFisico = info?.SALDOS != null ? Number(info.SALDOS) : (catalogSaldoFisico ?? null);
+  const prevSaida = mso?.PREV_SAIDA != null ? Number(mso.PREV_SAIDA) : (catalogPrevSaida ?? null);
+  const saldoDisponivel = info?.SALDO_DISPONIVEL != null ? Number(info.SALDO_DISPONIVEL) : (catalogSaldos ?? 0);
+  const prevEntrada = mso?.PREV_ENTRADA != null ? Number(mso.PREV_ENTRADA) : null;
   const hasStock = saldoDisponivel > 0;
 
   useEffect(() => {

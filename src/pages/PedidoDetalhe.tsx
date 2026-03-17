@@ -477,7 +477,8 @@ const PedidoDetalhe = () => {
                 <Input
                   value={addProductSearch}
                   onChange={e => setAddProductSearch(e.target.value)}
-                  placeholder="Buscar produto por nome ou código..."
+                  onDoubleClick={() => searchCatalogo('', true)}
+                  placeholder="Buscar produto por nome ou código... (duplo clique para listar todos)"
                   className="pl-9 h-9 text-sm"
                 />
                 {addProductSearch && (

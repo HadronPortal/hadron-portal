@@ -118,13 +118,9 @@ const Pedidos = () => {
   const [selectedPeriodRaw, setSelectedPeriod] = useSessionState('global_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
   const [searchQuery, setSearchQuery] = useSessionState('pedidos_search', '');
   const [filterNonce, setFilterNonce] = useState(0);
-  const [showFilters, setShowFilters] = useState(false);
   const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('global_clients', []);
 
   const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
-  const filteredRepresentantes = selectedClients.length > 0
-    ? representantes.filter((r: any) => selectedClients.some(c => c.repCode === r.rep_codrep))
-    : representantes;
   const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedClients.length > 0 || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);

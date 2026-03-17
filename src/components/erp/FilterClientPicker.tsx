@@ -20,12 +20,13 @@ const FilterClientPicker = ({ selectedClients, onChangeClients }: FilterClientPi
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<SelectedClient[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   const fetchClients = useCallback(async (q: string) => {
-    if (q.trim().length < 2) { setResults([]); return; }
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page: '1', limit: '20', search: q.trim() });
+      const params = new URLSearchParams({ page: '1', limit: '30' });
+      if (q.trim()) params.set('search', q.trim());
       const res = await fetchWithAuth(`${BASE}/fetch-clients?${params}`);
       if (!res.ok) { setResults([]); return; }
       const data = await res.json();
@@ -35,6 +36,7 @@ const FilterClientPicker = ({ selectedClients, onChangeClients }: FilterClientPi
         repCode: c.COD_REP,
       }));
       setResults(clients);
+      setShowResults(true);
     } catch {
       setResults([]);
     } finally {
@@ -43,9 +45,17 @@ const FilterClientPicker = ({ selectedClients, onChangeClients }: FilterClientPi
   }, []);
 
   useEffect(() => {
+    if (search.trim().length < 2) {
+      if (search.trim().length === 0) setShowResults(false);
+      return;
+    }
     const t = setTimeout(() => fetchClients(search), 300);
     return () => clearTimeout(t);
   }, [search, fetchClients]);
+
+  const handleDoubleClick = () => {
+    fetchClients('');
+  };
 
   const toggleClient = (client: SelectedClient) => {
     const exists = selectedClients.some(c => c.code === client.code);
@@ -84,11 +94,12 @@ const FilterClientPicker = ({ selectedClients, onChangeClients }: FilterClientPi
         <Input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Buscar cliente..."
+          onDoubleClick={handleDoubleClick}
+          placeholder="Buscar cliente... (2x clique p/ todos)"
           className="pl-8 h-8 text-xs"
         />
       </div>
-      {(search.trim().length >= 2) && (
+      {showResults && (
         <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
           {loading ? (
             <div className="p-2 text-center text-[11px] text-muted-foreground">Buscando...</div>

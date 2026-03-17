@@ -67,6 +67,12 @@ const PedidoDetalhe = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editItems, setEditItems] = useState<Record<string, { qty: number; price: number }>>({});
   const [editObs, setEditObs] = useState('');
+  const [removedItemIds, setRemovedItemIds] = useState<Set<string>>(new Set());
+  const [addedItems, setAddedItems] = useState<Array<{ id: string; codpro: number; despro: string; undpro: string; peso_liq: number; qty: number; price: number }>>([]);
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [addProductSearch, setAddProductSearch] = useState('');
+  const [catalogoResults, setCatalogoResults] = useState<any[]>([]);
+  const [loadingCatalogo, setLoadingCatalogo] = useState(false);
 
   useEffect(() => {
     if (location.state?.edit) {

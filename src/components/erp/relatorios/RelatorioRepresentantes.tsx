@@ -155,7 +155,7 @@ const RelatorioRepresentantes = ({ filters }: Props) => {
         />
       </div>
 
-      <ScrollToTop />
+      
     </>
   );
 };

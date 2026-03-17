@@ -190,7 +190,7 @@ const Analitico = () => {
     { header: 'Total Valor', accessor: (p: ProductAnalytics) => formatCurrency(p.totais?.valor || 0), align: 'right' as const },
   ];
 
-  const handleExportProdutos = useCallback(async (fmt: 'pdf' | 'csv') => {
+  const handleExportProdutos = useCallback(async (fmt: 'pdf' | 'csv' | 'xlsx') => {
     try {
       toast.info('Exportando todos os produtos...');
       const allData = await fetchAllForExport('fetch-analytics', {
@@ -200,7 +200,9 @@ const Analitico = () => {
         ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
       }, 'products');
       const opts = { title: 'Relatório de Produtos', columns: productColumns, data: allData, fileName: 'relatorio-produtos' };
-      fmt === 'pdf' ? exportPDF(opts) : exportCSV(opts);
+      if (fmt === 'pdf') exportPDF(opts);
+      else if (fmt === 'xlsx') exportXLSX(opts);
+      else exportCSV(opts);
       toast.success(`${allData.length} produtos exportados!`);
     } catch (e) {
       toast.error('Erro ao exportar: ' + (e as Error).message);

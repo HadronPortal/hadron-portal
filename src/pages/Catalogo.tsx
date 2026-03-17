@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { keepPreviousData } from '@tanstack/react-query';
 
@@ -41,12 +42,12 @@ const Catalogo = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12);
+  const [limit, setLimit] = useSessionState('catalogo_limit', 12);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useSessionState('catalogo_search', '');
   const [selectedProduct, setSelectedProduct] = useState<{ id: number; name: string; foto: string; saldos?: number; saldoFisico?: number; prevSaida?: number } | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-  const [filters, setFilters] = useState<CatalogoFilters>(defaultFilters);
+  const [viewMode, setViewMode] = useSessionState<'list' | 'grid'>('catalogo_viewMode', 'list');
+  const [filters, setFilters] = useSessionState<CatalogoFilters>('catalogo_filters', defaultFilters);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
 

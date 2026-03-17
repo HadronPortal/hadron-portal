@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useSessionState } from '@/hooks/use-session-state';
 import RelatorioClientes, { type SelectedClient } from '@/components/erp/relatorios/RelatorioClientes';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
@@ -91,25 +92,29 @@ const comissionamentoSubTabs = [
 const Analitico = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>('todos');
+  const [activeTab, setActiveTab] = useSessionState<string>('analitico_tab', 'todos');
   const { representantes } = useRepresentantes();
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
-    startDate: DEFAULT_START_DATE,
-    endDate: DEFAULT_END_DATE,
-  });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  const [rowsPerPage, setRowsPerPage] = useSessionState('analitico_rowsPerPage', 50);
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('analitico_rep', []);
+  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('analitico_repRaw', []);
+  const [selectedPeriodRaw, setSelectedPeriodRaw] = useSessionState('analitico_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
+  const [searchQuery, setSearchQuery] = useSessionState('analitico_searchQuery', '');
+  const [searchInput, setSearchInput] = useSessionState('analitico_searchInput', '');
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [filterNonce, setFilterNonce] = useState(0);
-  const [reportTab, setReportTab] = useState<ReportTab>('sintetico');
+  const [reportTab, setReportTab] = useSessionState<ReportTab>('analitico_reportTab', 'sintetico');
   const [exportOpen, setExportOpen] = useState(false);
-  const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
-  const [comissionamentoSubTab, setComissionamentoSubTab] = useState<string>('faturamento');
+  const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('analitico_clients', []);
+  const [comissionamentoSubTab, setComissionamentoSubTab] = useSessionState('analitico_comSubTab', 'faturamento');
 
+  const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
+  const setSelectedPeriod = (v: { startDate: Date | string; endDate: Date | string }) => {
+    setSelectedPeriodRaw({
+      startDate: v.startDate instanceof Date ? v.startDate.toISOString() : v.startDate,
+      endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate,
+    });
+  };
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
@@ -416,7 +421,7 @@ const Analitico = () => {
                             <Calendar
                               mode="single"
                               selected={selectedPeriod.startDate}
-                              onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, startDate: d }))}
+                              onSelect={(d) => d && setSelectedPeriod({ startDate: d, endDate: selectedPeriod.endDate })}
                               locale={ptBR}
                               className={cn("p-3 pointer-events-auto")}
                             />
@@ -436,7 +441,7 @@ const Analitico = () => {
                             <Calendar
                               mode="single"
                               selected={selectedPeriod.endDate}
-                              onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, endDate: d }))}
+                              onSelect={(d) => d && setSelectedPeriod({ startDate: selectedPeriod.startDate, endDate: d })}
                               locale={ptBR}
                               className={cn("p-3 pointer-events-auto")}
                             />

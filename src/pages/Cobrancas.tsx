@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSessionState } from '@/hooks/use-session-state';
 import { useSearchParams } from 'react-router-dom';
 import { format } from 'date-fns';
 
@@ -46,12 +47,12 @@ const Cobrancas = () => {
   const codter = searchParams.get('codter');
   const clienteNome = searchParams.get('nome');
 
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [rowsPerPage, setRowsPerPage] = useSessionState('cobrancas_rowsPerPage', 50);
   const [page, setPage] = useState(1);
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [dateIni, setDateIni] = useState('');
-  const [dateEnd, setDateEnd] = useState('');
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('cobrancas_rep', []);
+  const [searchQuery, setSearchQuery] = useSessionState('cobrancas_search', '');
+  const [dateIni, setDateIni] = useSessionState('cobrancas_dateIni', '');
+  const [dateEnd, setDateEnd] = useSessionState('cobrancas_dateEnd', '');
   const [filterNonce, setFilterNonce] = useState(0);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
@@ -118,7 +119,7 @@ const Cobrancas = () => {
 
   return (
     <>
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+      <FilterBar persistKey="cobrancas" representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       {clienteNome && (
         <div className="px-6 pt-2 text-sm text-muted-foreground">

@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import ScrollToTop from '@/components/ScrollToTop';
+import { useSessionState } from '@/hooks/use-session-state';
 
 interface ProductAPI {
   pro_codpro: number;
@@ -52,12 +53,12 @@ const Produtos = () => {
   const navigate = useNavigate();
   const { representantes } = useRepresentantes();
   const [activeTab, setActiveTab] = useState<string>('todos');
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [search, setSearch] = useState('');
+  const [rowsPerPage, setRowsPerPage] = useSessionState('produtos_rowsPerPage', 50);
+  const [search, setSearch] = useSessionState('produtos_search', '');
   const [page, setPage] = useState(1);
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [dateIni, setDateIni] = useState('');
-  const [dateEnd, setDateEnd] = useState('');
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('produtos_rep', []);
+  const [dateIni, setDateIni] = useSessionState('produtos_dateIni', '');
+  const [dateEnd, setDateEnd] = useSessionState('produtos_dateEnd', '');
   const [filterNonce, setFilterNonce] = useState(0);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
@@ -110,7 +111,7 @@ const Produtos = () => {
 
   return (
     <>
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+      <FilterBar persistKey="produtos" representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       <main className="flex-1 px-3 sm:px-6 py-4 sm:py-5 space-y-4">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Produtos</h1>

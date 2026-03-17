@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -71,13 +72,13 @@ const Clientes = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { representantes } = useRepresentantes();
-  const [activeTab, setActiveTab] = useState<string>('todos');
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [activeTab, setActiveTab] = useSessionState<string>('clientes_tab', 'todos');
+  const [rowsPerPage, setRowsPerPage] = useSessionState('clientes_rowsPerPage', 50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('clientes_rep', []);
+  const [selectedPeriodRaw, setSelectedPeriodRaw] = useSessionState('clientes_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
+  const [searchQuery, setSearchQuery] = useSessionState('clientes_searchQuery', '');
+  const [searchInput, setSearchInput] = useSessionState('clientes_searchInput', '');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -85,8 +86,15 @@ const Clientes = () => {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [filterNonce, setFilterNonce] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
+  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('clientes_repRaw', []);
 
+  const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
+  const setSelectedPeriod = (v: { startDate: Date | string; endDate: Date | string }) => {
+    setSelectedPeriodRaw({
+      startDate: v.startDate instanceof Date ? v.startDate.toISOString() : v.startDate,
+      endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate,
+    });
+  };
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
@@ -290,7 +298,7 @@ const Clientes = () => {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar mode="single" selected={selectedPeriod.startDate} onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, startDate: d }))} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
+                          <Calendar mode="single" selected={selectedPeriod.startDate} onSelect={(d) => d && setSelectedPeriod({ startDate: d, endDate: selectedPeriod.endDate })} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
                         </PopoverContent>
                       </Popover>
                     </div>
@@ -304,7 +312,7 @@ const Clientes = () => {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar mode="single" selected={selectedPeriod.endDate} onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, endDate: d }))} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
+                          <Calendar mode="single" selected={selectedPeriod.endDate} onSelect={(d) => d && setSelectedPeriod({ startDate: selectedPeriod.startDate, endDate: d })} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
                         </PopoverContent>
                       </Popover>
                     </div>

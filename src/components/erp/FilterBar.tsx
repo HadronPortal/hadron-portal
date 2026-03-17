@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Filter } from 'lucide-react';
+import { useSessionState } from '@/hooks/use-session-state';
 
 export interface Representante {
   rep_codrep: number;
@@ -21,15 +22,38 @@ interface FilterBarProps {
   onSearch?: (query: string) => void;
   onFilter?: (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => void;
   onClear?: () => void;
+  /** Unique key prefix for persisting this filter's state */
+  persistKey?: string;
 }
 
-const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChange, onSearch, onFilter, onClear }: FilterBarProps) => {
-  const [startDate, setStartDate] = useState<Date>(new Date(2026, 0, 8));
-  const [endDate, setEndDate] = useState<Date>(new Date(2026, 2, 9));
+const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChange, onSearch, onFilter, onClear, persistKey = 'filterbar' }: FilterBarProps) => {
+  const [startDateStr, setStartDateStr] = useSessionState<string>(`${persistKey}_startDate`, new Date(2026, 0, 8).toISOString());
+  const [endDateStr, setEndDateStr] = useSessionState<string>(`${persistKey}_endDate`, new Date(2026, 2, 9).toISOString());
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [selectedRep, setSelectedRep] = useState<string>('all');
-  const [search, setSearch] = useState('');
+  const [selectedRep, setSelectedRep] = useSessionState<string>(`${persistKey}_rep`, 'all');
+  const [search, setSearch] = useSessionState<string>(`${persistKey}_search`, '');
   const [open, setOpen] = useState(false);
+  
+  const startDate = new Date(startDateStr);
+  const endDate = new Date(endDateStr);
+  const setStartDate = (d: Date) => setStartDateStr(d.toISOString());
+  const setEndDate = (d: Date) => setEndDateStr(d.toISOString());
+
+  // Auto-apply persisted filters on mount
+  const mountedRef = useRef(false);
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      // If there are persisted non-default values, auto-apply
+      const hasPersistedFilters = selectedRep !== 'all' || search !== '';
+      if (hasPersistedFilters && onFilter) {
+        const repCodesRaw = selectedRep === 'all' ? [] : [selectedRep];
+        const repCodes = repCodesRaw.map(Number);
+        onFilter({ startDate, endDate, repCodes, repCodesRaw, search });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const formatDateStr = (date: Date) => format(date, 'dd/MM/yyyy');
 
@@ -50,6 +74,7 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
     setStartDate(new Date(2026, 0, 8));
     setEndDate(new Date(2026, 2, 9));
     onClear?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClear]);
 
   // Debounce: auto-filter on search typing

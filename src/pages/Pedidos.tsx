@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -108,15 +109,16 @@ const Pedidos = () => {
   const codter = searchParams.get('codter');
   const clienteNome = searchParams.get('nome');
 
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [rowsPerPage, setRowsPerPage] = useSessionState('pedidos_rowsPerPage', 50);
   const [page, setPage] = useState(1);
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('pedidos_rep', []);
+  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('pedidos_repRaw', []);
+  const [selectedPeriodRaw, setSelectedPeriod] = useSessionState('pedidos_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
+  const [searchQuery, setSearchQuery] = useSessionState('pedidos_search', '');
   const [filterNonce, setFilterNonce] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
 
+  const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
@@ -297,7 +299,7 @@ const Pedidos = () => {
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar mode="single" selected={selectedPeriod.startDate} onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, startDate: d }))} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
+                              <Calendar mode="single" selected={selectedPeriod.startDate} onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, startDate: d.toISOString() }))} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
                             </PopoverContent>
                           </Popover>
                         </div>
@@ -311,7 +313,7 @@ const Pedidos = () => {
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar mode="single" selected={selectedPeriod.endDate} onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, endDate: d }))} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
+                              <Calendar mode="single" selected={selectedPeriod.endDate} onSelect={(d) => d && setSelectedPeriod(prev => ({ ...prev, endDate: d.toISOString() }))} locale={ptBR} className={cn("p-3 pointer-events-auto")} />
                             </PopoverContent>
                           </Popover>
                         </div>
@@ -328,7 +330,7 @@ const Pedidos = () => {
                         <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => {
                           setSelectedRep([]);
                           setSelectedRepRaw([]);
-                          setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+                          setSelectedPeriod({ startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
                           setPage(1);
                           setFilterNonce(n => n + 1);
                           setShowFilters(false);

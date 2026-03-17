@@ -330,7 +330,7 @@ const Pedidos = () => {
                         <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => {
                           setSelectedRep([]);
                           setSelectedRepRaw([]);
-                          setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+                          setSelectedPeriod({ startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
                           setPage(1);
                           setFilterNonce(n => n + 1);
                           setShowFilters(false);

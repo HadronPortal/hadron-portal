@@ -22,7 +22,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     <div className="bg-foreground text-background px-3 py-2 rounded-lg shadow-lg text-sm pointer-events-none">
       <p className="font-semibold mb-0.5">{label}</p>
       <p className="flex items-center gap-1.5">
-        <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+        <span className="w-2 h-2 rounded-full bg-foreground inline-block" />
         R$ {payload[0].value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
       </p>
     </div>

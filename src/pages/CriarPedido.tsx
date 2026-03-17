@@ -584,10 +584,14 @@ const CriarPedido = () => {
                       <label className="text-xs font-medium text-primary mb-1.5 block">Cidade</label>
                       <Input className="h-10 text-sm rounded-lg" value={billingAddr.city} onChange={e => setBillingAddr(p => ({ ...p, city: e.target.value }))} />
                     </div>
-                    <div>
-                      <label className="text-xs font-medium text-primary mb-1.5 block">CEP <span className="text-destructive">*</span></label>
-                      <Input className="h-10 text-sm rounded-lg" value={billingAddr.postcode} onChange={e => setBillingAddr(p => ({ ...p, postcode: e.target.value }))} />
-                    </div>
+                      <div>
+                        <label className="text-xs font-medium text-primary mb-1.5 block">CEP <span className="text-destructive">*</span></label>
+                        <Input className="h-10 text-sm rounded-lg" value={billingAddr.postcode}
+                          onChange={e => setBillingAddr(p => ({ ...p, postcode: e.target.value }))}
+                          onBlur={() => fetchBillingCep(billingAddr.postcode)}
+                          placeholder="00000-000" />
+                        {billingCepLoading && <span className="text-[10px] text-muted-foreground">Buscando...</span>}
+                      </div>
                     <div>
                       <label className="text-xs font-medium text-primary mb-1.5 block">Estado <span className="text-destructive">*</span></label>
                       <Input className="h-10 text-sm rounded-lg" value={billingAddr.state} onChange={e => setBillingAddr(p => ({ ...p, state: e.target.value }))} />

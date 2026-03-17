@@ -134,12 +134,10 @@ const CatalogoDetalhe = ({ open, onOpenChange, productId, productName, productFo
               {/* Saldos */}
               <div className="space-y-1">
                 <h3 className="text-sm font-bold text-foreground mb-2">Saldos</h3>
-                <InfoRow label="Saldo Físico" value={catalogSaldoFisico != null ? Number(catalogSaldoFisico).toLocaleString('pt-BR') : '—'} />
-                <InfoRow label="Previsão de Saída" value={catalogPrevSaida != null ? Number(catalogPrevSaida).toLocaleString('pt-BR') : '—'} />
+                <InfoRow label="Saldo Físico" value={saldoFisico != null ? Number(saldoFisico).toLocaleString('pt-BR') : '—'} />
+                <InfoRow label="Previsão de Saída" value={prevSaida != null ? Number(prevSaida).toLocaleString('pt-BR') : '—'} />
                 <InfoRow label="Saldo Disponível" value={saldoDisponivel.toLocaleString('pt-BR')} />
-                <InfoRow label="Previsão de Entrada" value={
-                  info.wprc_mso?.PREV_ENTRADA != null ? Number(info.wprc_mso.PREV_ENTRADA).toLocaleString('pt-BR') : '—'
-                } />
+                <InfoRow label="Previsão de Entrada" value={prevEntrada != null ? Number(prevEntrada).toLocaleString('pt-BR') : '—'} />
               </div>
 
               {/* Preços */}

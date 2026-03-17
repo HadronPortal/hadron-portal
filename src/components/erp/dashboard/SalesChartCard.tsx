@@ -22,7 +22,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     <div className="bg-foreground text-background px-3 py-2 rounded-lg shadow-lg text-sm pointer-events-none">
       <p className="font-semibold mb-0.5">{label}</p>
       <p className="flex items-center gap-1.5">
-        <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+        <span className="w-2 h-2 rounded-full bg-foreground inline-block" />
         R$ {payload[0].value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
       </p>
     </div>
@@ -138,8 +138,8 @@ const SalesChartCard = ({ totalValue, salesData = [] }: Props) => {
             <BarChart data={visibleData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }} barCategoryGap="30%">
               <defs>
                 <linearGradient id="barBlueFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.8} />
+                  <stop offset="0%" stopColor="#171717" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#404040" stopOpacity={0.8} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false} />

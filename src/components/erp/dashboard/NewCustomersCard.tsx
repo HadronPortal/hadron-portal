@@ -14,7 +14,7 @@ interface Props {
 }
 
 const COLORS = [
-  'bg-amber-500', 'bg-blue-500', 'bg-rose-500', 'bg-emerald-600',
+  'bg-amber-500', 'bg-neutral-800', 'bg-rose-500', 'bg-emerald-600',
   'bg-violet-500', 'bg-cyan-500', 'bg-orange-500', 'bg-teal-500',
 ];
 

@@ -186,7 +186,7 @@ const FilterPanel = ({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[420px] p-0 shadow-lg border-border/80" align="start" sideOffset={8}>
+      <PopoverContent className="w-[360px] max-w-[calc(100vw-2rem)] p-0 shadow-lg border-border/80" align="start" sideOffset={8}>
         {/* ── Header ── */}
         <div className="px-5 py-3.5 border-b border-border bg-muted/40 flex items-center justify-between rounded-t-md">
           <div className="flex items-center gap-2">

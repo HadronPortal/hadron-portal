@@ -121,6 +121,9 @@ const Clientes = () => {
         });
         if (repParam) params.set('rep', repParam);
         if (searchQuery.trim()) params.set('search', searchQuery.trim());
+        // Pass selected client codes from filter panel
+        const clientCodes = selectedClients.map(c => c.code).join(',');
+        if (clientCodes) params.set('codter', clientCodes);
 
         const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params.toString()}`;
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' }, signal: abortController.signal });
@@ -145,7 +148,7 @@ const Clientes = () => {
       cancelled = true;
       abortController.abort();
     };
-  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce, activeTab]);
+  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce, activeTab, selectedClients]);
 
   // Debounced search
   useEffect(() => {

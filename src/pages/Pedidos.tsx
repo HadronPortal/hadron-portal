@@ -126,8 +126,11 @@ const Pedidos = () => {
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
+  // Use codter from URL or from selectedClients in the filter panel
+  const effectiveCodter = codter || (selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : '');
+
   const { data, isLoading, isFetching, error } = useApiFetch<OrdersAPIResponse>({
-    queryKey: ['orders', repParam || 'all', dateIniParam, dateEndParam, String(page), String(rowsPerPage), codter || '', String(filterNonce)],
+    queryKey: ['orders', repParam || 'all', dateIniParam, dateEndParam, String(page), String(rowsPerPage), effectiveCodter, String(filterNonce)],
     endpoint: 'fetch-orders',
     params: {
       page: String(page),
@@ -135,7 +138,7 @@ const Pedidos = () => {
       date_ini: dateIniParam,
       date_end: dateEndParam,
       ...(repParam ? { rep: repParam } : {}),
-      ...(codter ? { codter } : {}),
+      ...(effectiveCodter ? { codter: effectiveCodter } : {}),
     },
     staleTime: 0,
   });

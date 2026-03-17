@@ -73,12 +73,6 @@ const CriarPedido = () => {
   const [descontoFixed, setDescontoFixed] = useState(0);
   const [frete, setFrete] = useState(0);
 
-  const desconto = descontoType === 'percent'
-    ? subtotal * (descontoPercent / 100)
-    : descontoType === 'fixed'
-      ? descontoFixed
-      : 0;
-
   const representante = 'REPRESENTANTE ONLINE';
 
   /* ─── fetch clientes ─── */

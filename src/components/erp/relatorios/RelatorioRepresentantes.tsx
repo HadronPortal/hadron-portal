@@ -125,7 +125,7 @@ const RelatorioRepresentantes = ({ filters }: Props) => {
                   <TableCell className="text-sm font-mono text-muted-foreground">{rep.id}</TableCell>
                   <TableCell className="text-sm text-foreground font-medium">{rep.nome}</TableCell>
                   <TableCell className="text-center">
-                    <Badge variant={rep.status === 1 ? 'default' : 'secondary'} className="text-[10px]">
+                    <Badge variant={rep.status === 1 ? 'default' : 'secondary'} className={`text-[10px] ${rep.status === 1 ? 'bg-erp-green text-white border-transparent hover:bg-erp-green/80' : ''}`}>
                       {rep.status === 1 ? 'Ativo' : 'Inativo'}
                     </Badge>
                   </TableCell>

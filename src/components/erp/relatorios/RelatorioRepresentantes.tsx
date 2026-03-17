@@ -11,6 +11,8 @@ import ScrollToTop from '@/components/ScrollToTop';
 
 import type { SharedFilterProps } from './RelatorioClientes';
 
+const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
+
 const formatCurrency = (v: string | number | null) => {
   const n = typeof v === 'string' ? parseFloat(v) : v;
   if (n == null || isNaN(n) || n === 0) return 'R$ 0,00';

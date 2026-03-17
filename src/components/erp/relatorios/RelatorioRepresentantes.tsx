@@ -47,7 +47,7 @@ interface Props {
 }
 
 const RelatorioRepresentantes = ({ filters }: Props) => {
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
 
   const repParam = filters.selectedRepRaw.length > 0 ? filters.selectedRepRaw.join(',') : undefined;

@@ -118,7 +118,7 @@ const Pedidos = () => {
   const [selectedPeriodRaw, setSelectedPeriod] = useSessionState('global_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
   const [searchQuery, setSearchQuery] = useSessionState('pedidos_search', '');
   const [filterNonce, setFilterNonce] = useState(0);
-  const [showFiltersUnused, setShowFiltersUnused] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('global_clients', []);
 
   const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };

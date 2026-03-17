@@ -11,6 +11,8 @@ import ScrollToTop from '@/components/ScrollToTop';
 
 import type { SharedFilterProps } from './RelatorioClientes';
 
+const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
+
 const formatCurrency = (v: string | number | null) => {
   const n = typeof v === 'string' ? parseFloat(v) : v;
   if (n == null || isNaN(n) || n === 0) return 'R$ 0,00';
@@ -54,13 +56,15 @@ const RelatorioRepresentantes = ({ filters }: Props) => {
   const searchQ = filters.searchQuery?.trim() || undefined;
 
   const { data, isLoading } = useApiFetch<ApiResponse>({
-    queryKey: ['rep-reports', String(page), String(rowsPerPage), repParam || '', searchQ || '', String(filters.filterNonce)],
+    queryKey: ['rep-reports', String(page), String(rowsPerPage), repParam || '', searchQ || '', toApiDate(filters.selectedPeriod.startDate), toApiDate(filters.selectedPeriod.endDate), String(filters.filterNonce)],
     endpoint: 'fetch-rep-reports',
     params: {
       page: String(page),
       limit: String(rowsPerPage),
       rep: repParam,
       search: searchQ,
+      date_ini: toApiDate(filters.selectedPeriod.startDate),
+      date_end: toApiDate(filters.selectedPeriod.endDate),
     },
     staleTime: 2 * 60 * 1000,
   });

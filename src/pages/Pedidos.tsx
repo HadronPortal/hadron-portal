@@ -434,7 +434,7 @@ const Pedidos = () => {
                                     <DropdownMenuTrigger asChild>
                                       <Button
                                         variant="outline"
-                                        className="h-8 px-3 text-xs font-light bg-muted/50 border-border data-[state=open]:bg-[#DBEAFE] data-[state=open]:text-[#3B82F6] data-[state=open]:border-[#93C5FD] hover:bg-transparent hover:text-foreground focus-visible:ring-0 dark:hover:bg-transparent dark:hover:text-foreground"
+                                        className="h-8 px-3 text-xs font-light bg-muted/50 border-border data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground data-[state=open]:border-foreground/30 hover:bg-transparent hover:text-foreground focus-visible:ring-0 dark:hover:bg-transparent dark:hover:text-foreground"
                                         style={{ fontFamily: "'Poppins', sans-serif" }}
                                       >
                                         Ações

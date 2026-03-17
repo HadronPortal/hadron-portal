@@ -258,11 +258,11 @@ const Clientes = () => {
               <Popover open={showFilters} onOpenChange={setShowFilters}>
                 <PopoverTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant={hasActiveFilters ? "default" : "outline"}
                     size="sm"
                     className={cn(
                       "gap-1.5 h-10 text-xs font-medium shrink-0",
-                      hasActiveFilters && "bg-primary border-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                      hasActiveFilters && "border-primary shadow-sm"
                     )}
                   >
                     <Filter size={14} />

@@ -96,12 +96,12 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant={hasActiveFilters ? "default" : "outline"}
           size="sm"
           className={cn(
             "gap-1.5",
             hasActiveFilters
-              ? "bg-primary border-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+              ? "border-primary shadow-sm"
               : "bg-primary/90 border-primary/20 text-primary-foreground hover:bg-primary hover:text-primary-foreground"
           )}
         >

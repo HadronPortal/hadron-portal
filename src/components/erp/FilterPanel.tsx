@@ -1,11 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Filter, CalendarIcon, X, Users, UserCheck, Search, Loader2 } from 'lucide-react';
+import { Filter, X, Users, UserCheck, Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { fetchWithAuth } from '@/lib/auth-refresh';
@@ -14,7 +11,7 @@ import type { SelectedClient } from '@/components/erp/FilterClientPicker';
 
 const BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1`;
 
-interface FilterPanelProps {
+export interface FilterPanelProps {
   representantes: Representante[];
   selectedRepRaw: string[];
   setSelectedRepRaw: (v: string[]) => void;
@@ -22,16 +19,11 @@ interface FilterPanelProps {
   setSelectedRep: (v: number[]) => void;
   selectedClients: SelectedClient[];
   setSelectedClients: (v: SelectedClient[]) => void;
-  selectedPeriod: { startDate: Date; endDate: Date };
-  setSelectedPeriod: (v: { startDate: any; endDate: any }) => void;
-  defaultStartDate: Date;
-  defaultEndDate: Date;
   hasActiveFilters: boolean;
   onApply: () => void;
   onClear: () => void;
 }
 
-/* ── Section Header ── */
 const SectionHeader = ({ icon: Icon, label, badge }: { icon: any; label: string; badge?: React.ReactNode }) => (
   <div className="flex items-center gap-2 mb-2.5">
     <div className="flex items-center justify-center h-6 w-6 rounded-md bg-primary/10">
@@ -50,10 +42,6 @@ const FilterPanel = ({
   setSelectedRep,
   selectedClients,
   setSelectedClients,
-  selectedPeriod,
-  setSelectedPeriod,
-  defaultStartDate,
-  defaultEndDate,
   hasActiveFilters,
   onApply,
   onClear,
@@ -64,26 +52,19 @@ const FilterPanel = ({
   const [clientLoading, setClientLoading] = useState(false);
   const [showClientResults, setShowClientResults] = useState(false);
 
-  // Count active filters
   const activeCount = useMemo(() => {
     let count = 0;
     if (selectedRepRaw.length > 0) count++;
     if (selectedClients.length > 0) count++;
-    const isDefaultPeriod =
-      selectedPeriod.startDate.getTime() === defaultStartDate.getTime() &&
-      selectedPeriod.endDate.getTime() === defaultEndDate.getTime();
-    if (!isDefaultPeriod) count++;
     return count;
-  }, [selectedRepRaw, selectedClients, selectedPeriod, defaultStartDate, defaultEndDate]);
+  }, [selectedRepRaw, selectedClients]);
 
-  // Derive linked reps from selected clients
   const linkedReps = useMemo(() => {
     if (selectedClients.length === 0) return [];
     const codes = new Set(selectedClients.map(c => c.repCode).filter(Boolean));
     return representantes.filter(r => codes.has(r.rep_codrep));
   }, [selectedClients, representantes]);
 
-  // Fetch clients
   const fetchClients = useCallback(async (q: string, repCode?: string) => {
     setClientLoading(true);
     try {
@@ -107,14 +88,12 @@ const FilterPanel = ({
     }
   }, []);
 
-  // When rep is selected, auto-fetch their clients
   useEffect(() => {
     if (selectedRepRaw.length > 0 && selectedClients.length === 0) {
       fetchClients('', selectedRepRaw.join(','));
     }
   }, [selectedRepRaw, selectedClients.length, fetchClients]);
 
-  // Debounced client search
   useEffect(() => {
     if (clientSearch.trim().length < 2) {
       if (clientSearch.trim().length === 0) setShowClientResults(selectedRepRaw.length > 0);
@@ -159,12 +138,6 @@ const FilterPanel = ({
     setShowFilters(false);
   };
 
-  const selectedRepName = useMemo(() => {
-    if (selectedRepRaw.length === 0) return '';
-    const rep = representantes.find(r => String(r.rep_codrep) === selectedRepRaw[0]);
-    return rep?.rep_nomrep || selectedRepRaw[0];
-  }, [selectedRepRaw, representantes]);
-
   return (
     <Popover open={showFilters} onOpenChange={setShowFilters}>
       <PopoverTrigger asChild>
@@ -187,7 +160,7 @@ const FilterPanel = ({
       </PopoverTrigger>
 
       <PopoverContent className="w-[360px] max-w-[calc(100vw-2rem)] p-0 shadow-lg border-border/80" align="start" sideOffset={8}>
-        {/* ── Header ── */}
+        {/* Header */}
         <div className="px-5 py-3.5 border-b border-border bg-muted/40 flex items-center justify-between rounded-t-md">
           <div className="flex items-center gap-2">
             <Filter size={14} className="text-primary" />
@@ -206,7 +179,7 @@ const FilterPanel = ({
         </div>
 
         <div className="p-5 space-y-5 max-h-[72vh] overflow-y-auto">
-          {/* ── REPRESENTANTE ── */}
+          {/* REPRESENTANTE */}
           <div>
             <SectionHeader
               icon={UserCheck}
@@ -251,10 +224,9 @@ const FilterPanel = ({
             )}
           </div>
 
-          {/* ── Divider ── */}
           <div className="h-px bg-border" />
 
-          {/* ── CLIENTE ── */}
+          {/* CLIENTE */}
           <div>
             <SectionHeader
               icon={Users}
@@ -268,7 +240,6 @@ const FilterPanel = ({
               ) : undefined}
             />
 
-            {/* Selected clients */}
             {selectedClients.length > 0 && (
               <div className="mb-3 space-y-2">
                 <div className="border border-border rounded-lg p-2 max-h-28 overflow-y-auto space-y-0.5">
@@ -293,7 +264,6 @@ const FilterPanel = ({
               </div>
             )}
 
-            {/* Client search */}
             <div className="relative">
               <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
               <Input
@@ -314,7 +284,6 @@ const FilterPanel = ({
               Duplo clique para listar todos
             </p>
 
-            {/* Client results */}
             {(showClientResults || (selectedRepRaw.length > 0 && clientResults.length > 0)) && (
               <div className="border border-border rounded-lg max-h-40 overflow-y-auto mt-2 bg-card">
                 {clientLoading ? (
@@ -364,59 +333,9 @@ const FilterPanel = ({
               </div>
             )}
           </div>
-
-          {/* ── Divider ── */}
-          <div className="h-px bg-border" />
-
-          {/* ── PERÍODO ── */}
-          <div>
-            <SectionHeader icon={CalendarIcon} label="Período" />
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider ml-0.5">De</label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal h-10 text-xs">
-                      <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                      {format(selectedPeriod.startDate, 'dd/MM/yyyy')}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={selectedPeriod.startDate}
-                      onSelect={(d) => d && setSelectedPeriod({ startDate: d, endDate: selectedPeriod.endDate })}
-                      locale={ptBR}
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider ml-0.5">Até</label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal h-10 text-xs">
-                      <CalendarIcon className="mr-2 h-3.5 w-3.5 text-primary" />
-                      {format(selectedPeriod.endDate, 'dd/MM/yyyy')}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={selectedPeriod.endDate}
-                      onSelect={(d) => d && setSelectedPeriod({ startDate: selectedPeriod.startDate, endDate: d })}
-                      locale={ptBR}
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* ── Footer ── */}
+        {/* Footer */}
         <div className="px-5 py-3.5 border-t border-border bg-muted/30 flex items-center gap-3 rounded-b-md">
           <Button size="sm" className="flex-1 h-10 text-xs font-semibold" onClick={handleApply}>
             Aplicar Filtros

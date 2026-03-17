@@ -3,7 +3,7 @@ import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Search, Eye, ChevronLeft, ChevronRight, Filter, X, CalendarIcon } from 'lucide-react';
+import { Search, Eye, Filter, X, CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

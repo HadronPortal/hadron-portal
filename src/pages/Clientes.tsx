@@ -72,13 +72,13 @@ const Clientes = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { representantes } = useRepresentantes();
-  const [activeTab, setActiveTab] = useState<string>('todos');
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [activeTab, setActiveTab] = useSessionState<string>('clientes_tab', 'todos');
+  const [rowsPerPage, setRowsPerPage] = useSessionState('clientes_rowsPerPage', 50);
   const [clients, setClients] = useState<ClienteAPI[]>([]);
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('clientes_rep', []);
+  const [selectedPeriod, setSelectedPeriod] = useSessionState('clientes_period', { startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+  const [searchQuery, setSearchQuery] = useSessionState('clientes_searchQuery', '');
+  const [searchInput, setSearchInput] = useSessionState('clientes_searchInput', '');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -86,7 +86,7 @@ const Clientes = () => {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [filterNonce, setFilterNonce] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
+  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('clientes_repRaw', []);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);

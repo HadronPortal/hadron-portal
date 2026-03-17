@@ -92,24 +92,24 @@ const comissionamentoSubTabs = [
 const Analitico = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>('todos');
+  const [activeTab, setActiveTab] = useSessionState<string>('analitico_tab', 'todos');
   const { representantes } = useRepresentantes();
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<{ startDate: Date; endDate: Date }>({
+  const [rowsPerPage, setRowsPerPage] = useSessionState('analitico_rowsPerPage', 50);
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('analitico_rep', []);
+  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('analitico_repRaw', []);
+  const [selectedPeriod, setSelectedPeriod] = useSessionState<{ startDate: Date; endDate: Date }>('analitico_period', {
     startDate: DEFAULT_START_DATE,
     endDate: DEFAULT_END_DATE,
   });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useSessionState('analitico_searchQuery', '');
+  const [searchInput, setSearchInput] = useSessionState('analitico_searchInput', '');
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [filterNonce, setFilterNonce] = useState(0);
-  const [reportTab, setReportTab] = useState<ReportTab>('sintetico');
+  const [reportTab, setReportTab] = useSessionState<ReportTab>('analitico_reportTab', 'sintetico');
   const [exportOpen, setExportOpen] = useState(false);
-  const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
-  const [comissionamentoSubTab, setComissionamentoSubTab] = useState<string>('faturamento');
+  const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('analitico_clients', []);
+  const [comissionamentoSubTab, setComissionamentoSubTab] = useSessionState('analitico_comSubTab', 'faturamento');
 
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);

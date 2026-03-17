@@ -109,12 +109,12 @@ const Pedidos = () => {
   const codter = searchParams.get('codter');
   const clienteNome = searchParams.get('nome');
 
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [rowsPerPage, setRowsPerPage] = useSessionState('pedidos_rowsPerPage', 50);
   const [page, setPage] = useState(1);
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('pedidos_rep', []);
+  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('pedidos_repRaw', []);
+  const [selectedPeriod, setSelectedPeriod] = useSessionState('pedidos_period', { startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+  const [searchQuery, setSearchQuery] = useSessionState('pedidos_search', '');
   const [filterNonce, setFilterNonce] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
 

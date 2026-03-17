@@ -119,7 +119,7 @@ const Cobrancas = () => {
 
   return (
     <>
-      <FilterBar representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+      <FilterBar persistKey="cobrancas" representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
 
       {clienteNome && (
         <div className="px-6 pt-2 text-sm text-muted-foreground">

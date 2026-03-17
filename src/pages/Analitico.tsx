@@ -655,19 +655,19 @@ const Analitico = () => {
                   </PopoverTrigger>
                   <PopoverContent className="w-40 p-1.5" align="end">
                     <button
-                      onClick={() => { handleExportProdutos('pdf'); setExportOpen(false); }}
+                      onClick={() => { handleExport('pdf'); setExportOpen(false); }}
                       className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
                     >
                       <FileText size={14} className="text-destructive" /> Exportar PDF
                     </button>
                     <button
-                      onClick={() => { handleExportProdutos('csv'); setExportOpen(false); }}
+                      onClick={() => { handleExport('csv'); setExportOpen(false); }}
                       className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
                     >
                       <FileSpreadsheet size={14} className="text-primary" /> Exportar CSV
                     </button>
                     <button
-                      onClick={() => { handleExportProdutos('xlsx'); setExportOpen(false); }}
+                      onClick={() => { handleExport('xlsx'); setExportOpen(false); }}
                       className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
                     >
                       <FileSpreadsheet size={14} className="text-green-600" /> Exportar XLSX

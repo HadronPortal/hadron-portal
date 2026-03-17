@@ -86,7 +86,7 @@ const Clientes = () => {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [filterNonce, setFilterNonce] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('clientes_repRaw', []);
+  const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('global_repRaw', []);
 
   const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
   const setSelectedPeriod = (v: { startDate: Date | string; endDate: Date | string }) => {

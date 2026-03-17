@@ -686,11 +686,7 @@ const Analitico = () => {
           {reportTab === 'pedidos' && <RelatorioPedidos filters={sharedFilters} />}
 
           {/* Representantes report */}
-          {reportTab === 'representantes' && (
-            <div className="p-8 text-center text-muted-foreground text-sm">
-              Em breve: Relatório de Representantes
-            </div>
-          )}
+          {reportTab === 'representantes' && <RelatorioRepresentantes filters={sharedFilters} />}
 
           {/* Comissionamento report */}
           {reportTab === 'comissionamento' && (

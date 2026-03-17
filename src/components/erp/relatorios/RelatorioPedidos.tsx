@@ -171,7 +171,7 @@ const RelatorioPedidos = ({ filters }: { filters: SharedFilterProps }) => {
                       <tr key={ord.orc_codorc_web} className={`border-b border-border hover:bg-accent/30 transition-colors ${idx % 2 === 1 ? 'bg-muted/30' : ''}`}>
                         <td className="px-5 py-3 text-sm">
                           <button
-                            onClick={() => navigate(`/pedido/${ord.orc_codorc_web}`)}
+                            onClick={() => navigate(`/pedidos/${ord.orc_codorc_web}`)}
                             className="font-medium text-primary hover:underline cursor-pointer"
                           >
                             #{ord.orc_codorc_web}

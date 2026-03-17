@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { keepPreviousData } from '@tanstack/react-query';
@@ -10,6 +10,8 @@ import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 import CatalogoFilterBar, { CatalogoFilters, defaultFilters } from '@/components/erp/CatalogoFilterBar';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import ScrollToTop from '@/components/ScrollToTop';
+import { exportPDF, exportCSV, exportXLSX } from '@/lib/export-utils';
+import { toast } from 'sonner';
 
 const navItems = [
   { label: 'Home', path: '/' },

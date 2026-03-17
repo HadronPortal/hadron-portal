@@ -392,12 +392,12 @@ const Analitico = () => {
         <div className="bg-card border border-border rounded-xl shadow-sm">
 
           {/* Report-level tabs */}
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-1 mx-5 sm:mx-6 mt-5 sm:mt-6 w-fit">
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1 mx-3 sm:mx-6 mt-4 sm:mt-6 w-fit max-w-full overflow-x-auto scrollbar-none">
             {reportTabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setReportTab(tab.key)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
+                className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap ${
                   reportTab === tab.key
                     ? 'bg-card text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'

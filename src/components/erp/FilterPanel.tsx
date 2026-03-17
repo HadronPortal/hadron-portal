@@ -19,10 +19,7 @@ interface FilterPanelProps {
   setSelectedRep: (v: number[]) => void;
   selectedClients: SelectedClient[];
   setSelectedClients: (v: SelectedClient[]) => void;
-  selectedPeriod: { startDate: Date; endDate: Date };
-  setSelectedPeriod: (v: { startDate: any; endDate: any }) => void;
-  defaultStartDate: Date;
-  defaultEndDate: Date;
+  hasActiveFilters: boolean;
   hasActiveFilters: boolean;
   onApply: () => void;
   onClear: () => void;

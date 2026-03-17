@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet, Users } from 'lucide-react';
-import { exportPDF, exportCSV, fetchAllForExport } from '@/lib/export-utils';
+import { exportPDF, exportCSV, exportXLSX, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

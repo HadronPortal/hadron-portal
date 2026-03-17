@@ -54,12 +54,12 @@ const Produtos = () => {
   const navigate = useNavigate();
   const { representantes } = useRepresentantes();
   const [activeTab, setActiveTab] = useState<string>('todos');
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [search, setSearch] = useState('');
+  const [rowsPerPage, setRowsPerPage] = useSessionState('produtos_rowsPerPage', 50);
+  const [search, setSearch] = useSessionState('produtos_search', '');
   const [page, setPage] = useState(1);
-  const [selectedRep, setSelectedRep] = useState<number[]>([]);
-  const [dateIni, setDateIni] = useState('');
-  const [dateEnd, setDateEnd] = useState('');
+  const [selectedRep, setSelectedRep] = useSessionState<number[]>('produtos_rep', []);
+  const [dateIni, setDateIni] = useSessionState('produtos_dateIni', '');
+  const [dateEnd, setDateEnd] = useSessionState('produtos_dateEnd', '');
   const [filterNonce, setFilterNonce] = useState(0);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';

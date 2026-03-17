@@ -1,7 +1,11 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 import { useApiFetch } from '@/hooks/use-api-fetch';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
+import { Pencil } from 'lucide-react';
 
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,

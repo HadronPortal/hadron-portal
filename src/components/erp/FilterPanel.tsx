@@ -9,7 +9,12 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 import type { Representante } from '@/hooks/use-representantes';
-import type { SelectedClient } from '@/components/erp/FilterClientPicker';
+
+export interface FilterClient {
+  code: number;
+  name: string;
+  repCode?: number;
+}
 
 const BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1`;
 

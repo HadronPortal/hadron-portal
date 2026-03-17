@@ -3,6 +3,7 @@ import { Filter, X, Users, UserCheck, Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 import type { Representante } from '@/hooks/use-representantes';

@@ -247,180 +247,180 @@ const Pedidos = () => {
             <p className="text-destructive text-sm">{(error as Error).message}</p>
           </div>
         ) : (
-          <>
-            {/* Search & controls card */}
-            <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <div className="relative w-full sm:max-w-xs">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type="text"
-                      placeholder="Buscar pedido..."
-                      className="pl-9 h-10 text-sm bg-transparent border-border"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-
-                  <FilterPanel
-                    representantes={representantes}
-                    selectedRepRaw={selectedRepRaw}
-                    setSelectedRepRaw={setSelectedRepRaw}
-                    selectedRep={selectedRep}
-                    setSelectedRep={setSelectedRep}
-                    selectedClients={selectedClients}
-                    setSelectedClients={setSelectedClients}
-                    hasActiveFilters={hasActiveFilters}
-                    onApply={() => {
-                      setPage(1);
-                      setFilterNonce(n => n + 1);
-                    }}
-                    onClear={() => {
-                      setSelectedRep([]);
-                      setSelectedRepRaw([]);
-                      setSelectedClients([]);
-                      setSelectedPeriod({ startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
-                      setPage(1);
-                      setFilterNonce(n => n + 1);
-                    }}
-                  />
-
-                  <PeriodPicker
-                    startDate={selectedPeriod.startDate}
-                    endDate={selectedPeriod.endDate}
-                    onChange={(v) => {
-                      setSelectedPeriod({ startDate: v.startDate.toISOString(), endDate: v.endDate.toISOString() });
-                      setPage(1);
-                      setFilterNonce(n => n + 1);
-                    }}
+          <div className="bg-card border border-border rounded-xl shadow-sm">
+            {/* Toolbar */}
+            <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              {/* Search + Filter */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="relative w-full sm:max-w-xs">
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar pedido..."
+                    className="pl-9 h-10 text-sm bg-transparent border-border"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    className="gap-2 text-xs sm:text-sm h-10 bg-muted/50 border-border hover:bg-foreground/10 hover:text-foreground hover:border-foreground/30 focus-visible:ring-0"
-                    onClick={() => navigate('/pedidos/criar')}
-                  >
-                    <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido
-                  </Button>
-                  <select
-                    value={rowsPerPage}
-                    onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-                    className="appearance-none border border-border rounded-md pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
-                  >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">{totalRecords} registros</span>
-                </div>
+                <FilterPanel
+                  representantes={representantes}
+                  selectedRepRaw={selectedRepRaw}
+                  setSelectedRepRaw={setSelectedRepRaw}
+                  selectedRep={selectedRep}
+                  setSelectedRep={setSelectedRep}
+                  selectedClients={selectedClients}
+                  setSelectedClients={setSelectedClients}
+                  hasActiveFilters={hasActiveFilters}
+                  onApply={() => {
+                    setPage(1);
+                    setFilterNonce(n => n + 1);
+                  }}
+                  onClear={() => {
+                    setSelectedRep([]);
+                    setSelectedRepRaw([]);
+                    setSelectedClients([]);
+                    setSelectedPeriod({ startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
+                    setPage(1);
+                    setFilterNonce(n => n + 1);
+                  }}
+                />
+
+                <PeriodPicker
+                  startDate={selectedPeriod.startDate}
+                  endDate={selectedPeriod.endDate}
+                  onChange={(v) => {
+                    setSelectedPeriod({ startDate: v.startDate.toISOString(), endDate: v.endDate.toISOString() });
+                    setPage(1);
+                    setFilterNonce(n => n + 1);
+                  }}
+                />
               </div>
 
-              {/* Active filters indicator */}
-              {selectedRepRaw.length > 0 && (
-                <div className="mt-3 flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-muted-foreground">Filtros ativos:</span>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
-                    Rep: {representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
-                    <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
-                  </span>
-                </div>
-              )}
+              <div className="flex items-center gap-3 flex-wrap">
+                <Button
+                  variant="outline"
+                  className="gap-2 text-xs sm:text-sm h-10 bg-muted/50 border-border hover:bg-foreground/10 hover:text-foreground hover:border-foreground/30 focus-visible:ring-0"
+                  onClick={() => navigate('/pedidos/criar')}
+                >
+                  <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido
+                </Button>
+                <select
+                  value={rowsPerPage}
+                  onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
+                  className="appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-card text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">{totalRecords} registros</span>
+              </div>
             </div>
+
+            {/* Active filters indicator */}
+            {selectedRepRaw.length > 0 && (
+              <div className="px-5 sm:px-6 pb-3 flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-muted-foreground">Filtros ativos:</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
+                  Rep: {representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
+                  <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
+                </span>
+              </div>
+            )}
 
             {/* Table */}
             {showSkeleton ? (
-              <SkeletonTable columns={8} rows={10} headers={TABLE_HEADERS} />
+              <div className="px-2 sm:px-6 py-4">
+                <SkeletonTable columns={8} rows={10} headers={TABLE_HEADERS} />
+              </div>
             ) : (
               <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
-                <div className="bg-card rounded-xl border border-border overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {TABLE_HEADERS.map(h => (
+                          <TableHead key={h} className={`text-[11px] font-semibold text-muted-foreground uppercase tracking-wider ${h === 'AÇÕES' ? 'text-right' : ''}`}>{h}</TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredOrders.length === 0 ? (
                         <TableRow>
-                          {TABLE_HEADERS.map(h => (
-                            <TableHead key={h} className={`text-[11px] font-semibold text-muted-foreground uppercase tracking-wider ${h === 'AÇÕES' ? 'text-right' : ''}`}>{h}</TableHead>
-                          ))}
+                          <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
+                            Nenhum pedido encontrado
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredOrders.length === 0 ? (
-                          <TableRow>
-                            <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
-                              Nenhum pedido encontrado
-                            </TableCell>
-                          </TableRow>
-                        ) : (
-                          filteredOrders.map((o, idx) => {
-                            const code = o.orc_codorc_web || '';
-                            const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status || '—'), color: '#8b8b8b', bg: '#8b8b8b18' };
-                            return (
-                              <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer border-b border-border/50" onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
-                                <TableCell className="text-sm font-semibold text-primary">
-                                  #{code}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                  <div className="text-foreground">{o.CLIENTE || ''}</div>
-                                  {o.FANTER && (
-                                    <div className="text-xs text-muted-foreground">{o.FANTER}</div>
-                                  )}
-                                </TableCell>
-                                <TableCell className="text-sm text-foreground whitespace-nowrap">{formatDoc(o.orc_documento || '')}</TableCell>
-                                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                                  {o.LOCALIZACAO || '—'}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                  <span
-                                    className="inline-block px-3 py-1 rounded-full text-xs font-medium border"
-                                    style={{ backgroundColor: st.bg, color: st.color, borderColor: st.color + '40' }}
-                                  >
-                                    {st.label}
-                                  </span>
-                                  {o.orc_codorc_had > 0 && (
-                                    <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_codorc_had}</div>
-                                  )}
-                                </TableCell>
-                                <TableCell className="text-sm font-medium text-foreground whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
-                                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
-                                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
-                                <TableCell className="text-right" onClick={e => e.stopPropagation()}>
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        className="h-8 px-3 text-xs font-light bg-muted/50 border-border data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground data-[state=open]:border-foreground/30 hover:bg-transparent hover:text-foreground focus-visible:ring-0 dark:hover:bg-transparent dark:hover:text-foreground"
-                                        style={{ fontFamily: "'Poppins', sans-serif" }}
-                                      >
-                                        Ações
-                                        <ChevronDown size={14} />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-40">
-                                      <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
-                                        Visualizar
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`, { state: { edit: true } })}>
-                                        Editar
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
+                      ) : (
+                        filteredOrders.map((o, idx) => {
+                          const code = o.orc_codorc_web || '';
+                          const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status || '—'), color: '#8b8b8b', bg: '#8b8b8b18' };
+                          return (
+                            <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer border-b border-border/50" onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
+                              <TableCell className="text-sm font-semibold text-primary">
+                                #{code}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                <div className="text-foreground">{o.CLIENTE || ''}</div>
+                                {o.FANTER && (
+                                  <div className="text-xs text-muted-foreground">{o.FANTER}</div>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-sm text-foreground whitespace-nowrap">{formatDoc(o.orc_documento || '')}</TableCell>
+                              <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                                {o.LOCALIZACAO || '—'}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                <span
+                                  className="inline-block px-3 py-1 rounded-full text-xs font-medium border"
+                                  style={{ backgroundColor: st.bg, color: st.color, borderColor: st.color + '40' }}
+                                >
+                                  {st.label}
+                                </span>
+                                {o.orc_codorc_had > 0 && (
+                                  <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_codorc_had}</div>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-sm font-medium text-foreground whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
+                              <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
+                              <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
+                              <TableCell className="text-right" onClick={e => e.stopPropagation()}>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      className="h-8 px-3 text-xs font-light bg-muted/50 border-border data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground data-[state=open]:border-foreground/30 hover:bg-transparent hover:text-foreground focus-visible:ring-0 dark:hover:bg-transparent dark:hover:text-foreground"
+                                      style={{ fontFamily: "'Poppins', sans-serif" }}
+                                    >
+                                      Ações
+                                      <ChevronDown size={14} />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end" className="w-40">
+                                    <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
+                                      Visualizar
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`, { state: { edit: true } })}>
+                                      Editar
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
             )}
 
+            {/* Pagination */}
             <TablePagination page={page} totalRecords={totalRecords} rowsPerPage={rowsPerPage} onPageChange={setPage} />
-          </>
+          </div>
         )}
       </main>
     </>

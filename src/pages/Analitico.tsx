@@ -392,12 +392,12 @@ const Analitico = () => {
         <div className="bg-card border border-border rounded-xl shadow-sm">
 
           {/* Report-level tabs */}
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-1 mx-5 sm:mx-6 mt-5 sm:mt-6 w-fit">
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1 mx-3 sm:mx-6 mt-4 sm:mt-6 w-fit max-w-full overflow-x-auto scrollbar-none">
             {reportTabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setReportTab(tab.key)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
+                className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap ${
                   reportTab === tab.key
                     ? 'bg-card text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
@@ -409,11 +409,11 @@ const Analitico = () => {
           </div>
 
           {/* Shared Toolbar - visible on all tabs */}
-          <div className="p-5 sm:p-6 flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              {/* Search + Filter */}
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <div className="relative w-full sm:max-w-xs">
+          <div className="p-3 sm:p-6 flex flex-col gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              {/* Search + Filter + Period */}
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <div className="relative flex-1 min-w-0 sm:max-w-xs">
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={searchInput}

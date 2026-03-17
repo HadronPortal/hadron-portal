@@ -63,7 +63,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm">
       {/* Search + Toggle row */}
-      <div className="flex items-center gap-3 p-3 sm:p-4">
+      <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 sm:gap-3">
         <button
           onClick={() => setOpen(!open)}
           className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors shrink-0"
@@ -76,18 +76,6 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
           <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
         </button>
 
-        {/* Search input */}
-        <div className="relative flex-1 min-w-0 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Buscar produtos..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full h-9 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
-
         {/* Export dropdown */}
         {onExport && (
           <div className="relative shrink-0" ref={exportRef}>
@@ -98,7 +86,6 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
               onClick={() => setExportOpen(!exportOpen)}
             >
               <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">Exportar</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform ${exportOpen ? 'rotate-180' : ''}`} />
             </Button>
             {exportOpen && (
@@ -129,7 +116,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
           </div>
         )}
 
-        {/* Sort controls - always visible */}
+        {/* Sort controls */}
         <div className="flex items-center gap-2 shrink-0">
           <ArrowUpDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
           <select
@@ -144,10 +131,22 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
           </select>
           <button
             onClick={() => update({ sortDir: filters.sortDir === 'asc' ? 'desc' : 'asc' })}
-            className="h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1"
+            className="h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1 whitespace-nowrap"
           >
             {filters.sortDir === 'asc' ? '↑ Crescente' : '↓ Decrescente'}
           </button>
+        </div>
+
+        {/* Search input - full width on mobile */}
+        <div className="relative w-full sm:w-auto sm:flex-1 sm:max-w-xs order-last sm:order-none">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Buscar produtos..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full h-9 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          />
         </div>
       </div>
 

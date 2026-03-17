@@ -409,11 +409,11 @@ const Analitico = () => {
           </div>
 
           {/* Shared Toolbar - visible on all tabs */}
-          <div className="p-5 sm:p-6 flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              {/* Search + Filter */}
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <div className="relative w-full sm:max-w-xs">
+          <div className="p-3 sm:p-6 flex flex-col gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              {/* Search + Filter + Period */}
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <div className="relative flex-1 min-w-0 sm:max-w-xs">
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={searchInput}

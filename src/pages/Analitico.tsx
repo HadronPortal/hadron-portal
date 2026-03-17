@@ -424,6 +424,7 @@ const Analitico = () => {
                 </div>
 
                 <FilterPanel
+                  hideClientFilter={reportTab === 'clientes'}
                   representantes={representantes}
                   selectedRepRaw={selectedRepRaw}
                   setSelectedRepRaw={setSelectedRepRaw}

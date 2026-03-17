@@ -63,7 +63,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm">
       {/* Search + Toggle row */}
-      <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 sm:gap-3">
+      <div className="flex items-center gap-3 p-4">
         <button
           onClick={() => setOpen(!open)}
           className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors shrink-0"
@@ -137,8 +137,8 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
           </button>
         </div>
 
-        {/* Search input - full width on mobile */}
-        <div className="relative w-full sm:w-auto sm:flex-1 sm:max-w-xs order-last sm:order-none">
+        {/* Search input */}
+        <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"

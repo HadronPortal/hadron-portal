@@ -116,6 +116,7 @@ const Analitico = () => {
     });
   };
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
+  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
@@ -389,7 +390,7 @@ const Analitico = () => {
             {reportTabs.map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => { setReportTab(tab.key); setSearchInput(''); }}
+                onClick={() => setReportTab(tab.key)}
                 className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
                   reportTab === tab.key
                     ? 'bg-card text-foreground shadow-sm'
@@ -419,9 +420,17 @@ const Analitico = () => {
                 {/* Filter Button */}
                 <Popover open={showFilters} onOpenChange={setShowFilters}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-1.5 h-10 text-xs font-medium shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={cn(
+                        "gap-1.5 h-10 text-xs font-medium shrink-0",
+                        hasActiveFilters && "bg-primary border-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                      )}
+                    >
                       <Filter size={14} />
                       Filtrar
+                      {hasActiveFilters && <span className="ml-0.5 h-2 w-2 rounded-full bg-primary-foreground" />}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[340px] p-4 space-y-4" align="start">

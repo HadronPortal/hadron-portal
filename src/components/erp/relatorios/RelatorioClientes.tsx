@@ -102,7 +102,7 @@ const RelatorioClientes = ({ filters, onSelectClients }: Props) => {
     const exists = current.find(c => c.code === cli.ter_codter);
     const updated = exists
       ? current.filter(c => c.code !== cli.ter_codter)
-      : [...current, { code: cli.ter_codter, name: cli.ter_nomter }];
+      : [...current, { code: cli.ter_codter, name: cli.ter_nomter, repCode: cli.COD_REP }];
     onSelectClients?.(updated);
   }, [filters.selectedClients, onSelectClients]);
 

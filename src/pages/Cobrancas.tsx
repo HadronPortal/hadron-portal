@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
-import ScrollToTop from '@/components/ScrollToTop';
+import TablePagination from '@/components/erp/TablePagination';
 
 interface Charge {
   rec_id_rec: string;
@@ -206,20 +206,7 @@ const Cobrancas = () => {
           </div>
         )}
 
-        {totalRecords > rowsPerPage && (
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <ScrollToTop />
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-              Anterior
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Página {page} de {Math.ceil(totalRecords / rowsPerPage)}
-            </span>
-            <Button variant="outline" size="sm" disabled={page >= Math.ceil(totalRecords / rowsPerPage)} onClick={() => setPage(p => p + 1)}>
-              Próxima
-            </Button>
-          </div>
-        )}
+        <TablePagination page={page} totalRecords={totalRecords} rowsPerPage={rowsPerPage} onPageChange={setPage} />
       </main>
     </>
   );

@@ -3,7 +3,7 @@ import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Search, Eye, ChevronLeft, ChevronRight, Filter, X, CalendarIcon } from 'lucide-react';
+import { Search, Eye, Filter, X, CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
-import ScrollToTop from '@/components/ScrollToTop';
+import TablePagination from '@/components/erp/TablePagination';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 
@@ -492,51 +492,7 @@ const Clientes = () => {
           )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-t border-border">
-              <p className="text-xs text-muted-foreground hidden sm:block">
-                Mostrando {Math.min((page - 1) * rowsPerPage + 1, totalRecords)} a {Math.min(page * rowsPerPage, totalRecords)} de {totalRecords}
-              </p>
-              <div className="flex items-center gap-1 mx-auto sm:mx-0">
-                <ScrollToTop />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  disabled={page <= 1}
-                  onClick={() => setPage(p => p - 1)}
-                >
-                  <ChevronLeft size={16} />
-                </Button>
-                {getPageNumbers().map((p, i) =>
-                  p === '...' ? (
-                    <span key={`dots-${i}`} className="px-1 text-xs text-muted-foreground">...</span>
-                  ) : (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p as number)}
-                      className={`h-8 w-8 rounded-lg text-xs font-medium transition-colors ${
-                        page === p
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  )
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage(p => p + 1)}
-                >
-                  <ChevronRight size={16} />
-                </Button>
-              </div>
-            </div>
-          )}
+          <TablePagination page={page} totalRecords={totalRecords} rowsPerPage={rowsPerPage} onPageChange={setPage} />
         </div>
       </main>
     </>

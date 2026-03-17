@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { ChevronDown, FileText, Plus, Search, Send, CheckCircle, XCircle, Filter, X, CalendarIcon } from 'lucide-react';
 import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
-import ScrollToTop from '@/components/ScrollToTop';
+import TablePagination from '@/components/erp/TablePagination';
 import FadeIn from '@/components/erp/skeletons/FadeIn';
 
 interface OrderAPI {
@@ -473,20 +473,7 @@ const Pedidos = () => {
               </div>
             )}
 
-            {totalRecords > rowsPerPage && (
-              <div className="flex items-center justify-center gap-2 pt-2">
-                <ScrollToTop />
-                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-                  Anterior
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  Página {page} de {Math.ceil(totalRecords / rowsPerPage)}
-                </span>
-                <Button variant="outline" size="sm" disabled={page >= Math.ceil(totalRecords / rowsPerPage)} onClick={() => setPage(p => p + 1)}>
-                  Próxima
-                </Button>
-              </div>
-            )}
+            <TablePagination page={page} totalRecords={totalRecords} rowsPerPage={rowsPerPage} onPageChange={setPage} />
           </>
         )}
       </main>

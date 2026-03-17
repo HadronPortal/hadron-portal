@@ -90,7 +90,7 @@ const FilterBar = memo(({ representantes = [], clientCountByRep = {}, onRepChang
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  const hasActiveFilters = selectedRep !== 'all' || search.trim() !== '';
+  const hasActiveFilters = selectedRep !== 'all' || search.trim() !== '' || startDateStr !== new Date(2026, 0, 8).toISOString() || endDateStr !== new Date(2026, 2, 9).toISOString();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

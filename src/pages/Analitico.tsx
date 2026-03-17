@@ -116,7 +116,7 @@ const Analitico = () => {
     });
   };
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
-  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '';
+  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 

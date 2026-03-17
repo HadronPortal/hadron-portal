@@ -83,11 +83,11 @@ const ReportToolbar = memo(({
           <Popover open={showFilters} onOpenChange={onShowFiltersChange}>
             <PopoverTrigger asChild>
               <Button
-                variant={(selectedRepRaw.length > 0 || searchQuery.trim()) ? "default" : "outline"}
+                variant={(selectedRepRaw.length > 0 || searchQuery.trim() !== '' || format(selectedPeriod.startDate, 'yyyy-MM-dd') !== format(new Date(2026, 0, 8), 'yyyy-MM-dd') || format(selectedPeriod.endDate, 'yyyy-MM-dd') !== format(new Date(2026, 2, 9), 'yyyy-MM-dd')) ? "default" : "outline"}
                 size="sm"
                 className={cn(
                   "gap-1.5 h-10 text-xs font-medium shrink-0",
-                  (selectedRepRaw.length > 0 || searchQuery.trim()) && "border-primary shadow-sm"
+                  (selectedRepRaw.length > 0 || searchQuery.trim() !== '' || format(selectedPeriod.startDate, 'yyyy-MM-dd') !== format(new Date(2026, 0, 8), 'yyyy-MM-dd') || format(selectedPeriod.endDate, 'yyyy-MM-dd') !== format(new Date(2026, 2, 9), 'yyyy-MM-dd')) && "border-primary shadow-sm"
                 )}
               >
                 <Filter size={14} />

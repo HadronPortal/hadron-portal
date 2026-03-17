@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import { Button } from '@/components/ui/button';
@@ -48,6 +49,7 @@ interface OrderAPI {
 }
 
 const RelatorioPedidos = ({ filters }: { filters: SharedFilterProps }) => {
+  const navigate = useNavigate();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(1);
   const [localSearchInput, setLocalSearchInput] = useState('');
@@ -168,7 +170,12 @@ const RelatorioPedidos = ({ filters }: { filters: SharedFilterProps }) => {
                     return (
                       <tr key={ord.orc_codorc_web} className={`border-b border-border hover:bg-accent/30 transition-colors ${idx % 2 === 1 ? 'bg-muted/30' : ''}`}>
                         <td className="px-5 py-3 text-sm">
-                          <span className="font-medium text-foreground">#{ord.orc_codorc_web}</span>
+                          <button
+                            onClick={() => navigate(`/pedido/${ord.orc_codorc_web}`)}
+                            className="font-medium text-primary hover:underline cursor-pointer"
+                          >
+                            #{ord.orc_codorc_web}
+                          </button>
                           {ord.orc_codorc_had > 0 && <div className="text-xs text-muted-foreground">ERP: {ord.orc_codorc_had}</div>}
                         </td>
                         <td className="px-4 py-3 text-sm">

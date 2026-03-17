@@ -25,6 +25,7 @@ interface CatalogoItem {
   pro_foto: string;
   NOME_GRUPO: string | null;
   SALDOS: number | string;
+  SALDO_DISPONIVEL?: number | string | null;
   SALDO_FISICO?: number | string | null;
   PREV_SAIDA?: number | string | null;
   pro_codgrp: number;
@@ -50,7 +51,7 @@ const Catalogo = () => {
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
 
   const getSaldo = (item: CatalogoItem) => {
-    return Number(item.SALDOS) || 0;
+    return Number(item.SALDO_DISPONIVEL) || 0;
   };
 
   const formatSaldo = (num: number) => {

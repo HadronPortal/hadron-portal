@@ -247,7 +247,7 @@ const Pedidos = () => {
             <p className="text-destructive text-sm">{(error as Error).message}</p>
           </div>
         ) : (
-          /* Main Card - unified like Clientes */
+          <div className="bg-card border border-border rounded-xl shadow-sm">
             {/* Toolbar */}
             <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               {/* Search + Filter */}

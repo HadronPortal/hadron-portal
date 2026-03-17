@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCep } from '@/hooks/use-cep';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -169,6 +170,15 @@ const CriarPedido = () => {
   const [billingAddr, setBillingAddr] = useState({ line1: '', line2: '', city: '', postcode: '', state: '', country: '' });
   const [sameAsBilling, setSameAsBilling] = useState(true);
   const [shippingAddr, setShippingAddr] = useState({ line1: '', line2: '', city: '', postcode: '', state: '', country: '' });
+
+  const handleBillingCep = useCallback((d: any) => {
+    setBillingAddr(p => ({ ...p, line1: d.logradouro || p.line1, line2: d.bairro || p.line2, city: d.localidade || p.city, state: d.uf || p.state, country: 'Brasil' }));
+  }, []);
+  const handleShippingCep = useCallback((d: any) => {
+    setShippingAddr(p => ({ ...p, line1: d.logradouro || p.line1, line2: d.bairro || p.line2, city: d.localidade || p.city, state: d.uf || p.state, country: 'Brasil' }));
+  }, []);
+  const { fetchCep: fetchBillingCep, loading: billingCepLoading } = useCep(handleBillingCep);
+  const { fetchCep: fetchShippingCep, loading: shippingCepLoading } = useCep(handleShippingCep);
 
   const handleEnviarPedido = async () => {
     if (!selectedCliente || cart.length === 0) return;
@@ -583,10 +593,14 @@ const CriarPedido = () => {
                       <label className="text-xs font-medium text-primary mb-1.5 block">Cidade</label>
                       <Input className="h-10 text-sm rounded-lg" value={billingAddr.city} onChange={e => setBillingAddr(p => ({ ...p, city: e.target.value }))} />
                     </div>
-                    <div>
-                      <label className="text-xs font-medium text-primary mb-1.5 block">CEP <span className="text-destructive">*</span></label>
-                      <Input className="h-10 text-sm rounded-lg" value={billingAddr.postcode} onChange={e => setBillingAddr(p => ({ ...p, postcode: e.target.value }))} />
-                    </div>
+                      <div>
+                        <label className="text-xs font-medium text-primary mb-1.5 block">CEP <span className="text-destructive">*</span></label>
+                        <Input className="h-10 text-sm rounded-lg" value={billingAddr.postcode}
+                          onChange={e => setBillingAddr(p => ({ ...p, postcode: e.target.value }))}
+                          onBlur={() => fetchBillingCep(billingAddr.postcode)}
+                          placeholder="00000-000" />
+                        {billingCepLoading && <span className="text-[10px] text-muted-foreground">Buscando...</span>}
+                      </div>
                     <div>
                       <label className="text-xs font-medium text-primary mb-1.5 block">Estado <span className="text-destructive">*</span></label>
                       <Input className="h-10 text-sm rounded-lg" value={billingAddr.state} onChange={e => setBillingAddr(p => ({ ...p, state: e.target.value }))} />
@@ -623,10 +637,14 @@ const CriarPedido = () => {
                         <label className="text-xs font-medium text-primary mb-1.5 block">Cidade</label>
                         <Input className="h-10 text-sm rounded-lg" value={shippingAddr.city} onChange={e => setShippingAddr(p => ({ ...p, city: e.target.value }))} />
                       </div>
-                      <div>
-                        <label className="text-xs font-medium text-primary mb-1.5 block">CEP</label>
-                        <Input className="h-10 text-sm rounded-lg" value={shippingAddr.postcode} onChange={e => setShippingAddr(p => ({ ...p, postcode: e.target.value }))} />
-                      </div>
+                        <div>
+                          <label className="text-xs font-medium text-primary mb-1.5 block">CEP</label>
+                          <Input className="h-10 text-sm rounded-lg" value={shippingAddr.postcode}
+                            onChange={e => setShippingAddr(p => ({ ...p, postcode: e.target.value }))}
+                            onBlur={() => fetchShippingCep(shippingAddr.postcode)}
+                            placeholder="00000-000" />
+                          {shippingCepLoading && <span className="text-[10px] text-muted-foreground">Buscando...</span>}
+                        </div>
                       <div>
                         <label className="text-xs font-medium text-primary mb-1.5 block">Estado</label>
                         <Input className="h-10 text-sm rounded-lg" value={shippingAddr.state} onChange={e => setShippingAddr(p => ({ ...p, state: e.target.value }))} />

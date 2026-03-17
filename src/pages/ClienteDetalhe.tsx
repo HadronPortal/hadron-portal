@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useCep } from '@/hooks/use-cep';
 import { useToast } from '@/hooks/use-toast';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -116,6 +117,22 @@ const ClienteDetalhe = () => {
   const [editLogradouro, setEditLogradouro] = useState('');
   const [editComplemento, setEditComplemento] = useState('');
   const [editBairro, setEditBairro] = useState('');
+  const [editCep, setEditCep] = useState('');
+
+  const handleEditCep = useCallback((d: any) => {
+    setEditLogradouro(d.logradouro || '');
+    setEditBairro(d.bairro || '');
+    setEditCidade(d.localidade || '');
+    setEditUf(d.uf || '');
+  }, []);
+  const { fetchCep: fetchEditCep, loading: editCepLoading } = useCep(handleEditCep);
+
+  const handleNewAddrCep = useCallback((d: any) => {
+    setNewAddrLinha1(d.logradouro || '');
+    setNewAddrCidade(d.localidade || '');
+    setNewAddrEstado(d.uf || '');
+  }, []);
+  const { fetchCep: fetchNewAddrCep, loading: newAddrCepLoading } = useCep(handleNewAddrCep);
 
   // New address modal state
   const [newAddressOpen, setNewAddressOpen] = useState(false);
@@ -770,7 +787,10 @@ const ClienteDetalhe = () => {
                         </div>
                         <div>
                           <label className="text-xs font-semibold text-foreground mb-1.5 block">CEP</label>
-                          <Input className="bg-transparent" placeholder="00000-000" />
+                          <Input className="bg-transparent" placeholder="00000-000" value={editCep}
+                            onChange={e => setEditCep(e.target.value)}
+                            onBlur={() => fetchEditCep(editCep)} />
+                          {editCepLoading && <span className="text-[10px] text-muted-foreground">Buscando...</span>}
                         </div>
                       </div>
                       <div className="flex justify-center gap-3 pt-3">
@@ -825,7 +845,10 @@ const ClienteDetalhe = () => {
                         </div>
                         <div>
                           <Label className="text-xs text-muted-foreground">Código postal <span className="text-destructive">*</span></Label>
-                          <Input value={newAddrCep} onChange={e => setNewAddrCep(e.target.value)} className="mt-1.5 bg-transparent" placeholder="00000-000" />
+                          <Input value={newAddrCep} onChange={e => setNewAddrCep(e.target.value)}
+                            onBlur={() => fetchNewAddrCep(newAddrCep)}
+                            className="mt-1.5 bg-transparent" placeholder="00000-000" />
+                          {newAddrCepLoading && <span className="text-[10px] text-muted-foreground">Buscando...</span>}
                         </div>
                       </div>
 

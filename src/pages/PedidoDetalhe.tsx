@@ -450,12 +450,61 @@ const PedidoDetalhe = () => {
         <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <h2 className="text-base font-bold text-foreground">Pedido #{order.orc_codorc_web}</h2>
-            {isEditing && <span className="text-xs text-primary font-medium px-2 py-1 bg-primary/10 rounded-md">Modo edição</span>}
+            <div className="flex items-center gap-2">
+              {isEditing && (
+                <>
+                  <span className="text-xs text-primary font-medium px-2 py-1 bg-primary/10 rounded-md">Modo edição</span>
+                  <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8" onClick={() => setShowAddProduct(!showAddProduct)}>
+                    <Plus size={14} /> Adicionar Produto
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
+
+          {/* Add product search */}
+          {isEditing && showAddProduct && (
+            <div className="px-5 py-3 border-b border-border bg-muted/30 space-y-2">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={addProductSearch}
+                  onChange={e => setAddProductSearch(e.target.value)}
+                  placeholder="Buscar produto por nome ou código..."
+                  className="pl-9 h-9 text-sm"
+                />
+                {addProductSearch && (
+                  <button onClick={() => { setAddProductSearch(''); setCatalogoResults([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+              {loadingCatalogo && <p className="text-xs text-muted-foreground">Buscando...</p>}
+              {catalogoResults.length > 0 && (
+                <div className="border border-border rounded-lg max-h-48 overflow-y-auto bg-card">
+                  {catalogoResults.map((cat: any) => (
+                    <button
+                      key={cat.pro_codpro}
+                      onClick={() => addProduct(cat)}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-accent/50 transition-colors border-b border-border/50 last:border-0 flex items-center justify-between"
+                    >
+                      <div>
+                        <span className="font-medium text-foreground">{cat.pro_despro}</span>
+                        <span className="text-xs text-muted-foreground ml-2">SKU: {cat.pro_codpro}</span>
+                      </div>
+                      <Plus size={14} className="text-primary shrink-0" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
+                  {isEditing && <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-12"></TableHead>}
                   <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Produto</TableHead>
                   <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">SKU</TableHead>
                   <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider text-center">Qtde</TableHead>
@@ -464,69 +513,103 @@ const PedidoDetalhe = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((item: any) => (
-                  <TableRow
-                    key={item.oit_id}
-                    className={`hover:bg-accent/30 border-b border-border/50 ${!isEditing ? 'cursor-pointer' : ''}`}
-                    onClick={() => {
-                      if (!isEditing) {
-                        setSelectedProductId(item.oit_codpro);
-                        setSelectedProductName(item.oit_despro);
-                        setDetailOpen(true);
-                      }
-                    }}
-                  >
+                {/* Existing items */}
+                {items.map((item: any) => {
+                  const isRemoved = removedItemIds.has(item.oit_id);
+                  return (
+                    <TableRow
+                      key={item.oit_id}
+                      className={`hover:bg-accent/30 border-b border-border/50 ${!isEditing ? 'cursor-pointer' : ''} ${isRemoved ? 'opacity-40 line-through' : ''}`}
+                      onClick={() => {
+                        if (!isEditing) {
+                          setSelectedProductId(item.oit_codpro);
+                          setSelectedProductName(item.oit_despro);
+                          setDetailOpen(true);
+                        }
+                      }}
+                    >
+                      {isEditing && (
+                        <TableCell onClick={e => e.stopPropagation()}>
+                          {isRemoved ? (
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => restoreItem(item.oit_id)}>
+                              <Plus size={14} className="text-primary" />
+                            </Button>
+                          ) : (
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => removeItem(item.oit_id)}>
+                              <Trash2 size={14} className="text-destructive" />
+                            </Button>
+                          )}
+                        </TableCell>
+                      )}
+                      <TableCell className="text-sm">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <span className="font-medium text-foreground">{item.oit_despro}</span>
+                            <div className="text-xs text-muted-foreground">{item.oit_undpro} | Peso: {item.oit_peso_liq} Kg</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground font-mono">{item.oit_codpro}</TableCell>
+                      <TableCell className="text-sm text-center text-foreground" onClick={e => isEditing && e.stopPropagation()}>
+                        {isEditing && !isRemoved ? (
+                          <Input type="number" min={0} value={getItemQty(item)} onChange={(e) => updateItemQty(item.oit_id, Number(e.target.value))} className="h-8 w-20 text-center text-sm mx-auto" />
+                        ) : (
+                          item.oit_qtdoit
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-right text-foreground" onClick={e => isEditing && e.stopPropagation()}>
+                        {isEditing && !isRemoved ? (
+                          <Input type="number" min={0} step={0.01} value={getItemPrice(item)} onChange={(e) => updateItemPrice(item.oit_id, Number(e.target.value))} className="h-8 w-24 text-right text-sm ml-auto" />
+                        ) : (
+                          formatCurrency(item.oit_prcpro)
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-right font-semibold text-foreground">{isRemoved ? '—' : formatCurrency(getItemTotal(item))}</TableCell>
+                    </TableRow>
+                  );
+                })}
+
+                {/* Added items */}
+                {addedItems.map(item => (
+                  <TableRow key={item.id} className="hover:bg-accent/30 border-b border-border/50 bg-primary/5">
+                    {isEditing && (
+                      <TableCell>
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => removeAddedItem(item.id)}>
+                          <Trash2 size={14} className="text-destructive" />
+                        </Button>
+                      </TableCell>
+                    )}
                     <TableCell className="text-sm">
                       <div className="flex items-center gap-3">
                         <div>
-                          <span className="font-medium text-foreground">{item.oit_despro}</span>
-                          <div className="text-xs text-muted-foreground">{item.oit_undpro} | Peso: {item.oit_peso_liq} Kg</div>
+                          <span className="font-medium text-foreground">{item.despro}</span>
+                          <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">Novo</span>
+                          <div className="text-xs text-muted-foreground">{item.undpro}</div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground font-mono">{item.oit_codpro}</TableCell>
-                    <TableCell className="text-sm text-center text-foreground" onClick={e => isEditing && e.stopPropagation()}>
-                      {isEditing ? (
-                        <Input
-                          type="number"
-                          min={0}
-                          value={getItemQty(item)}
-                          onChange={(e) => updateItemQty(item.oit_id, Number(e.target.value))}
-                          className="h-8 w-20 text-center text-sm mx-auto"
-                        />
-                      ) : (
-                        item.oit_qtdoit
-                      )}
+                    <TableCell className="text-sm text-muted-foreground font-mono">{item.codpro}</TableCell>
+                    <TableCell className="text-sm text-center">
+                      <Input type="number" min={1} value={item.qty} onChange={e => setAddedItems(prev => prev.map(i => i.id === item.id ? { ...i, qty: Number(e.target.value) || 1 } : i))} className="h-8 w-20 text-center text-sm mx-auto" />
                     </TableCell>
-                    <TableCell className="text-sm text-right text-foreground" onClick={e => isEditing && e.stopPropagation()}>
-                      {isEditing ? (
-                        <Input
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          value={getItemPrice(item)}
-                          onChange={(e) => updateItemPrice(item.oit_id, Number(e.target.value))}
-                          className="h-8 w-24 text-right text-sm ml-auto"
-                        />
-                      ) : (
-                        formatCurrency(item.oit_prcpro)
-                      )}
+                    <TableCell className="text-sm text-right">
+                      <Input type="number" min={0} step={0.01} value={item.price} onChange={e => setAddedItems(prev => prev.map(i => i.id === item.id ? { ...i, price: Number(e.target.value) || 0 } : i))} className="h-8 w-24 text-right text-sm ml-auto" />
                     </TableCell>
-                    <TableCell className="text-sm text-right font-semibold text-foreground">{formatCurrency(getItemTotal(item))}</TableCell>
+                    <TableCell className="text-sm text-right font-semibold text-foreground">{formatCurrency(item.qty * item.price)}</TableCell>
                   </TableRow>
                 ))}
 
                 {/* Totals rows */}
                 <TableRow className="border-t border-border">
-                  <TableCell colSpan={4} className="text-sm text-muted-foreground text-right">Subtotal</TableCell>
+                  <TableCell colSpan={isEditing ? 5 : 4} className="text-sm text-muted-foreground text-right">Subtotal</TableCell>
                   <TableCell className="text-sm font-medium text-foreground text-right">{formatCurrency(totalItens)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell colSpan={4} className="text-sm text-muted-foreground text-right">Peso Total</TableCell>
+                  <TableCell colSpan={isEditing ? 5 : 4} className="text-sm text-muted-foreground text-right">Peso Total</TableCell>
                   <TableCell className="text-sm font-medium text-foreground text-right">{totalPeso.toFixed(1)} Kg</TableCell>
                 </TableRow>
                 <TableRow className="border-t-2 border-border">
-                  <TableCell colSpan={4} className="text-sm font-bold text-foreground text-right">Total</TableCell>
+                  <TableCell colSpan={isEditing ? 5 : 4} className="text-sm font-bold text-foreground text-right">Total</TableCell>
                   <TableCell className="text-sm font-bold text-foreground text-right">{formatCurrency(isEditing ? totalItens : (order.orc_vlrorc || totalItens))}</TableCell>
                 </TableRow>
               </TableBody>

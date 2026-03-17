@@ -112,7 +112,7 @@ const Catalogo = () => {
     return list;
   }, [data, filters]);
 
-  const hasLocalFilters = !!(filters.skuFrom || filters.skuTo || filters.priceMin || filters.priceMax || filters.category || filters.stockFilter);
+  const hasLocalFilters = !!(filters.skuFrom || filters.skuTo || filters.priceMin || filters.priceMax || filters.category || (filters.stockFilter && filters.stockFilter !== 'all'));
   const totalRecords = hasLocalFilters ? items.length : (data?.total_records || 0);
   const totalPages = hasLocalFilters ? 1 : Math.ceil((data?.total_records || 0) / limit);
 

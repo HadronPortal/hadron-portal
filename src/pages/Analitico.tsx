@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useSessionState } from '@/hooks/use-session-state';
 import RelatorioClientes, { type SelectedClient } from '@/components/erp/relatorios/RelatorioClientes';
+import FilterClientPicker from '@/components/erp/FilterClientPicker';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
 import RelatorioRepresentantes from '@/components/erp/relatorios/RelatorioRepresentantes';
@@ -105,7 +106,7 @@ const Analitico = () => {
   const [filterNonce, setFilterNonce] = useState(0);
   const [reportTab, setReportTab] = useSessionState<ReportTab>('analitico_reportTab', 'sintetico');
   const [exportOpen, setExportOpen] = useState(false);
-  const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('analitico_clients', []);
+  const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('global_clients', []);
   const [comissionamentoSubTab, setComissionamentoSubTab] = useSessionState('analitico_comSubTab', 'faturamento');
 
   const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
@@ -116,7 +117,10 @@ const Analitico = () => {
     });
   };
   const repParam = selectedRepRaw.length > 0 ? selectedRepRaw.join(',') : undefined;
-  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
+  const filteredRepresentantes = selectedClients.length > 0
+    ? representantes.filter((r: any) => selectedClients.some(c => c.repCode === r.rep_codrep))
+    : representantes;
+  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedClients.length > 0 || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
@@ -470,7 +474,7 @@ const Analitico = () => {
                         </div>
                       ) : null}
                       <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
-                        {representantes.map((r: any) => {
+                        {filteredRepresentantes.map((r: any) => {
                           const isSelected = selectedRepRaw.includes(String(r.rep_codrep));
                           return (
                             <label
@@ -500,37 +504,10 @@ const Analitico = () => {
                       </div>
                     </div>
 
-                    {/* Clientes selecionados */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">Clientes</label>
-                      {selectedClients.length > 0 ? (
-                        <div className="space-y-1.5">
-                          <div className="border border-border rounded-lg p-2 max-h-24 overflow-y-auto space-y-1">
-                            {selectedClients.map(cli => (
-                              <div key={cli.code} className="flex items-center justify-between text-xs">
-                                <span className="text-foreground truncate mr-2">{cli.name}</span>
-                                <button
-                                  onClick={() => setSelectedClients(prev => prev.filter(c => c.code !== cli.code))}
-                                  className="text-muted-foreground hover:text-destructive shrink-0"
-                                >
-                                  <X size={12} />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                          <button
-                            onClick={() => setSelectedClients([])}
-                            className="text-[11px] text-destructive hover:underline"
-                          >
-                            Limpar todos
-                          </button>
-                        </div>
-                      ) : (
-                        <p className="text-[11px] text-muted-foreground italic">
-                          Selecione na aba Clientes via checkbox
-                        </p>
-                      )}
-                    </div>
+                    <FilterClientPicker
+                      selectedClients={selectedClients.map(c => ({ code: c.code, name: c.name, repCode: c.repCode ?? 0 }))}
+                      onChangeClients={(clients) => setSelectedClients(clients.map(c => ({ code: c.code, name: c.name, repCode: c.repCode })))}
+                    />
 
                     {/* Date range */}
                     <div className="grid grid-cols-2 gap-3">

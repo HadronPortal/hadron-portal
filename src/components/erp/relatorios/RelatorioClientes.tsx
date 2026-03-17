@@ -37,6 +37,7 @@ interface ClienteAPI {
 export interface SelectedClient {
   code: number;
   name: string;
+  repCode?: number;
 }
 
 export interface SharedFilterProps {

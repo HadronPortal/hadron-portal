@@ -12,6 +12,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import TablePagination from '@/components/erp/TablePagination';
+import FilterClientPicker, { type SelectedClient } from '@/components/erp/FilterClientPicker';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 
@@ -87,6 +88,7 @@ const Clientes = () => {
   const [filterNonce, setFilterNonce] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('global_repRaw', []);
+  const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('global_clients', []);
 
   const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
   const setSelectedPeriod = (v: { startDate: Date | string; endDate: Date | string }) => {
@@ -95,7 +97,10 @@ const Clientes = () => {
       endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate,
     });
   };
-  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
+  const filteredRepresentantes = selectedClients.length > 0
+    ? representantes.filter((r: any) => selectedClients.some(c => c.repCode === r.rep_codrep))
+    : representantes;
+  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedClients.length > 0 || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
@@ -290,11 +295,13 @@ const Clientes = () => {
                       className="w-full appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-card text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer [&>option]:bg-card [&>option]:text-foreground"
                     >
                       <option value="">Todos</option>
-                      {representantes.map((r: any) => (
+                      {filteredRepresentantes.map((r: any) => (
                         <option key={r.rep_codrep} value={r.rep_codrep}>{r.rep_nomrep}</option>
                       ))}
                     </select>
                   </div>
+
+                  <FilterClientPicker selectedClients={selectedClients} onChangeClients={setSelectedClients} />
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
@@ -338,6 +345,7 @@ const Clientes = () => {
                     <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => {
                       setSelectedRep([]);
                       setSelectedRepRaw([]);
+                      setSelectedClients([]);
                       setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
                       setSearchQuery('');
                       setSearchInput('');

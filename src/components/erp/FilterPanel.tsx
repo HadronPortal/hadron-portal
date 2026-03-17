@@ -202,11 +202,18 @@ const FilterPanel = ({
 
           {/* CLIENTE */}
           <div>
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 ml-1">
-              Cliente
-            </p>
-            {selectedClients.length > 0 ? (
-              <div className="space-y-2">
+            <div className="flex items-center justify-between mb-1.5 ml-1">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Cliente
+              </p>
+              {selectedRepRaw.length > 0 && (
+                <span className="text-[10px] text-primary/70 italic">filtrado pelo representante</span>
+              )}
+            </div>
+
+            {/* Selected clients chips */}
+            {selectedClients.length > 0 && (
+              <div className="space-y-1.5 mb-2">
                 {selectedClients.map(cli => (
                   <div key={cli.code} className="flex items-center gap-2 border border-primary/20 rounded-xl px-3 py-2 bg-primary/5">
                     <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground text-[10px] font-bold shrink-0">
@@ -224,19 +231,20 @@ const FilterPanel = ({
                   </div>
                 ))}
               </div>
-            ) : (
-              <FilterSelect
-                items={clientItems}
-                loading={clientLoading}
-                selectedCode={null}
-                onSelect={handleSelectClient}
-                onSearch={(q) => fetchClients(q)}
-                placeholder="Selecionar cliente"
-                searchPlaceholder="Buscar por nome ou código..."
-                emptyMessage="Nenhum cliente encontrado"
-                icon={<Users size={14} />}
-              />
             )}
+
+            {/* Always show client selector to allow adding more */}
+            <FilterSelect
+              items={clientItems}
+              loading={clientLoading}
+              selectedCode={null}
+              onSelect={handleSelectClient}
+              onSearch={(q) => fetchClients(q)}
+              placeholder={selectedClients.length > 0 ? '+ Adicionar cliente' : 'Selecionar cliente'}
+              searchPlaceholder="Buscar por nome ou código..."
+              emptyMessage="Nenhum cliente encontrado"
+              icon={<Users size={14} />}
+            />
           </div>
         </div>
 

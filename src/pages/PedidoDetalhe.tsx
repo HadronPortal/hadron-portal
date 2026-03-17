@@ -209,8 +209,11 @@ const PedidoDetalhe = () => {
   const getItemPrice = (item: any) => isEditing ? (editItems[item.oit_id]?.price ?? item.oit_prcpro) : item.oit_prcpro;
   const getItemTotal = (item: any) => getItemQty(item) * getItemPrice(item);
 
-  const totalItens = items.reduce((s: number, i: any) => s + getItemTotal(i), 0);
-  const totalPeso = items.reduce((s: number, i: any) => s + (getItemQty(i) * (i.oit_peso_liq || 0)), 0);
+  const visibleItems = items.filter((i: any) => !removedItemIds.has(i.oit_id));
+  const totalItens = visibleItems.reduce((s: number, i: any) => s + getItemTotal(i), 0)
+    + addedItems.reduce((s, i) => s + i.qty * i.price, 0);
+  const totalPeso = visibleItems.reduce((s: number, i: any) => s + (getItemQty(i) * (i.oit_peso_liq || 0)), 0)
+    + addedItems.reduce((s, i) => s + i.qty * i.peso_liq, 0);
 
   return (
     <>

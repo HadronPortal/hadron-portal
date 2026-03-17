@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 import FilterSelect from '@/components/erp/FilterSelect';
 import type { FilterDrawerItem } from '@/components/erp/FilterSelect';

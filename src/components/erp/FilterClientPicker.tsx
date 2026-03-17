@@ -6,7 +6,7 @@ import { fetchWithAuth } from '@/lib/auth-refresh';
 export interface SelectedClient {
   code: number;
   name: string;
-  repCode: number;
+  repCode?: number;
 }
 
 interface FilterClientPickerProps {

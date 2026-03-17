@@ -57,35 +57,63 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const page = url.searchParams.get('page') || '1';
-    const limit = url.searchParams.get('limit') || '50';
     const search = url.searchParams.get('search') || '';
     const rep = url.searchParams.get('rep') || '';
 
     const token = extractUserToken(req) || await getServiceToken();
 
-    const apiUrl = new URL('https://dev.hadronweb.com.br/app/pages/apiRepresentatives');
-    apiUrl.searchParams.set('page', page);
-    apiUrl.searchParams.set('limit', limit);
-    if (search) apiUrl.searchParams.set('search', search);
-    if (rep) apiUrl.searchParams.set('rep', rep);
+    // The external API caps at 10 per page, so we fetch all pages and merge
+    let allReports: any[] = [];
+    let totalRecords = 0;
+    let currentPage = 1;
+    const apiLimit = 10; // API's actual max per page
 
-    const res = await fetchWithRetry(apiUrl.toString(), {
-      method: 'GET',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+    while (true) {
+      const apiUrl = new URL('https://dev.hadronweb.com.br/app/pages/apiRepresentatives');
+      apiUrl.searchParams.set('page', String(currentPage));
+      apiUrl.searchParams.set('limit', String(apiLimit));
+      if (search) apiUrl.searchParams.set('search', search);
+      if (rep) apiUrl.searchParams.set('rep', rep);
 
-    const text = await res.text();
-    if (!res.ok) throw new Error(`API error [${res.status}]: ${text.substring(0, 500)}`);
+      const res = await fetchWithRetry(apiUrl.toString(), {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
 
-    let data: any;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error('Non-JSON response from API');
+      const text = await res.text();
+      if (!res.ok) throw new Error(`API error [${res.status}]: ${text.substring(0, 500)}`);
+
+      let data: any;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error('Non-JSON response from API');
+      }
+
+      totalRecords = data.total_records || 0;
+      const reports = data.reports || [];
+      allReports = allReports.concat(reports);
+
+      // Stop if we got all records or no more pages
+      if (allReports.length >= totalRecords || reports.length < apiLimit) break;
+      currentPage++;
+      // Safety: max 20 pages to avoid infinite loop
+      if (currentPage > 20) break;
     }
 
-    return new Response(JSON.stringify(data), {
+    // Now apply our own pagination from query params
+    const reqPage = parseInt(url.searchParams.get('page') || '1', 10);
+    const reqLimit = parseInt(url.searchParams.get('limit') || '50', 10);
+    const start = (reqPage - 1) * reqLimit;
+    const paged = allReports.slice(start, start + reqLimit);
+
+    return new Response(JSON.stringify({
+      success: true,
+      total_records: totalRecords,
+      reports: paged,
+      page: reqPage,
+      limit: reqLimit,
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=120' },
     });
   } catch (error) {

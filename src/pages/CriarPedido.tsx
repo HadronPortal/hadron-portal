@@ -153,7 +153,7 @@ const CriarPedido = () => {
   };
 
   const subtotal = cart.reduce((s, c) => s + c.quantidade * c.preco_unitario, 0);
-  const total = subtotal - desconto + frete;
+  const total = Math.max(0, subtotal - desconto + frete);
 
   const getImageUrl = (filename: string) => `${BASE}/proxy-image?file=${encodeURIComponent(filename)}`;
 

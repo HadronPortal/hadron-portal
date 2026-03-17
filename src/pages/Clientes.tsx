@@ -95,6 +95,7 @@ const Clientes = () => {
       endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate,
     });
   };
+  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '';
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);

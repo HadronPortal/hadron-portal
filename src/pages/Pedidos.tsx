@@ -103,15 +103,19 @@ const Pedidos = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   
+  const { representantes } = useRepresentantes();
+
   const codter = searchParams.get('codter');
   const clienteNome = searchParams.get('nome');
 
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(1);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
+  const [selectedRepRaw, setSelectedRepRaw] = useState<string[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
   const [searchQuery, setSearchQuery] = useState('');
   const [filterNonce, setFilterNonce] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
 
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);

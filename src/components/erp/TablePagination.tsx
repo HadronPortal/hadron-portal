@@ -11,7 +11,9 @@ interface TablePaginationProps {
 const TablePagination = ({ page, totalRecords, rowsPerPage, onPageChange }: TablePaginationProps) => {
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
 
-  if (totalPages <= 1) return null;
+  if (totalPages <= 1 && totalRecords <= 0) return null;
+
+  const showPageButtons = totalPages > 1;
 
   const getPageNumbers = (): (number | '...')[] => {
     const pages: (number | '...')[] = [];

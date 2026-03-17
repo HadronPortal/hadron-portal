@@ -142,14 +142,13 @@ const RelatorioRepresentantes = ({ filters }: Props) => {
         </Table>
       </div>
 
-      {totalPages > 1 && (
+      {totalRecords > rowsPerPage && (
         <div className="px-4 sm:px-6 py-3">
           <TablePagination
             page={page}
-            totalPages={totalPages}
+            totalRecords={totalRecords}
             rowsPerPage={rowsPerPage}
             onPageChange={setPage}
-            onRowsChange={(v) => { setRowsPerPage(v); setPage(1); }}
           />
         </div>
       )}

@@ -142,16 +142,14 @@ const RelatorioRepresentantes = ({ filters }: Props) => {
         </Table>
       </div>
 
-      {totalRecords > rowsPerPage && (
-        <div className="px-4 sm:px-6 py-3">
-          <TablePagination
-            page={page}
-            totalRecords={totalRecords}
-            rowsPerPage={rowsPerPage}
-            onPageChange={setPage}
-          />
-        </div>
-      )}
+      <div className="px-4 sm:px-6 py-3">
+        <TablePagination
+          page={page}
+          totalRecords={totalRecords}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+        />
+      </div>
 
       <ScrollToTop />
     </>

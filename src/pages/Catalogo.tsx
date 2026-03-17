@@ -126,6 +126,26 @@ const Catalogo = () => {
   const startItem = hasLocalFilters ? (items.length > 0 ? 1 : 0) : (page - 1) * limit + 1;
   const endItem = hasLocalFilters ? items.length : Math.min(page * limit, data?.total_records || 0);
 
+  const catalogoColumns = [
+    { header: 'SKU', accessor: (r: any) => r.pro_codpro },
+    { header: 'Produto', accessor: (r: any) => r.pro_despro },
+    { header: 'Grupo', accessor: (r: any) => r.NOME_GRUPO || '' },
+    { header: 'Preço', accessor: (r: any) => Number(r.pro_preco || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 }), align: 'right' as const },
+    { header: 'Estoque', accessor: (r: any) => formatSaldo(getSaldo(r)), align: 'right' as const },
+  ];
+
+  const handleExport = useCallback((format: 'pdf' | 'csv' | 'xlsx') => {
+    if (items.length === 0) {
+      toast.error('Nenhum dado para exportar');
+      return;
+    }
+    const opts = { title: 'Catálogo de Produtos', columns: catalogoColumns, data: items, fileName: 'catalogo' };
+    if (format === 'pdf') exportPDF(opts);
+    else if (format === 'csv') exportCSV(opts);
+    else exportXLSX(opts);
+    toast.success(`Exportação ${format.toUpperCase()} gerada!`);
+  }, [items]);
+
   return (
     <>
       {/* Hero banner */}
@@ -164,6 +184,7 @@ const Catalogo = () => {
           categories={categories}
           searchQuery={searchQuery}
           onSearchChange={(v) => { setSearchQuery(v); setPage(1); }}
+          onExport={handleExport}
         />
 
         {/* Header with results count and per-page */}

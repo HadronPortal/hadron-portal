@@ -272,19 +272,19 @@ const PedidoDetalhe = () => {
           <div className="flex items-center gap-2">
             {isEditing ? (
               <>
-                <Button variant="outline" className="rounded-lg text-sm" onClick={cancelEditing}>
+                <Button variant="outline" className="rounded-lg text-sm bg-card border-border text-foreground hover:bg-accent" onClick={cancelEditing}>
                   Cancelar
                 </Button>
-                <Button className="rounded-lg text-sm gap-1.5" onClick={handleSave}>
+                <Button className="rounded-lg text-sm gap-1.5 bg-foreground text-background hover:bg-foreground/90" onClick={handleSave}>
                   Salvar Alterações
                 </Button>
               </>
             ) : (
               <>
-                <Button variant="outline" className="rounded-lg text-sm gap-1.5" onClick={startEditing}>
+                <Button variant="outline" className="rounded-lg text-sm gap-1.5 bg-card border-border text-foreground hover:bg-accent" onClick={startEditing}>
                   <Pencil size={14} /> Editar
                 </Button>
-                <Button variant="outline" className="rounded-lg text-sm" onClick={() => navigate('/pedidos')}>
+                <Button variant="outline" className="rounded-lg text-sm bg-card border-border text-foreground hover:bg-accent" onClick={() => navigate('/pedidos')}>
                   Voltar
                 </Button>
               </>

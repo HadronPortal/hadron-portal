@@ -49,6 +49,7 @@ interface OrderAPI {
 }
 
 const RelatorioPedidos = ({ filters }: { filters: SharedFilterProps }) => {
+  const navigate = useNavigate();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(1);
   const [localSearchInput, setLocalSearchInput] = useState('');

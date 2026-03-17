@@ -626,15 +626,19 @@ const CriarPedido = () => {
                 {!sameAsBilling && (
                   <div>
                     <h3 className="text-sm font-bold text-foreground mb-4">Endereço de Entrega</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="sm:col-span-2">
                         <label className="text-xs font-medium text-foreground mb-1.5 block">Endereço 1</label>
-                        <Input placeholder="Endereço 1" className="h-10 text-sm rounded-lg" value={shippingAddr.line1} onChange={e => setShippingAddr(p => ({ ...p, line1: e.target.value }))} />
+                        <Input placeholder="Rua, Avenida..." className="h-10 text-sm rounded-lg" value={shippingAddr.line1} onChange={e => setShippingAddr(p => ({ ...p, line1: e.target.value }))} />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-foreground mb-1.5 block">Endereço 2</label>
-                        <Input placeholder="Endereço 2" className="h-10 text-sm rounded-lg" value={shippingAddr.line2} onChange={e => setShippingAddr(p => ({ ...p, line2: e.target.value }))} />
+                        <label className="text-xs font-medium text-foreground mb-1.5 block">Nº</label>
+                        <Input placeholder="Nº" className="h-10 text-sm rounded-lg" value={shippingAddr.number} onChange={e => setShippingAddr(p => ({ ...p, number: e.target.value }))} />
                       </div>
+                    </div>
+                    <div className="mt-4">
+                      <label className="text-xs font-medium text-foreground mb-1.5 block">Complemento</label>
+                      <Input placeholder="Bairro, complemento..." className="h-10 text-sm rounded-lg" value={shippingAddr.line2} onChange={e => setShippingAddr(p => ({ ...p, line2: e.target.value }))} />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                       <div>

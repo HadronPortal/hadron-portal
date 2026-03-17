@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import RelatorioClientes, { type SelectedClient } from '@/components/erp/relatorios/RelatorioClientes';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
+import RelatorioRepresentantes from '@/components/erp/relatorios/RelatorioRepresentantes';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -685,11 +686,7 @@ const Analitico = () => {
           {reportTab === 'pedidos' && <RelatorioPedidos filters={sharedFilters} />}
 
           {/* Representantes report */}
-          {reportTab === 'representantes' && (
-            <div className="p-8 text-center text-muted-foreground text-sm">
-              Em breve: Relatório de Representantes
-            </div>
-          )}
+          {reportTab === 'representantes' && <RelatorioRepresentantes filters={sharedFilters} />}
 
           {/* Comissionamento report */}
           {reportTab === 'comissionamento' && (

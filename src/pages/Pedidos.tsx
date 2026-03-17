@@ -119,7 +119,7 @@ const Pedidos = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
-  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '';
+  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);

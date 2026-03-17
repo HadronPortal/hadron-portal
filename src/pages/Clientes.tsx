@@ -95,7 +95,7 @@ const Clientes = () => {
       endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate,
     });
   };
-  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '';
+  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);

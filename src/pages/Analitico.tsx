@@ -561,7 +561,9 @@ const Analitico = () => {
                 <span className="text-xs text-muted-foreground">Filtros ativos:</span>
                 {selectedRepRaw.length > 0 && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
-                    Rep: {representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
+                    {selectedRepRaw.length === 1
+                      ? `Rep: ${representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}`
+                      : `${selectedRepRaw.length} representantes`}
                     <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
                   </span>
                 )}

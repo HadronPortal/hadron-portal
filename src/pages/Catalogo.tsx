@@ -10,7 +10,7 @@ import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 import CatalogoFilterBar, { CatalogoFilters, defaultFilters } from '@/components/erp/CatalogoFilterBar';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import ScrollToTop from '@/components/ScrollToTop';
-import { exportPDF, exportCSV, exportXLSX } from '@/lib/export-utils';
+import { exportPDF, exportCSV, exportXLSX, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 
 const navItems = [
@@ -134,17 +134,38 @@ const Catalogo = () => {
     { header: 'Estoque', accessor: (r: any) => formatSaldo(getSaldo(r)), align: 'right' as const },
   ];
 
-  const handleExport = useCallback((format: 'pdf' | 'csv' | 'xlsx') => {
-    if (items.length === 0) {
-      toast.error('Nenhum dado para exportar');
-      return;
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = useCallback(async (format: 'pdf' | 'csv' | 'xlsx') => {
+    try {
+      setExporting(true);
+      toast.info('Buscando todos os produtos...');
+
+      const allData = await fetchAllForExport(
+        'fetch-catalogo',
+        {
+          ...(repParam ? { rep: repParam } : {}),
+          ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
+        },
+        'catalogs',
+      );
+
+      if (allData.length === 0) {
+        toast.error('Nenhum dado para exportar');
+        return;
+      }
+
+      const opts = { title: 'Catálogo de Produtos', columns: catalogoColumns, data: allData, fileName: 'catalogo' };
+      if (format === 'pdf') exportPDF(opts);
+      else if (format === 'csv') exportCSV(opts);
+      else exportXLSX(opts);
+      toast.success(`Exportação ${format.toUpperCase()} gerada com ${allData.length} produtos!`);
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao exportar');
+    } finally {
+      setExporting(false);
     }
-    const opts = { title: 'Catálogo de Produtos', columns: catalogoColumns, data: items, fileName: 'catalogo' };
-    if (format === 'pdf') exportPDF(opts);
-    else if (format === 'csv') exportCSV(opts);
-    else exportXLSX(opts);
-    toast.success(`Exportação ${format.toUpperCase()} gerada!`);
-  }, [items]);
+  }, [repParam, searchQuery]);
 
   return (
     <>

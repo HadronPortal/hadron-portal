@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Filter, ArrowUpDown, X, ChevronDown, Search } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Filter, ArrowUpDown, X, ChevronDown, Search, Download, FileText, FileSpreadsheet, File } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface CatalogoFilters {
@@ -30,10 +30,21 @@ interface Props {
   categories: string[];
   searchQuery: string;
   onSearchChange: (v: string) => void;
+  onExport?: (format: 'pdf' | 'csv' | 'xlsx') => void;
 }
 
-const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearchChange }: Props) => {
+const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearchChange, onExport }: Props) => {
   const [open, setOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) setExportOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const update = (partial: Partial<CatalogoFilters>) => {
     onChange({ ...filters, ...partial });
@@ -66,7 +77,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
         </button>
 
         {/* Search input */}
-        <div className="relative flex-1 min-w-0">
+        <div className="relative flex-1 min-w-0 max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
@@ -76,6 +87,47 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
             className="w-full h-9 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
+
+        {/* Export dropdown */}
+        {onExport && (
+          <div className="relative shrink-0" ref={exportRef}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9 gap-1.5 text-sm"
+              onClick={() => setExportOpen(!exportOpen)}
+            >
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline">Exportar</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${exportOpen ? 'rotate-180' : ''}`} />
+            </Button>
+            {exportOpen && (
+              <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-50 min-w-[160px] py-1">
+                <button
+                  onClick={() => { onExport('pdf'); setExportOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <FileText className="w-4 h-4 text-red-500" />
+                  PDF
+                </button>
+                <button
+                  onClick={() => { onExport('csv'); setExportOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <File className="w-4 h-4 text-green-500" />
+                  CSV
+                </button>
+                <button
+                  onClick={() => { onExport('xlsx'); setExportOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                  XLSX
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Sort controls - always visible */}
         <div className="flex items-center gap-2 shrink-0">

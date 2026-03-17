@@ -68,8 +68,16 @@ const CriarPedido = () => {
 
   /* carrinho */
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [desconto, setDesconto] = useState(0);
+  const [descontoType, setDescontoType] = useState<'none' | 'percent' | 'fixed'>('none');
+  const [descontoPercent, setDescontoPercent] = useState(0);
+  const [descontoFixed, setDescontoFixed] = useState(0);
   const [frete, setFrete] = useState(0);
+
+  const desconto = descontoType === 'percent'
+    ? subtotal * (descontoPercent / 100)
+    : descontoType === 'fixed'
+      ? descontoFixed
+      : 0;
 
   const representante = 'REPRESENTANTE ONLINE';
 

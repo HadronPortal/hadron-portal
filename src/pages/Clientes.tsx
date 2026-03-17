@@ -13,7 +13,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import TablePagination from '@/components/erp/TablePagination';
-import FilterClientPicker, { type SelectedClient } from '@/components/erp/FilterClientPicker';
+import { type SelectedClient } from '@/components/erp/FilterClientPicker';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 

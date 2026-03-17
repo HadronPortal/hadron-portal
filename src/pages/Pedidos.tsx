@@ -113,11 +113,12 @@ const Pedidos = () => {
   const [page, setPage] = useState(1);
   const [selectedRep, setSelectedRep] = useSessionState<number[]>('pedidos_rep', []);
   const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('pedidos_repRaw', []);
-  const [selectedPeriod, setSelectedPeriod] = useSessionState('pedidos_period', { startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
+  const [selectedPeriodRaw, setSelectedPeriod] = useSessionState('pedidos_period', { startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
   const [searchQuery, setSearchQuery] = useSessionState('pedidos_search', '');
   const [filterNonce, setFilterNonce] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
 
+  const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : undefined;
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);

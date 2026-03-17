@@ -20,7 +20,7 @@ const PeriodPicker = ({ startDate, endDate, onChange }: PeriodPickerProps) => {
     <div className="flex items-center gap-1.5">
       <Popover open={startOpen} onOpenChange={setStartOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="h-10 px-3 text-xs font-normal gap-1.5 min-w-[120px] justify-start">
+          <Button variant="outline" className="h-10 px-2 sm:px-3 text-[11px] sm:text-xs font-normal gap-1 sm:gap-1.5 min-w-0 sm:min-w-[120px] justify-start">
             <CalendarIcon className="h-3.5 w-3.5 text-primary shrink-0" />
             {format(startDate, 'dd/MM/yyyy')}
           </Button>

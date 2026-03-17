@@ -367,10 +367,24 @@ const PedidoDetalhe = () => {
           </div>
         </div>
 
+        {/* Observação (edit mode) */}
+        {isEditing && (
+          <div className="bg-card rounded-xl border border-border shadow-sm p-5">
+            <h3 className="text-base font-bold text-foreground mb-3">Observação</h3>
+            <Textarea
+              value={editObs}
+              onChange={(e) => setEditObs(e.target.value)}
+              placeholder="Observações do pedido..."
+              className="min-h-[80px] text-sm"
+            />
+          </div>
+        )}
+
         {/* Items table */}
         <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-border">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <h2 className="text-base font-bold text-foreground">Pedido #{order.orc_codorc_web}</h2>
+            {isEditing && <span className="text-xs text-primary font-medium px-2 py-1 bg-primary/10 rounded-md">Modo edição</span>}
           </div>
           <div className="overflow-x-auto">
             <Table>
@@ -387,11 +401,13 @@ const PedidoDetalhe = () => {
                 {items.map((item: any) => (
                   <TableRow
                     key={item.oit_id}
-                    className="hover:bg-accent/30 cursor-pointer border-b border-border/50"
+                    className={`hover:bg-accent/30 border-b border-border/50 ${!isEditing ? 'cursor-pointer' : ''}`}
                     onClick={() => {
-                      setSelectedProductId(item.oit_codpro);
-                      setSelectedProductName(item.oit_despro);
-                      setDetailOpen(true);
+                      if (!isEditing) {
+                        setSelectedProductId(item.oit_codpro);
+                        setSelectedProductName(item.oit_despro);
+                        setDetailOpen(true);
+                      }
                     }}
                   >
                     <TableCell className="text-sm">
@@ -403,9 +419,34 @@ const PedidoDetalhe = () => {
                       </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground font-mono">{item.oit_codpro}</TableCell>
-                    <TableCell className="text-sm text-center text-foreground">{item.oit_qtdoit}</TableCell>
-                    <TableCell className="text-sm text-right text-foreground">{formatCurrency(item.oit_prcpro)}</TableCell>
-                    <TableCell className="text-sm text-right font-semibold text-foreground">{formatCurrency(item.oit_val_tot)}</TableCell>
+                    <TableCell className="text-sm text-center text-foreground" onClick={e => isEditing && e.stopPropagation()}>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          min={0}
+                          value={getItemQty(item)}
+                          onChange={(e) => updateItemQty(item.oit_id, Number(e.target.value))}
+                          className="h-8 w-20 text-center text-sm mx-auto"
+                        />
+                      ) : (
+                        item.oit_qtdoit
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-right text-foreground" onClick={e => isEditing && e.stopPropagation()}>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          min={0}
+                          step={0.01}
+                          value={getItemPrice(item)}
+                          onChange={(e) => updateItemPrice(item.oit_id, Number(e.target.value))}
+                          className="h-8 w-24 text-right text-sm ml-auto"
+                        />
+                      ) : (
+                        formatCurrency(item.oit_prcpro)
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-right font-semibold text-foreground">{formatCurrency(getItemTotal(item))}</TableCell>
                   </TableRow>
                 ))}
 
@@ -420,7 +461,7 @@ const PedidoDetalhe = () => {
                 </TableRow>
                 <TableRow className="border-t-2 border-border">
                   <TableCell colSpan={4} className="text-sm font-bold text-foreground text-right">Total</TableCell>
-                  <TableCell className="text-sm font-bold text-foreground text-right">{formatCurrency(order.orc_vlrorc || totalItens)}</TableCell>
+                  <TableCell className="text-sm font-bold text-foreground text-right">{formatCurrency(isEditing ? totalItens : (order.orc_vlrorc || totalItens))}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>

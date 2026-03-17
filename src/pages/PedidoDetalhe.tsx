@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Pencil, Trash2, Plus, Search, X } from 'lucide-react';
+import { Pencil, Trash2, Plus, Search, X, Download } from 'lucide-react';
 
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ChevronRight, CalendarDays, CreditCard, Truck, User, Mail, Phone, FileText, Package, Award } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import { exportOrderPDF } from '@/lib/export-order-pdf';
 
 const formatCurrency = (v: number) =>
   'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -283,6 +284,9 @@ const PedidoDetalhe = () => {
               <>
                 <Button variant="outline" className="rounded-lg text-sm gap-1.5 bg-card border-border text-foreground hover:bg-accent" onClick={startEditing}>
                   <Pencil size={14} /> Editar
+                </Button>
+                <Button variant="outline" className="rounded-lg text-sm gap-1.5 bg-card border-border text-foreground hover:bg-accent" onClick={() => exportOrderPDF(order, items)}>
+                  <Download size={14} /> Exportar PDF
                 </Button>
                 <Button variant="outline" className="rounded-lg text-sm bg-card border-border text-foreground hover:bg-accent" onClick={() => navigate('/pedidos')}>
                   Voltar

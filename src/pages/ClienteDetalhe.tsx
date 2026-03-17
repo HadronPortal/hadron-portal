@@ -787,7 +787,10 @@ const ClienteDetalhe = () => {
                         </div>
                         <div>
                           <label className="text-xs font-semibold text-foreground mb-1.5 block">CEP</label>
-                          <Input className="bg-transparent" placeholder="00000-000" />
+                          <Input className="bg-transparent" placeholder="00000-000" value={editCep}
+                            onChange={e => setEditCep(e.target.value)}
+                            onBlur={() => fetchEditCep(editCep)} />
+                          {editCepLoading && <span className="text-[10px] text-muted-foreground">Buscando...</span>}
                         </div>
                       </div>
                       <div className="flex justify-center gap-3 pt-3">

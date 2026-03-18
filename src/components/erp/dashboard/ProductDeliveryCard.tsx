@@ -44,6 +44,8 @@ const ProductImage = ({ foto, descricao }: { foto: string; descricao: string }) 
 };
 
 const ProductDeliveryCard = ({ produtos }: Props) => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-card rounded-xl border border-border p-6 flex flex-col h-full">
       <div className="mb-1">
@@ -56,7 +58,11 @@ const ProductDeliveryCard = ({ produtos }: Props) => {
           <p className="text-sm text-muted-foreground">Sem dados de produtos</p>
         ) : (
           produtos.map((item) => (
-            <div key={item.codigo} className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/30">
+            <div
+              key={item.codigo}
+              onClick={() => navigate(`/produtos/${item.codigo}`)}
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/30 cursor-pointer transition-colors"
+            >
               <ProductImage foto={item.foto || ''} descricao={item.descricao} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Filter, ArrowUpDown, X, ChevronDown, Search, Download, FileText, FileSpreadsheet, File } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export interface CatalogoFilters {
@@ -140,24 +141,131 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
     </div>
   );
 
+  const filtersContent = (
+    <div className="space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">SKU de</label>
+          <input
+            type="number"
+            placeholder="Ex: 100"
+            value={filters.skuFrom}
+            onChange={(e) => update({ skuFrom: e.target.value })}
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">SKU até</label>
+          <input
+            type="number"
+            placeholder="Ex: 999"
+            value={filters.skuTo}
+            onChange={(e) => update({ skuTo: e.target.value })}
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Preço mín.</label>
+          <input
+            type="number"
+            step="0.01"
+            placeholder="R$ 0,00"
+            value={filters.priceMin}
+            onChange={(e) => update({ priceMin: e.target.value })}
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Preço máx.</label>
+          <input
+            type="number"
+            step="0.01"
+            placeholder="R$ 999,00"
+            value={filters.priceMax}
+            onChange={(e) => update({ priceMax: e.target.value })}
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Categoria</label>
+          <select
+            value={filters.category}
+            onChange={(e) => update({ category: e.target.value })}
+            className={`${selectClass} w-full`}
+          >
+            <option value="">Todas</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <label className="text-xs font-medium text-muted-foreground">Estoque:</label>
+          <div className="flex items-center border border-border rounded-lg overflow-hidden">
+            {([['all', 'Todos'], ['in_stock', isMobile ? 'Em est.' : 'Em estoque'], ['out_of_stock', isMobile ? 'Sem est.' : 'Sem estoque']] as const).map(([val, label]) => (
+              <button
+                key={val}
+                onClick={() => update({ stockFilter: val as CatalogoFilters['stockFilter'] })}
+                className={`px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-medium transition-colors ${
+                  filters.stockFilter === val
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {hasActiveFilters && (
+          <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs gap-1 text-muted-foreground">
+            <X className="w-3 h-3" /> Limpar filtros
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm">
-      {/* Top row */}
       <div className={`flex items-center p-4 ${isMobile ? 'gap-2' : 'gap-3'}`}>
         {isMobile ? (
           <>
             {searchInput}
-            <button
-              onClick={() => setOpen(!open)}
-              className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors shrink-0 rounded-lg border border-border px-3 h-9"
+            <Sheet
+              open={open}
+              onOpenChange={(nextOpen) => {
+                setOpen(nextOpen);
+                if (!nextOpen) setExportOpen(false);
+              }}
             >
-              <Filter className="w-4 h-4" />
-              <span className="hidden xs:inline">Filtros</span>
-              {hasActiveFilters && (
-                <span className="w-2 h-2 rounded-full bg-primary" />
-              )}
-              <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
-            </button>
+              <SheetTrigger asChild>
+                <button
+                  className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors shrink-0 rounded-lg border border-border px-3 h-9"
+                >
+                  <Filter className="w-4 h-4" />
+                  Filtrar
+                  {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-primary" />}
+                  <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl border-border bg-card px-4 pb-5 pt-6 overflow-y-auto">
+                <SheetHeader className="mb-4">
+                  <SheetTitle className="text-left text-base">Filtros</SheetTitle>
+                </SheetHeader>
+                <div className="space-y-4">
+                  {sortControls}
+                  {exportDropdown}
+                  {filtersContent}
+                </div>
+              </SheetContent>
+            </Sheet>
           </>
         ) : (
           <>
@@ -167,9 +275,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
             >
               <Filter className="w-4 h-4" />
               Filtros
-              {hasActiveFilters && (
-                <span className="w-2 h-2 rounded-full bg-primary" />
-              )}
+              {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-primary" />}
               <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
             </button>
             {exportDropdown}
@@ -179,106 +285,9 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
         )}
       </div>
 
-      {/* Collapsible section */}
-      {open && (
-        <div className="border-t border-border px-3 sm:px-4 pb-3 sm:pb-4 pt-3 space-y-3">
-          {isMobile && (
-            <div className="space-y-3">
-              {sortControls}
-              {exportDropdown}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {/* SKU range */}
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">SKU de</label>
-              <input
-                type="number"
-                placeholder="Ex: 100"
-                value={filters.skuFrom}
-                onChange={(e) => update({ skuFrom: e.target.value })}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">SKU até</label>
-              <input
-                type="number"
-                placeholder="Ex: 999"
-                value={filters.skuTo}
-                onChange={(e) => update({ skuTo: e.target.value })}
-                className={inputClass}
-              />
-            </div>
-
-            {/* Price range */}
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">Preço mín.</label>
-              <input
-                type="number"
-                step="0.01"
-                placeholder="R$ 0,00"
-                value={filters.priceMin}
-                onChange={(e) => update({ priceMin: e.target.value })}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">Preço máx.</label>
-              <input
-                type="number"
-                step="0.01"
-                placeholder="R$ 999,00"
-                value={filters.priceMax}
-                onChange={(e) => update({ priceMax: e.target.value })}
-                className={inputClass}
-              />
-            </div>
-
-            {/* Category */}
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">Categoria</label>
-              <select
-                value={filters.category}
-                onChange={(e) => update({ category: e.target.value })}
-                className={`${selectClass} w-full`}
-              >
-                <option value="">Todas</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Stock filter + clear */}
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <label className="text-xs font-medium text-muted-foreground">Estoque:</label>
-              <div className="flex items-center border border-border rounded-lg overflow-hidden">
-                {([['all', 'Todos'], ['in_stock', isMobile ? 'Em est.' : 'Em estoque'], ['out_of_stock', isMobile ? 'Sem est.' : 'Sem estoque']] as const).map(([val, label]) => (
-                  <button
-                    key={val}
-                    onClick={() => update({ stockFilter: val as CatalogoFilters['stockFilter'] })}
-                    className={`px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-medium transition-colors ${
-                      filters.stockFilter === val
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs gap-1 text-muted-foreground">
-                <X className="w-3 h-3" /> Limpar filtros
-              </Button>
-            )}
-          </div>
+      {!isMobile && open && (
+        <div className="border-t border-border px-3 sm:px-4 pb-3 sm:pb-4 pt-3">
+          {filtersContent}
         </div>
       )}
     </div>

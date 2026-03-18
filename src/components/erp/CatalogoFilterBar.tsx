@@ -118,9 +118,9 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
       </select>
       <button
         onClick={() => update({ sortDir: filters.sortDir === 'asc' ? 'desc' : 'asc' })}
-        className="h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1 whitespace-nowrap"
+        className={`h-9 px-3 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1 whitespace-nowrap ${isMobile ? 'text-xs' : 'text-sm'}`}
       >
-        {filters.sortDir === 'asc' ? '↑ Crescente' : '↓ Decrescente'}
+        {filters.sortDir === 'asc' ? (isMobile ? '↑ Cresc.' : '↑ Crescente') : (isMobile ? '↓ Decresc.' : '↓ Decrescente')}
       </button>
     </div>
   );
@@ -243,14 +243,14 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
 
           {/* Stock filter + clear */}
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <label className="text-xs font-medium text-muted-foreground">Estoque:</label>
               <div className="flex items-center border border-border rounded-lg overflow-hidden">
-                {([['all', 'Todos'], ['in_stock', 'Em estoque'], ['out_of_stock', 'Sem estoque']] as const).map(([val, label]) => (
+                {([['all', 'Todos'], ['in_stock', isMobile ? 'Em est.' : 'Em estoque'], ['out_of_stock', isMobile ? 'Sem est.' : 'Sem estoque']] as const).map(([val, label]) => (
                   <button
                     key={val}
-                    onClick={() => update({ stockFilter: val })}
-                    className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                    onClick={() => update({ stockFilter: val as CatalogoFilters['stockFilter'] })}
+                    className={`px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-medium transition-colors ${
                       filters.stockFilter === val
                         ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'

@@ -118,9 +118,9 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
       </select>
       <button
         onClick={() => update({ sortDir: filters.sortDir === 'asc' ? 'desc' : 'asc' })}
-        className="h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1 whitespace-nowrap"
+        className={`h-9 px-3 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1 whitespace-nowrap ${isMobile ? 'text-xs' : 'text-sm'}`}
       >
-        {filters.sortDir === 'asc' ? '↑ Crescente' : '↓ Decrescente'}
+        {filters.sortDir === 'asc' ? (isMobile ? '↑ Cresc.' : '↑ Crescente') : (isMobile ? '↓ Decresc.' : '↓ Decrescente')}
       </button>
     </div>
   );

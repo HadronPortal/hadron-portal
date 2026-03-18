@@ -243,14 +243,14 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
 
           {/* Stock filter + clear */}
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <label className="text-xs font-medium text-muted-foreground">Estoque:</label>
               <div className="flex items-center border border-border rounded-lg overflow-hidden">
-                {([['all', 'Todos'], ['in_stock', 'Em estoque'], ['out_of_stock', 'Sem estoque']] as const).map(([val, label]) => (
+                {([['all', 'Todos'], ['in_stock', isMobile ? 'Em est.' : 'Em estoque'], ['out_of_stock', isMobile ? 'Sem est.' : 'Sem estoque']] as const).map(([val, label]) => (
                   <button
                     key={val}
-                    onClick={() => update({ stockFilter: val })}
-                    className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                    onClick={() => update({ stockFilter: val as CatalogoFilters['stockFilter'] })}
+                    className={`px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-medium transition-colors ${
                       filters.stockFilter === val
                         ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'

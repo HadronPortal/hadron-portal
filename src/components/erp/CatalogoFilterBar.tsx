@@ -38,6 +38,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
   const [open, setOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -61,9 +62,85 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
 
   const inputClass = "h-9 w-full rounded-lg border border-border bg-transparent px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 
+  /* Shared sub-components rendered in different positions based on mobile/desktop */
+  const exportDropdown = onExport ? (
+    <div className="relative shrink-0" ref={exportRef}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-9 gap-1.5 text-sm"
+        onClick={() => setExportOpen(!exportOpen)}
+      >
+        <Download className="w-4 h-4" />
+        Exportar
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${exportOpen ? 'rotate-180' : ''}`} />
+      </Button>
+      {exportOpen && (
+        <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-50 min-w-[160px] py-1">
+          <button
+            onClick={() => { onExport('pdf'); setExportOpen(false); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+          >
+            <FileText className="w-4 h-4 text-red-500" />
+            PDF
+          </button>
+          <button
+            onClick={() => { onExport('csv'); setExportOpen(false); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+          >
+            <File className="w-4 h-4 text-green-500" />
+            CSV
+          </button>
+          <button
+            onClick={() => { onExport('xlsx'); setExportOpen(false); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+            XLSX
+          </button>
+        </div>
+      )}
+    </div>
+  ) : null;
+
+  const sortControls = (
+    <div className="flex items-center gap-2 shrink-0">
+      <ArrowUpDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
+      <select
+        value={filters.sortField}
+        onChange={(e) => update({ sortField: e.target.value as CatalogoFilters['sortField'] })}
+        className={selectClass}
+      >
+        <option value="sku">SKU</option>
+        <option value="name">Nome</option>
+        <option value="price">Preço</option>
+        <option value="stock">Estoque</option>
+      </select>
+      <button
+        onClick={() => update({ sortDir: filters.sortDir === 'asc' ? 'desc' : 'asc' })}
+        className="h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1 whitespace-nowrap"
+      >
+        {filters.sortDir === 'asc' ? '↑ Crescente' : '↓ Decrescente'}
+      </button>
+    </div>
+  );
+
+  const searchInput = (
+    <div className={`relative ${isMobile ? 'w-full' : 'flex-1 max-w-xs'}`}>
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      <input
+        type="text"
+        placeholder="Buscar produtos..."
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+        className="w-full h-9 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+    </div>
+  );
+
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm">
-      {/* Search + Toggle row */}
+      {/* Top row */}
       <div className="flex items-center gap-3 p-4">
         <button
           onClick={() => setOpen(!open)}
@@ -77,84 +154,30 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
           <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
         </button>
 
-        {/* Export dropdown */}
-        {onExport && (
-          <div className="relative shrink-0" ref={exportRef}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 gap-1.5 text-sm"
-              onClick={() => setExportOpen(!exportOpen)}
-            >
-              <Download className="w-4 h-4" />
-              Exportar
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${exportOpen ? 'rotate-180' : ''}`} />
-            </Button>
-            {exportOpen && (
-              <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-50 min-w-[160px] py-1">
-                <button
-                  onClick={() => { onExport('pdf'); setExportOpen(false); }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                >
-                  <FileText className="w-4 h-4 text-red-500" />
-                  PDF
-                </button>
-                <button
-                  onClick={() => { onExport('csv'); setExportOpen(false); }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                >
-                  <File className="w-4 h-4 text-green-500" />
-                  CSV
-                </button>
-                <button
-                  onClick={() => { onExport('xlsx'); setExportOpen(false); }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                >
-                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                  XLSX
-                </button>
-              </div>
-            )}
-          </div>
+        {/* Desktop only: show export, sort, search inline */}
+        {!isMobile && (
+          <>
+            {exportDropdown}
+            {sortControls}
+            {searchInput}
+          </>
         )}
-
-        {/* Sort controls */}
-        <div className="flex items-center gap-2 shrink-0">
-          <ArrowUpDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
-          <select
-            value={filters.sortField}
-            onChange={(e) => update({ sortField: e.target.value as CatalogoFilters['sortField'] })}
-            className={selectClass}
-          >
-            <option value="sku">SKU</option>
-            <option value="name">Nome</option>
-            <option value="price">Preço</option>
-            <option value="stock">Estoque</option>
-          </select>
-          <button
-            onClick={() => update({ sortDir: filters.sortDir === 'asc' ? 'desc' : 'asc' })}
-            className="h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1 whitespace-nowrap"
-          >
-            {filters.sortDir === 'asc' ? '↑ Crescente' : '↓ Decrescente'}
-          </button>
-        </div>
-
-        {/* Search input */}
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Buscar produtos..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full h-9 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
       </div>
 
-      {/* Collapsible filter fields */}
+      {/* Collapsible section */}
       {open && (
         <div className="border-t border-border px-3 sm:px-4 pb-3 sm:pb-4 pt-3 space-y-3">
+          {/* Mobile only: search, sort, export inside collapsible */}
+          {isMobile && (
+            <div className="space-y-3">
+              {searchInput}
+              <div className="flex items-center gap-2 flex-wrap">
+                {sortControls}
+                {exportDropdown}
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {/* SKU range */}
             <div>

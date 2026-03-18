@@ -64,19 +64,21 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
 
   /* Shared sub-components rendered in different positions based on mobile/desktop */
   const exportDropdown = onExport ? (
-    <div className="relative shrink-0" ref={exportRef}>
+    <div className={`relative ${isMobile ? 'w-full' : 'shrink-0'}`} ref={exportRef}>
       <Button
         variant="outline"
         size="sm"
-        className="h-9 gap-1.5 text-sm"
+        className={`h-9 gap-1.5 text-sm ${isMobile ? 'w-full justify-between' : ''}`}
         onClick={() => setExportOpen(!exportOpen)}
       >
-        <Download className="w-4 h-4" />
-        Exportar
+        <span className="flex items-center gap-1.5">
+          <Download className="w-4 h-4" />
+          Exportar
+        </span>
         <ChevronDown className={`w-3.5 h-3.5 transition-transform ${exportOpen ? 'rotate-180' : ''}`} />
       </Button>
       {exportOpen && (
-        <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-50 min-w-[160px] py-1">
+        <div className={`top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-50 py-1 ${isMobile ? 'relative right-auto min-w-0 w-full' : 'absolute right-0 min-w-[160px]'}`}>
           <button
             onClick={() => { onExport('pdf'); setExportOpen(false); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
@@ -104,12 +106,12 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
   ) : null;
 
   const sortControls = (
-    <div className="flex items-center gap-2 shrink-0">
+    <div className={`gap-2 ${isMobile ? 'grid grid-cols-1 w-full' : 'flex items-center shrink-0'}`}>
       <ArrowUpDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
       <select
         value={filters.sortField}
         onChange={(e) => update({ sortField: e.target.value as CatalogoFilters['sortField'] })}
-        className={selectClass}
+        className={`${selectClass} ${isMobile ? 'w-full' : ''}`}
       >
         <option value="sku">SKU</option>
         <option value="name">Nome</option>
@@ -118,7 +120,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
       </select>
       <button
         onClick={() => update({ sortDir: filters.sortDir === 'asc' ? 'desc' : 'asc' })}
-        className={`h-9 px-3 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1 whitespace-nowrap ${isMobile ? 'text-xs' : 'text-sm'}`}
+        className={`h-9 px-3 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-1 whitespace-nowrap ${isMobile ? 'text-xs w-full' : 'text-sm'}`}
       >
         {filters.sortDir === 'asc' ? (isMobile ? '↑ Cresc.' : '↑ Crescente') : (isMobile ? '↓ Decresc.' : '↓ Decrescente')}
       </button>
@@ -126,7 +128,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
   );
 
   const searchInput = (
-    <div className={`relative ${isMobile ? 'w-full' : 'flex-1 max-w-xs'}`}>
+    <div className={`relative ${isMobile ? 'flex-1 min-w-0' : 'flex-1 max-w-xs'}`}>
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
       <input
         type="text"
@@ -141,22 +143,35 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm">
       {/* Top row */}
-      <div className="flex items-center gap-3 p-4">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors shrink-0"
-        >
-          <Filter className="w-4 h-4" />
-          Filtros
-          {hasActiveFilters && (
-            <span className="w-2 h-2 rounded-full bg-primary" />
-          )}
-          <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
-        </button>
-
-        {/* Desktop only: show export, sort, search inline */}
-        {!isMobile && (
+      <div className={`flex items-center p-4 ${isMobile ? 'gap-2' : 'gap-3'}`}>
+        {isMobile ? (
           <>
+            {searchInput}
+            <button
+              onClick={() => setOpen(!open)}
+              className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors shrink-0 rounded-lg border border-border px-3 h-9"
+            >
+              <Filter className="w-4 h-4" />
+              <span className="hidden xs:inline">Filtros</span>
+              {hasActiveFilters && (
+                <span className="w-2 h-2 rounded-full bg-primary" />
+              )}
+              <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => setOpen(!open)}
+              className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors shrink-0"
+            >
+              <Filter className="w-4 h-4" />
+              Filtros
+              {hasActiveFilters && (
+                <span className="w-2 h-2 rounded-full bg-primary" />
+              )}
+              <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+            </button>
             {exportDropdown}
             {sortControls}
             {searchInput}
@@ -167,14 +182,10 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
       {/* Collapsible section */}
       {open && (
         <div className="border-t border-border px-3 sm:px-4 pb-3 sm:pb-4 pt-3 space-y-3">
-          {/* Mobile only: search, sort, export inside collapsible */}
           {isMobile && (
             <div className="space-y-3">
-              {searchInput}
-              <div className="flex items-center gap-2 flex-wrap">
-                {sortControls}
-                {exportDropdown}
-              </div>
+              {sortControls}
+              {exportDropdown}
             </div>
           )}
 

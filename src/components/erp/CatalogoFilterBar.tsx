@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Filter, ArrowUpDown, X, ChevronDown, Search, Download, FileText, FileSpreadsheet, File } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export interface CatalogoFilters {

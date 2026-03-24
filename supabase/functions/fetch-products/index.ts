@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const _API_ENV = Deno.env.get('ENVIRONMENT') || 'development';
+const API_BASE_URL = Deno.env.get('HADRON_API_URL') ?? (_API_ENV === 'production' ? 'https://app.hadronweb.com.br' : `${API_BASE_URL}`);
+
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -19,7 +23,7 @@ async function getServiceToken(): Promise<string> {
   const email = Deno.env.get('HADRON_API_EMAIL');
   const password = Deno.env.get('HADRON_API_PASSWORD');
   if (!email || !password) throw new Error('Missing API credentials');
-  const loginRes = await fetch('https://dev.hadronweb.com.br/app/authUsuarios/apiLogin', {
+  const loginRes = await fetch(`${API_BASE_URL}/app/authUsuarios/apiLogin`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ aus_email: email, aus_senha: password }),
@@ -59,10 +63,10 @@ serve(async (req) => {
       search,
       filter: { cod_rep: repParam, cod_ter: singleCodter, date_ini: dateIni, date_end: dateEnd, product_filter: productFilter },
       pagination: { page, limit: codterList.length > 1 ? 500 : limit },
-      sort: sortField ? { field: sortField, direction: sortDir } : undefined,
+      sort: sortField ? { field: sortField, direction: sortDir } : { field: 'pro_codpro', direction: 'ASC' },
     };
 
-    const res = await fetch('https://dev.hadronweb.com.br/DEV/app/pages/apiProducts', {
+    const res = await fetch(`${API_BASE_URL}/DEV/app/pages/apiProducts`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),

@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const _API_ENV = Deno.env.get('ENVIRONMENT') || 'development';
+const API_BASE_URL = Deno.env.get('HADRON_API_URL') ?? (_API_ENV === 'production' ? 'https://app.hadronweb.com.br' : `${API_BASE_URL}`);
+
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -32,7 +36,7 @@ serve(async (req) => {
       loginBody = { aus_email: email, aus_senha: password };
     }
 
-    const loginRes = await fetch('https://dev.hadronweb.com.br/app/AuthUsuarios/apiLogin', {
+    const loginRes = await fetch(`${API_BASE_URL}/app/AuthUsuarios/apiLogin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginBody),

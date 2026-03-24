@@ -9,17 +9,11 @@ import { ptBR } from 'date-fns/locale';
 
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import { useRepresentantes } from '@/hooks/use-representantes';
+import { useTheme } from 'next-themes';
 
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
-import { ChevronDown, FileText, Plus, Search, Send, CheckCircle, XCircle, Filter, X, CalendarIcon } from 'lucide-react';
+import { ChevronDown, FileText, Plus, Search, Send, CheckCircle, XCircle, Filter, X, CalendarIcon, Sun, Moon, ShoppingCart, Eye } from 'lucide-react';
 import SkeletonKpiRow from '@/components/erp/skeletons/SkeletonKpiRow';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import TablePagination from '@/components/erp/TablePagination';
@@ -57,41 +51,38 @@ interface OrdersAPIResponse {
   total_records: number;
 }
 
-const formatCurrency = (v: number) =>
-  'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const formatCurrency = (v: number | string | null) => {
+  if (v == null || v === '' || v === 0 || v === '0') return 'R$ 0,00';
+  const num = typeof v === 'string' ? parseFloat(v as string) : v;
+  if (isNaN(num)) return 'R$ 0,00';
+  return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
 
 const formatDate = (iso: string | null) => {
   if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-};
-
-const formatDoc = (doc: string) => {
-  const d = (doc || '').replace(/\D/g, '');
-  if (d.length === 14) return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-  if (d.length === 11) return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-  return doc;
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
 const statusMap: Record<string, { label: string; color: string; bg: string }> = {
-  '10': { label: 'Digitação', color: '#eab308', bg: '#eab30818' },
-  '20': { label: 'Enviado', color: '#06b6d4', bg: '#06b6d418' },
-  '30': { label: 'Aprovado', color: '#f59e0b', bg: '#f59e0b18' },
-  '40': { label: 'Faturado', color: '#10b981', bg: '#10b98118' },
-  '50': { label: 'Faturado', color: '#10b981', bg: '#10b98118' },
-  '90': { label: 'Cancelado', color: '#ef4444', bg: '#ef444418' },
-  'EN': { label: 'Enviado', color: '#06b6d4', bg: '#06b6d418' },
-  'AP': { label: 'Aprovado', color: '#f59e0b', bg: '#f59e0b18' },
-  'FA': { label: 'Faturado', color: '#10b981', bg: '#10b98118' },
-  'CA': { label: 'Cancelado', color: '#ef4444', bg: '#ef444418' },
-  'PC': { label: 'Pag. Confirmado', color: '#22c55e', bg: '#22c55e18' },
-  'PE': { label: 'Pendente', color: '#eab308', bg: '#eab30818' },
+  '10': { label: 'ABERTO', color: '#eab308', bg: '#eab30818' },
+  '20': { label: 'ENVIADO', color: '#06b6d4', bg: '#06b6d418' },
+  '30': { label: 'APROVADO', color: '#f59e0b', bg: '#f59e0b18' },
+  '40': { label: 'FATURADO', color: '#10b981', bg: '#10b98118' },
+  '50': { label: 'FATURADO', color: '#10b981', bg: '#10b98118' },
+  '90': { label: 'CANCELADO', color: '#ef4444', bg: '#ef444418' },
+  'EN': { label: 'ENVIADO', color: '#06b6d4', bg: '#06b6d418' },
+  'AP': { label: 'APROVADO', color: '#f59e0b', bg: '#f59e0b18' },
+  'FA': { label: 'FATURADO', color: '#10b981', bg: '#10b98118' },
+  'CA': { label: 'CANCELADO', color: '#ef4444', bg: '#ef444418' },
+  'PC': { label: 'PAG. CONFIRMADO', color: '#22c55e', bg: '#22c55e18' },
+  'PE': { label: 'PENDENTE', color: '#eab308', bg: '#eab30818' },
 };
 
 const DEFAULT_START_DATE = new Date(2026, 0, 8);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
-const TABLE_HEADERS = ['CÓDIGO', 'CLIENTE', 'DOCUMENTO', 'LOCALIZAÇÃO', 'STATUS', 'VALOR', 'PESO(KG)', 'DATA', 'AÇÕES'];
+const TABLE_HEADERS = ['Nº PEDIDO', 'CLIENTE', 'DATA', 'VALOR', 'STATUS', 'AÇÕES'];
 
 const navItems = [
   { label: 'Home', path: '/' },
@@ -105,6 +96,7 @@ const navItems = [
 const Pedidos = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
   
   const { representantes } = useRepresentantes();
@@ -127,7 +119,6 @@ const Pedidos = () => {
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
 
-  // When a client is selected, prioritize client filtering and avoid sending rep together.
   const effectiveCodter = codter || (selectedClients.length > 0 ? selectedClients.map(c => c.code).join(',') : '');
   const effectiveRepParam = effectiveCodter ? undefined : repParam;
 
@@ -148,7 +139,6 @@ const Pedidos = () => {
   const orders = data?.orders || [];
   const dashboard = data?.dashboard || { sent: 0, sent_peso: 0, approved: 0, approved_peso: 0, invoiced: 0, invoiced_peso: 0, canceled: 0, canceled_peso: 0 };
   const totalRecords = data?.total_records || 0;
-
 
   const filteredOrders = useMemo(() => {
     if (!searchQuery.trim()) return orders;
@@ -178,11 +168,9 @@ const Pedidos = () => {
   const showOverlay = isFetching && !isLoading;
 
   return (
-    <>
-      {/* Hero banner - same pattern as Dashboard */}
-      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))]">
-        <div className="absolute inset-x-0 top-0 h-[70px] bg-[hsl(var(--erp-banner))]" />
-        <div className="h-[70px]" />
+    <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-200">
+      {/* Hero banner - same pattern as Clientes */}
+      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))] transition-colors duration-200">
         <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
           <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Pedidos</h1>
           <nav className="hidden lg:flex items-center gap-1">
@@ -202,14 +190,22 @@ const Pedidos = () => {
                 </button>
               );
             })}
+            {/* Theme Toggle Button */}
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="ml-4 p-2 rounded-full hover:bg-primary-foreground/10 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+              title={theme === 'dark' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'}
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
           </nav>
         </div>
         <div className="h-16 sm:h-24" />
       </div>
 
-      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-4 sm:space-y-5 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-4 sm:space-y-6 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
         {clienteNome && (
-          <div className="text-sm text-primary-foreground/80">
+          <div className="text-sm text-primary-foreground/80 mb-2">
             Filtro Cliente:{' '}
             <button onClick={clearClientFilter} className="text-primary-foreground underline font-semibold">
               {decodeURIComponent(clienteNome)}
@@ -218,52 +214,36 @@ const Pedidos = () => {
           </div>
         )}
 
-        {/* KPI Summary Card - Inspired by uploaded image */}
-        {showSkeleton ? (
-          <SkeletonKpiRow count={4} />
-        ) : (
-          <FadeIn>
-            <div className="rounded-2xl bg-card border border-border overflow-hidden">
-              <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
-                {kpiItems.map(({ label, value, peso, icon: Icon, color, bg }) => (
-                  <div key={label} className="flex items-center justify-between px-5 sm:px-7 py-5 sm:py-6">
-                    <div className="flex flex-col gap-1">
-                      <p className="text-xl sm:text-2xl font-bold text-foreground">{value}</p>
-                      <p className="text-xs text-muted-foreground">{label}</p>
-                      <p className="text-[10px] text-muted-foreground/60">{peso}</p>
-                    </div>
-                    <div className="h-10 w-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: bg }}>
-                      <Icon size={20} style={{ color }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </FadeIn>
-        )}
-
-        {error ? (
-          <div className="bg-card border border-border rounded-xl p-8 text-center">
-            <p className="text-destructive text-sm">{(error as Error).message}</p>
+        {/* Floating Card Content Wrapper */}
+        <div className="bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xl flex flex-col gap-6 transition-colors duration-200">
+          
+          {/* Header Title */}
+          <div className="flex flex-col gap-1">
+            <h1 className="text-3xl font-bold flex items-center gap-3 text-foreground">
+              <ShoppingCart className="text-[#FF6A00]" size={36} />
+              Pedidos
+            </h1>
+            <p className="text-muted-foreground text-[15px]">Acompanhe e gerencie os pedidos de venda.</p>
           </div>
-        ) : (
-          <div className="bg-card border border-border rounded-xl shadow-sm">
-            {/* Toolbar */}
-            <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              {/* Search + Filter */}
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <div className="relative w-full sm:max-w-xs">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Buscar pedido..."
-                    className="pl-9 h-10 text-sm bg-transparent border-border"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
 
+          {/* Filters Row */}
+          <div className="flex flex-col lg:flex-row gap-4 w-full mt-2 justify-between">
+            {/* Search Input */}
+            <div className="relative w-full lg:w-[400px]">
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar pedidos..."
+                className="w-full h-12 bg-card border border-border rounded-xl pl-11 pr-4 text-sm focus:outline-none focus:border-border focus:ring-1 focus:ring-border text-foreground placeholder-muted-foreground transition-colors duration-200"
+              />
+            </div>
+
+            <div className="flex gap-4 items-center flex-wrap sm:flex-nowrap">
+              <div className="[&>button]:h-12 [&>button]:border-border [&>button]:bg-card [&>button:hover]:bg-accent [&>button:hover]:text-accent-foreground [&>button]:px-6 [&>button]:rounded-xl [&>button]:text-sm [&>button]:font-medium [&>button]:shadow-none transition-colors duration-200">
                 <FilterPanel
+                  hideClientFilter
                   representantes={representantes}
                   selectedRepRaw={selectedRepRaw}
                   setSelectedRepRaw={setSelectedRepRaw}
@@ -272,10 +252,7 @@ const Pedidos = () => {
                   selectedClients={selectedClients}
                   setSelectedClients={setSelectedClients}
                   hasActiveFilters={hasActiveFilters}
-                  onApply={() => {
-                    setPage(1);
-                    setFilterNonce(n => n + 1);
-                  }}
+                  onApply={() => { setPage(1); setFilterNonce(n => n + 1); }}
                   onClear={() => {
                     setSelectedRep([]);
                     setSelectedRepRaw([]);
@@ -285,145 +262,135 @@ const Pedidos = () => {
                     setFilterNonce(n => n + 1);
                   }}
                 />
-
-                <PeriodPicker
-                  startDate={selectedPeriod.startDate}
-                  endDate={selectedPeriod.endDate}
-                  onChange={(v) => {
-                    setSelectedPeriod({ startDate: v.startDate.toISOString(), endDate: v.endDate.toISOString() });
-                    setPage(1);
-                    setFilterNonce(n => n + 1);
-                  }}
-                />
               </div>
 
-              <div className="flex items-center gap-3 flex-wrap">
-                <Button
-                  variant="outline"
-                  className="gap-2 text-xs sm:text-sm h-10 bg-muted/50 border-border hover:bg-foreground/10 hover:text-foreground hover:border-foreground/30 focus-visible:ring-0"
-                  onClick={() => navigate('/pedidos/criar')}
-                >
-                  <Plus size={16} /> <span className="hidden sm:inline">Criar</span> Pedido
-                </Button>
-                <select
-                  value={rowsPerPage}
-                  onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-                  className="appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-card text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
-                >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                </select>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{totalRecords} registros</span>
-              </div>
+              <PeriodPicker
+                startDate={selectedPeriod.startDate}
+                endDate={selectedPeriod.endDate}
+                onChange={(v) => {
+                  setSelectedPeriod({ startDate: v.startDate.toISOString(), endDate: v.endDate.toISOString() });
+                  setPage(1);
+                  setFilterNonce(n => n + 1);
+                }}
+              />
+
+              <Button
+                className="gap-2 h-12 px-6 rounded-xl bg-[#FF6A00] hover:bg-[#FF6A00]/90 text-white border-0 shadow-none font-medium ml-auto sm:ml-0"
+                onClick={() => navigate('/pedidos/criar')}
+              >
+                <Plus size={16} /> <span className="hidden sm:inline">Criar Pedido</span>
+              </Button>
             </div>
-
-            {/* Active filters indicator */}
-            {selectedRepRaw.length > 0 && (
-              <div className="px-5 sm:px-6 pb-3 flex items-center gap-2 flex-wrap">
-                <span className="text-xs text-muted-foreground">Filtros ativos:</span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
-                  Rep: {representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
-                  <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
-                </span>
-              </div>
-            )}
-
-            {/* Table */}
-            {showSkeleton ? (
-              <div className="px-2 sm:px-6 py-4">
-                <SkeletonTable columns={8} rows={10} headers={TABLE_HEADERS} />
-              </div>
-            ) : (
-              <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        {TABLE_HEADERS.map(h => (
-                          <TableHead key={h} className={`text-[11px] font-semibold text-muted-foreground uppercase tracking-wider ${h === 'AÇÕES' ? 'text-right' : ''}`}>{h}</TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredOrders.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
-                            Nenhum pedido encontrado
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        filteredOrders.map((o, idx) => {
-                          const code = o.orc_codorc_web || '';
-                          const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status || '—'), color: '#8b8b8b', bg: '#8b8b8b18' };
-                          return (
-                            <TableRow key={`${code}-${idx}`} className="hover:bg-accent/30 cursor-pointer border-b border-border/50" onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
-                              <TableCell className="text-sm font-semibold text-primary">
-                                #{code}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                <div className="text-foreground">{o.CLIENTE || ''}</div>
-                                {o.FANTER && (
-                                  <div className="text-xs text-muted-foreground">{o.FANTER}</div>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-sm text-foreground whitespace-nowrap">{formatDoc(o.orc_documento || '')}</TableCell>
-                              <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                                {o.LOCALIZACAO || '—'}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                <span
-                                  className="inline-block px-3 py-1 rounded-full text-xs font-medium border"
-                                  style={{ backgroundColor: st.bg, color: st.color, borderColor: st.color + '40' }}
-                                >
-                                  {st.label}
-                                </span>
-                                {o.orc_codorc_had > 0 && (
-                                  <div className="text-xs text-muted-foreground mt-1">ERP:{o.orc_codorc_had}</div>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-sm font-medium text-foreground whitespace-nowrap">{formatCurrency(o.orc_val_tot || 0)}</TableCell>
-                              <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{o.OIT_PESO || 0}</TableCell>
-                              <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{formatDate(o.DATA_PEDIDO || '')}</TableCell>
-                              <TableCell className="text-right" onClick={e => e.stopPropagation()}>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      className="h-8 px-3 text-xs font-light bg-muted/50 border-border data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground data-[state=open]:border-foreground/30 hover:bg-transparent hover:text-foreground focus-visible:ring-0 dark:hover:bg-transparent dark:hover:text-foreground"
-                                      style={{ fontFamily: "'Poppins', sans-serif" }}
-                                    >
-                                      Ações
-                                      <ChevronDown size={14} />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end" className="w-40">
-                                    <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
-                                      Visualizar
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`, { state: { edit: true } })}>
-                                      Editar
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-            )}
-
-            {/* Pagination */}
-            <TablePagination page={page} totalRecords={totalRecords} rowsPerPage={rowsPerPage} onPageChange={setPage} />
           </div>
-        )}
+
+          {/* Active filters indicator */}
+          {selectedRepRaw.length > 0 && (
+            <div className="pb-2 flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-muted-foreground">Filtros ativos:</span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
+                Rep: {representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
+                <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
+              </span>
+            </div>
+          )}
+
+          {error ? (
+            <div className="text-center py-20 text-red-500 font-medium">{(error as Error).message}</div>
+          ) : (
+            <div className="bg-card border border-border rounded-2xl overflow-hidden mt-2 shadow-sm transition-colors duration-200">
+              {showSkeleton ? (
+                <div className="p-6">
+                  <SkeletonTable columns={6} rows={10} headers={TABLE_HEADERS} />
+                </div>
+              ) : (
+                <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-muted/50 border-b border-border">
+                          {TABLE_HEADERS.map(h => (
+                            <th key={h} className={`px-6 py-4 text-[12px] font-semibold text-muted-foreground uppercase tracking-wider ${h === 'AÇÕES' ? 'text-right' : ''}`}>
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {filteredOrders.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="text-center text-muted-foreground py-16 text-sm">
+                              Nenhum pedido encontrado.
+                            </td>
+                          </tr>
+                        ) : (
+                          filteredOrders.map((o, idx) => {
+                            const code = o.orc_codorc_web || o.orc_codorc_had || '';
+                            const st = statusMap[String(o.orc_status)] || { label: String(o.orc_status || '—'), color: '#8b8b8b', bg: '#8b8b8b30' };
+                            return (
+                              <tr key={`${code}-${idx}`} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => navigate(`/pedidos/${o.orc_codorc_web}`)}>
+                                <td className="px-6 py-5">
+                                  <div className="font-bold text-foreground text-[14px]">
+                                    #{code}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-5">
+                                  <div className="font-bold text-foreground text-[14px] max-w-xs xl:max-w-md truncate" title={o.CLIENTE}>
+                                    {o.CLIENTE || '—'}
+                                  </div>
+                                  {o.FANTER && (
+                                    <div className="text-muted-foreground text-xs mt-1 truncate max-w-[200px]" title={o.FANTER}>
+                                      {o.FANTER}
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="px-6 py-5 text-sm text-foreground/80">
+                                  {formatDate(o.DATA_PEDIDO)}
+                                </td>
+                                <td className="px-6 py-5 font-bold text-foreground text-[14px]">
+                                  {formatCurrency(o.orc_val_tot || 0)}
+                                </td>
+                                <td className="px-6 py-5">
+                                  <div className="inline-flex items-center justify-center px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide"
+                                       style={{ backgroundColor: st.bg, color: st.color }}>
+                                    {st.label}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-5 text-right">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); navigate(`/pedidos/${o.orc_codorc_web}`); }}
+                                    className="inline-flex items-center justify-center h-9 w-9 rounded-full text-[#FF6A00] hover:bg-[#FF6A00]/10 transition-colors"
+                                  >
+                                    <Eye size={18} />
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <div className="p-4 border-t border-border bg-muted/30 flex items-center justify-between">
+                    <TablePagination page={page} totalRecords={totalRecords} rowsPerPage={rowsPerPage} onPageChange={setPage} />
+                    <select
+                      value={rowsPerPage}
+                      onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
+                      className="ml-4 border border-border rounded-lg px-3 py-1.5 text-xs bg-card text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-border transition-colors duration-200"
+                    >
+                      <option value={10}>10 linhas</option>
+                      <option value={25}>25 linhas</option>
+                      <option value={50}>50 linhas</option>
+                      <option value={100}>100 linhas</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </main>
-    </>
+    </div>
   );
 };
 

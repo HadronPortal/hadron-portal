@@ -1,23 +1,18 @@
-import { useState, useEffect, useMemo } from 'react';
-import FilterPanel from '@/components/erp/FilterPanel';
-import PeriodPicker from '@/components/erp/PeriodPicker';
+import { useState, useEffect } from 'react';
 import { useSessionState } from '@/hooks/use-session-state';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Search, Eye, Filter, X } from 'lucide-react';
+import { Search, Eye, Filter, Users, FileText, ShoppingCart, MapPin, Calendar, Sun, Moon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import TablePagination from '@/components/erp/TablePagination';
-import { type SelectedClient } from '@/components/erp/FilterClientPicker';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { fetchWithAuth } from '@/lib/auth-refresh';
-
+import FilterPanel from '@/components/erp/FilterPanel';
+import PeriodPicker from '@/components/erp/PeriodPicker';
+import { useTheme } from 'next-themes';
 
 interface ClienteAPI {
   ter_codter: number;
@@ -29,7 +24,6 @@ interface ClienteAPI {
   TOTAL_VENDAS: number | null;
   QUANT_VENDAS: number | null;
   ULT_VENDA: string | null;
-  ULT_CODORC: number | null;
   ter_dta_cad: string;
   COD_REP: number;
 }
@@ -47,18 +41,14 @@ const formatDoc = (doc: string) => {
   return doc;
 };
 
-const formatDate = (iso: string | null) => {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  return d.toLocaleDateString('pt-BR');
+const formatCurrency = (v: number | string | null) => {
+  if (v == null || v === '' || v === 0 || v === '0') return 'R$ 0,00';
+  const num = typeof v === 'string' ? parseFloat(v as string) : v;
+  if (isNaN(num)) return 'R$ 0,00';
+  return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
-const formatCurrency = (v: number | null) => {
-  if (v == null || v === 0) return 'R$ 0,00';
-  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-};
-
-const DEFAULT_START_DATE = new Date(2026, 0, 8);
+const DEFAULT_START_DATE = new Date(2025, 0, 1);
 const DEFAULT_END_DATE = new Date(2026, 2, 9);
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
@@ -74,6 +64,7 @@ const navItems = [
 const Clientes = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
   const { representantes } = useRepresentantes();
   const [activeTab, setActiveTab] = useSessionState<string>('clientes_tab', 'todos');
   const [rowsPerPage, setRowsPerPage] = useSessionState('clientes_rowsPerPage', 50);
@@ -86,10 +77,8 @@ const Clientes = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [filterNonce, setFilterNonce] = useState(0);
   const [selectedRepRaw, setSelectedRepRaw] = useSessionState<string[]>('global_repRaw', []);
-  const [selectedClients, setSelectedClients] = useSessionState<SelectedClient[]>('global_clients', []);
 
   const selectedPeriod = { startDate: new Date(selectedPeriodRaw.startDate), endDate: new Date(selectedPeriodRaw.endDate) };
   const setSelectedPeriod = (v: { startDate: Date | string; endDate: Date | string }) => {
@@ -98,12 +87,10 @@ const Clientes = () => {
       endDate: v.endDate instanceof Date ? v.endDate.toISOString() : v.endDate,
     });
   };
-  const hasActiveFilters = selectedRepRaw.length > 0 || searchQuery.trim() !== '' || selectedClients.length > 0 || selectedPeriodRaw.startDate !== DEFAULT_START_DATE.toISOString() || selectedPeriodRaw.endDate !== DEFAULT_END_DATE.toISOString();
+
   const repParam = selectedRep.length > 0 ? selectedRep.join(',') : '';
   const dateIniParam = toApiDate(selectedPeriod.startDate);
   const dateEndParam = toApiDate(selectedPeriod.endDate);
-  const clientCodes = selectedClients.map(c => c.code).join(',');
-  const effectiveRepParam = clientCodes ? '' : repParam;
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -122,9 +109,8 @@ const Clientes = () => {
           date_end: dateEndParam,
           client_filter: clientFilterMap[activeTab] || 'all',
         });
-        if (effectiveRepParam) params.set('rep', effectiveRepParam);
+        if (repParam) params.set('rep', repParam);
         if (searchQuery.trim()) params.set('search', searchQuery.trim());
-        if (clientCodes) params.set('codter', clientCodes);
 
         const url = `https://${projectId}.supabase.co/functions/v1/fetch-clients?${params.toString()}`;
         const res = await fetchWithAuth(url, { headers: { 'Content-Type': 'application/json' }, signal: abortController.signal });
@@ -149,9 +135,8 @@ const Clientes = () => {
       cancelled = true;
       abortController.abort();
     };
-  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce, activeTab, selectedClients]);
+  }, [page, rowsPerPage, repParam, dateIniParam, dateEndParam, searchQuery, filterNonce, activeTab]);
 
-  // Debounced search
   useEffect(() => {
     const t = setTimeout(() => {
       setSearchQuery(searchInput);
@@ -160,65 +145,10 @@ const Clientes = () => {
     return () => clearTimeout(t);
   }, [searchInput]);
 
-  const handleFilter = (filters: { startDate: Date; endDate: Date; repCodes: number[]; repCodesRaw: string[]; search: string }) => {
-    setSelectedPeriod({ startDate: filters.startDate, endDate: filters.endDate });
-    setSelectedRep(filters.repCodes);
-    setSearchQuery(filters.search);
-    setSearchInput(filters.search);
-    setPage(1);
-    setFilterNonce((n) => n + 1);
-  };
-  const handleClear = () => {
-    setSelectedRep([]);
-    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-    setSearchQuery('');
-    setSearchInput('');
-    setPage(1);
-    setFilterNonce((n) => n + 1);
-  };
-
-  const filtered = clients;
-
-  const clientCountByRep = clients.reduce<Record<number, number>>((acc, c) => {
-    acc[c.COD_REP] = (acc[c.COD_REP] || 0) + 1;
-    return acc;
-  }, {});
-
-  const totalPages = Math.ceil(totalRecords / rowsPerPage);
-
-  const toggleSelect = (id: number) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-  const toggleAll = () => {
-    if (selectedIds.size === filtered.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(filtered.map(c => c.ter_codter)));
-    }
-  };
-
-  const getPageNumbers = () => {
-    const pages: (number | '...')[] = [];
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      if (page > 3) pages.push('...');
-      for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i);
-      if (page < totalPages - 2) pages.push('...');
-      pages.push(totalPages);
-    }
-    return pages;
-  };
-
   return (
-    <>
-      {/* Hero banner - same as Dashboard */}
-      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))]">
+    <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-200">
+      {/* Hero banner */}
+      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))] transition-colors duration-200">
         <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
           <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Clientes</h1>
           <nav className="hidden lg:flex items-center gap-1">
@@ -238,210 +168,182 @@ const Clientes = () => {
                 </button>
               );
             })}
+            {/* Theme Toggle Button */}
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="ml-4 p-2 rounded-full hover:bg-primary-foreground/10 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+              title={theme === 'dark' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'}
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
           </nav>
         </div>
         <div className="h-16 sm:h-24" />
       </div>
 
       <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-6 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
+        <div className="bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xl flex flex-col gap-6 transition-colors duration-200">
 
-        {/* Main Card */}
-        <div className="bg-card border border-border rounded-xl shadow-sm">
-          {/* Toolbar */}
-          <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            {/* Search + Filter */}
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="relative w-full sm:max-w-xs">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder="Buscar clientes..."
-                  className="pl-9 h-10 bg-transparent border-border"
-                />
-              </div>
+        {/* Header Title */}
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold flex items-center gap-3 text-foreground">
+            <Users className="text-[#FF6A00]" size={36} />
+            Clientes
+          </h1>
+          <p className="text-muted-foreground text-[15px]">Gerencie sua base de clientes e contatos.</p>
+        </div>
 
-               <FilterPanel
+        {/* Tabs */}
+        <div className="flex items-center gap-2 bg-muted p-1.5 rounded-xl w-fit mt-2 transition-colors duration-200">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => { setActiveTab(tab.key); setPage(1); }}
+                className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all ${
+                  isActive
+                    ? 'bg-card text-[#FF6A00] shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Filters Row */}
+        <div className="flex flex-col lg:flex-row gap-4 w-full mt-2 justify-between">
+          {/* Search Input */}
+          <div className="relative w-full lg:w-[400px]">
+            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Buscar clientes..."
+              className="w-full h-12 bg-card border border-border rounded-xl pl-11 pr-4 text-sm focus:outline-none focus:border-border focus:ring-1 focus:ring-border text-foreground placeholder-muted-foreground transition-colors duration-200"
+            />
+          </div>
+
+          <div className="flex gap-4 items-center">
+            <div className="[&>button]:h-12 [&>button]:border-border [&>button]:bg-card [&>button:hover]:bg-accent [&>button:hover]:text-accent-foreground [&>button]:px-6 [&>button]:rounded-xl [&>button]:text-sm [&>button]:font-medium [&>button]:shadow-none transition-colors duration-200">
+              <FilterPanel
                 hideClientFilter
                 representantes={representantes}
                 selectedRepRaw={selectedRepRaw}
                 setSelectedRepRaw={setSelectedRepRaw}
                 selectedRep={selectedRep}
                 setSelectedRep={setSelectedRep}
-                selectedClients={selectedClients}
-                setSelectedClients={setSelectedClients}
-                hasActiveFilters={hasActiveFilters}
-                onApply={() => {
-                  setPage(1);
-                  setFilterNonce(n => n + 1);
-                }}
-                onClear={() => {
-                  setSelectedRep([]);
-                  setSelectedRepRaw([]);
-                  setSelectedClients([]);
-                  setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-                  setSearchQuery('');
-                  setSearchInput('');
-                  setPage(1);
-                  setFilterNonce(n => n + 1);
-                }}
-              />
-
-              <PeriodPicker
-                startDate={selectedPeriod.startDate}
-                endDate={selectedPeriod.endDate}
-                onChange={(v) => {
-                  setSelectedPeriod(v);
-                  setPage(1);
-                  setFilterNonce(n => n + 1);
-                }}
+                selectedClients={[]}
+                setSelectedClients={() => {}}
+                hasActiveFilters={selectedRep.length > 0}
+                onApply={() => { setPage(1); setFilterNonce(n => n + 1); }}
+                onClear={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }}
               />
             </div>
 
-            <div className="flex items-center gap-3 flex-wrap">
-              {/* Tabs */}
-              <div className="flex items-center bg-muted rounded-lg p-0.5">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.key}
-                    onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                    className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
-                      activeTab === tab.key
-                        ? 'bg-card text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Rows per page */}
-              <select
-                value={rowsPerPage}
-                onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-                className="appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-card text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer [&>option]:bg-card [&>option]:text-foreground"
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </div>
+            <PeriodPicker
+              startDate={selectedPeriod.startDate}
+              endDate={selectedPeriod.endDate}
+              onChange={(v) => { setSelectedPeriod(v); setPage(1); setFilterNonce(n => n + 1); }}
+            />
           </div>
+        </div>
 
-          {/* Active filters */}
-          {selectedRepRaw.length > 0 && (
-            <div className="px-5 sm:px-6 pb-3 flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-muted-foreground">Filtros ativos:</span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
-                Rep: {representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}
-                <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
-              </span>
-            </div>
-          )}
-
-          {/* Selected bar */}
-          {selectedIds.size > 0 && (
-            <div className="px-5 sm:px-6 pb-3 flex items-center gap-3">
-              <span className="text-sm font-medium text-foreground">{selectedIds.size} selecionado(s)</span>
-            </div>
-          )}
-
-          {/* Table */}
+        {/* Table Container */}
+        <div className="bg-card border border-border rounded-2xl overflow-hidden mt-4 shadow-xl transition-colors duration-200">
           {loading ? (
-            <div className="px-2 sm:px-6 py-4">
-              <SkeletonTable columns={8} rows={10} headers={['Cliente', 'Documento', 'Local', 'Status', 'Vendas', 'Cadastro', 'Ações']} />
+            <div className="p-6">
+              <SkeletonTable columns={5} rows={8} headers={['CLIENTE', 'DOCUMENTO / VENDAS', 'LOCALIZAÇÃO', 'STATUS', 'AÇÕES']} />
             </div>
           ) : error ? (
-            <div className="text-center py-16 text-destructive text-sm">{error}</div>
+            <div className="text-center py-20 text-red-500 font-medium">{error}</div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-t border-b border-border">
-                     <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Documento</th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Local</th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Vendas</th>
-                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cadastro</th>
-                    <th className="px-4 py-3 text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-16"></th>
+                  <tr className="bg-muted/50 border-b border-border">
+                    <th className="px-6 py-4 text-[12px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</th>
+                    <th className="px-6 py-4 text-[12px] font-semibold text-muted-foreground uppercase tracking-wider">Documento / Vendas</th>
+                    <th className="px-6 py-4 text-[12px] font-semibold text-muted-foreground uppercase tracking-wider">Localização</th>
+                    <th className="px-6 py-4 text-[12px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-[12px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Ações</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {filtered.length === 0 ? (
+                <tbody className="divide-y divide-border">
+                  {clients.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-center text-muted-foreground py-16 text-sm">
-                        Nenhum cliente encontrado
-                      </td>
+                      <td colSpan={5} className="text-center text-muted-foreground py-16 text-sm">Nenhum cliente encontrado.</td>
                     </tr>
                   ) : (
-                    filtered.map((c) => {
-                      const isPositivado = (c.TOTAL_VENDAS ?? 0) > 0;
+                    clients.map((c) => {
+                      const ultVendaDate = c.ULT_VENDA ? new Date(c.ULT_VENDA) : null;
+                      const isPositivado = ultVendaDate 
+                        ? ultVendaDate >= selectedPeriod.startDate && ultVendaDate <= selectedPeriod.endDate
+                        : false;
+                      
                       return (
-                        <tr
-                          key={c.ter_codter}
-                          className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors"
-                        >
-                           <td className="px-4 py-3.5">
-                            <div>
-                              <span className="text-sm font-normal text-foreground hover:text-primary cursor-pointer transition-colors">
-                                {c.ter_nomter}
-                              </span>
-                              {c.ter_fanter && (
-                                <p className="text-xs text-muted-foreground mt-0.5">{c.ter_fanter}</p>
-                              )}
+                        <tr key={c.ter_codter} className="hover:bg-muted/30 transition-colors">
+                          <td className="px-6 py-5">
+                            <div className="font-bold text-foreground text-[15px] max-w-xs xl:max-w-md truncate" title={c.ter_nomter}>
+                              {c.ter_nomter}
+                            </div>
+                            <div className="text-muted-foreground text-xs mt-1">
+                              ID: #{String(c.ter_codter).padStart(4, '0')}
                             </div>
                           </td>
-                          <td className="px-4 py-3.5 text-sm text-muted-foreground whitespace-nowrap">
-                            {formatDoc(c.ter_documento)}
+                          <td className="px-6 py-5">
+                            <div className="flex flex-col gap-1.5">
+                              <div className="flex items-center gap-2 text-sm text-foreground/80">
+                                <FileText size={15} className="text-muted-foreground" />
+                                {formatDoc(c.ter_documento)}
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-foreground/80">
+                                <ShoppingCart size={15} className="text-muted-foreground" />
+                                Vendas: {formatCurrency(c.TOTAL_VENDAS)}
+                              </div>
+                            </div>
                           </td>
-                          <td className="px-4 py-3.5 text-sm text-muted-foreground whitespace-nowrap">
-                            {c.TEN_CIDLGR} - {c.TEN_UF_LGR}
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-2 text-sm text-foreground/80">
+                              <MapPin size={15} className="text-muted-foreground" />
+                              {c.TEN_CIDLGR}, {c.TEN_UF_LGR}
+                            </div>
                           </td>
-                          <td className="px-4 py-3.5">
-                            <Badge
-                              variant="outline"
-                              className={`text-[11px] font-medium border-0 px-2.5 py-0.5 ${
-                                isPositivado
-                                  ? 'bg-[hsl(var(--erp-green)/0.12)] text-[hsl(var(--erp-green))]'
-                                  : 'bg-destructive/10 text-destructive'
-                              }`}
-                            >
+                          <td className="px-6 py-5">
+                            <div className={`inline-flex items-center justify-center px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide
+                              ${isPositivado ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-500' : 'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-500'}
+                            `}>
                               {isPositivado ? 'Ativo' : 'Inativo'}
-                            </Badge>
+                            </div>
                           </td>
-                          <td className="px-4 py-3.5 whitespace-nowrap">
-                            <span className="text-sm font-medium text-foreground">{formatCurrency(c.TOTAL_VENDAS)}</span>
-                            <span className="text-xs text-muted-foreground ml-1.5">({c.QUANT_VENDAS ?? 0})</span>
+                          <td className="px-6 py-5 text-right">
+                            <button
+                              onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { client: c } })}
+                              className="inline-flex items-center justify-center h-9 w-9 rounded-full text-blue-500 hover:bg-blue-500/10 transition-colors"
+                            >
+                              <Eye size={18} />
+                            </button>
                           </td>
-                          <td className="px-4 py-3.5 text-sm text-muted-foreground whitespace-nowrap">
-                            {formatDate(c.ter_dta_cad)}
-                          </td>
-                           <td className="px-4 py-3.5 text-center">
-                             <button
-                               onClick={() => navigate(`/clientes/${c.ter_codter}`, { state: { client: c } })}
-                               className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
-                               title="Visualizar"
-                             >
-                               <Eye size={16} />
-                             </button>
-                           </td>
                         </tr>
                       );
                     })
                   )}
                 </tbody>
               </table>
+              
+              <div className="p-4 border-t border-border bg-muted/30">
+                <TablePagination page={page} totalRecords={totalRecords} rowsPerPage={rowsPerPage} onPageChange={setPage} />
+              </div>
             </div>
           )}
-
-          {/* Pagination */}
-          <TablePagination page={page} totalRecords={totalRecords} rowsPerPage={rowsPerPage} onPageChange={setPage} />
+        </div>
+        
         </div>
       </main>
-    </>
+    </div>
   );
 };
 

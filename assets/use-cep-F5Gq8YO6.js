@@ -1,0 +1,1 @@
+import{r as c}from"./vendor-Pz6HhvY5.js";function l(e){const[r,t]=c.useState(!1);return{fetchCep:c.useCallback(async n=>{const a=n.replace(/\D/g,"");if(a.length===8){t(!0);try{const s=await(await fetch(`https://viacep.com.br/ws/${a}/json/`)).json();s.erro||e(s)}catch{}finally{t(!1)}}},[e]),loading:r}}export{l as u};

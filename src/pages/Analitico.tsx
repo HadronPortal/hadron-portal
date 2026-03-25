@@ -6,6 +6,7 @@ import PeriodPicker from '@/components/erp/PeriodPicker';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
 import RelatorioRepresentantes from '@/components/erp/relatorios/RelatorioRepresentantes';
+import RelatorioItensVendidos from '@/components/erp/relatorios/RelatorioItensVendidos';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -81,6 +82,7 @@ const reportTabs = [
   { key: 'produtos', label: 'Produtos' },
   { key: 'clientes', label: 'Clientes' },
   { key: 'pedidos', label: 'Pedidos' },
+  { key: 'itens_vendidos', label: 'Itens Vendidos' },
   { key: 'representantes', label: 'Representantes' },
   { key: 'comissionamento', label: 'Comissionamento' },
 ] as const;
@@ -384,14 +386,6 @@ const Analitico = () => {
                 </button>
               );
             })}
-            {/* Theme Toggle Button */}
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="ml-4 p-2 rounded-full hover:bg-primary-foreground/10 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-              title={theme === 'dark' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'}
-            >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
           </nav>
         </div>
         <div className="h-16 sm:h-24" />
@@ -741,6 +735,9 @@ const Analitico = () => {
 
           {/* Pedidos report */}
           {reportTab === 'pedidos' && <RelatorioPedidos filters={sharedFilters} />}
+
+          {/* Itens Vendidos report */}
+          {reportTab === 'itens_vendidos' && <RelatorioItensVendidos filters={sharedFilters} />}
 
           {/* Representantes report */}
           {reportTab === 'representantes' && <RelatorioRepresentantes filters={sharedFilters} />}

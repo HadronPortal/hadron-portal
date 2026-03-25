@@ -190,14 +190,6 @@ const Pedidos = () => {
                 </button>
               );
             })}
-            {/* Theme Toggle Button */}
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="ml-4 p-2 rounded-full hover:bg-primary-foreground/10 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-              title={theme === 'dark' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'}
-            >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
           </nav>
         </div>
         <div className="h-16 sm:h-24" />

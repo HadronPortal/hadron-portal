@@ -1,8 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const _API_ENV = Deno.env.get('ENVIRONMENT') || 'development';
-const API_BASE_URL = Deno.env.get('HADRON_API_URL') ?? (_API_ENV === 'production' ? 'https://app.hadronweb.com.br' : `${API_BASE_URL}`);
-
+const API_BASE_URL = Deno.env.get('HADRON_API_URL') ?? (_API_ENV === 'production' ? 'https://app.hadronweb.com.br' : 'https://dev.hadronweb.com.br');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,39 +29,87 @@ async function getServiceToken(): Promise<string> {
   return loginData.access_token;
 }
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const url = new URL(req.url);
-    const codpro = url.searchParams.get('codpro');
-    if (!codpro) {
-      return new Response(JSON.stringify({ error: 'codpro is required' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    const page = parseInt(url.searchParams.get('page') || '1', 10);
+    const limit = parseInt(url.searchParams.get('limit') || '50', 10);
+    const dateIni = url.searchParams.get('date_ini');
+    const dateEnd = url.searchParams.get('date_end');
+    const repParam = url.searchParams.get('rep');
+    const search = url.searchParams.get('search') || null;
+
+    let representante: number[] | null = null;
+    if (repParam && repParam !== 'all') {
+      representante = repParam.split(',').map(Number).filter(n => !isNaN(n));
+      if (representante.length === 0) representante = null;
     }
+
+    const formatDateBr = (d: string | null) => {
+      if (!d) return null;
+      const parts = d.split('-');
+      // Convert 2025-01-01 to 01/01/25 (exactly like Postman)
+      if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
+      return d;
+    };
 
     const token = extractUserToken(req) || await getServiceToken();
 
-    const res = await fetch(`${API_BASE_URL}/DEV/app/pages/apiItemReports`, {
+    // HARDCODING THE DEV ENDPOINT FOR DEBUGGING - MATCHING POSTMAN
+    const endpoint = "https://dev.hadronweb.com.br/app/pages/apiItemReports";
+
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ codpro: parseInt(codpro) }),
+      body: JSON.stringify({
+        search,
+        filter: {
+          date_ini: formatDateBr(dateIni),
+          date_end: formatDateBr(dateEnd),
+          group_id: "",
+          representante: repParam || null
+        },
+        pagination: {
+          page,
+          limit
+        },
+        sort: {
+          field: "code",
+          direction: "DESC"
+        }
+      }),
     });
 
     const responseText = await res.text();
-    if (!res.ok) throw new Error(`ItemReports fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
+    if (!res.ok) throw new Error(`apiItemReports fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
 
     let data;
-    try { data = JSON.parse(responseText); } catch { throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`); }
+    try { 
+      data = JSON.parse(responseText); 
+    } catch { 
+      throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`); 
+    }
 
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },
+    // Adding debug info to help the user verify in the Network tab
+    const finalData = {
+      ...data,
+      antigravity_debug: {
+        endpoint,
+        date_ini_sent: formatDateBr(dateIni),
+        date_end_sent: formatDateBr(dateEnd),
+        search_sent: search
+      }
+    };
+
+    return new Response(JSON.stringify(finalData), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
     });
   } catch (error) {
     console.error('Error:', error);

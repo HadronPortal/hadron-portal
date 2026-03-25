@@ -12,6 +12,8 @@ import { useApiFetch } from '@/hooks/use-api-fetch';
 import ScrollToTop from '@/components/ScrollToTop';
 import { exportPDF, exportCSV, exportXLSX, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
+import { useTheme } from 'next-themes';
+import { Sun, Moon } from 'lucide-react';
 
 const navItems = [
   { label: 'Home', path: '/' },
@@ -43,6 +45,7 @@ interface CatalogoAPIResponse {
 const Catalogo = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useSessionState('catalogo_limit', 12);
   const [selectedRep, setSelectedRep] = useState<number[]>([]);
@@ -168,9 +171,9 @@ const Catalogo = () => {
   }, [repParam, searchQuery]);
 
   return (
-    <>
+    <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-200">
       {/* Hero banner */}
-      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))]">
+      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))] transition-colors duration-200">
         <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
           <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Catálogo</h1>
           <nav className="hidden lg:flex items-center gap-1">
@@ -190,6 +193,14 @@ const Catalogo = () => {
                 </button>
               );
             })}
+            {/* Theme Toggle Button */}
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="ml-4 p-2 rounded-full hover:bg-primary-foreground/10 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+              title={theme === 'dark' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'}
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
           </nav>
         </div>
         <div className="h-10 sm:h-16" />
@@ -422,7 +433,7 @@ const Catalogo = () => {
         />
       </main>
       </div>
-    </>
+    </div>
   );
 };
 

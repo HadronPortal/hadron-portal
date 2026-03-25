@@ -15,6 +15,8 @@ import SkeletonCustomers from '@/components/erp/skeletons/SkeletonCustomers';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import SkeletonProducts from '@/components/erp/skeletons/SkeletonProducts';
 import FadeIn from '@/components/erp/skeletons/FadeIn';
+import { useTheme } from 'next-themes';
+import { Sun, Moon } from 'lucide-react';
 
 interface DashboardAPIResponse {
   cards: {
@@ -66,6 +68,7 @@ function mapStatus(status: unknown): 'enviado' | 'aprovado' | 'confirmado' | 'pe
 }
 
 const Index = () => {
+  const { theme, setTheme } = useTheme();
   const { data: dashData, isLoading, error } = useApiFetch<DashboardAPIResponse>({
     queryKey: ['dashboard'],
     endpoint: 'fetch-dashboard',
@@ -139,9 +142,9 @@ const Index = () => {
   ];
 
   return (
-    <>
+    <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-200">
       {/* Hero banner */}
-      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))]">
+      <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))] transition-colors duration-200">
         <div className="absolute inset-x-0 top-0 h-[70px] bg-[hsl(var(--erp-banner))]" />
         <div className="h-[70px]" />
         <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
@@ -163,6 +166,14 @@ const Index = () => {
                 </button>
               );
             })}
+            {/* Theme Toggle Button */}
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="ml-4 p-2 rounded-full hover:bg-primary-foreground/10 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+              title={theme === 'dark' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'}
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
           </nav>
         </div>
         <div className="h-16 sm:h-24" />
@@ -225,7 +236,7 @@ const Index = () => {
           </FadeIn>
         )}
       </main>
-    </>
+    </div>
   );
 };
 

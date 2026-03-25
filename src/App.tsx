@@ -48,7 +48,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/hadron-portal">
         <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Spinner /></div>}>
           <Routes>
             {/* ERP pages share Header via ErpLayout */}

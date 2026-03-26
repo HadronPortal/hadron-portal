@@ -41,7 +41,7 @@ const OrdersTable = ({ orders: propOrders }: { orders: Order[] }) => {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <Table>
+        <Table className="min-w-[650px]">
           <TableHeader>
             <TableRow className="border-b border-border">
               <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">ID do Pedido</TableHead>

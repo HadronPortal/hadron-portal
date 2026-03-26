@@ -11,6 +11,7 @@ import TablePagination from '@/components/erp/TablePagination';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { fetchWithAuth } from '@/lib/auth-refresh';
 import FilterPanel from '@/components/erp/FilterPanel';
+import AdvancedFilter from '@/components/erp/AdvancedFilter';
 import PeriodPicker from '@/components/erp/PeriodPicker';
 import { useTheme } from 'next-themes';
 
@@ -179,7 +180,7 @@ const Clientes = () => {
         {/* Header Title */}
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold flex items-center gap-3 text-foreground">
-            <Users className="text-[#FF6A00]" size={36} />
+            <Users className="text-primary" size={36} />
             Clientes
           </h1>
           <p className="text-muted-foreground text-[15px]">Gerencie sua base de clientes e contatos.</p>
@@ -195,7 +196,7 @@ const Clientes = () => {
                 onClick={() => { setActiveTab(tab.key); setPage(1); }}
                 className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all ${
                   isActive
-                    ? 'bg-card text-[#FF6A00] shadow-sm'
+                    ? 'bg-card text-primary shadow-sm'
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
                 }`}
               >
@@ -205,44 +206,34 @@ const Clientes = () => {
           })}
         </div>
 
-        {/* Filters Row */}
-        <div className="flex flex-col lg:flex-row gap-4 w-full mt-2 justify-between">
-          {/* Search Input */}
-          <div className="relative w-full lg:w-[400px]">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Buscar clientes..."
-              className="w-full h-12 bg-card border border-border rounded-xl pl-11 pr-4 text-sm focus:outline-none focus:border-border focus:ring-1 focus:ring-border text-foreground placeholder-muted-foreground transition-colors duration-200"
-            />
-          </div>
-
-          <div className="flex gap-4 items-center">
-            <div className="[&>button]:h-12 [&>button]:border-border [&>button]:bg-card [&>button:hover]:bg-accent [&>button:hover]:text-accent-foreground [&>button]:px-6 [&>button]:rounded-xl [&>button]:text-sm [&>button]:font-medium [&>button]:shadow-none transition-colors duration-200">
-              <FilterPanel
-                hideClientFilter
-                representantes={representantes}
-                selectedRepRaw={selectedRepRaw}
-                setSelectedRepRaw={setSelectedRepRaw}
-                selectedRep={selectedRep}
-                setSelectedRep={setSelectedRep}
-                selectedClients={[]}
-                setSelectedClients={() => {}}
-                hasActiveFilters={selectedRep.length > 0}
-                onApply={() => { setPage(1); setFilterNonce(n => n + 1); }}
-                onClear={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }}
-              />
-            </div>
-
-            <PeriodPicker
-              startDate={selectedPeriod.startDate}
-              endDate={selectedPeriod.endDate}
-              onChange={(v) => { setSelectedPeriod(v); setPage(1); setFilterNonce(n => n + 1); }}
-            />
-          </div>
-        </div>
+        {/* Advanced Filter Row */}
+        <AdvancedFilter 
+          placeholder="Buscar por cliente, documento, cidade..."
+          representantes={representantes}
+          totalRecords={totalRecords}
+          statusOptions={[
+            { label: 'Todos', value: 'todos' },
+            { label: 'Positivados', value: 'positivados' },
+            { label: 'Novos', value: 'novos' },
+          ]}
+          initialFilters={{
+            startDate: selectedPeriod.startDate,
+            endDate: selectedPeriod.endDate,
+            search: searchQuery,
+            repCodes: selectedRep,
+            status: activeTab
+          }}
+          onFilter={(f) => {
+            setSearchQuery(f.search);
+            setSearchInput(f.search);
+            setSelectedPeriod({ startDate: f.startDate, endDate: f.endDate });
+            setSelectedRep(f.repCodes || []);
+            setSelectedRepRaw((f.repCodes || []).map(String));
+            if (f.status) setActiveTab(f.status);
+            setPage(1);
+            setFilterNonce(n => n + 1);
+          }}
+        />
 
         {/* Table Container */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden mt-4 shadow-xl transition-colors duration-200">
@@ -253,8 +244,8 @@ const Clientes = () => {
           ) : error ? (
             <div className="text-center py-20 text-red-500 font-medium">{error}</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto px-1">
+              <table className="w-full min-w-[800px] text-left border-collapse">
                 <thead>
                   <tr className="bg-muted/50 border-b border-border">
                     <th className="px-6 py-4 text-[12px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</th>

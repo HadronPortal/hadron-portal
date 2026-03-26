@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const _API_ENV = Deno.env.get('ENVIRONMENT') || 'development';
 const API_BASE_URL = Deno.env.get('HADRON_API_URL') ?? (_API_ENV === 'production' ? 'https://app.hadronweb.com.br' : 'https://dev.hadronweb.com.br');
+const CONTEXT = _API_ENV === 'production' ? 'APP' : 'DEV';
+
 
 
 const corsHeaders = {
@@ -89,7 +91,7 @@ serve(async (req) => {
         },
       };
 
-      const res = await fetchWithRetry(`${API_BASE_URL}/app/pages/apiRepresentatives`, {
+      const res = await fetchWithRetry(`${API_BASE_URL}/${CONTEXT}/app/pages/apiRepresentatives`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

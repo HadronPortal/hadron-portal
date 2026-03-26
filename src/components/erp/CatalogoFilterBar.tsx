@@ -59,9 +59,9 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
 
   const clearFilters = () => onChange({ ...defaultFilters, sortField: filters.sortField, sortDir: filters.sortDir });
 
-  const selectClass = "appearance-none border border-border rounded-lg pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-9 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer";
+  const selectClass = "appearance-none border border-border rounded-xl pl-3 pr-7 py-1.5 text-sm bg-card text-foreground h-[34px] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer";
 
-  const inputClass = "h-9 w-full rounded-lg border border-border bg-transparent px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
+  const inputClass = "h-[34px] w-full rounded-xl border border-border bg-transparent px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 
   /* Shared sub-components rendered in different positions based on mobile/desktop */
   const exportDropdown = onExport ? (
@@ -69,7 +69,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
       <Button
         variant="outline"
         size="sm"
-        className={`h-9 gap-1.5 text-sm ${isMobile ? 'w-full justify-between' : ''}`}
+        className={`h-[34px] gap-1.5 text-sm rounded-xl ${isMobile ? 'w-full justify-between' : ''}`}
         onClick={() => setExportOpen(!exportOpen)}
       >
         <span className="flex items-center gap-1.5">
@@ -121,7 +121,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
       </select>
       <button
         onClick={() => update({ sortDir: filters.sortDir === 'asc' ? 'desc' : 'asc' })}
-        className={`h-9 px-3 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-1 whitespace-nowrap ${isMobile ? 'text-xs w-full' : 'text-sm'}`}
+        className={`h-[34px] px-3 rounded-xl border border-border font-medium text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-1 whitespace-nowrap ${isMobile ? 'text-xs w-full' : 'text-sm'}`}
       >
         {filters.sortDir === 'asc' ? (isMobile ? '↑ Cresc.' : '↑ Crescente') : (isMobile ? '↓ Decresc.' : '↓ Decrescente')}
       </button>
@@ -136,7 +136,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
         placeholder="Buscar produtos..."
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="w-full h-9 pl-9 pr-4 rounded-lg border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        className="w-full h-[34px] pl-9 pr-4 rounded-xl border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
       />
     </div>
   );
@@ -213,7 +213,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
                 onClick={() => update({ stockFilter: val as CatalogoFilters['stockFilter'] })}
                 className={`px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-medium transition-colors ${
                   filters.stockFilter === val
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-primary text-white underline decoration-2 underline-offset-4 font-bold'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
@@ -247,7 +247,7 @@ const CatalogoFilterBar = ({ filters, onChange, categories, searchQuery, onSearc
             >
               <SheetTrigger asChild>
                 <button
-                  className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors shrink-0 rounded-lg border border-border px-3 h-9"
+                  className="flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors shrink-0 rounded-xl border border-border px-3 h-[34px]"
                 >
                   <Filter className="w-4 h-4" />
                   Filtrar

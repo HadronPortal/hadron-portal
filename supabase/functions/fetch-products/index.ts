@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const _API_ENV = Deno.env.get('ENVIRONMENT') || 'development';
 const API_BASE_URL = Deno.env.get('HADRON_API_URL') ?? (_API_ENV === 'production' ? 'https://app.hadronweb.com.br' : 'https://dev.hadronweb.com.br');
+const CONTEXT = _API_ENV === 'production' ? 'APP' : 'DEV';
+
 
 
 const corsHeaders = {
@@ -66,7 +68,7 @@ serve(async (req) => {
       sort: sortField ? { field: sortField, direction: sortDir } : { field: 'pro_codpro', direction: 'ASC' },
     };
 
-    const res = await fetch(`${API_BASE_URL}/DEV/app/pages/apiProducts`, {
+    const res = await fetch(`${API_BASE_URL}/${CONTEXT}/app/pages/apiProducts`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),

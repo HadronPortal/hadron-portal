@@ -1,6 +1,5 @@
 import { Package } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface Produto {
   codigo: number;
@@ -12,6 +11,7 @@ interface Produto {
 
 interface Props {
   produtos: Produto[];
+  onProductClick: (produto: Produto) => void;
 }
 
 const getProxyUrl = (foto: string) => {
@@ -43,9 +43,7 @@ const ProductImage = ({ foto, descricao }: { foto: string; descricao: string }) 
   );
 };
 
-const ProductDeliveryCard = ({ produtos }: Props) => {
-  const navigate = useNavigate();
-
+const ProductDeliveryCard = ({ produtos, onProductClick }: Props) => {
   return (
     <div className="bg-card rounded-xl border border-border p-6 flex flex-col h-full">
       <div className="mb-1">
@@ -60,7 +58,7 @@ const ProductDeliveryCard = ({ produtos }: Props) => {
           produtos.map((item) => (
             <div
               key={item.codigo}
-              onClick={() => navigate(`/produtos/${item.codigo}`)}
+              onClick={() => onProductClick(item)}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/30 cursor-pointer transition-colors"
             >
               <ProductImage foto={item.foto || ''} descricao={item.descricao} />

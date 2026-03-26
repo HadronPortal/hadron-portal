@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const _API_ENV = Deno.env.get('ENVIRONMENT') || 'development';
 const API_BASE_URL = Deno.env.get('HADRON_API_URL') ?? (_API_ENV === 'production' ? 'https://app.hadronweb.com.br' : 'https://dev.hadronweb.com.br');
+const CONTEXT = _API_ENV === 'production' ? 'APP' : 'DEV';
+
 
 
 const corsHeaders = {
@@ -44,7 +46,7 @@ serve(async (req) => {
   try {
     const token = extractUserToken(req) || await getServiceToken();
 
-    const res = await fetch(`${API_BASE_URL}/DEV/app/pages/apiListaReps`, {
+    const res = await fetch(`${API_BASE_URL}/${CONTEXT}/app/pages/apiListaReps`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` },
     });

@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const _API_ENV = Deno.env.get('ENVIRONMENT') || 'development';
 const API_BASE_URL = Deno.env.get('HADRON_API_URL') ?? (_API_ENV === 'production' ? 'https://app.hadronweb.com.br' : 'https://dev.hadronweb.com.br');
+const CONTEXT = _API_ENV === 'production' ? 'APP' : 'DEV';
+
 
 
 const corsHeaders = {
@@ -23,7 +25,7 @@ async function getServiceToken(): Promise<string> {
   const email = Deno.env.get('HADRON_API_EMAIL');
   const password = Deno.env.get('HADRON_API_PASSWORD');
   if (!email || !password) throw new Error('Missing API credentials');
-  const loginRes = await fetch(`${API_BASE_URL}/DEV/app/AuthUsuarios/apiLogin`, {
+  const loginRes = await fetch(`${API_BASE_URL}/${CONTEXT}/app/AuthUsuarios/apiLogin`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ aus_email: email, aus_senha: password }),
@@ -65,7 +67,7 @@ serve(async (req) => {
       sort: sortField ? { field: sortField, direction: sortDir } : undefined,
     };
 
-    const res = await fetch(`${API_BASE_URL}/DEV/app/pages/apiAnalytics`, {
+    const res = await fetch(`${API_BASE_URL}/${CONTEXT}/app/pages/apiAnalytics`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),

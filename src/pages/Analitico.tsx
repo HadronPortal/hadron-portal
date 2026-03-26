@@ -1,8 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useSessionState } from '@/hooks/use-session-state';
 import RelatorioClientes, { type SelectedClient } from '@/components/erp/relatorios/RelatorioClientes';
-import FilterPanel from '@/components/erp/FilterPanel';
-import PeriodPicker from '@/components/erp/PeriodPicker';
+import AdvancedFilter from '@/components/erp/AdvancedFilter';
 import RelatorioPedidos from '@/components/erp/relatorios/RelatorioPedidos';
 import RelatorioProdutos from '@/components/erp/relatorios/RelatorioProdutos';
 import RelatorioRepresentantes from '@/components/erp/relatorios/RelatorioRepresentantes';
@@ -14,9 +13,10 @@ import { Search, Download, Filter, CalendarIcon, X, FileText, FileSpreadsheet, U
 import { exportPDF, exportCSV, exportXLSX, fetchAllForExport } from '@/lib/export-utils';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 import { useTheme } from 'next-themes';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Menu, ChevronDown } from 'lucide-react';
 
 import { useRepresentantes } from '@/hooks/use-representantes';
 import {
@@ -67,8 +67,8 @@ const formatCurrency = (v: number) =>
 const formatWeight = (v: number) =>
   v.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' Kg';
 
-const DEFAULT_START_DATE = new Date(2026, 0, 8);
-const DEFAULT_END_DATE = new Date(2026, 2, 9);
+const DEFAULT_END_DATE = new Date();
+const DEFAULT_START_DATE = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
 const toApiDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
@@ -95,6 +95,7 @@ const comissionamentoSubTabs = [
 ] as const;
 
 const Analitico = () => {
+  const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
@@ -398,93 +399,94 @@ const Analitico = () => {
           {/* Header Title */}
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl font-bold flex items-center gap-3 text-foreground">
-              <BarChart2 className="text-[#FF6A00]" size={36} />
+              <BarChart2 className="text-primary" size={36} />
               Relatórios e Análises
             </h1>
             <p className="text-muted-foreground text-[15px]">Analise os dados e a performance da sua operação de vendas.</p>
           </div>
 
           {/* Report-level tabs */}
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit max-w-full overflow-x-auto scrollbar-none transition-colors duration-200">
-            {reportTabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setReportTab(tab.key)}
-                className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap ${
-                  reportTab === tab.key
-                    ? 'bg-card text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          {isMobile ? (
+            <div className="w-full">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between h-11 border-border bg-card">
+                    <div className="flex items-center gap-2">
+                      <Menu size={18} className="text-primary" />
+                      <span className="font-semibold">{reportTabs.find(t => t.key === reportTab)?.label}</span>
+                    </div>
+                    <ChevronDown size={16} className="text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-[calc(100vw-48px)] bg-card border-border">
+                  {reportTabs.map((tab) => (
+                    <DropdownMenuItem
+                      key={tab.key}
+                      onClick={() => setReportTab(tab.key)}
+                      className={`h-11 font-medium ${reportTab === tab.key ? 'text-primary bg-primary/10' : 'text-foreground'}`}
+                    >
+                      {tab.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit max-w-full overflow-x-auto scrollbar-none transition-colors duration-200">
+              {reportTabs.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setReportTab(tab.key)}
+                  className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap ${
+                    reportTab === tab.key
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          )}
 
-          {/* Shared Toolbar - visible on all tabs */}
-          <div className="flex flex-col gap-3 sm:gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-              {/* Search + Filter + Period */}
-              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                <div className="relative flex-1 min-w-0 sm:max-w-xs">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder="Buscar..."
-                    className="pl-9 h-10 bg-transparent border-border"
-                  />
-                </div>
-
-                <FilterPanel
-                  hideClientFilter={reportTab === 'clientes'}
-                  representantes={representantes}
-                  selectedRepRaw={selectedRepRaw}
-                  setSelectedRepRaw={setSelectedRepRaw}
-                  selectedRep={selectedRep}
-                  setSelectedRep={setSelectedRep}
-                  selectedClients={selectedClients}
-                  setSelectedClients={setSelectedClients}
-                  hasActiveFilters={hasActiveFilters}
-                  onApply={() => {
-                    setSearchQuery(searchInput);
-                    setPage(1);
-                    setFilterNonce(n => n + 1);
-                  }}
-                  onClear={() => {
-                    setSelectedRep([]);
-                    setSelectedRepRaw([]);
-                    setSelectedClients([]);
-                    setSelectedPeriod({ startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE });
-                    setSearchQuery('');
-                    setSearchInput('');
-                    setPage(1);
-                    setFilterNonce(n => n + 1);
-                  }}
-                />
-
-                <PeriodPicker
-                  startDate={selectedPeriod.startDate}
-                  endDate={selectedPeriod.endDate}
-                  onChange={(v) => {
-                    setSelectedPeriod(v);
-                    setPage(1);
-                    setFilterNonce(n => n + 1);
-                  }}
-                />
-              </div>
-
-              <div className="flex items-center gap-3 flex-wrap">
+          {/* Advanced Filter Row */}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col lg:flex-row items-end gap-4 w-full">
+              <AdvancedFilter 
+                className="flex-1"
+                placeholder="Buscar por produto, cliente, SKU..."
+                representantes={representantes}
+                totalRecords={totalRecords}
+                initialFilters={{
+                  startDate: selectedPeriod.startDate,
+                  endDate: selectedPeriod.endDate,
+                  search: searchInput,
+                  repCodes: selectedRep,
+                  selectedClients: selectedClients
+                }}
+                onFilter={(f) => {
+                  setSearchInput(f.search);
+                  setSearchQuery(f.search);
+                  setSelectedPeriod({ startDate: f.startDate, endDate: f.endDate });
+                  setSelectedRep(f.repCodes || []);
+                  setSelectedRepRaw((f.repCodes || []).map(String));
+                  setSelectedClients(f.selectedClients || []);
+                  setPage(1);
+                  setFilterNonce(n => n + 1);
+                }}
+              />
+              
+              <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
                 {/* Operation tabs - Sintético */}
                 {reportTab === 'sintetico' && (
-                  <div className="flex items-center bg-muted rounded-lg p-0.5">
+                  <div className="flex items-center bg-muted rounded-lg p-0.5 h-[34px]">
                     {tabs.map((tab) => (
                       <button
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
-                        className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+                        className={`px-3.5 h-full text-xs font-semibold rounded-md transition-all ${
                           activeTab === tab.key
-                            ? 'bg-card text-foreground shadow-sm'
+                            ? 'bg-card text-primary shadow-sm'
                             : 'text-muted-foreground hover:text-foreground'
                         }`}
                       >
@@ -496,14 +498,14 @@ const Analitico = () => {
 
                 {/* Sub-tabs - Comissionamento */}
                 {reportTab === 'comissionamento' && (
-                  <div className="flex items-center bg-muted rounded-lg p-0.5">
+                  <div className="flex items-center bg-muted rounded-lg p-0.5 h-[34px]">
                     {comissionamentoSubTabs.map((tab) => (
                       <button
                         key={tab.key}
                         onClick={() => setComissionamentoSubTab(tab.key)}
-                        className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
+                        className={`px-3.5 h-full text-xs font-semibold rounded-md transition-all ${
                           comissionamentoSubTab === tab.key
-                            ? 'bg-card text-foreground shadow-sm'
+                            ? 'bg-card text-primary shadow-sm'
                             : 'text-muted-foreground hover:text-foreground'
                         }`}
                       >
@@ -513,11 +515,10 @@ const Analitico = () => {
                   </div>
                 )}
 
-                {/* Rows per page */}
                 <select
                   value={rowsPerPage}
                   onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-                  className="appearance-none border border-border rounded-lg px-3 py-2 text-xs bg-transparent text-foreground h-9 pr-7 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_4px_center] bg-no-repeat cursor-pointer"
+                  className="appearance-none border border-border rounded-xl px-4 py-2 text-xs font-bold bg-card text-foreground h-[34px] pr-8 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_8px_center] bg-no-repeat cursor-pointer focus:ring-2 focus:ring-primary/20 outline-none"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -525,63 +526,29 @@ const Analitico = () => {
                   <option value={100}>100</option>
                 </select>
 
-                <Popover open={exportOpen} onOpenChange={setExportOpen}>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs font-medium">
-                      <Download size={14} />
-                      Exportar
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-40 p-1.5" align="end">
-                    <button
-                      onClick={() => { handleExport('pdf'); setExportOpen(false); }}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
-                    >
-                      <FileText size={14} className="text-destructive" /> Exportar PDF
-                    </button>
-                    <button
-                      onClick={() => { handleExport('csv'); setExportOpen(false); }}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
-                    >
-                      <FileSpreadsheet size={14} className="text-primary" /> Exportar CSV
-                    </button>
-                    <button
-                      onClick={() => { handleExport('xlsx'); setExportOpen(false); }}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-accent transition-colors text-foreground"
-                    >
-                      <FileSpreadsheet size={14} className="text-green-600" /> Exportar XLSX
-                    </button>
-                  </PopoverContent>
-                </Popover>
+                <div className="flex items-center gap-2">
+                  <DropdownMenu open={exportOpen} onOpenChange={setExportOpen}>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="h-[34px] px-4 gap-2 border shadow-sm rounded-xl bg-card font-bold text-xs hover:border-primary/50 transition-all">
+                        <Download size={14} />
+                        Exportar
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 bg-card border-border">
+                      <DropdownMenuItem onClick={() => handleExport('pdf')} className="gap-2 cursor-pointer font-medium">
+                        <FileText size={14} className="text-destructive" /> Exportar PDF
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExport('csv')} className="gap-2 cursor-pointer font-medium">
+                        <FileSpreadsheet size={14} className="text-primary" /> Exportar CSV
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExport('xlsx')} className="gap-2 cursor-pointer font-medium">
+                        <FileSpreadsheet size={14} className="text-green-600" /> Exportar XLSX
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             </div>
-
-            {/* Active filters indicator */}
-            {(selectedRepRaw.length > 0 || searchQuery.trim() || selectedClients.length > 0) && (
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs text-muted-foreground">Filtros ativos:</span>
-                {selectedRepRaw.length > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
-                    {selectedRepRaw.length === 1
-                      ? `Rep: ${representantes.find((r: any) => String(r.rep_codrep) === selectedRepRaw[0])?.rep_nomrep || selectedRepRaw[0]}`
-                      : `${selectedRepRaw.length} representantes`}
-                    <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedRep([]); setSelectedRepRaw([]); setPage(1); setFilterNonce(n => n + 1); }} />
-                  </span>
-                )}
-                {selectedClients.length > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-xs text-primary font-medium">
-                    {selectedClients.length} cliente{selectedClients.length > 1 ? 's' : ''}
-                    <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSelectedClients([]); setPage(1); setFilterNonce(n => n + 1); }} />
-                  </span>
-                )}
-                {searchQuery.trim() && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent text-xs text-foreground">
-                    Busca: {searchQuery}
-                    <X size={12} className="cursor-pointer hover:text-destructive" onClick={() => { setSearchQuery(''); setSearchInput(''); setPage(1); setFilterNonce(n => n + 1); }} />
-                  </span>
-                )}
-              </div>
-            )}
           </div>
 
           {/* Sintético report content */}

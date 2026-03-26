@@ -1,5 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { subDays, format } from 'date-fns';
+import { BarChart2, ShoppingCart } from 'lucide-react';
+import { useSessionState } from '@/hooks/use-session-state';
+import AdvancedFilter from '@/components/erp/AdvancedFilter';
 
 import OrdersTable from '@/components/erp/OrdersTable';
 import { useApiFetch } from '@/hooks/use-api-fetch';
@@ -8,6 +12,7 @@ import EarningsCard from '@/components/erp/dashboard/EarningsCard';
 import SalesChartCard from '@/components/erp/dashboard/SalesChartCard';
 import NewCustomersCard from '@/components/erp/dashboard/NewCustomersCard';
 import ProductDeliveryCard from '@/components/erp/dashboard/ProductDeliveryCard';
+import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 
 import SkeletonEarnings from '@/components/erp/skeletons/SkeletonEarnings';
 import SkeletonChart from '@/components/erp/skeletons/SkeletonChart';
@@ -15,8 +20,6 @@ import SkeletonCustomers from '@/components/erp/skeletons/SkeletonCustomers';
 import SkeletonTable from '@/components/erp/skeletons/SkeletonTable';
 import SkeletonProducts from '@/components/erp/skeletons/SkeletonProducts';
 import FadeIn from '@/components/erp/skeletons/FadeIn';
-import { useTheme } from 'next-themes';
-import { Sun, Moon } from 'lucide-react';
 
 interface DashboardAPIResponse {
   cards: {
@@ -68,12 +71,13 @@ function mapStatus(status: unknown): 'enviado' | 'aprovado' | 'confirmado' | 'pe
 }
 
 const Index = () => {
-  const { theme, setTheme } = useTheme();
+  const [selectedProduct, setSelectedProduct] = useState<{ codigo: number; descricao: string; foto: string } | null>(null);
+
   const { data: dashData, isLoading, error } = useApiFetch<DashboardAPIResponse>({
     queryKey: ['dashboard'],
     endpoint: 'fetch-dashboard',
     params: {},
-    staleTime: 2 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });
 
   const cards = dashData?.cards;
@@ -145,7 +149,7 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-200">
       {/* Hero banner */}
       <div className="relative overflow-hidden bg-[hsl(var(--erp-banner))] transition-colors duration-200">
-        <div className="absolute inset-x-0 top-0 h-[70px] bg-[hsl(var(--erp-banner))]" />
+        <div className="absolute inset-y-0 top-0 h-[70px] bg-[hsl(var(--erp-banner))]" />
         <div className="h-[70px]" />
         <div className="relative px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 flex items-center justify-between max-w-[1600px] mx-auto w-full">
           <h1 className="text-lg sm:text-2xl font-bold text-primary-foreground">Dashboard</h1>
@@ -166,20 +170,13 @@ const Index = () => {
                 </button>
               );
             })}
-            {/* Theme Toggle Button */}
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="ml-4 p-2 rounded-full hover:bg-primary-foreground/10 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-              title={theme === 'dark' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'}
-            >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
           </nav>
         </div>
         <div className="h-16 sm:h-24" />
       </div>
 
       <main className="flex-1 px-4 sm:px-8 lg:px-12 xl:px-16 pb-6 space-y-4 sm:space-y-5 -mt-16 sm:-mt-24 relative z-10 max-w-[1600px] mx-auto w-full">
+
         {error ? (
           <div className="bg-card border border-border rounded-xl p-8 text-center">
             <p className="text-destructive text-sm">{(error as Error).message}</p>
@@ -231,8 +228,19 @@ const Index = () => {
               <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
                 <OrdersTable orders={orders} />
               </div>
-              <ProductDeliveryCard produtos={topProdutos} />
+              <ProductDeliveryCard
+                produtos={topProdutos}
+                onProductClick={(p) => setSelectedProduct({ codigo: p.codigo, descricao: p.descricao, foto: p.foto || '' })}
+              />
             </div>
+
+            <CatalogoDetalhe
+              open={!!selectedProduct}
+              onOpenChange={(open) => { if (!open) setSelectedProduct(null); }}
+              productId={selectedProduct?.codigo ?? null}
+              productName={selectedProduct?.descricao}
+              productFoto={selectedProduct?.foto}
+            />
           </FadeIn>
         )}
       </main>

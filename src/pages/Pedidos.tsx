@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import FilterPanel from '@/components/erp/FilterPanel';
+import AdvancedFilter from '@/components/erp/AdvancedFilter';
 import PeriodPicker from '@/components/erp/PeriodPicker';
 import { type SelectedClient } from '@/components/erp/FilterClientPicker';
 import { useSessionState } from '@/hooks/use-session-state';
@@ -212,67 +213,48 @@ const Pedidos = () => {
           {/* Header Title */}
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl font-bold flex items-center gap-3 text-foreground">
-              <ShoppingCart className="text-[#FF6A00]" size={36} />
+              <ShoppingCart className="text-primary" size={36} />
               Pedidos
             </h1>
             <p className="text-muted-foreground text-[15px]">Acompanhe e gerencie os pedidos de venda.</p>
           </div>
 
-          {/* Filters Row */}
-          <div className="flex flex-col lg:flex-row gap-4 w-full mt-2 justify-between">
-            {/* Search Input */}
-            <div className="relative w-full lg:w-[400px]">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar pedidos..."
-                className="w-full h-12 bg-card border border-border rounded-xl pl-11 pr-4 text-sm focus:outline-none focus:border-border focus:ring-1 focus:ring-border text-foreground placeholder-muted-foreground transition-colors duration-200"
-              />
-            </div>
-
-            <div className="flex gap-4 items-center flex-wrap sm:flex-nowrap">
-              <div className="[&>button]:h-12 [&>button]:border-border [&>button]:bg-card [&>button:hover]:bg-accent [&>button:hover]:text-accent-foreground [&>button]:px-6 [&>button]:rounded-xl [&>button]:text-sm [&>button]:font-medium [&>button]:shadow-none transition-colors duration-200">
-                <FilterPanel
-                  hideClientFilter
-                  representantes={representantes}
-                  selectedRepRaw={selectedRepRaw}
-                  setSelectedRepRaw={setSelectedRepRaw}
-                  selectedRep={selectedRep}
-                  setSelectedRep={setSelectedRep}
-                  selectedClients={selectedClients}
-                  setSelectedClients={setSelectedClients}
-                  hasActiveFilters={hasActiveFilters}
-                  onApply={() => { setPage(1); setFilterNonce(n => n + 1); }}
-                  onClear={() => {
-                    setSelectedRep([]);
-                    setSelectedRepRaw([]);
-                    setSelectedClients([]);
-                    setSelectedPeriod({ startDate: DEFAULT_START_DATE.toISOString(), endDate: DEFAULT_END_DATE.toISOString() });
-                    setPage(1);
-                    setFilterNonce(n => n + 1);
-                  }}
-                />
-              </div>
-
-              <PeriodPicker
-                startDate={selectedPeriod.startDate}
-                endDate={selectedPeriod.endDate}
-                onChange={(v) => {
-                  setSelectedPeriod({ startDate: v.startDate.toISOString(), endDate: v.endDate.toISOString() });
-                  setPage(1);
-                  setFilterNonce(n => n + 1);
-                }}
-              />
-
-              <Button
-                className="gap-2 h-12 px-6 rounded-xl bg-[#FF6A00] hover:bg-[#FF6A00]/90 text-white border-0 shadow-none font-medium ml-auto sm:ml-0"
-                onClick={() => navigate('/pedidos/criar')}
-              >
-                <Plus size={16} /> <span className="hidden sm:inline">Criar Pedido</span>
-              </Button>
-            </div>
+          {/* Advanced Filter Row */}
+          <div className="flex flex-col lg:flex-row items-end gap-4 w-full">
+            <AdvancedFilter 
+              className="flex-1"
+              placeholder="Buscar por cliente, SKU, documento..."
+              representantes={representantes}
+              totalRecords={totalRecords}
+              statusOptions={[
+                { label: 'Enviado', value: 'enviado' },
+                { label: 'Aprovado', value: 'aprovado' },
+                { label: 'Confirmado', value: 'confirmado' },
+                { label: 'Pendente', value: 'pendente' },
+                { label: 'Cancelado', value: 'cancelado' },
+              ]}
+              initialFilters={{
+                startDate: selectedPeriod.startDate,
+                endDate: selectedPeriod.endDate,
+                search: searchQuery,
+                repCodes: selectedRep,
+              }}
+              onFilter={(f) => {
+                setSearchQuery(f.search);
+                setSelectedPeriod({ startDate: f.startDate.toISOString(), endDate: f.endDate.toISOString() });
+                setSelectedRep(f.repCodes || []);
+                setSelectedRepRaw((f.repCodes || []).map(String));
+                setPage(1);
+                setFilterNonce(n => n + 1);
+              }}
+            />
+            <Button
+              className="h-[34px] px-8 rounded-2xl bg-primary hover:bg-primary/90 text-white border-0 shadow-lg shadow-primary/20 font-bold transition-all active:scale-95"
+              onClick={() => navigate('/pedidos/criar')}
+            >
+              <Plus size={20} className="mr-2" />
+              Criar Pedido
+            </Button>
           </div>
 
           {/* Active filters indicator */}
@@ -296,8 +278,8 @@ const Pedidos = () => {
                 </div>
               ) : (
                 <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                  <div className="overflow-x-auto px-1">
+                    <table className="w-full min-w-[800px] text-left border-collapse">
                       <thead>
                         <tr className="bg-muted/50 border-b border-border">
                           {TABLE_HEADERS.map(h => (
@@ -350,7 +332,7 @@ const Pedidos = () => {
                                 <td className="px-6 py-5 text-right">
                                   <button
                                     onClick={(e) => { e.stopPropagation(); navigate(`/pedidos/${o.orc_codorc_web}`); }}
-                                    className="inline-flex items-center justify-center h-9 w-9 rounded-full text-[#FF6A00] hover:bg-[#FF6A00]/10 transition-colors"
+                                    className="inline-flex items-center justify-center h-9 w-9 rounded-full text-primary hover:bg-primary/10 transition-colors"
                                   >
                                     <Eye size={18} />
                                   </button>

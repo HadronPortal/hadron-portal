@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip } from 'recharts';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-
-const VISIBLE_COUNT = 14;
+import { useIsMobile } from '@/hooks/use-mobile';
+const VISIBLE_COUNT_DESKTOP = 14;
+const VISIBLE_COUNT_MOBILE = 6;
 const EDGE_ZONE = 60;
 const SCROLL_INTERVAL = 250;
 
@@ -38,14 +39,17 @@ const CustomBar = (props: any) => {
 };
 
 const SalesChartCard = ({ totalValue, salesData = [] }: Props) => {
+  const isMobile = useIsMobile();
+  const visibleCount = isMobile ? VISIBLE_COUNT_MOBILE : VISIBLE_COUNT_DESKTOP;
+  
   const [startIndex, setStartIndex] = useState(0);
   const scrollDirection = useRef<'left' | 'right' | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const allData = salesData.length > 0 ? salesData : [];
-  const maxStart = Math.max(allData.length - VISIBLE_COUNT, 0);
-  const visibleData = allData.slice(startIndex, startIndex + VISIBLE_COUNT);
+  const maxStart = Math.max(allData.length - visibleCount, 0);
+  const visibleData = allData.slice(startIndex, startIndex + visibleCount);
 
   const maxValue = allData.length > 0 ? Math.max(...allData.map(d => d.value)) : 0;
   const yDomain = [0, Math.ceil(maxValue * 1.2 / 100) * 100 || 1000];
@@ -85,10 +89,10 @@ const SalesChartCard = ({ totalValue, salesData = [] }: Props) => {
 
   // Start showing last entries
   useEffect(() => {
-    if (allData.length > VISIBLE_COUNT) {
-      setStartIndex(Math.max(allData.length - VISIBLE_COUNT, 0));
+    if (allData.length > visibleCount) {
+      setStartIndex(Math.max(allData.length - visibleCount, 0));
     }
-  }, [allData.length]);
+  }, [allData.length, visibleCount]);
 
   const formatYAxis = (v: number) => {
     if (v >= 1000) return `R$${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}K`;

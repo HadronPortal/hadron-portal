@@ -128,7 +128,14 @@ const RelatorioItensVendidos = ({ filters }: { filters: SharedFilterProps }) => 
       )}
 
       {error ? (
-        <div className="text-center py-16 text-destructive text-sm">{error}</div>
+        <div className="text-center py-16 px-6">
+          <div className="text-destructive text-sm font-medium mb-2">⚠️ Erro ao carregar relatório</div>
+          <p className="text-muted-foreground text-xs max-w-md mx-auto">
+            {error.includes('500') || error.includes('timeout') || error.includes('Timeout')
+              ? 'O servidor demorou demais para responder. Tente reduzir o período de datas no filtro para obter resultados mais rápidos.'
+              : error}
+          </p>
+        </div>
       ) : isLoading ? (
         <div className="px-2 sm:px-6 py-4">
           <SkeletonTable columns={6} rows={10} headers={['ITEM', 'CLIENTE', 'DATA', 'QTDE', 'PREÇO UN.', 'TOTAL']} />

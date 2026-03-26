@@ -123,16 +123,14 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Theme toggle - mobile only */}
             <button
-              className="sm:hidden h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-foreground/10 transition-colors"
               onClick={toggleTheme}
-              aria-label="Alternar tema"
+              className="p-2 rounded-md hover:bg-primary-foreground/10 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+              title={isDark ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'}
             >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            {/* Hamburger button - visible on mobile */}
             <button
               className="lg:hidden p-1.5 rounded-md hover:bg-primary-foreground/10 transition-colors"
               onClick={() => setDrawerOpen(true)}
@@ -143,13 +141,6 @@ const Header = () => {
 
             <div className="relative flex items-center gap-3" ref={menuRef}>
               <div className="hidden sm:flex items-center gap-5">
-                <button
-                  onClick={toggleTheme}
-                  className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-foreground/10 transition-colors"
-                  aria-label="Alternar tema"
-                >
-                  {isDark ? <Sun size={18} /> : <Moon size={18} />}
-                </button>
                 <div className="relative" ref={companyRef}>
                   <button
                     onClick={() => setCompanyMenuOpen(!companyMenuOpen)}

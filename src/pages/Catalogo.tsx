@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { keepPreviousData } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Package, Boxes, Search, LayoutGrid, List } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Package, Boxes, Search, LayoutGrid, List, Info } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import CatalogoDetalhe from '@/components/erp/CatalogoDetalhe';
 import CatalogoFilterBar, { CatalogoFilters, defaultFilters } from '@/components/erp/CatalogoFilterBar';
@@ -209,6 +209,17 @@ const Catalogo = () => {
       <div className="bg-card flex-1">
       {/* Content overlaps into the black hero */}
       <main className="px-3 sm:px-6 lg:px-12 xl:px-20 py-4 sm:py-5 space-y-4 max-w-[1600px] mx-auto w-full -mt-10 sm:-mt-16 relative z-10">
+        {/* Main Title section matching other pages */}
+        <div className="bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xl flex flex-col gap-6">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-3xl font-bold flex items-center gap-3 text-foreground tracking-tight">
+              <Package className="text-primary" size={36} />
+              Catálogo
+            </h1>
+            <p className="text-muted-foreground text-[15px]">Consulte o acervo completo de produtos e disponibilidades.</p>
+          </div>
+        </div>
+
         {/* Filter bar with integrated search */}
         <CatalogoFilterBar
           filters={filters}
@@ -244,13 +255,13 @@ const Catalogo = () => {
             <div className="flex items-center border border-border rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+                className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
               >
                 <LayoutGrid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+                className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
               >
                 <List className="w-4 h-4" />
               </button>
@@ -285,48 +296,64 @@ const Catalogo = () => {
                     <div
                       key={item.pro_codpro}
                       onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 })}
-                      className="bg-card rounded-lg border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col"
+                      className="bg-[#121212] rounded-xl border border-white/5 hover:border-primary/50 transition-all duration-300 cursor-pointer group flex flex-col overflow-hidden shadow-2xl"
                     >
-                      {/* Image */}
-                      <div className="aspect-square rounded-t-lg bg-muted flex items-center justify-center overflow-hidden p-4">
+                      {/* Image Area */}
+                      <div className="relative aspect-square bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
                         {item.pro_foto ? (
                           <img
                             src={getImageUrl(item.pro_foto)}
                             alt={item.pro_despro}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                           />
                         ) : (
-                          <Package className="w-10 h-10 text-muted-foreground" />
+                          <div className="flex flex-col items-center gap-2 opacity-20">
+                            <Package className="w-12 h-12 text-white" />
+                          </div>
                         )}
-                      </div>
-                      {/* Info */}
-                      <div className="p-3 flex-1 flex flex-col">
-                        <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-tight">
-                          {item.pro_despro}
-                        </h3>
                         
-                        {item.pro_preco != null && Number(item.pro_preco) > 0 && (
-                          <span className="text-sm font-bold text-primary mt-1">
-                            R$ {Number(item.pro_preco).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        {/* Status Badge */}
+                        <div className="absolute top-3 right-3">
+                          <span className={`px-2.5 py-1 rounded-md text-[10px] font-black tracking-wider uppercase ${
+                            inStock
+                              ? 'bg-green-500/10 text-[#00FF88] border border-green-500/20'
+                              : 'bg-red-500/10 text-[#FF4444] border border-red-500/20'
+                          }`}>
+                            {inStock ? 'Em Estoque' : 'Esgotado'}
                           </span>
+                        </div>
+                      </div>
+
+                      {/* Content Area */}
+                      <div className="p-4 flex-1 flex flex-col gap-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="text-[13px] font-bold text-white uppercase leading-tight line-clamp-2">
+                            {item.pro_despro}
+                          </h3>
+                          <span className="shrink-0 px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px] font-mono border border-blue-500/20">
+                            #{item.pro_codpro}
+                          </span>
+                        </div>
+
+                        {item.NOME_GRUPO && (
+                          <div className="flex items-center gap-1.5 text-muted-foreground/60">
+                            <Boxes size={12} className="text-primary/70" />
+                            <span className="text-[10px] uppercase tracking-wide truncate">{item.NOME_GRUPO}</span>
+                          </div>
                         )}
-                        <div className="mt-auto pt-2 flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
-                              inStock
-                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                            }`}>
-                              <Boxes className="w-3 h-3" />
+
+                        <div className="mt-auto pt-4 flex items-end justify-between">
+                          <div className="space-y-0.5">
+                            <span className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest block">Saldo</span>
+                            <span className={`text-lg font-black tabular-nums leading-none ${inStock ? 'text-white' : 'text-red-500/70'}`}>
                               {formatSaldo(saldoNum)}
                             </span>
-                            <span className="text-[11px] text-muted-foreground">SKU: <span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
                           </div>
-                          <Button variant="outline" size="sm" className="text-[11px] gap-1 h-7 px-2">
-                            <Package className="w-3 h-3" />
-                            Ver
-                          </Button>
+                          
+                          <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-colors">
+                            <Info size={16} />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -334,31 +361,31 @@ const Catalogo = () => {
                 }
 
                 return (
-                  <div
-                    key={item.pro_codpro}
-                    onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 })}
-                    className="bg-card rounded-lg border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200 cursor-pointer flex items-start sm:items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-2.5 group flex-wrap sm:flex-nowrap"
-                  >
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden">
-                      {item.pro_foto ? (
-                        <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain p-1" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                      ) : (
-                        <Package className="w-7 h-7 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm sm:text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 sm:truncate">{item.pro_despro}</h3>
-                      <div className="flex items-center gap-2 sm:gap-3 mt-1.5 flex-wrap">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${inStock ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                          <Boxes className="w-3 h-3" />{formatSaldo(saldoNum)}
-                        </span>
-                        <span className="text-xs text-muted-foreground"><span className="hidden sm:inline">SKU: </span><span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
-                        {item.NOME_GRUPO && <span className="text-xs text-muted-foreground hidden sm:inline">Grupo: <span className="font-medium text-foreground">{item.NOME_GRUPO}</span></span>}
-                        {item.pro_preco != null && Number(item.pro_preco) > 0 && (
-                          <span className="text-xs font-bold text-primary whitespace-nowrap">R$ {Number(item.pro_preco).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                    <div
+                      key={item.pro_codpro}
+                      onClick={() => setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 })}
+                      className="bg-card rounded-lg border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200 cursor-pointer flex items-start sm:items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-2.5 group flex-wrap sm:flex-nowrap"
+                    >
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden">
+                        {item.pro_foto ? (
+                          <img src={getImageUrl(item.pro_foto)} alt={item.pro_despro} className="w-full h-full object-contain p-1" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                        ) : (
+                          <Package className="w-7 h-7 text-muted-foreground" />
                         )}
                       </div>
-                    </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm sm:text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 sm:truncate">{item.pro_despro}</h3>
+                        <div className="flex items-center gap-2 sm:gap-3 mt-1.5 flex-wrap">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${inStock ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
+                            <Boxes className="w-3 h-3" />{formatSaldo(saldoNum)}
+                          </span>
+                          <span className="text-xs text-muted-foreground"><span className="hidden sm:inline">SKU: </span><span className="font-mono font-medium text-foreground">{item.pro_codpro}</span></span>
+                          {item.NOME_GRUPO && <span className="text-xs text-muted-foreground hidden sm:inline">Grupo: <span className="font-medium text-foreground">{item.NOME_GRUPO}</span></span>}
+                          {item.pro_preco != null && Number(item.pro_preco) > 0 && (
+                            <span className="text-xs font-bold text-primary whitespace-nowrap">R$ {Number(item.pro_preco).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                          )}
+                        </div>
+                      </div>
                     <div className="flex-shrink-0 flex items-center">
                       <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={(e) => { e.stopPropagation(); setSelectedProduct({ id: item.pro_codpro, name: item.pro_despro, foto: item.pro_foto, saldos: Number(item.SALDOS) || 0, saldoFisico: Number(item.SALDO_FISICO) || 0, prevSaida: Number(item.PREV_SAIDA) || 0 }); }}>
                         <Package className="w-3.5 h-3.5" /><span className="hidden sm:inline">Ver Detalhes</span><span className="sm:hidden">Ver</span>
@@ -400,7 +427,7 @@ const Catalogo = () => {
                       key={pageNum}
                       variant={pageNum === page ? 'default' : 'outline'}
                       size="sm"
-                      className="w-8 h-8 p-0"
+                      className={`w-8 h-8 p-0 ${pageNum === page ? 'bg-primary hover:bg-primary/90 text-white border-0' : ''}`}
                       disabled={isFetching}
                       onClick={() => setPage(pageNum)}
                     >

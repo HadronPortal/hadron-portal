@@ -67,7 +67,8 @@ serve(async (req) => {
       cookies = auth.cookies;
     }
 
-    const imgUrl = `https://dev.hadronweb.com.br/user_data/DEV/products/${encodeURIComponent(filename)}`;
+    const CONTEXT = _API_ENV === 'production' ? 'APP' : 'DEV';
+    const imgUrl = `${API_BASE_URL}/user_data/${CONTEXT}/products/${encodeURIComponent(filename)}`;
 
     const imgHeaders: Record<string, string> = {
       'Authorization': `Bearer ${token}`,

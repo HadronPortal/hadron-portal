@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { format } from 'date-fns';
+import { subDays, format } from 'date-fns';
 import { keepPreviousData } from '@tanstack/react-query';
 
-import FilterBar from '@/components/erp/FilterBar';
+import AdvancedFilter from '@/components/erp/AdvancedFilter';
 import { useRepresentantes } from '@/hooks/use-representantes';
 import { useApiFetch } from '@/hooks/use-api-fetch';
 import {
@@ -165,13 +165,37 @@ const Produtos = () => {
           {/* Header Title */}
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl font-bold flex items-center gap-3 text-foreground">
-              <PackageSearch className="text-[#FF6A00]" size={36} />
+              <PackageSearch className="text-primary" size={36} />
               Produtos
             </h1>
             <p className="text-muted-foreground text-[15px]">Consulte o estoque e preços dos produtos.</p>
           </div>
 
-          <FilterBar persistKey="produtos" representantes={representantes} onRepChange={handleRepChange} onSearch={handleSearch} onFilter={handleFilter} onClear={handleClear} />
+          <AdvancedFilter 
+            placeholder="Buscar por descrição, código ou referência..."
+            representantes={representantes}
+            statusOptions={[
+              { label: 'Todos', value: 'todos' },
+              { label: 'Amostra Grátis', value: 'AG' },
+              { label: 'Bonificados', value: 'BN' },
+            ]}
+            initialFilters={{
+              startDate: dateIni ? new Date(dateIni) : subDays(new Date(), 30),
+              endDate: dateEnd ? new Date(dateEnd) : new Date(),
+              search: search,
+              repCodes: selectedRep,
+              status: activeTab
+            }}
+            onFilter={(f) => {
+              setSearch(f.search);
+              setDateIni(format(f.startDate, 'yyyy-MM-dd'));
+              setDateEnd(format(f.endDate, 'yyyy-MM-dd'));
+              setSelectedRep(f.repCodes || []);
+              if (f.status) setActiveTab(f.status);
+              setPage(1);
+              setFilterNonce(n => n + 1);
+            }}
+          />
 
           <div className="flex items-center gap-2 bg-muted rounded-lg p-1 w-fit max-w-full overflow-x-auto transition-colors duration-200">
             {tabs.map((tab) => (
@@ -220,8 +244,8 @@ const Produtos = () => {
           ) : (
             <div className={`relative transition-opacity duration-300 ${showOverlay ? 'opacity-60' : 'opacity-100'}`}>
               <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm">
-                <div className="overflow-x-auto">
-                  <Table>
+                <div className="overflow-x-auto px-1">
+                  <Table className="min-w-[800px]">
                     <TableHeader>
                       <TableRow className="bg-muted/50 border-b border-border">
                         {TABLE_HEADERS.map(h => (

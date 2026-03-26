@@ -43,24 +43,35 @@ serve(async (req: Request) => {
     const repParam = url.searchParams.get('rep');
     const search = url.searchParams.get('search') || null;
 
-    let representante: number[] | null = null;
-    if (repParam && repParam !== 'all') {
-      representante = repParam.split(',').map(Number).filter(n => !isNaN(n));
-      if (representante.length === 0) representante = null;
-    }
-
+    // Convert YYYY-MM-DD → DD/MM/YY for the Hádron API
     const formatDateBr = (d: string | null) => {
       if (!d) return null;
       const parts = d.split('-');
-      // Convert 2025-01-01 to 01/01/25 (exactly like Postman)
       if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
       return d;
     };
 
     const token = extractUserToken(req) || await getServiceToken();
 
-    // HARDCODING THE DEV ENDPOINT FOR DEBUGGING - MATCHING POSTMAN
-    const endpoint = "https://dev.hadronweb.com.br/app/pages/apiItemReports";
+    // Build the exact payload per the official API docs:
+    // POST /app/pages/apiItemReports
+    const requestBody = {
+      search,
+      filter: {
+        date_ini: formatDateBr(dateIni),
+        date_end: formatDateBr(dateEnd),
+        group_id: "",
+        representante: repParam || null,
+      },
+      pagination: { page, limit },
+      sort: { field: "code", direction: "DESC" },
+    };
+
+    // The documented URL is /app/pages/apiItemReports (no context prefix)
+    const endpoint = `${API_BASE_URL}/app/pages/apiItemReports`;
+
+    console.log('fetch-item-reports → endpoint:', endpoint);
+    console.log('fetch-item-reports → body:', JSON.stringify(requestBody));
 
     const res = await fetch(endpoint, {
       method: 'POST',
@@ -68,47 +79,22 @@ serve(async (req: Request) => {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        search,
-        filter: {
-          date_ini: formatDateBr(dateIni),
-          date_end: formatDateBr(dateEnd),
-          group_id: "",
-          representante: repParam || null
-        },
-        pagination: {
-          page,
-          limit
-        },
-        sort: {
-          field: "code",
-          direction: "DESC"
-        }
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     const responseText = await res.text();
-    if (!res.ok) throw new Error(`apiItemReports fetch failed [${res.status}]: ${responseText.substring(0, 500)}`);
+    console.log('fetch-item-reports → status:', res.status, '| length:', responseText.length);
+
+    if (!res.ok) throw new Error(`apiItemReports failed [${res.status}]: ${responseText.substring(0, 500)}`);
 
     let data;
-    try { 
-      data = JSON.parse(responseText); 
-    } catch { 
-      throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`); 
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      throw new Error(`Response is not JSON: ${responseText.substring(0, 500)}`);
     }
 
-    // Adding debug info to help the user verify in the Network tab
-    const finalData = {
-      ...data,
-      antigravity_debug: {
-        endpoint,
-        date_ini_sent: formatDateBr(dateIni),
-        date_end_sent: formatDateBr(dateEnd),
-        search_sent: search
-      }
-    };
-
-    return new Response(JSON.stringify(finalData), {
+    return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
     });
   } catch (error) {

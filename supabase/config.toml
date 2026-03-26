@@ -1,4 +1,4 @@
-project_id = "okertqaojhjafezdwnaa"
+project_id = "mymqhvqvudpptkxpzvil"
 
 [functions.fetch-catalogo]
 verify_jwt = false
